@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alabanzas-v136';
+const CACHE_NAME = 'alabanzas-v137';
 const DATA_CACHE_NAME = 'alabanzas-data-v36';
 
 self.addEventListener('install', (e) => {
@@ -38,8 +38,10 @@ self.addEventListener('install', (e) => {
         'piano-samples/G4.mp3',
         'piano-samples/Gb3.mp3',
         'piano-samples/Gb4.mp3',
-        'audios/0.m4a',
-        'audios/0.mp3'
+        // La alabanza 0 queda disponible sin conexión como activador del piano.
+        // Se conserva en Cloudinary, no en el repositorio de GitHub.
+        'https://res.cloudinary.com/hie4so71/video/upload/0.m4a',
+        'https://res.cloudinary.com/hie4so71/video/upload/0.mp3'
       ];
 
       const opcionales = [

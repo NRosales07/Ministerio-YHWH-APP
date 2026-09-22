@@ -14066,19 +14066,32 @@ function pianoDesbloquearAudioConMp3Real(){
     audio.preload = 'auto';
     audio.playsInline = true;
     audio.volume = 0.01;
+    // El temporizador debe comenzar cuando el audio realmente empieza a sonar.
+    // Si se iniciara al pedir play(), una red lenta podría hacerlo sonar después
+    // de que ya intentamos pausarlo, dejando la canción 0 de fondo.
+    var warmupFinalizado = false;
+    var warmupTimer = null;
+    function detenerWarmup() {
+      if (warmupFinalizado) return;
+      warmupFinalizado = true;
+      if (warmupTimer) clearTimeout(warmupTimer);
+      try { audio.pause(); audio.src = ''; } catch (e) {}
+    }
+    audio.addEventListener('playing', function() {
+      if (!warmupFinalizado) warmupTimer = setTimeout(detenerWarmup, 800);
+    });
     audio.src = urlAudioCloudinary(baseId, 'm4a');
     audio.addEventListener('error', function() {
+      if (warmupFinalizado) return;
       try { audio.src = urlAudioCloudinary(baseId, 'mp3'); audio.load(); audio.play().catch(function(){ window._pianoWarmupPlayed = false; }); } catch (e) { window._pianoWarmupPlayed = false; }
     }, { once: true });
     var p = audio.play();
     if (p && p.catch) {
       p.catch(function(){
+        if (warmupFinalizado) return;
         try { audio.src = urlAudioCloudinary(baseId, 'mp3'); audio.load(); audio.play().catch(function(){ window._pianoWarmupPlayed = false; }); } catch (e) { window._pianoWarmupPlayed = false; }
       });
     }
-    setTimeout(function() {
-      try { audio.pause(); audio.src = ''; } catch (e) {}
-    }, 800);
   } catch (e) {
     window._pianoWarmupPlayed = false;
     return false;

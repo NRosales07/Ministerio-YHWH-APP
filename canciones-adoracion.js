@@ -362,6 +362,17 @@ var SONGS =
     "content": "[INTRO]: MELODÍA\n                                       | B | F# | Bbm | GD |\n        [VERSO 1]: \n     D#m                                  B\nX2  No puedo vivir con tu ausencia\n                      C#                F#\nNecesito tu ayuda y tu presencia\n D#m                                B\nNo puedo vivir con tu ausencia\n                      C#               F#\nNecesito tu ayuda y tu presencia\n   C#     D#m\nPadre amado. X2\n        [CORO]: \n                        B                            F#\nX2   No me rendiré, pase lo que pase\n    B                   F#\nVenga lo que venga, no me rendiré\n           Bbm        D#m\nAquí estaré, te adoraré. X2\n        [VERSO 1]  X2          |     [CORO]   X2",
     "id": 33.2
   },
+
+    {
+    "num": 37,
+    "title": "EN PIE DE GUERRA",
+    "compositor": "Eddie Jr Rivera",
+    "tono": "Am",
+    "album": "",
+    "content": "[VERSO 1]:\n                Am                   Am7                F  \nX2    El enemigo se ha levantado, a declarado verme derrotado\n           Dm7                  \nEn el proceso mucho he pasado, \n               Esus4                  E [E7]\nMas sobre todo me he levantado    X2\n\n[PRE-CORO]:\n                  Am\nX3    Y yo estoy (En pie de guerra)\n          F\nY tú estás (En pie de guerra)\n         Dm\nY yo estoy (En pie de guerra)\n           E7\nY tú estás (En pie de guerra)    X3\n\n[CORO]:\n\nX3     En la tormenta pero sigo de pie\n\nEn la batalla pero sigo de pie\n\nEn la crisis pero sigo de pie\n\nQue lo sepa el enemigo que sigo de pie...    X3\n \n\nQue lo sepa el enemigo que sigo de pie...\nQue lo sepa el enemigo que sigo de pie...\nQue lo sepa el enemigo que sigo de pie...\nQue lo sepa el enemigo que sigo de pie...\n\n[PRE-CORO]:\nX2    Y yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)\nY yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)    X2\n\n\n\n\n\n\n[VERSO 1]:\nX2    El enemigo se ha levantado, a declarado verme derrotado\nEn el proceso mucho he pasado, \nMas sobre todo me he levantado    X2\n\n[PRE-CORO]:\nX2    Y yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)\nY yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)    X2",
+    "id": 206
+  },
+
   {
     "num": 1,
     "title": "¿QUIÉN PODRÁ?",
@@ -2012,6 +2023,17 @@ var SONGS =
     "content": "[INTRO]: MELODÍA\n                                         | Dm | C | Dm | C | \n                                      | F | Gm | Dm | Em | A |\n        [VERSO 1]:\n        Dm         C           Dm      C     F\nX3 Amo Tu presencia, mi continua búsqueda,\n        Gm             Dm              Em     A\nEl lugar donde mi alma, encuentra gozo y paz. X3\n        [CORO]: | Full Grv.\n        Dm          Gm       C F - Bb\nX2    En tu presencia hay descanso,\n        Gm         A      Dm-C-D\nEn tu presencia encuentro paz.    X2\n        [VERSO 1] X3         |          [CORO]: X2 ",
     "id": 195
   },
+
+    {
+    "num": 38,
+    "title": "HAZ LLOVER",
+    "compositor": "New Wine",
+    "tono": "Am",
+    "album": "Ven y llena esta casa",
+    "content": "[VERSO 1]:\n                  Am7            F         C                                G  \nX6     Haz llover, haz llover, Rompe las fuentes del cielo\n        Am7            F         C                                G  \nHaz llover, haz llover, Rompe las fuentes del cielo    X6\n\n\n\nMINISTRACIÓN - VERSO BIBLICO\n\n\n[VERSO 1]:\nX6     Haz llover, haz llover, Rompe las fuentes del cielo\nHaz llover, haz llover, Rompe las fuentes del cielo    X6",
+    "id": 207
+  },
+
   {
     "num": 9,
     "title": "VEN Y LLENA ESTA CASA",
@@ -2110,23 +2132,7 @@ var SONGS =
     "album": "Proyecto JES - 1995",
     "content": "[INTRO]:\n                                          | A | D | E | D | A |\n        [VERSO 1]: \n      A                                                   D                         A\nX2     El Espíritu del Señor está sobre ti, te ha ungido para darnos Buenas nuevas,\n        E                   C# F#m\nA proclamarnos libertad, y darnos vida,\n        D                            A\nA liberar de la opresión, a proclamar el tiempo del Señor,\n        E                 D A\nTú eres digno, Jesús de adoración...    X2\n        [CORO]:\n        A       D                             A\nX2   A liberar de la opresión, a proclamar el tiempo del Señor,\n        E      D          A\nTú eres digno, Jesús de adoración...   X2\n[VERSO 1]: X2       |         [CORO]: X2 ",
     "id": 205
-  },
-  {
-    "num": 37,
-    "title": "EN PIE DE GUERRA",
-    "compositor": "Eddie Jr Rivera",
-    "tono": "Am",
-    "album": "",
-    "content": "[VERSO 1]:\n                Am                   Am7                F  \nX2    El enemigo se ha levantado, a declarado verme derrotado\n           Dm7                  \nEn el proceso mucho he pasado, \n               Esus4                  E [E7]\nMas sobre todo me he levantado    X2\n\n[PRE-CORO]:\n                  Am\nX3    Y yo estoy (En pie de guerra)\n          F\nY tú estás (En pie de guerra)\n         Dm\nY yo estoy (En pie de guerra)\n           E7\nY tú estás (En pie de guerra)    X3\n\n[CORO]:\n\nX3     En la tormenta pero sigo de pie\n\nEn la batalla pero sigo de pie\n\nEn la crisis pero sigo de pie\n\nQue lo sepa el enemigo que sigo de pie...    X3\n \n\nQue lo sepa el enemigo que sigo de pie...\nQue lo sepa el enemigo que sigo de pie...\nQue lo sepa el enemigo que sigo de pie...\nQue lo sepa el enemigo que sigo de pie...\n\n[PRE-CORO]:\nX2    Y yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)\nY yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)    X2\n\n\n\n\n\n\n[VERSO 1]:\nX2    El enemigo se ha levantado, a declarado verme derrotado\nEn el proceso mucho he pasado, \nMas sobre todo me he levantado    X2\n\n[PRE-CORO]:\nX2    Y yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)\nY yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)    X2",
-    "id": 206
-  },
-  {
-    "num": 38,
-    "title": "HAZ LLOVER",
-    "compositor": "New Wine",
-    "tono": "Am",
-    "album": "Ven y llena esta casa",
-    "content": "[VERSO 1]:\n                  Am7            F         C                                G  \nX6     Haz llover, haz llover, Rompe las fuentes del cielo\n        Am7            F         C                                G  \nHaz llover, haz llover, Rompe las fuentes del cielo    X6\n\n\n\nMINISTRACIÓN - VERSO BIBLICO\n\n\n[VERSO 1]:\nX6     Haz llover, haz llover, Rompe las fuentes del cielo\nHaz llover, haz llover, Rompe las fuentes del cielo    X6",
-    "id": 207
   }
+
+
 ];
