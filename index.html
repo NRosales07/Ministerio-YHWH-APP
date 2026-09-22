@@ -5698,6 +5698,23 @@ function animarEntradaContenido(elOrId, delayMs) {
   else dispararEntrada();
 }
 
+// Los audios viven en Cloudinary para no incluirlos en el repositorio de GitHub.
+// Estos cinco IDs se subieron allí con "_" en vez del punto decimal.
+var CLOUDINARY_AUDIO_BASE = 'https://res.cloudinary.com/hie4so71/video/upload/';
+var CLOUDINARY_AUDIO_ID_EXCEPCIONES = {
+  '110.1': '110_1',
+  '158.1': '158_1',
+  '174.1': '174_1',
+  '72.1': '72_1',
+  '81.1': '81_1'
+};
+
+function urlAudioCloudinary(id, extension) {
+  var idOriginal = String(id);
+  var idCloudinary = CLOUDINARY_AUDIO_ID_EXCEPCIONES[idOriginal] || idOriginal;
+  return CLOUDINARY_AUDIO_BASE + idCloudinary + '.' + extension;
+}
+
 function loadSong(id){
   // ⬇️ NUEVA FORMA INTELIGENTE DE BUSCAR ⬇️
   var song = null;
@@ -5787,11 +5804,11 @@ currentSemitones = tonoGuardado ? getSemitonesTo(tonoGuardado, getOrigKey(song))
     audio.preload = 'metadata';
 
     var sourceM4a = document.createElement('source');
-    sourceM4a.src = 'audios/' + song.id + '.m4a';
+    sourceM4a.src = urlAudioCloudinary(song.id, 'm4a');
     sourceM4a.type = 'audio/mp4';
 
     var sourceMp3 = document.createElement('source');
-    sourceMp3.src = 'audios/' + song.id + '.mp3';
+    sourceMp3.src = urlAudioCloudinary(song.id, 'mp3');
     sourceMp3.type = 'audio/mpeg';
 
     audio.appendChild(sourceM4a);
@@ -5829,7 +5846,7 @@ currentSemitones = tonoGuardado ? getSemitonesTo(tonoGuardado, getOrigKey(song))
     };
     audio.addEventListener('error', function(){
       var codigo = audio.error ? audio.error.code : '?';
-      mostrarToast('⚠️ No se pudo cargar el audio (código ' + codigo + '). Revisa que exista audios/' + song.id + '.m4a o .mp3');
+      mostrarToast('⚠️ No se pudo cargar el audio (código ' + codigo + '). Revisa que exista el audio de esta canción en Cloudinary.');
     });
     audio.addEventListener('play', function(){
       playBtn.textContent = '❚❚';
@@ -9783,13 +9800,13 @@ function obtenerBadgeSinAudio(id) {
   // Si todavía no se pudo verificar, preferimos no marcar nada
   // para evitar falsos positivos offline.
   if (audioDisponibleCache[id] !== false) return '';
-  return '<span class="media-badge badge-sin-audio" title="No se encontró archivo de audio para esta canción en /audios">🔇 Sin audio</span>';
+  return '<span class="media-badge badge-sin-audio" title="No se encontró archivo de audio para esta canción en Cloudinary">🔇 Sin audio</span>';
 }
 
 // Caché persistente: qué canciones SÍ/NO tienen archivo de audio real
 // en el servidor. Evita repetir la revisión (fetch) cada vez que se
 // abre la lista; solo se vuelve a revisar lo que nunca se comprobó.
-var AUDIO_DISPONIBLE_KEY = 'yhwh_audio_disponible_v1';
+var AUDIO_DISPONIBLE_KEY = 'yhwh_audio_disponible_v2';
 var audioDisponibleCache = {};
 try {
   audioDisponibleCache = JSON.parse(localStorage.getItem(AUDIO_DISPONIBLE_KEY) || '{}') || {};
@@ -9800,7 +9817,7 @@ function guardarAudioDisponibleCache() {
 }
 
 // Un "no existe" confirmado se vuelve a revisar cada 24 horas (por si el audio se sube después).
-var AUDIO_REVISADO_KEY = 'yhwh_audio_revisado_v1';
+var AUDIO_REVISADO_KEY = 'yhwh_audio_revisado_v2';
 var AUDIO_REVISAR_CADA_MS = 24 * 60 * 60 * 1000;
 var audioRevisadoEn = {};
 try {
@@ -9833,12 +9850,11 @@ function existeArchivoEnCache(url) {
   return caches.match(url).then(function(resp) { return !!resp; }).catch(function() { return false; });
 }
 
-// Revisa si existe audios/{id}.m4a o audios/{id}.mp3 y guarda el resultado.
+// Revisa si existe el audio Cloudinary en .m4a o .mp3 y guarda el resultado.
 function revisarAudioCancion(song) {
   if (!audioNecesitaRevision(song.id)) return Promise.resolve();
-  var baseId = String(song.id);
-  var urlM4a = 'audios/' + baseId + '.m4a';
-  var urlMp3 = 'audios/' + baseId + '.mp3';
+  var urlM4a = urlAudioCloudinary(song.id, 'm4a');
+  var urlMp3 = urlAudioCloudinary(song.id, 'mp3');
 
   return existeArchivoEnCache(urlM4a).then(function(enCacheM4a) {
     if (enCacheM4a) return true;
@@ -14045,19 +14061,19 @@ function pianoDesbloquearAudioConMp3Real(){
     if (Array.isArray(SONGS) && SONGS.length) {
       apoyo = SONGS[0];
     }
-    var baseId = apoyo && apoyo.id !== undefined && apoyo.id !== null ? String(apoyo.id) : '0';
+    var baseId = apoyo && apoyo.id !== undefined && apoyo.id !== null ? apoyo.id : '0';
     var audio = new Audio();
     audio.preload = 'auto';
     audio.playsInline = true;
     audio.volume = 0.01;
-    audio.src = 'audios/' + baseId + '.m4a';
+    audio.src = urlAudioCloudinary(baseId, 'm4a');
     audio.addEventListener('error', function() {
-      try { audio.src = 'audios/' + baseId + '.mp3'; audio.load(); audio.play().catch(function(){ window._pianoWarmupPlayed = false; }); } catch (e) { window._pianoWarmupPlayed = false; }
+      try { audio.src = urlAudioCloudinary(baseId, 'mp3'); audio.load(); audio.play().catch(function(){ window._pianoWarmupPlayed = false; }); } catch (e) { window._pianoWarmupPlayed = false; }
     }, { once: true });
     var p = audio.play();
     if (p && p.catch) {
       p.catch(function(){
-        try { audio.src = 'audios/' + baseId + '.mp3'; audio.load(); audio.play().catch(function(){ window._pianoWarmupPlayed = false; }); } catch (e) { window._pianoWarmupPlayed = false; }
+        try { audio.src = urlAudioCloudinary(baseId, 'mp3'); audio.load(); audio.play().catch(function(){ window._pianoWarmupPlayed = false; }); } catch (e) { window._pianoWarmupPlayed = false; }
       });
     }
     setTimeout(function() {
