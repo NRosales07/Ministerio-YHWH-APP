@@ -5150,19 +5150,27 @@ function formatTonicChord(root, minor) {
   return root + (minor ? 'm' : '');
 }
 
+function chordForScaleDegree(key, degree) {
+  var root = getToneRoot(key);
+  if (!root) return '';
+  var minor = isMinorKey(key);
+  var offsets = minor ? [0,2,3,5,7,8,10] : [0,2,4,5,7,9,11];
+  var qualities = minor ? ['m','dim','','m','m','',''] : ['', 'm', 'm', '', '', 'm', 'dim'];
+  var i = ((degree - 1) % 7 + 7) % 7;
+  return transposeRoot(root, offsets[i]) + qualities[i];
+}
+
+function getDiatonicChordNames(key) {
+  var out = [];
+  for (var i = 1; i <= 7; i++) out.push(chordForScaleDegree(key, i));
+  return out;
+}
+
 function buildTargetCadence(toKey) {
   var root = getToneRoot(toKey);
   if (!root) return [];
-  var minor = isMinorKey(toKey);
-  var tonic = formatTonicChord(root, minor);
-  var subdominantRoot = transposeRoot(root, 5);
-  var relativeRoot = minor ? transposeRoot(root, 3) : transposeRoot(root, 9);
-  return [
-    tonic,
-    subdominantRoot + (minor ? 'm' : ''),
-    relativeRoot + (minor ? '' : 'm'),
-    tonic
-  ];
+  // V–I (or V–i) is the clearest short resolution into the destination.
+  return [chordForScaleDegree(toKey, 5), formatTonicChord(root, isMinorKey(toKey))];
 }
 
 function buildSuspendedEntry(fromKey, toKey) {
@@ -5195,52 +5203,36 @@ function buildSmoothBridge(fromKey, toKey) {
   var toIdx = CHROMATIC.indexOf(norm(toRoot));
   if (fromIdx === -1 || toIdx === -1) return [];
 
-  var interval = ((toIdx - fromIdx) % 12 + 12) % 12;
+  var tonicFrom = formatTonicChord(fromRoot, fromMinor);
+  var tonicTo = formatTonicChord(toRoot, toMinor);
+  if (fromRoot === toRoot) return [tonicFrom, tonicTo];
 
-  if (interval === 0) {
-    return [formatTonicChord(fromRoot, fromMinor), formatTonicChord(toRoot, toMinor)];
+  // Closely related keys often share one or more diatonic triads. Use the
+  // nearest common chord as a pivot, then resolve with V–I in the new key.
+  var fromChords = getDiatonicChordNames(fromKey);
+  var toChords = getDiatonicChordNames(toKey);
+  var common = fromChords.filter(function(chord, i, arr) {
+    return chord && toChords.indexOf(chord) !== -1 && arr.indexOf(chord) === i;
+  });
+  var targetDominant = chordForScaleDegree(toKey, 5);
+  var pivot = '';
+  var bestScore = Infinity;
+  common.forEach(function(chord) {
+    var score = Math.abs(CHROMATIC.indexOf(norm(getToneRoot(chord))) - fromIdx);
+    score = Math.min(score, 12 - score);
+    if (chord === tonicFrom) score -= 0.25;
+    if (chord === targetDominant) score -= 0.25;
+    if (score < bestScore) { bestScore = score; pivot = chord; }
+  });
+
+  if (pivot) {
+    if (pivot === tonicFrom) return [tonicFrom, targetDominant, tonicTo];
+    return [tonicFrom, pivot, targetDominant, tonicTo];
   }
 
-  if (interval <= 2) {
-    return buildSuspendedEntry(fromKey, toKey);
-  }
-
-  if (interval <= 5) {
-    var targetCadence = buildTargetCadence(toKey);
-    return [
-      formatTonicChord(fromRoot, fromMinor),
-      fromRoot + 'sus4',
-      targetCadence[1],
-      targetCadence[2],
-      targetCadence[3]
-    ];
-  }
-
-  var targetCadenceLong = buildTargetCadence(toKey);
-  var sourceLink = fromMinor
-    ? transposeRoot(fromRoot, 3) + 'm'
-    : transposeRoot(fromRoot, 9) + 'm';
-  var sourceColor = fromRoot + 'sus2';
-
-  if (toMinor) {
-    return [
-      formatTonicChord(fromRoot, fromMinor),
-      sourceColor,
-      sourceLink,
-      targetCadenceLong[1],
-      targetCadenceLong[2],
-      targetCadenceLong[3]
-    ];
-  }
-
-  return [
-    formatTonicChord(fromRoot, fromMinor),
-    sourceColor,
-    sourceLink,
-    targetCadenceLong[1],
-    targetCadenceLong[2],
-    targetCadenceLong[3]
-  ];
+  // If there is no common triad, keep the bridge short instead of inventing
+  // a long chain unsupported by the available song data.
+  return [tonicFrom, targetDominant, tonicTo];
 }
 
 function transitionChordHTML(chord) {
@@ -5277,7 +5269,10 @@ function buildTransitionText(prevSong, nextSong) {
 
   var fromMinor = isMinorKey(prevKey);
   var toMinor = isMinorKey(nextKey);
-  var interval = ((CHROMATIC.indexOf(norm(toRoot)) - CHROMATIC.indexOf(norm(fromRoot))) % 12 + 12) % 12;
+  var fromIdx = CHROMATIC.indexOf(norm(fromRoot));
+  var toIdx = CHROMATIC.indexOf(norm(toRoot));
+  var interval = ((toIdx - fromIdx) % 12 + 12) % 12;
+  var circleDistance = Math.min(interval, 12 - interval);
   var path = buildSmoothBridge(prevKey, nextKey);
   var moves = path.map(function(chord, index) {
     return index === path.length - 1 ? '<strong>' + transitionChordHTML(chord) + '</strong>' : transitionChordHTML(chord);
@@ -5286,9 +5281,14 @@ function buildTransitionText(prevSong, nextSong) {
   var actualTitulo = nextSong && nextSong.title ? nextSong.title : 'la siguiente alabanza';
   var actualKey = fromRoot + (fromMinor ? 'm' : '');
   var nextKeyLabel = toRoot + (toMinor ? 'm' : '');
-  var shortHint = interval <= 2 ? 'Cambio corto' : (interval <= 5 ? 'Cambio medio' : 'Cambio largo');
+  var relacion = circleDistance <= 1 ? 'Tonalidades muy cercanas' : (circleDistance <= 2 ? 'Tonalidades cercanas' : 'Salto tonal amplio');
+  var consejos = circleDistance <= 1
+    ? 'Prueba sostener el acorde pivote y entrar al siguiente verso o coro sin pausa larga.'
+    : (circleDistance <= 2
+      ? 'El acorde pivote puede ayudar; deja que el director marque la entrada y prueba la cadencia antes de usarla.'
+      : 'El cambio de tono es amplio. Esta ruta es una guía armónica; considera cerrar, hacer una pausa breve o modular con el grupo.');
 
-  return 'Actual <strong>' + escH(prevSong && prevSong.title ? prevSong.title : '') + '</strong> en <strong>' + transitionChordHTML(actualKey) + '</strong>. Siguiente <strong>' + escH(actualTitulo) + '</strong> en <strong>' + transitionChordHTML(nextKeyLabel) + '</strong>. Transición: <strong>' + moves.join(' - ') + '</strong>.<small>' + shortHint + ': usa ese cierre para entrar con seguridad.</small>';
+  return 'Actual <strong>' + escH(prevSong && prevSong.title ? prevSong.title : '') + '</strong> en <strong>' + transitionChordHTML(actualKey) + '</strong>. Siguiente <strong>' + escH(actualTitulo) + '</strong> en <strong>' + transitionChordHTML(nextKeyLabel) + '</strong>. Puente sugerido: <strong>' + moves.join(' - ') + '</strong>.<small>' + relacion + '. ' + consejos + ' La suavidad también depende de cómo termina y empieza cada canción.</small>';
 }
 
 
@@ -10226,10 +10226,18 @@ function getDificultadCancion(id) {
 
 // ===== SUGERIDOR DE CANCIÓN DE CIERRE (IA — Google Gemini, capa gratuita) =====
 var GEMINI_KEY_STORAGE = 'yhwh_gemini_api_key';
+// Limpia una sola vez la antigua clave compartida que pudo quedar guardada
+// en los navegadores; cada dispositivo volverá a ingresar su propia clave.
+var GEMINI_KEY_RESET_VERSION = 'yhwh_gemini_key_reset_v1';
+if (localStorage.getItem(GEMINI_KEY_RESET_VERSION) !== '1') {
+  localStorage.removeItem(GEMINI_KEY_STORAGE);
+  localStorage.setItem(GEMINI_KEY_RESET_VERSION, '1');
+}
 
 function abrirRecomendador() {
   var modal = document.getElementById('recomendadorModal');
   var apiKeyWrap = document.getElementById('recomendadorApiKeyWrap');
+  var apiKeyInput = document.getElementById('recomendadorApiKeyInput');
   var estado = document.getElementById('recomendadorEstado');
   var resultado = document.getElementById('recomendadorResultado');
   if (!modal) return;
@@ -10237,7 +10245,9 @@ function abrirRecomendador() {
   resultado.style.display = 'none';
   resultado.textContent = '';
   var keyGuardada = localStorage.getItem(GEMINI_KEY_STORAGE);
+  if (apiKeyInput) apiKeyInput.value = '';
   apiKeyWrap.style.display = keyGuardada ? 'none' : 'block';
+  actualizarCampoTipoCierre();
   modal.style.display = 'flex';
 }
 
@@ -10246,8 +10256,25 @@ function cerrarRecomendador() {
   if (modal) modal.style.display = 'none';
 }
 
-// Permite pegar una clave nueva si la guardada está mal (ej: se pegó por error
-// otro texto en vez de la clave) sin tener que tocar el almacenamiento del navegador.
+// Devuelve la última fecha en que apareció cada canción en un repertorio.
+// El historial disponible es el que cada dispositivo tiene cargado/cacheado.
+function obtenerUltimoUsoCanciones() {
+  var ultimoUso = {};
+  Object.keys(repertorios || {}).forEach(function(fecha) {
+    var d = fechaLocalDesdeISO(fecha);
+    if (!d || d > fechaLocalDesdeISO(hoyISO())) return;
+    var lista = repertorios[fecha];
+    if (!Array.isArray(lista)) return;
+    lista.forEach(function(item) {
+      if (!item || item.id === undefined || (item.fuente && item.fuente !== 'adoracion')) return;
+      var id = String(item.id);
+      if (!ultimoUso[id] || fecha > ultimoUso[id]) ultimoUso[id] = fecha;
+    });
+  });
+  return ultimoUso;
+}
+
+// Permite cambiar la clave guardada en este dispositivo.
 function cambiarClaveGemini() {
   localStorage.removeItem(GEMINI_KEY_STORAGE);
   var apiKeyWrap = document.getElementById('recomendadorApiKeyWrap');
@@ -10255,37 +10282,18 @@ function cambiarClaveGemini() {
   var estado = document.getElementById('recomendadorEstado');
   if (apiKeyInput) apiKeyInput.value = '';
   if (apiKeyWrap) apiKeyWrap.style.display = 'block';
-  if (estado) estado.textContent = 'Pegá tu nueva clave de Gemini abajo.';
+  if (estado) estado.textContent = 'Pegá tu clave de Gemini abajo.';
 }
 
-// Google tiene dos formatos de clave en uso: las viejas empiezan con "AIza",
-// las nuevas ("auth keys") empiezan con "AQ.". En vez de atarnos a un prefijo
-// que puede volver a cambiar, solo validamos que no tenga espacios/saltos de
-// línea y tenga un largo razonable — así detectamos igual si alguien pega
-// código o texto largo por error, sin bloquear claves nuevas válidas.
+function actualizarCampoTipoCierre() {
+  var selector = document.getElementById('recomendadorTipoCierre');
+  var wrap = document.getElementById('recomendadorTipoCierrePersonalizadoWrap');
+  if (selector && wrap) wrap.style.display = selector.value === 'personalizado' ? 'block' : 'none';
+}
+
 function esClaveGeminiValida(valor) {
   var v = valor.trim();
   return v.length >= 20 && v.length <= 200 && /^[A-Za-z0-9._-]+$/.test(v);
-}
-
-// Revisa el repertorio de los últimos N días (todas las fechas guardadas en
-// `repertorios`) y devuelve un set con los IDs de canciones ya cantadas, para
-// que la IA evite repetirlas si hay alternativas razonables.
-function obtenerIdsCancionesRecientes(dias) {
-  var limite = dias || 21;
-  var hoy = fechaLocalDesdeISO(hoyISO());
-  var usados = {};
-  Object.keys(repertorios || {}).forEach(function(fecha) {
-    var d = fechaLocalDesdeISO(fecha);
-    var diffDias = Math.round((hoy - d) / 86400000);
-    if (diffDias < 0 || diffDias > limite) return; // solo pasado reciente
-    var lista = repertorios[fecha];
-    if (!Array.isArray(lista)) return;
-    lista.forEach(function(item) {
-      if (item && item.id !== undefined) usados[String(item.id)] = true;
-    });
-  });
-  return usados;
 }
 
 // Arma un texto compacto "Título — etiqueta1, etiqueta2" con TODO el repertorio
@@ -10309,7 +10317,8 @@ function extraerFragmentoLetra(content, maxChars) {
 
 function construirListaRepertorioParaIA() {
   if (typeof SONGS === 'undefined' || !Array.isArray(SONGS)) return '';
-  var recientes = obtenerIdsCancionesRecientes(21);
+  var ultimoUso = obtenerUltimoUsoCanciones();
+  var hoy = fechaLocalDesdeISO(hoyISO());
   var lineas = [];
   for (var i = 0; i < SONGS.length; i++) {
     var s = SONGS[i];
@@ -10319,10 +10328,14 @@ function construirListaRepertorioParaIA() {
       return found ? found.texto : id;
     });
     var fragmento = extraerFragmentoLetra(s.content, 400);
+    var fechaUso = ultimoUso[String(s.id)];
+    var diasSinUso = fechaUso ? Math.max(0, Math.round((hoy - fechaLocalDesdeISO(fechaUso)) / 86400000)) : null;
+    var historial = diasSinUso === null ? ' — (sin historial reciente disponible)'
+      : ' — (último uso: hace ' + diasSinUso + ' días)';
     var linea = s.title +
       (textosEtiquetas.length ? ' — etiquetas: ' + textosEtiquetas.join(', ') : ' — sin etiquetas') +
       (fragmento ? ' — letra: "' + fragmento + '"' : '') +
-      (recientes[String(s.id)] ? ' — (usada en las últimas 3 semanas)' : '');
+      historial;
     lineas.push(linea);
   }
   return lineas.join('\n');
@@ -10332,19 +10345,34 @@ async function generarRecomendacionCierre() {
   var apiKeyInput = document.getElementById('recomendadorApiKeyInput');
   var apiKeyWrap = document.getElementById('recomendadorApiKeyWrap');
   var temaInput = document.getElementById('recomendadorTemaInput');
+  var tipoCierreInput = document.getElementById('recomendadorTipoCierre');
   var estado = document.getElementById('recomendadorEstado');
   var resultado = document.getElementById('recomendadorResultado');
   var btn = document.getElementById('btnGenerarRecomendacion');
 
   var apiKey = localStorage.getItem(GEMINI_KEY_STORAGE);
-
-  // Si hay algo guardado pero no tiene pinta de clave real (ej: quedó de un
-  // error anterior), lo descartamos y pedimos que la pegue de nuevo.
   if (apiKey && !esClaveGeminiValida(apiKey)) {
     localStorage.removeItem(GEMINI_KEY_STORAGE);
     apiKey = null;
   }
-
+  if (!apiKey && apiKeyInput && apiKeyInput.value.trim()) {
+    var valorPegado = apiKeyInput.value.trim();
+    if (!esClaveGeminiValida(valorPegado)) {
+      estado.textContent = '⚠️ Eso no parece una clave de Gemini válida. Verificá que copiaste la clave completa, sin espacios ni saltos de línea.';
+      return;
+    }
+    apiKey = valorPegado;
+    localStorage.setItem(GEMINI_KEY_STORAGE, apiKey);
+  }
+  if (!apiKey) {
+    apiKeyWrap.style.display = 'block';
+    estado.textContent = '⚠️ Pegá tu clave de Gemini para continuar.';
+    return;
+  }
+  if (apiKey && !esClaveGeminiValida(apiKey)) {
+    localStorage.removeItem(GEMINI_KEY_STORAGE);
+    apiKey = null;
+  }
   if (!apiKey && apiKeyInput && apiKeyInput.value.trim()) {
     var valorPegado = apiKeyInput.value.trim();
     if (!esClaveGeminiValida(valorPegado)) {
@@ -10372,18 +10400,28 @@ async function generarRecomendacionCierre() {
     return;
   }
 
+  var tipoCierreEtiqueta = tipoCierreInput && tipoCierreInput.value === 'personalizado'
+    ? (document.getElementById('recomendadorTipoCierrePersonalizado').value.trim() || '')
+    : (tipoCierreInput && tipoCierreInput.selectedOptions.length
+      ? tipoCierreInput.selectedOptions[0].textContent.trim() : 'Invitación / respuesta al altar');
+  if (!tipoCierreEtiqueta) {
+    estado.textContent = '⚠️ Escribe el tipo de cierre que necesitas.';
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = '🙏 Pensando...';
   estado.textContent = '';
   resultado.style.display = 'none';
 
   var prompt = 'Eres un asistente de un ministerio de alabanza cristiano evangélico (Ministerio YHWH). ' +
-    'Te doy una lista de canciones disponibles (con sus etiquetas temáticas, un fragmento de la letra de cada una cuando esté disponible, ' +
-    'y una marca "(usada en las últimas 3 semanas)" en las que ya se cantaron hace poco) y el tema o llamado del culto de hoy. ' +
-    'Tu tarea: recomendar EXACTAMENTE 5 canciones de la lista dada para cerrar el culto (momento de invitación al altar / respuesta), ' +
+    'Te doy una lista de canciones disponibles con etiquetas, fragmentos de letra cuando existan y los días desde su último uso según el historial disponible. ' +
+    'El tipo de cierre solicitado es: ' + tipoCierreEtiqueta + '. ' +
+    'Tu tarea: recomendar EXACTAMENTE 5 canciones de la lista dada para el cierre del culto según el tipo solicitado, ' +
     'ordenadas de mejor a peor opción, numeradas del 1 al 5 (no inventes canciones que no estén en la lista). ' +
-    'Preferí canciones que NO estén marcadas como usadas recientemente; solo incluí una marcada como reciente si de verdad no hay 5 opciones mejores que encajen con el tema. ' +
-    'Para cada una escribe: el título tal cual aparece en la lista, seguido de un motivo de UNA sola línea (máximo 20 palabras) de por qué encaja con el tema. ' +
+    'Elige según la relación concreta entre el tema, las etiquetas y el sentido de la letra; en cada motivo menciona brevemente la idea de la letra o etiqueta que justifica la elección, sin inventar citas. ' +
+    'Da prioridad a canciones que llevan más días sin usarse; evita las usadas recientemente cuando haya alternativas temáticamente igual de buenas. Si no hay historial para una canción, no supongas que nunca se cantó. ' +
+    'Para cada una escribe: el título tal cual aparece en la lista, seguido de un motivo de UNA sola línea (máximo 24 palabras). ' +
     'IMPORTANTE: ve directo al grano. NO escribas saludo, introducción, comentarios sobre lo lindo/profundo/interesante del tema, ni cierre o despedida al final. Empieza directo con "1. ". ' +
     'Responde en español, tono cálido y pastoral pero breve, sin encabezados markdown, texto plano.\n\n' +
     'TEMA O LLAMADO DE HOY: ' + tema + '\n\n' +
@@ -10401,10 +10439,7 @@ async function generarRecomendacionCierre() {
     });
     var data = await response.json();
 
-    if (data.error) {
-      throw new Error(data.error.message || 'Error de la API');
-    }
-
+    if (data.error) throw new Error(data.error.message || 'Error de la API');
     var texto = (data.candidates && data.candidates[0] && data.candidates[0].content &&
       data.candidates[0].content.parts && data.candidates[0].content.parts[0] &&
       data.candidates[0].content.parts[0].text) || '';
@@ -10432,7 +10467,6 @@ async function generarRecomendacionCierre() {
     apiKeyWrap.style.display = 'none';
   } catch (err) {
     estado.textContent = '❌ ' + (err.message === 'Error de la API' || !err.message ? 'Hubo un problema. Revisa tu clave o intenta de nuevo.' : err.message);
-    // Si la clave falló, permitir corregirla
     if (String(err.message || '').toLowerCase().indexOf('key') !== -1 || String(err.message || '').toLowerCase().indexOf('api') !== -1) {
       localStorage.removeItem(GEMINI_KEY_STORAGE);
       apiKeyWrap.style.display = 'block';
@@ -15469,7 +15503,7 @@ function aplicarAjusteJubilo() {
     <div style="text-align:center;margin-bottom:16px;">
       <div style="font-size:2rem;margin-bottom:6px;">🎯</div>
       <div style="color:#c9a84c;font-weight:bold;font-size:1.05rem;">¿Cuál canción cierra el culto?</div>
-      <div style="color:#8888aa;font-size:0.78rem;margin-top:4px;">Contame el tema o el llamado de hoy y te sugiero 5 opciones de tu repertorio, ordenadas (evitando lo que ya cantaste hace poco).</div>
+      <div style="color:#8888aa;font-size:0.78rem;margin-top:4px;">Primero indica qué quieres que exprese la canción; después, el tema de la predicación.</div>
     </div>
 
     <div id="recomendadorApiKeyWrap" style="display:none;margin-bottom:14px;">
@@ -15480,8 +15514,27 @@ function aplicarAjusteJubilo() {
       <div style="color:#8888aa;font-size:0.7rem;margin-top:5px;">Sacala gratis, sin tarjeta, en aistudio.google.com/apikey</div>
     </div>
 
-    <label style="display:block;color:#af7ac5;font-size:0.75rem;margin-bottom:5px;">🎯 Tema o llamado del culto de hoy</label>
-    <input id="recomendadorTemaInput" type="text" placeholder="Ej: restauración después de una caída…"
+    <label for="recomendadorTipoCierre" style="display:block;color:#af7ac5;font-size:0.75rem;margin-bottom:5px;">🙏 ¿Qué quieres que exprese la canción?</label>
+    <select id="recomendadorTipoCierre" onchange="actualizarCampoTipoCierre()" style="width:100%;background:#0d0d14;border:1px solid #42426e;color:#e8e6f0;
+      border-radius:8px;padding:11px 12px;font-size:0.88rem;outline:none;box-sizing:border-box;margin-bottom:12px;">
+      <option value="personalizado" selected>✍️ Escribir mi tipo de cierre</option>
+      <option value="invitacion">Invitación / respuesta al altar</option>
+      <option value="consuelo">Consuelo / restauración</option>
+      <option value="gratitud">Gratitud / acción de gracias</option>
+      <option value="adoracion">Adoración / entrega</option>
+      <option value="celebracion">Celebración / victoria</option>
+      <option value="intercesion">Intercesión / clamor</option>
+    </select>
+
+    <div id="recomendadorTipoCierrePersonalizadoWrap" style="margin-bottom:12px;">
+    <input id="recomendadorTipoCierrePersonalizado" type="text" maxlength="120" placeholder="Ej: consuelo para quienes están pasando dolor…"
+      style="width:100%;background:#0d0d14;border:1px solid #42426e;color:#e8e6f0;
+             border-radius:8px;padding:11px 12px;font-size:0.88rem;outline:none;box-sizing:border-box;"
+      onkeydown="if(event.key==='Enter') generarRecomendacionCierre()">
+    </div>
+
+    <label for="recomendadorTemaInput" style="display:block;color:#af7ac5;font-size:0.75rem;margin-bottom:5px;">📖 ¿Cuál fue el tema de la predicación?</label>
+    <input id="recomendadorTemaInput" type="text" placeholder="Ej: Dios restaura después de una caída…"
       style="width:100%;background:#0d0d14;border:1px solid #42426e;color:#e8e6f0;
              border-radius:8px;padding:12px 14px;font-size:0.9rem;outline:none;
              box-sizing:border-box;margin-bottom:6px;"

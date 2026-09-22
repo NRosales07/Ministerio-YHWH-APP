@@ -362,8 +362,7 @@ var SONGS =
     "content": "[INTRO]: MELODÍA\n                                       | B | F# | Bbm | GD |\n        [VERSO 1]: \n     D#m                                  B\nX2  No puedo vivir con tu ausencia\n                      C#                F#\nNecesito tu ayuda y tu presencia\n D#m                                B\nNo puedo vivir con tu ausencia\n                      C#               F#\nNecesito tu ayuda y tu presencia\n   C#     D#m\nPadre amado. X2\n        [CORO]: \n                        B                            F#\nX2   No me rendiré, pase lo que pase\n    B                   F#\nVenga lo que venga, no me rendiré\n           Bbm        D#m\nAquí estaré, te adoraré. X2\n        [VERSO 1]  X2          |     [CORO]   X2",
     "id": 33.2
   },
-
-    {
+  {
     "num": 37,
     "title": "EN PIE DE GUERRA",
     "compositor": "Eddie Jr Rivera",
@@ -372,7 +371,6 @@ var SONGS =
     "content": "[VERSO 1]:\n                Am                   Am7                F  \nX2    El enemigo se ha levantado, a declarado verme derrotado\n           Dm7                  \nEn el proceso mucho he pasado, \n               Esus4                  E [E7]\nMas sobre todo me he levantado    X2\n\n[PRE-CORO]:\n                  Am\nX3    Y yo estoy (En pie de guerra)\n          F\nY tú estás (En pie de guerra)\n         Dm\nY yo estoy (En pie de guerra)\n           E7\nY tú estás (En pie de guerra)    X3\n\n[CORO]:\n\nX3     En la tormenta pero sigo de pie\n\nEn la batalla pero sigo de pie\n\nEn la crisis pero sigo de pie\n\nQue lo sepa el enemigo que sigo de pie...    X3\n \n\nQue lo sepa el enemigo que sigo de pie...\nQue lo sepa el enemigo que sigo de pie...\nQue lo sepa el enemigo que sigo de pie...\nQue lo sepa el enemigo que sigo de pie...\n\n[PRE-CORO]:\nX2    Y yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)\nY yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)    X2\n\n\n\n\n\n\n[VERSO 1]:\nX2    El enemigo se ha levantado, a declarado verme derrotado\nEn el proceso mucho he pasado, \nMas sobre todo me he levantado    X2\n\n[PRE-CORO]:\nX2    Y yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)\nY yo estoy (En pie de guerra)\nY tú estás (En pie de guerra)    X2",
     "id": 206
   },
-
   {
     "num": 1,
     "title": "¿QUIÉN PODRÁ?",
@@ -419,10 +417,10 @@ var SONGS =
     "title": "HAY UNA UNCIÓN",
     "compositor": "Marlene Bejarano",
     "tono": "E",
-    "youtube": "https://www.youtube.com/embed/vlVICHKkBvU",
     "album": "Corre a la Gracia - 1997",
-    "content": "[INTRO]: MELODÍA \n                                     | E | F#m | B7 | G#m | \n                                     | C#m | F#m | B7 | E |\n        [VERSO 1]: \n  E                  F#m7    B7                 G#m   C#m\nX2   Hay una unción aquí, cayendo sobre - mí,\n      F#m7              B7             E\nMudándome, cambiando mi ser.   X2\n        [CORO]:\n                                    A                   B7\nX2   Mi espíritu y mi alma se está llenando,\n           G#sus4           Ab    C#m7\nCon el poder de tu Espíritu Santo,\n    F#m7                             B [E]\nMi vida nunca más será igual.   X2\n    F#m              B             E\nMi vida nunca más será igual.\n       [VERSO 1]  X2          |         [CORO]   X2 ",
-    "id": 38
+    "content": "[INTRO]: MELODÍA \n                                     | E | F#m | B7 | G#m | \n                                     | C#m | F#m | B7 | E |\n        [VERSO 1]: \n  E                  F#m7    B7                 G#m   C#m\nX2   Hay una unción aquí, cayendo sobre - mí,\n      F#m7             B7             E\nLlenandomé, cambiando mi ser.   X2\n        [CORO]:\n                                    A                   B7\nX2   Mi espíritu y mi alma se está llenando,\n           G#sus4           Ab    C#m7\nCon el poder de tu Espíritu Santo,\n    F#m7                             B [E]\nMi vida nunca más será igual.   X2\n    F#m              B             E\nMi vida nunca más será igual.\n       [VERSO 1]  X2          |         [CORO]   X2 ",
+    "id": 38,
+    "youtube": "https://www.youtube.com/embed/vlVICHKkBvU"
   },
   {
     "num": 2,
@@ -430,7 +428,7 @@ var SONGS =
     "compositor": "Peter Castro",
     "tono": "G",
     "album": "Corre a la Gracia - 1997",
-    "content": "[INTRO]: \n                                                | G | D |\n        [VERSO 1]:\n  D                    G     A               F#m     Bm\nX2   Espíritu Santo,     yo te necesito,\n                Em7   A               D      Am7\nManda tu fuego      a este lugar.\n                 G              F#m       Bm\nEspíritu Santo, solo anhelo,\n              Em   A         D       Am7\nMirar tu gloria   y majestad.   X2\n        [CORO]: \n                             G     A                     F#m   Bm\nX2   Tú eres mi fuerza,     tú eres mi ayuda,\n              Em7   A                   D - Am7\nEspíritu Santo,   ven a este lugar.   X2\n       [VERSO 1]   X2          |         [CORO]   X2    ",
+    "content": "[INTRO]: \n                                                | G | Dm7 |\n        [VERSO 1]:\nDm7               C7     D7           Bm7      Em7\nX2   Espíritu Santo,     yo te necesito,\n                 Am7  D7             Em7      Dm7 - G\nManda tu fuego        a este lugar.\n                 C     D           Bm7      Em7       \nEspíritu Santo,     solo anhelo,\n              Am7   D          G7       Dm7 - C#\nMirar tu gloria       y majestad.   X2\n        [CORO]: \n                             C      D                   Bm7   Em7\nX2   Tú eres mi fuerza,     tú eres mi ayuda,\n              Am7   D                      G - Am7\nEspíritu Santo,     ven a este lugar.   X2\n       [VERSO 1]   X2          |         [CORO]   X2    ",
     "id": 39
   },
   {
@@ -787,7 +785,6 @@ var SONGS =
     "content": "[INTRO]: MELODÍA\n                           | G | Am | Bm | C | D | G | C | G |\n        [VERSO 1]: \n  G                 Am                                         C-Bm\nX2   Yo solo quiero estar dónde tú estás,\n                   D                   G\nViviendo diario en tu presencia.\n                          Am                   Bm-C\nNo quiero darte solo adoración,\n                  D       G          C-G\nYo quiero ser adorador.\n               Am                                       Bm-C\nYo solo quiero estar dónde tú estás,\n                 D                   G         C-G\nEn tu habitación por siempre.\n                   Am                              Bm-C\nLlévame al lugar dónde tú estás,\n                   D                      G        C-G\nYo quiero estar dónde tú estás.   X2\n        [CORO]:\n                           Am       D                G               Em\nYo quiero estar contigo,    morando en tu presencia,\n                            Am     D                  Em\nComiendo de tu mesa,       y rodeado de tu gloria.\n                C         D                      G                  Em\nEn tu presencia,     es donde siempre quiero estar,\nC              D              Eb                  F                     G\nYo solo quiero estar,    yo quiero estar dónde tú estás.\n           Em                       Am               D\nOh mi Dios, tú eres mi fuerza y mi canción,\nG                      Em                 Am                 D\nY aunque débil sea, en tu presencia fuerte soy.\n        [VERSO 1]:        |         X2 [CORO]  X2 ",
     "id": 72
   },
- 
   {
     "num": 7,
     "title": "A TI ATRIBUIMOS",
@@ -1794,7 +1791,6 @@ var SONGS =
     "content": "[INTRO]:\n                                                      |B|\n        [VERSO 1]:\n        E                        F#m\n¿Amén, amén, amén, amén, amén\n        B                             E\n¿Las promesas del Señor son siempre Amén,\n        C#m                    F#m\n¿Cuando leo tu palabra canto Amén,\n        B                          E   B\n¿A la órden del Señor respondo Amén.\n        [VERSO 2]: \n        E                        F#m\n¿Amén, amén, amén, amén, amén, (Mi vida)\n        B                     E\n¿Mi vida yo la rindo a tus pies,\n        C#m                F#m\n¿Cuando veo tu gloria y tu poder,\n        B               E\n¿En mi alabanza te canto amén, amén.\n        [VERSO 1]:         |          [CORO]: ",
     "id": 172
   },
-  
   {
     "num": 10,
     "title": "QUE TU GLORIA",
@@ -2023,8 +2019,7 @@ var SONGS =
     "content": "[INTRO]: MELODÍA\n                                         | Dm | C | Dm | C | \n                                      | F | Gm | Dm | Em | A |\n        [VERSO 1]:\n        Dm         C           Dm      C     F\nX3 Amo Tu presencia, mi continua búsqueda,\n        Gm             Dm              Em     A\nEl lugar donde mi alma, encuentra gozo y paz. X3\n        [CORO]: | Full Grv.\n        Dm          Gm       C F - Bb\nX2    En tu presencia hay descanso,\n        Gm         A      Dm-C-D\nEn tu presencia encuentro paz.    X2\n        [VERSO 1] X3         |          [CORO]: X2 ",
     "id": 195
   },
-
-    {
+  {
     "num": 38,
     "title": "HAZ LLOVER",
     "compositor": "New Wine",
@@ -2033,7 +2028,6 @@ var SONGS =
     "content": "[VERSO 1]:\n                  Am7            F         C                                G  \nX6     Haz llover, haz llover, Rompe las fuentes del cielo\n        Am7            F         C                                G  \nHaz llover, haz llover, Rompe las fuentes del cielo    X6\n\n\n\nMINISTRACIÓN - VERSO BIBLICO\n\n\n[VERSO 1]:\nX6     Haz llover, haz llover, Rompe las fuentes del cielo\nHaz llover, haz llover, Rompe las fuentes del cielo    X6",
     "id": 207
   },
-
   {
     "num": 9,
     "title": "VEN Y LLENA ESTA CASA",
@@ -2133,6 +2127,4 @@ var SONGS =
     "content": "[INTRO]:\n                                          | A | D | E | D | A |\n        [VERSO 1]: \n      A                                                   D                         A\nX2     El Espíritu del Señor está sobre ti, te ha ungido para darnos Buenas nuevas,\n        E                   C# F#m\nA proclamarnos libertad, y darnos vida,\n        D                            A\nA liberar de la opresión, a proclamar el tiempo del Señor,\n        E                 D A\nTú eres digno, Jesús de adoración...    X2\n        [CORO]:\n        A       D                             A\nX2   A liberar de la opresión, a proclamar el tiempo del Señor,\n        E      D          A\nTú eres digno, Jesús de adoración...   X2\n[VERSO 1]: X2       |         [CORO]: X2 ",
     "id": 205
   }
-
-
 ];
