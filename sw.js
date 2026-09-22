@@ -1,10 +1,10 @@
-const CACHE_NAME = 'alabanzas-v139';
+const CACHE_NAME = 'alabanzas-v140';
 const DATA_CACHE_NAME = 'alabanzas-data-v37';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      const criticos = [
+      const recursos = [
         'index.html',
         'Tone.js',
         'Tone.js.map',
@@ -13,28 +13,37 @@ self.addEventListener('install', (e) => {
         'icon-512.png',
         'canciones-adoracion.js',
         'canciones-jubilo.js',
-    
-        // La alabanza 0 queda disponible sin conexión como activador del piano.
-        // Se conserva en Cloudinary, no en el repositorio de GitHub.
-        'https://res.cloudinary.com/hie4so71/video/upload/0.m4a',
-        'https://res.cloudinary.com/hie4so71/video/upload/0.mp3'
-      ];
 
-      const opcionales = [
+        // Archivos opcionales (PDFs, audio de Cloudinary, Firebase CDN).
         'Alabanzas_Acordes.pdf',
         'Alabanzas_Jub_Acordes.pdf',
         'Alabanzas_Jub_Letra.pdf',
         'Alabanzas_Letra.pdf',
+
+        // La alabanza 0 queda disponible sin conexión como activador del piano.
+        // Se conserva en Cloudinary, no en el repositorio de GitHub.
+        'https://res.cloudinary.com/hie4so71/video/upload/0.m4a',
+        'https://res.cloudinary.com/hie4so71/video/upload/0.mp3',
+
         'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js',
         'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js',
         'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'
       ];
 
-      return cache.addAll(criticos).then(() => {
-        opcionales.forEach(url => {
-          cache.add(url).catch(() => {});
-        });
-      });
+      // IMPORTANTE: cada recurso se cachea individualmente (cache.add + catch)
+      // en vez de un solo cache.addAll(). Con addAll, si UN solo recurso
+      // fallaba (ej. el audio de Cloudinary por CORS o un hipo de red), TODA
+      // la instalación del Service Worker se rechazaba y el SW nuevo nunca
+      // se activaba. Eso dejaba el iPhone atascado sirviendo el caché viejo
+      // aunque ya hubieras subido código nuevo. Ahora un fallo puntual solo
+      // afecta a ese recurso; el SW nuevo sí se instala y toma control.
+      return Promise.all(
+        recursos.map((url) =>
+          cache.add(url).catch((err) => {
+            console.warn('[SW] No se pudo cachear en la instalación:', url, err);
+          })
+        )
+      );
     })
   );
   self.skipWaiting();
@@ -44,9 +53,8 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => Promise.all(
       keys.filter(key => key !== CACHE_NAME && key !== DATA_CACHE_NAME).map(key => caches.delete(key))
-    ))
+    )).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (e) => {
