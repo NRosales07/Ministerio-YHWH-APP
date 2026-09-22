@@ -3168,9 +3168,46 @@ body.musician-view #screen-chords .musician-exit { display: flex; justify-conten
 .adoracion-vistas-row { display: none !important; }
 body.singer-view #screen-chords .adoracion-vistas-row,
 body.musician-view #screen-chords .adoracion-vistas-row { display: flex !important; }
+
+/* Botón "Más opciones": mismo patrón — solo tiene sentido dentro de vista
+   músico/cantante, que es donde el transpositor se oculta por defecto. */
+.mas-opciones-row { display: none !important; }
+body.singer-view #screen-chords .mas-opciones-row,
+body.musician-view #screen-chords .mas-opciones-row { display: flex !important; }
+
+/* Dentro de vista músico/cantante, el transpositor (#transpositorVista) se
+   traslada por JS junto al botón "Más opciones" (ver moverTranspositorVista).
+   Ahí permanece oculto hasta que se activa "Más opciones", momento en el
+   que se muestra en este orden: transpositor, cifrado, fila Ant./Sig. Los
+   botones de Cifrado/Repertorio/Vistas de más abajo (.quick-actions,
+   dentro de .controls) siguen ocultos porque ya están arriba. */
+body.singer-view #adoracionControlsBar #transpositorVista,
+body.musician-view #adoracionControlsBar #transpositorVista {
+  display: none;
+}
+#transpositorVista label {
+  font-size: 0.75rem;
+  color: var(--text2);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+body.musician-view.mostrar-mas-opciones-vista #screen-chords #transpositorVista,
+body.singer-view.mostrar-mas-opciones-vista #screen-chords #transpositorVista {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 12px 14px;
+  background: #1b2152;
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0;
+}
 .song-nav-bar { display: none; align-items: center; justify-content:center; gap: 6px; width:100%; flex-wrap:wrap; }
-body.singer-view #screen-chords .song-nav-bar,
-body.musician-view #screen-chords .song-nav-bar { display: inline-flex; }
+body.singer-view.mostrar-mas-opciones-vista #screen-chords .song-nav-bar,
+body.musician-view.mostrar-mas-opciones-vista #screen-chords .song-nav-bar { display: inline-flex; }
 .song-nav-bar .font-btn { min-width: 78px; }
 .song-nav-bar {
   width: 100%;
@@ -3242,8 +3279,11 @@ body.light-theme.singer-view #screen-chords .song-header {
 }
 body.singer-view #screen-chords .song-title { font-size: 1.15rem; margin-top: 6px; }
 body.singer-view #screen-chords .font-controls { position: sticky; top: 0; z-index: 120; margin: 0 -8px 2px; border-radius: 0; }
-body.singer-view #screen-chords .volver-repertorio-btn,
-body.musician-view #screen-chords .volver-repertorio-btn {
+/* Estilo base: antes solo existía dentro de vista músico/cantante, por lo que
+   al "Salir vista músico" el botón se ocultaba y parecía que la app te
+   devolvía a Adoración en vez de al Repertorio. Ahora se ve igual en
+   cualquier vista mientras la canción venga del Repertorio/Ministración. */
+.volver-repertorio-btn {
   display: block;
   margin: 8px auto 0;
   padding: 6px 12px;
@@ -3388,7 +3428,7 @@ body.jubilo-musician-view #screen-jubilo #jubiloCifradoBar {
   padding-top: 6px;
   padding-bottom: 6px;
 }
-body.musician-view #screen-chords .musician-cifrado-bar {
+body.musician-view.mostrar-mas-opciones-vista #screen-chords .musician-cifrado-bar {
   display: flex !important;
   margin-top: 0;
   padding: 6px 14px;
@@ -4136,6 +4176,13 @@ document.addEventListener('DOMContentLoaded', function(){
     <button id="btnSalirVistaMusico" class="action-btn musician-exit" onclick="toggleVistaMusico()" style="flex:1;height:32px;font-size:0.75rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-align:center;">Vista músico</button>
   </div>
 
+  <!-- FILA: "Más opciones" — muestra/oculta el transpositor sin salir de
+       vista músico/cantante. Solo aparece dentro de esas vistas (fuera de
+       ellas el transpositor ya está siempre visible más abajo). -->
+  <div class="fila-botones mas-opciones-row" style="padding:0 14px 6px;">
+    <button id="btnMasOpcionesVista" class="action-btn" onclick="toggleMasOpcionesVista()" style="flex:1;height:32px;font-size:0.75rem;font-weight:bold;">Más opciones ▾</button>
+  </div>
+
   <div class="musician-cifrado-bar solo-musico" style="display:none; width:100%;">
     <button id="btnCifradoMusico" class="action-btn" onclick="alternarCifrado(); document.getElementById('btnCifrado').textContent = document.getElementById('btnCifradoMusico').textContent" style="height:30px; font-size:0.75rem;">Cifrado: Americano</button>
   </div>
@@ -4168,8 +4215,11 @@ document.addEventListener('DOMContentLoaded', function(){
      
      
  <div class="controls">
-      <div class="solo-musico">
-        <label>Tono</label>
+      <div class="solo-musico" id="transpositorVista">
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:2px;">
+          <label style="margin:0;">Tono</label>
+          <span id="tonoContextoEmoji" style="font-size:1.05rem;line-height:1;" title=""></span>
+        </div>
         <div class="key-selector" id="keySelector"></div>
         
         
@@ -5207,6 +5257,10 @@ function transitionChordHTML(chord) {
 function getTonoEfectivo(song) {
   if (!song) return '';
   if (currentSong && currentKey && String(song.id) === String(currentSong.id)) return currentKey;
+  // Los ítems del Repertorio (traen "fuente") ya cargan su propio tono
+  // vigente para ese culto en song.tono: no debe competir con el tono
+  // personal guardado en este dispositivo para Adoración.
+  if (song.fuente !== undefined) return song.tono || '';
   var guardado = song.id !== undefined ? localStorage.getItem('yhwh_tono_' + song.id) : null;
   return guardado || song.tono || '';
 }
@@ -5571,6 +5625,30 @@ function updateSemDisplay(){
   el.textContent=(s>0?'+':'')+s+' st';
 }
 
+// Guarda el tono elegido en el lugar que corresponde según de dónde se abrió
+// la canción:
+// - Si viene de un ítem del Repertorio (repertorioContextoActual): se guarda
+//   EN ESE ítem de ESA fecha (y se sincroniza a la nube si hay sesión de
+//   admin), sin tocar el tono de Adoración ni el de otros cultos.
+// - Si viene de Adoración: se guarda como siempre, por dispositivo en
+//   localStorage, sin afectar ningún repertorio.
+function guardarTonoSegunContexto(key) {
+  if (!currentSong) return;
+  if (repertorioContextoActual) {
+    var lista = getRepertorioFecha(repertorioContextoActual.fecha);
+    var item = lista && lista[repertorioContextoActual.index];
+    if (item && String(item.id) === String(currentSong.id)) {
+      item.tono = key;
+      // guardarRepertorios() ya valida window.esAdmin y avisa con un toast
+      // si hace falta iniciar sesión; si no es admin, el cambio de tono solo
+      // vale para esta sesión y no queda guardado para los demás.
+      guardarRepertorios(repertorioContextoActual.fecha);
+    }
+    return;
+  }
+  localStorage.setItem('yhwh_tono_' + currentSong.id, key);
+}
+
 function selectKey(key){
   if(!currentSong) return;
   currentSemitones=getSemitonesTo(key,getOrigKey(currentSong));
@@ -5578,7 +5656,7 @@ function selectKey(key){
   setActiveKey(key);
   updateSemDisplay();
   animarCambioAcordes();
-    localStorage.setItem('yhwh_tono_' + currentSong.id, key);
+  guardarTonoSegunContexto(key);
   actualizarTransicionActual();
 
 }
@@ -5598,7 +5676,7 @@ function shiftSemitone(delta){
       : nombreTonoBoton(idxOrig + currentSemitones, esMenor);
     currentKey = nuevaKey;
     setActiveKey(nuevaKey);
-    localStorage.setItem('yhwh_tono_' + currentSong.id, nuevaKey);
+    guardarTonoSegunContexto(nuevaKey);
   }
   updateSemDisplay();
   animarCambioAcordes();
@@ -5625,6 +5703,22 @@ function animarCambioAcordes(){
       });
     });
   }, 90);
+}
+
+// Emoji junto a "Tono" que indica dónde se va a guardar el tono que elijas:
+// 🗓️ = ese culto específico del Repertorio, 📱 = tono personal de Adoración
+// (este dispositivo). El detalle completo queda en el title (al mantener
+// presionado o pasar el cursor).
+function actualizarEtiquetaContextoTono() {
+  var el = document.getElementById('tonoContextoEmoji');
+  if (!el) return;
+  if (repertorioContextoActual) {
+    el.textContent = '🗓️';
+    el.title = 'Tono para: ' + getDiaLabel(repertorioContextoActual.fecha) + ' (Repertorio)';
+  } else {
+    el.textContent = '📱';
+    el.title = 'Tono personal de Adoración (este dispositivo)';
+  }
 }
 
 function buildKeySelector(song){
@@ -5670,6 +5764,7 @@ function buildKeySelector(song){
   sel.appendChild(btnToggle);
 
   setActiveKey(normalizarTono(tonoActivo));
+  actualizarEtiquetaContextoTono();
 }
 
 // Vuelve a disparar la animación de entrada (fade + slide) de un contenedor
@@ -5732,13 +5827,37 @@ function loadSong(id){
   // (ver seleccionarCancionDesdeCompositor).
   window.cancionVieneDeGrupoArtista = false;
 
+  // Cada canción nueva empieza con el transpositor colapsado dentro de
+  // vista músico/cantante (el botón "Más opciones" vuelve a su estado inicial).
+  document.body.classList.remove('mostrar-mas-opciones-vista');
+  var btnMasOpciones = document.getElementById('btnMasOpcionesVista');
+  if (btnMasOpciones) btnMasOpciones.textContent = 'Más opciones ▾';
+
   currentSong=song;
   currentSong=song;
   currentSemitones=0;
-  var tonoGuardado = localStorage.getItem('yhwh_tono_' + song.id);
-verFilaMenores = null;
-currentKey = tonoGuardado ? normalizarTono(tonoGuardado) : getOrigKey(song);
-currentSemitones = tonoGuardado ? getSemitonesTo(tonoGuardado, getOrigKey(song)) : 0;
+  verFilaMenores = null;
+
+  // ¿Esta apertura viene de un ítem concreto del Repertorio? Si es así, el
+  // tono se lee (y luego se guarda) en ESE ítem, no en el tono general de
+  // Adoración, para que cada culto pueda tener su propio tono.
+  var contextoRep = repertorioContextoPendiente;
+  repertorioContextoPendiente = null;
+  repertorioContextoActual = contextoRep;
+
+  if (contextoRep) {
+    var listaCtx = getRepertorioFecha(contextoRep.fecha);
+    var itemCtx = (listaCtx && listaCtx[contextoRep.index] && String(listaCtx[contextoRep.index].id) === String(song.id))
+      ? listaCtx[contextoRep.index]
+      : null;
+    var tonoItem = itemCtx && itemCtx.tono ? itemCtx.tono : '';
+    currentKey = tonoItem ? normalizarTono(tonoItem) : getOrigKey(song);
+    currentSemitones = tonoItem ? getSemitonesTo(tonoItem, getOrigKey(song)) : 0;
+  } else {
+    var tonoGuardado = localStorage.getItem('yhwh_tono_' + song.id);
+    currentKey = tonoGuardado ? normalizarTono(tonoGuardado) : getOrigKey(song);
+    currentSemitones = tonoGuardado ? getSemitonesTo(tonoGuardado, getOrigKey(song)) : 0;
+  }
   
   document.getElementById('welcomeMsg').style.display='none';
   document.getElementById('songView').classList.add('visible');
@@ -6750,6 +6869,28 @@ function toggleMasOpciones() {
   if (btn) btn.textContent = abierto ? 'Ocultar opciones' : 'Mas opciones';
 }
 
+// Traslada el transpositor (#transpositorVista) entre su lugar habitual
+// (dentro de .controls, junto a Cifrado/Repertorio) y la barra de vista
+// músico/cantante (justo antes del cifrado, dentro de #adoracionControlsBar),
+// según si esa vista está activa. Así en modo normal se ve igual que
+// siempre, y en vista músico/cantante aparece junto al botón "Más opciones".
+function moverTranspositorVista() {
+  var el = document.getElementById('transpositorVista');
+  if (!el) return;
+  var enVista = document.body.classList.contains('singer-view') || document.body.classList.contains('musician-view');
+  if (enVista) {
+    var cifradoBar = document.querySelector('#adoracionControlsBar .musician-cifrado-bar');
+    if (cifradoBar && cifradoBar.parentNode && el.nextSibling !== cifradoBar) {
+      cifradoBar.parentNode.insertBefore(el, cifradoBar);
+    }
+  } else {
+    var quickActions = document.querySelector('.quick-actions');
+    if (quickActions && quickActions.parentNode && el.nextSibling !== quickActions) {
+      quickActions.parentNode.insertBefore(el, quickActions);
+    }
+  }
+}
+
 function toggleVistaCantante() {
   var activa = !document.body.classList.contains('singer-view');
   if (activa && document.body.classList.contains('musician-view')) {
@@ -6761,6 +6902,7 @@ function toggleVistaCantante() {
     singerViewPrevOcultarAcordes = ocultarAcordes;
   }
   document.body.classList.toggle('singer-view', activa);
+  moverTranspositorVista();
   actualizarBotonesVistaAdoracion();
   actualizarSiguienteAlabanza();
   actualizarVisibilidadBotonVolverRepertorio();
@@ -6788,6 +6930,16 @@ function toggleVistaCantante() {
 
 
 
+// Muestra u oculta el transpositor DENTRO de vista músico/cantante (sin
+// tener que salir de esa vista). Empieza siempre colapsado cada vez que se
+// abre una canción, para mantener la vista limpia por defecto.
+function toggleMasOpcionesVista() {
+  var activo = document.body.classList.toggle('mostrar-mas-opciones-vista');
+  var btn = document.getElementById('btnMasOpcionesVista');
+  if (btn) btn.textContent = activo ? 'Menos opciones ▴' : 'Más opciones ▾';
+  actualizarEtiquetaContextoTono();
+}
+
 function toggleVistaMusico() {
   var activa = !document.body.classList.contains('musician-view');
   if (activa && document.body.classList.contains('singer-view')) {
@@ -6801,6 +6953,7 @@ function toggleVistaMusico() {
     }
   }
   document.body.classList.toggle('musician-view', activa);
+  moverTranspositorVista();
   actualizarBotonesVistaAdoracion();
   actualizarVisibilidadBotonVolverRepertorio();
   renderContent();
@@ -8745,6 +8898,14 @@ function abrirDesdeRepertorio(index) {
   showScreen('screen-chords');
   if (item) {
     origenRepertorioPendiente = true;
+    // Guarda de qué fecha y posición del Repertorio viene esta apertura, para
+    // que loadSong() sepa leer/guardar el tono en ESE ítem y no en el tono
+    // general de Adoración.
+    repertorioContextoPendiente = {
+      fecha: repertorioFechaActiva,
+      index: index,
+      fuente: item.fuente || 'adoracion'
+    };
     loadSong(item.id);
   }
 }
@@ -9541,6 +9702,25 @@ function navegarCancion(direccion) {
   }
 
   var nuevoIdx = ((idx + direccion) % listaActiva.length + listaActiva.length) % listaActiva.length;
+
+  if (usandoRepertorio) {
+    // Igual que abrirDesdeRepertorio(): hay que avisarle a loadSong() de qué
+    // ítem del Repertorio se trata, para que use y guarde el tono de ESE
+    // ítem (y no el tono general de Adoración), y para que el botón
+    // "Volver al Repertorio" se siga mostrando al navegar con
+    // siguiente/anterior.
+    var siguienteItem = listaActiva[nuevoIdx];
+    var indexReal = setlistDOM.indexOf(siguienteItem);
+    origenRepertorioPendiente = true;
+    if (indexReal !== -1) {
+      repertorioContextoPendiente = {
+        fecha: repertorioFechaActiva,
+        index: indexReal,
+        fuente: siguienteItem.fuente || 'adoracion'
+      };
+    }
+  }
+
   loadSong(listaActiva[nuevoIdx].id);
 
   if (usandoRepertorio) {
@@ -14683,12 +14863,23 @@ var origenRepertorioPendiente = false; // true justo antes de abrir una canción
 var cancionActualVieneDeRepertorio = false; // true si la canción cargada actualmente vino del Repertorio
 var origenMinistracionPendiente = false; // true justo antes de abrir una canción desde Ministración
 var cancionActualVieneDeMinistracion = false; // true si la canción cargada actualmente vino de Ministración
+
+// Contexto de tono: a qué ítem exacto del Repertorio (fecha + posición)
+// pertenece la canción abierta actualmente, para leer/guardar SU tono sin
+// tocar el tono "de fábrica" que se usa cuando se abre desde Adoración.
+// null = la canción se abrió desde Adoración (tono normal, por dispositivo).
+var repertorioContextoPendiente = null; // se arma justo antes de abrir desde el Repertorio
+var repertorioContextoActual = null;    // contexto ya "confirmado" de la canción que está en pantalla
+
 function actualizarVisibilidadBotonVolverRepertorio() {
   var btnVolverRep = document.getElementById('btnVolverRepertorioAdoracion');
   var btnVolverMin = document.getElementById('btnVolverMinistracionAdoracion');
-  var enVistaPresentacion = document.body.classList.contains('singer-view') || document.body.classList.contains('musician-view');
-  if (btnVolverRep) btnVolverRep.style.display = (cancionActualVieneDeRepertorio && enVistaPresentacion) ? '' : 'none';
-  if (btnVolverMin) btnVolverMin.style.display = (cancionActualVieneDeMinistracion && enVistaPresentacion) ? '' : 'none';
+  // Antes esto exigía estar en vista músico/cantante (enVistaPresentacion), así
+  // que al salir de esa vista el botón desaparecía y parecía que la app te
+  // devolvía a Adoración. Ahora se muestra siempre que la canción venga de
+  // ahí, sin importar la vista activa.
+  if (btnVolverRep) btnVolverRep.style.display = cancionActualVieneDeRepertorio ? '' : 'none';
+  if (btnVolverMin) btnVolverMin.style.display = cancionActualVieneDeMinistracion ? '' : 'none';
 }
 
 function storageDisponible() {
