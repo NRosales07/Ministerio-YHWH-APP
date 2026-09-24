@@ -18,19 +18,23 @@ var SONGS =
     "compositor": "Javier Garcías - 1979",
     "tono": "C",
     "album": "Ríos de Gloria",
-    "version": "Cindy Barrera",
     "content": "[INTRO]:\n                                            | C | G | Am | F |\n                                               | C | G | Am |\n        [VERSO 1]:\n        C     G    Am7   Gsus4         F                                     C\nX4 Dios está aquí,              tan cierto como el aire que, respiro,\n          F                                            C      G     Am7\nTan cierto como en la mañana se leva - nta el sol,\n          F                               G                        Am7\nTan cierto que cuando le hablo, él me puede oír. X4",
-    "id": 1
+    "id": 1,
+    "version": "Cindy Barrera",
+    "versiculo": "\"Cercano está Jehová a todos los que le invocan, A todos los que le invocan de veras.\"",
+    "versiculoCita": "SALMOS 45:18"
   },
   {
     "num": 3,
     "title": "COMO EL VUELO DE UN ÁGUILA",
     "compositor": "Noel Carmona",
     "tono": "C",
-    "youtube": "https://www.youtube.com/embed/btkTzK_LU6o",
     "album": "Como el vuelo de un águila - 1994",
     "content": "[INTRO]: MELODÍA\n                                             | C | G | C | F | \n                                             | C | G | F | C |\n        [VERSO 1]: \n                    C                                     Em\nX2   Mírame aquí donde estoy abatido y pobre gorrión,\n                   F                                                           G\nLa tormenta día y noche en mis fuerzas me quitó.    X2\n        \n\nHABLADO\n\nAm                                        Gsus4                             G                             \nAhora no te levantarás nunca más en tus fuerzas,\n                             Am\n si no que lo harás en mi nombre que es poder,\n                     G                                                                 Am                                                                         \nY te levantarás hasta las cumbres más altas donde yo habito,\n                                                  G                     C \n y lo harás como el vuelo majestuoso de un águila.\n        [CORO]:\n                                      C              Am                                            \nComo el vuelo de un águila me levantaré,\n                                      F                G\n como el vuelo de un águila me levantaré,\n                                        C               Am                                            \nY como el vuelo de un águila me levantaré,\n                                       F               G\n como el vuelo de un águila me levantaré,\n       Em                                                  Am                 \nYo subiré hasta el monte donde habitas tú,\n                 G                 F-G              C\n como el vuelo de un águila me levantaré.\n  \n \nMELODÍA\n        [VERSO 2]:\n           Em                                         Am\nYa no seré el gorrión, de aquella tormenta,\n  G                   F    G                  C        A\nCon su gran fuerza, mis alas quebró.\n        Dm                             G                                    C\nQue lindo, es llegar a comprender, que un gorrión solo\n                                           Am                 F          G\nLa tormenta no no podrá vencer, que necesita, volar.\n        [CORO]:             |        [VERSO 2]:",
-    "id": 2
+    "id": 2,
+    "youtube": "https://www.youtube.com/embed/btkTzK_LU6o",
+    "versiculo": "\"Pero los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas; correrán, y no se cansarán; caminarán, y no se fatigarán.",
+    "versiculoCita": "ISAÍAS 40:31"
   },
   {
     "num": 4,
@@ -39,7 +43,9 @@ var SONGS =
     "tono": "Fm",
     "album": "Presencia de Dios - 2014",
     "content": "[INTRO]:\n                                         | Fm | C# | Ab | Eb |\n        [VERSO 1]:\n        Fm                C#             Ab - Eb\nHay poder en el nombre de Cristo,\n        Fm                C#             Ab - Eb\nHay poder en el nombre de Cristo,\n        Fm                 C#            Ab - Eb\nHay poder en el nombre de Cristo.\n        [CORO]:\n                               Fm                        C#\nX2 Para cadenas romper, cadenas romper,\n                   Ab - Eb\nCadenas romper. X2\n        [VERSO 1]:             |             [CORO]: \n        [VERSO 2]: \n         Fm        C# - Ab - Eb\nSe levanta un ejército,\n         Fm        C# - Ab - Eb\nSe levanta un ejército,\n          Fm        C# - Ab - Eb\nSe levanta un ejército.\n [CORO]:  \n\n          Fm      C#        Ab - Eb    Fm       C#      Ab - Eb\nX3    Oigo cadenas caer,         Oigo cadenas caer.     X3",
-    "id": 3
+    "id": 3,
+    "versiculo": "2 Corintios 3:17: \n\"Porque el Señor es el Espíritu; y donde está el Espíritu del Señor, allí hay libertad.\"\n\n\nHechos 16:25-26: \n\"Pero a medianoche, orando Pablo y Silas, cantaban himnos a Dios; y los presos los oían. \n\nEntonces sobrevino de repente un gran terremoto, de tal manera que los cimientos de la cárcel se sacudían; y al instante se abrieron todas las puertas, y las cadenas de todos se soltaron.",
+    "versiculoCita": "2 CORINTIOS 3:17 - HECHOS 16:25-26"
   },
   {
     "num": 5,
@@ -48,7 +54,9 @@ var SONGS =
     "tono": "Cm",
     "album": "Paul Wilbur Colección - 2014",
     "content": "[INTRO]:\n                                        | Cm | Ab | Bb | Bb |\n        [VERSO 1]:\n      Cm                        Bb\nYo entro al lugar más santo,\n     Ab             Bb          Cm\nA través del cordero de Dios,\n                                   Bb\nY vengo tan solo a adorarte,\n       Ab          Bb  Gm    Cm\nYo vengo a honrar al Yo Soy.\n        [CORO]:\n                     Eb    Bb        Fm   Cm\nX2 Dios, te adoro a ti, Te adoro a ti… X2\n                                       Ab       Bb   Cm\nX2 Pues tu nombre es Santo, Santo Dios,\n                                 Ab      Bb    Cm\nPues tu nombre es Santo, Santo Dios. X2\n        [VERSO 1]:            |             [CORO]:",
-    "id": 4
+    "id": 4,
+    "versiculo": "\"Para ver tu poder y tu gloria,\nAsí como te he mirado en el santuario.\"",
+    "versiculoCita": "SALMO 63:2"
   },
   {
     "num": 6,
@@ -56,9 +64,11 @@ var SONGS =
     "compositor": "Josué Ibañez",
     "tono": "Db",
     "album": "Miguel Martínez VOL. 6 - 2022",
-    "version": "Miguel Martínez",
     "content": "[INTRO]:\n                                | C#| Fm | Bbm | F# | Ab | C# |\n        [VERSO 1]:\n       C#       Fm      Bbm    F#                    Ab\nX2 Vine a adorar a Dios, Vine a adorar a Dios,\n  \n C#      Fm            Bbm       F#        Ab        C#\nVine a adorar su nombre, Vine a adorar a Dios. X2\n         [CORO]: \n                F#           Ab           Fm            Bbm\nX2      Él vino a mi vida en un día muy especial,\n     F#             Ab               C#                       Fm      C#\nCambió mi corazón, me mostró un camino mejor,\n     F#            Ab       Fm              Bbm   F#        Ab       C#           \nY esa es la razón por la que digo que: Vine a adorar a Dios. \n       F#        Ab        C# \nX2 Vine a adorar a Dios. \n       \n\nMELODÍA\n        [VERSO 2]:\n               C#               Ab                 F#            C#\nNo por Gloria, ni por pan, no por vestido, te serviré Señor,\n              C#               Ab                                C#-Ab-C#\nNo por Gloria, ni por una bendición, no por salud, te serviré Señor,\n                  Ab                    F#-C#                       \nSolo por amarte, solo por amarte, \n                      Ab            F#-Ab    C#\n y no me rechazaste te serviré Señor,\n                         Ab                             F#-C#                       \nPorque tú me amaste, porque tú me amaste, \n                     Ab           F#-Ab     C#\ny no me rechazaste te serviré Señor,\n              F# - Ab                          Fm - Bbm                           D#m            \nX2 Sienteloo - o, Jesucristo está aquíi - í, cada vez que se acerca \n         Ab                 C#               Ab      C#\ntu presencia, en mi ser, hoy lo puedo sentir. X2",
-    "id": 5
+    "id": 5,
+    "version": "Miguel Martínez",
+    "versiculo": "\"Venid, adoremos y postrémonos;\nArrodillémonos delante de Jehová nuestro Hacedor.\"",
+    "versiculoCita": "SALMOS 95:6"
   },
   {
     "num": 7,
