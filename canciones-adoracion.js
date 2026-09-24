@@ -431,7 +431,9 @@ var SONGS =
     "tono": "G",
     "album": "Corre a la Gracia - 1997",
     "content": "[INTRO]: \n                                                | G | Dm7 |\n        [VERSO 1]:\nDm7               C7     D7           Bm7      Em7\nX2   Espíritu Santo,     yo te necesito,\n                 Am7  D7             Em7      Dm7 - G\nManda tu fuego        a este lugar.\n                 C     D           Bm7      Em7       \nEspíritu Santo,     solo anhelo,\n              Am7   D          G7       Dm7 - C#\nMirar tu gloria       y majestad.   X2\n        [CORO]: \n                             C      D                   Bm7   Em7\nX2   Tú eres mi fuerza,     tú eres mi ayuda,\n              Am7   D                      G - Am7\nEspíritu Santo,     ven a este lugar.   X2\n       [VERSO 1]   X2          |         [CORO]   X2    ",
-    "id": 39
+    "id": 39,
+    "versiculo": "\"Y yo rogaré al Padre, y os dará otro Consolador, para que esté con vosotros para siempre:\"",
+    "versiculoCita": "JUAN 14:16"
   },
   {
     "num": 3,
@@ -672,7 +674,9 @@ var SONGS =
     "tono": "A",
     "album": "Te daré lo mejor - 2004",
     "content": "[INTRO]:\n                                   | A | C#m | F#m | D | A |\n        [VERSO 1]:\nA                                     C#m    F#m                                      D\nPor un momento en tu presencia,       por un instante de tu amor,\nA                                C#m   F#m                                   D      A\nPor un destello de tu gloria,         por un minuto nada más.\n        [PRE - CORO]:\n            A                 E                     Bm\nTodo daría, no importaría, lo que tenga que pasar,\n               E\nLo que tenga que esperar.\n        [VERSO 1]:         |        [PRE - CORO]: \n        [CORO]: \n D                    E          A                 C#                   F#m                  D\nX2   Tengo hambre de ti, de tu presencia, de tu fragancia, de tu poder.\n                        A                 C#                F#m            D\nHambre que duele, que debilita, que desespera, por ti.   X2",
-    "id": 63
+    "id": 63,
+    "versiculo": "\"Como el ciervo brama por las corrientes de las aguas, Así clama por ti, oh Dios, el alma mía. \n\nMi alma tiene sed de Dios, del Dios vivo; ¿Cuándo vendré, y me presentaré delante de Dios?\"",
+    "versiculoCita": "SALMOS 42:1-2"
   },
   {
     "num": 7,
@@ -720,10 +724,12 @@ var SONGS =
     "title": "ALGO ESTÁ CAYENDO AQUÍ",
     "compositor": "José Luis Reyes",
     "tono": "G",
-    "youtube": "https://www.youtube.com/embed/uSt_tLrGqEM",
     "album": "Dios de lo Imposible - 2013",
     "content": "[INTRO]: MELODÍA \n                                         | G | Em | C | D | \n                                         | G | Em | C | D |\n        [VERSO 1]: \n G                                  Am7   Dsus2                               G     Em\nX2   Algo está cayendo aquí,             es tan fuerte sobre mí,\n                      Am7     Dsus2                     G        [C-G-D]\nMis manos levantaré,           y su gloria tocaré.   X2\n        [CORO]: \n                      G                                D                  C-Am7\nX2   Está cayendo, su gloria sobre mí, sanando heridas,\n                           C                             D\nLevantando al caído, su gloria está aquí.   X2\n                         G\nSu gloria está aquí.\n        \n\nMELODÍA\n      [VERSO 1]  X2 |     [CORO]  X2",
-    "id": 66
+    "id": 66,
+    "youtube": "https://www.youtube.com/embed/uSt_tLrGqEM",
+    "versiculo": "145:14: \"Sostiene Jehová a todos los que caen, Y levanta a todos los oprimidos.\"\n\n147:3: \"El sana a los quebrantados de corazón, Y venda sus heridas.\"",
+    "versiculoCita": "Salmos"
   },
   {
     "num": 2,
