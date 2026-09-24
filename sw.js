@@ -1,8 +1,7 @@
 // ============================================================
 //  Service Worker - Alabanzas (uso sin conexión)
-//  Cada vez que cambies canciones o archivos, sube el número
-//  de versión correspondiente y cambia también sw.js?v=NNN en
-//  index.html.
+//  Cuando cambies PDFs, imágenes o Tone.js, sube CACHE_NAME
+//  (v143 -> v144). Las canciones y index.html se actualizan solas.
 // ============================================================
 const CACHE_NAME = 'alabanzas-v143';        // index, Tone.js, íconos, PDFs, imágenes
 const DATA_CACHE_NAME = 'alabanzas-data-v43'; // canciones, Firebase, fuentes
@@ -14,9 +13,7 @@ const AUDIO_CACHE_NAME = 'alabanzas-audio-v1'; // solo el audio de la primera al
 // El resto de audios se reproducen por streaming y NO se guardan.
 const CLOUDINARY_BASE = 'https://res.cloudinary.com/hie4so71/video/upload/';
 const AUDIO_OFFLINE_IDS = ['0'];
-const AUDIO_OFFLINE_URLS = AUDIO_OFFLINE_IDS.flatMap((id) =>
-  ['m4a', 'mp3'].map((ext) => CLOUDINARY_BASE + id + '.' + ext)
-);
+const AUDIO_OFFLINE_URLS = AUDIO_OFFLINE_IDS.map((id) => CLOUDINARY_BASE + id + '.m4a');
 
 // ---- Archivos críticos: si alguno falla, la instalación falla ----------
 const APP_SHELL = [
@@ -87,8 +84,61 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  const d = event.data;
+  if (!d) return;
+  if (d.type === 'SKIP_WAITING') self.skipWaiting();
+  if (d.type === 'PRECARGAR') event.waitUntil(precargarTodo());
 });
+
+// ====================== PRECARGA EN SEGUNDO PLANO ======================
+// La página avisa (mensaje PRECARGAR) cuando abre con internet. Aquí se
+// descargan las imágenes que aparecen en index.html y en los archivos de
+// canciones, y se reintenta el audio inicial. Lo que ya está guardado se
+// salta, así que si se interrumpe, continúa la próxima vez.
+const IMAGENES_EXTRA = ['Portadajubilo.jpeg', 'Portadaadoracion.jpeg', 'Organigrama.jpeg'];
+let precargando = false;
+
+async function agregarSiFalta(cache, urls, lote) {
+  const faltan = [];
+  for (const u of urls) {
+    if (!(await cache.match(u))) faltan.push(u);
+  }
+  for (let i = 0; i < faltan.length; i += lote) {
+    await Promise.all(faltan.slice(i, i + lote).map((u) => cache.add(u).catch(() => {})));
+  }
+}
+
+async function precargarTodo() {
+  if (precargando) return;
+  precargando = true;
+  try {
+    const audio = await caches.open(AUDIO_CACHE_NAME);
+    await agregarSiFalta(audio, AUDIO_OFFLINE_URLS, 1);
+
+    const fuentes = [
+      [CACHE_NAME, 'index.html'],
+      [DATA_CACHE_NAME, 'canciones-adoracion.js'],
+      [DATA_CACHE_NAME, 'canciones-jubilo.js']
+    ];
+    const rutas = new Set(IMAGENES_EXTRA);
+    const re = /(?:img|imagenes)\/[^"'`()<>\\]+?\.(?:png|jpe?g|webp|gif|svg)/gi;
+    for (const [nombre, archivo] of fuentes) {
+      const c = await caches.open(nombre);
+      const r = await c.match(abs(archivo));
+      if (!r) continue;
+      const texto = await r.clone().text();
+      for (const m of texto.match(re) || []) {
+        if (m.indexOf('${') === -1 && m.indexOf('+') === -1) rutas.add(m);
+      }
+    }
+    const shell = await caches.open(CACHE_NAME);
+    await agregarSiFalta(shell, Array.from(rutas).map(abs), 6);
+  } catch (e) {
+    // se reintentará la próxima vez que abran la app con internet
+  } finally {
+    precargando = false;
+  }
+}
 
 // ============================ UTILIDADES ===============================
 function puedeGuardarse(response) {
