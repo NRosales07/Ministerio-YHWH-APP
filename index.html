@@ -9272,7 +9272,7 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       // El parámetro de versión evita que iOS conserve un worker antiguo
       // después de reinstalar la app en la pantalla de inicio.
-      navigator.serviceWorker.register('sw.js?v=142')
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
         .then(reg => console.log('Service Worker registrado con éxito', reg))
         .catch(err => console.error('Error al registrar el Service Worker', err));
     });
