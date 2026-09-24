@@ -5,10 +5,12 @@ var SONGS =
     "title": "PRECIOSA SANGRE",
     "compositor": "César Darío",
     "tono": "C",
-    "youtube": "https://www.youtube.com/embed/cjwiVwlnvcg",
     "album": "Preciosa Sangre - 2000",
     "content": "      [INTRO]: MELODÍA \n                                             | C | G | C | F |\n                                             | F | Bb | F | C |\n        [VERSO 1]:\n      C                     F                                             C\nInmolado en el calvario, Él mostró su amor, por mí,\n                            F                       G                               C\nTodo peso del pecado, sucios pecados, encima de Él llevó.\n                                   G                            F                   C\nY en un momento importante, y en un instante, muy decisivo,\n                                        G                          F                              C\nFue por Él, oh, por mi amado, mi amado Padre, quería a mí, salvar.\n        [CORO]:\n                                           G - F                              C\nX2   Sangre que me da la paz,   sangre que me purifica,\n                             G                         F\nSangre que me redime, preciosa sangre,\n                         C\nLa sangre de Jesús.   X2\n \nMELODÍA\n[VERSO 2]\n        C                                F                     C\nDespreciado y desechado, el varón de dolor,\n                                   G                     F                              C\nÉl sufrió nuestras dolencias, y fue herido, por nuestra rebelión.\n                                 G                         F                           C\nMás angustiado y afligido, hasta la muerte, no abrió su boca,\n                                           G                                    F                                \nX2 De su trono hasta el pesebre, del pesebre al calvario,\n                          C\n y del calvario a mí. X2\n \n  \n        [CORO]  X2 ",
-    "id": 0
+    "id": 0,
+    "youtube": "https://www.youtube.com/embed/cjwiVwlnvcg",
+    "versiculo": "3 Despreciado y desechado entre los hombres, varón de dolores, experimentado en quebranto; y como que escondimos de él el rostro, fue menospreciado, y no lo estimamos.\n\n4 Ciertamente llevó él nuestras enfermedades, y sufrió nuestros dolores; y nosotros le tuvimos por azotado, por herido de Dios y abatido. \n\n5 Mas él herido fue por nuestras rebeliones, molido por nuestros pecados; el castigo de nuestra paz fue sobre él, y por su llaga fuimos nosotros curados. \n\n6 Todos nosotros nos descarriamos como ovejas, cada cual se apartó por su camino; mas Jehová cargó en él el pecado de todos nosotros.\n\n7 Angustiado él, y afligido, no abrió su boca; como cordero fue llevado al matadero; y como oveja delante de sus trasquiladores, enmudeció, y no abrió su boca.",
+    "versiculoCita": "ISAÍAS 53:3-7"
   },
   {
     "num": 2,

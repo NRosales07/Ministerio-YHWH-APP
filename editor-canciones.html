@@ -79,7 +79,6 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
 .preview-meta{color:var(--text2);text-align:center;font-size:0.8rem;margin-bottom:16px;}
 
 .versiculo-box{position:relative;margin:0 0 16px;padding:14px 18px 12px 18px;border-left:3px solid var(--gold);border-radius:10px;background:linear-gradient(135deg, rgba(27,33,82,.95), rgba(18,21,52,.94));box-shadow:0 10px 24px rgba(0,0,0,.18);overflow:hidden;}
-.versiculo-box::before{content:"\275D";position:absolute;top:-14px;right:10px;font-size:3.4rem;font-family:Georgia,"Times New Roman",serif;color:rgba(201,168,76,.16);line-height:1;pointer-events:none;}
 .versiculo-box-head{display:flex;align-items:center;gap:6px;color:var(--gold2);font-size:0.7rem;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
 .versiculo-box-text{color:var(--text);font-size:0.9rem;line-height:1.55;font-style:italic;white-space:pre-line;position:relative;z-index:1;}
 .versiculo-box-cita{margin-top:8px;text-align:right;color:var(--gold);font-size:0.76rem;font-weight:700;letter-spacing:0.3px;position:relative;z-index:1;}
@@ -534,11 +533,11 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
     </div>
     <div class="field">
       <label>Versículo bíblico (opcional)</label>
-      <textarea id="fVersiculo" style="min-height:70px;" placeholder="Ej. El Señor es mi pastor, nada me faltará."></textarea>
+      <textarea id="fVersiculo" oninput="renderPreview()" style="min-height:260px;" placeholder="Ej. El Señor es mi pastor, nada me faltará."></textarea>
     </div>
     <div class="field">
       <label>Cita del versículo (opcional)</label>
-      <input type="text" id="fVersiculoCita" placeholder="Ej. Salmos 23:1">
+      <input type="text" id="fVersiculoCita" oninput="renderPreview()" placeholder="Ej. Salmos 23:1">
     </div>
     <div class="field">
       <label>Contenido (letra y acordes)</label>
@@ -1010,12 +1009,12 @@ function generarHTMLVisorDirecto(){
     body.light-theme.singer-view .song-header,body.light-theme.musician-view .song-header{background:#fffaf0 !important;border-bottom:1px solid #d8cdb8 !important;}
     body.light-theme{background:#fffaf0;color:#111;}
     .versiculo-box{position:relative;margin:10px 10px 10px;padding:14px 18px 12px 18px;border-left:3px solid var(--gold);border-radius:10px;background:linear-gradient(135deg, rgba(27,33,82,.95), rgba(18,21,52,.94));box-shadow:0 10px 24px rgba(0,0,0,.18);overflow:hidden;}
-    .versiculo-box::before{content:"275\D";position:absolute;top:-14px;right:10px;font-size:3.4rem;font-family:Georgia,"Times New Roman",serif;color:rgba(201,168,76,.16);line-height:1;pointer-events:none;}
+
     .versiculo-box-head{display:flex;align-items:center;gap:6px;color:var(--gold2);font-size:0.7rem;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
     .versiculo-box-text{color:var(--text);font-size:0.9rem;line-height:1.55;font-style:italic;white-space:pre-line;position:relative;z-index:1;}
     .versiculo-box-cita{margin-top:8px;text-align:right;color:var(--gold);font-size:0.76rem;font-weight:700;letter-spacing:0.3px;position:relative;z-index:1;}
     body.light-theme .versiculo-box{background:linear-gradient(135deg, #fdf6e3, #f3ecd8);border-left-color:#b8933c;}
-    body.light-theme .versiculo-box::before{color:rgba(184,147,60,.22);}
+
     body.light-theme .versiculo-box-head{color:#7f5f19;}
     body.light-theme .versiculo-box-text{color:#22303b;}
     body.light-theme .versiculo-box-cita{color:#7f5f19;}

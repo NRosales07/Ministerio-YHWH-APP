@@ -2848,6 +2848,9 @@ body.light-theme .versiculo-box::before{ color:rgba(184,147,60,.22); }
 body.light-theme .versiculo-box-head{ color:#7f5f19; }
 body.light-theme .versiculo-box-text{ color:#22303b; }
 body.light-theme .versiculo-box-cita{ color:#7f5f19; }
+.versiculo-modal-card{max-width:540px;max-height:calc(100vh - 40px);overflow-y:auto;}
+.versiculo-modal-text{white-space:pre-line;font-style:italic;line-height:1.6;}
+@media(max-width:580px){.versiculo-modal-card{max-width:520px;padding:20px 18px;}}
 
 /* Pega esto al final del bloque de estilos de light-theme */
 
@@ -3271,6 +3274,9 @@ body.singer-view.mostrar-mas-opciones-vista:not(.rol-cantante) #screen-chords #t
 .song-nav-bar { display: none; align-items: center; justify-content:center; gap: 6px; width:100%; flex-wrap:wrap; }
 body.singer-view.mostrar-mas-opciones-vista #screen-chords .song-nav-bar,
 body.musician-view.mostrar-mas-opciones-vista #screen-chords .song-nav-bar { display: inline-flex; }
+.mas-opciones-row #btnVersiculoVista { display:none !important; }
+body.singer-view.tiene-versiculo-vista.mostrar-mas-opciones-vista #screen-chords #btnVersiculoVista,
+body.musician-view.tiene-versiculo-vista.mostrar-mas-opciones-vista #screen-chords #btnVersiculoVista { display:inline-flex !important; align-items:center; justify-content:center; }
 .song-nav-bar .font-btn { min-width: 78px; }
 .song-nav-bar {
   width: 100%;
@@ -4244,6 +4250,7 @@ document.addEventListener('DOMContentLoaded', function(){
        ellas el transpositor ya está siempre visible más abajo). -->
   <div class="fila-botones mas-opciones-row" style="padding:0 14px 6px;">
     <button id="btnMasOpcionesVista" class="action-btn" onclick="toggleMasOpcionesVista()" style="flex:1;height:32px;font-size:0.75rem;font-weight:bold;">Más opciones ▾</button>
+    <button id="btnVersiculoVista" class="action-btn" onclick="abrirVersiculoModal()" style="width:42px;height:32px;font-size:1rem;padding:0;" title="Ver versículo bíblico" aria-label="Ver versículo bíblico">📖</button>
   </div>
 
   <div class="musician-cifrado-bar solo-musico" style="display:none; width:100%;">
@@ -4275,11 +4282,6 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
   </div>
 
-  <div class="versiculo-box" id="versiculoBox" style="display:none;">
-    <div class="versiculo-box-head">&#128214; Versículo</div>
-    <div class="versiculo-box-text" id="versiculoBoxText"></div>
-    <div class="versiculo-box-cita" id="versiculoBoxCita"></div>
-  </div>
 </div>
      
      
@@ -4415,6 +4417,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
       </div>
+    <div class="versiculo-box" id="versiculoBox" style="display:none;">
+      <div class="versiculo-box-head">&#128214; Versículo</div>
+      <div class="versiculo-box-text" id="versiculoBoxText"></div>
+      <div class="versiculo-box-cita" id="versiculoBoxCita"></div>
+    </div>
     <div class="song-content" id="viewContent"></div>
       <!-- NOTAS POR CANCIÓN -->
 <div class="notas-container" id="notasContainer" style="display:none;">
@@ -5686,14 +5693,42 @@ function actualizarVersiculoBox(song) {
   var box = document.getElementById('versiculoBox');
   var txt = document.getElementById('versiculoBoxText');
   var cita = document.getElementById('versiculoBoxCita');
+  var boton = document.getElementById('btnVersiculoVista');
   if (!box || !txt || !cita) return;
   var verso = song && song.versiculo ? String(song.versiculo).trim() : '';
-  if (!verso) { box.style.display = 'none'; return; }
+  if (!verso) {
+    box.style.display = 'none';
+    document.body.classList.remove('tiene-versiculo-vista');
+    if (boton) boton.style.display = 'none';
+    return;
+  }
+  document.body.classList.add('tiene-versiculo-vista');
   txt.textContent = verso;
   var citaTexto = song.versiculoCita ? String(song.versiculoCita).trim() : '';
   cita.textContent = citaTexto;
   cita.style.display = citaTexto ? 'block' : 'none';
-  box.style.display = 'block';
+  box.style.display = 'none';
+  if (boton) boton.style.display = '';
+}
+
+function abrirVersiculoModal() {
+  if (!currentSong || !currentSong.versiculo) return;
+  var modal = document.getElementById('versiculoCancionModal');
+  var texto = document.getElementById('versiculoCancionModalTexto');
+  var cita = document.getElementById('versiculoCancionModalCita');
+  if (!modal || !texto || !cita) return;
+  texto.textContent = String(currentSong.versiculo).trim();
+  cita.textContent = currentSong.versiculoCita ? String(currentSong.versiculoCita).trim() : '';
+  cita.style.display = cita.textContent ? 'block' : 'none';
+  texto.style.fontSize = fontSizeCurrent + 'px';
+  var tarjeta = document.getElementById('versiculoCancionModalCard');
+  if (tarjeta) tarjeta.style.fontSize = fontSizeCurrent + 'px';
+  modal.style.display = 'flex';
+}
+
+function cerrarVersiculoModal() {
+  var modal = document.getElementById('versiculoCancionModal');
+  if (modal) modal.style.display = 'none';
 }
 
 function setActiveKey(key){
@@ -15647,6 +15682,18 @@ function aplicarAjusteJubilo() {
         ✨ Sugerir
       </button>
     </div>
+  </div>
+</div>
+
+<!-- ===== MODAL VERSÍCULO DE LA CANCIÓN ===== -->
+<div id="versiculoCancionModal" class="modal-overlay" style="display:none;z-index:10000;" onclick="if(event.target===this) cerrarVersiculoModal();">
+  <div class="modal-card versiculo-modal-card" id="versiculoCancionModalCard">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;">
+      <div style="color:var(--gold2);font-weight:bold;font-size:1rem;">📖 Versículo bíblico</div>
+      <button onclick="cerrarVersiculoModal()" aria-label="Cerrar" style="background:#42426e;border:none;color:#e8e6f0;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:bold;">✕</button>
+    </div>
+    <div class="versiculo-modal-text" id="versiculoCancionModalTexto"></div>
+    <div class="versiculo-box-cita" id="versiculoCancionModalCita" style="font-size:0.9em;"></div>
   </div>
 </div>
 
