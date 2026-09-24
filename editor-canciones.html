@@ -78,6 +78,12 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
 .preview-title{font-family:'Inter',Helvetica,serif;font-size:1.1rem;color:var(--gold2);text-align:center;font-weight:700;margin-bottom:4px;}
 .preview-meta{color:var(--text2);text-align:center;font-size:0.8rem;margin-bottom:16px;}
 
+.versiculo-box{position:relative;margin:0 0 16px;padding:14px 18px 12px 18px;border-left:3px solid var(--gold);border-radius:10px;background:linear-gradient(135deg, rgba(27,33,82,.95), rgba(18,21,52,.94));box-shadow:0 10px 24px rgba(0,0,0,.18);overflow:hidden;}
+.versiculo-box::before{content:"\275D";position:absolute;top:-14px;right:10px;font-size:3.4rem;font-family:Georgia,"Times New Roman",serif;color:rgba(201,168,76,.16);line-height:1;pointer-events:none;}
+.versiculo-box-head{display:flex;align-items:center;gap:6px;color:var(--gold2);font-size:0.7rem;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
+.versiculo-box-text{color:var(--text);font-size:0.9rem;line-height:1.55;font-style:italic;white-space:pre-line;position:relative;z-index:1;}
+.versiculo-box-cita{margin-top:8px;text-align:right;color:var(--gold);font-size:0.76rem;font-weight:700;letter-spacing:0.3px;position:relative;z-index:1;}
+
 .song-content{
   font-family:Arial,Helvetica,sans-serif;
   font-size:0.85rem;
@@ -527,6 +533,14 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
       <input type="text" id="fYoutube" placeholder="https://www.youtube.com/embed/...">
     </div>
     <div class="field">
+      <label>Versículo bíblico (opcional)</label>
+      <textarea id="fVersiculo" style="min-height:70px;" placeholder="Ej. El Señor es mi pastor, nada me faltará."></textarea>
+    </div>
+    <div class="field">
+      <label>Cita del versículo (opcional)</label>
+      <input type="text" id="fVersiculoCita" placeholder="Ej. Salmos 23:1">
+    </div>
+    <div class="field">
       <label>Contenido (letra y acordes)</label>
       <textarea id="fContent" oninput="renderPreview()" placeholder="[INTRO]:&#10;   C   G   Am   F&#10;[VERSO 1]:&#10;C           G&#10;Letra de la canción aquí..."></textarea>
       <div class="hint">
@@ -608,6 +622,11 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
             <div class="preview-meta" id="pMeta">Compositor · Tono · Álbum</div>
           </div>
           <div class="aviso-jubilo" id="avisoJubilo" style="display:none;">ℹ️ En la tarjeta real de Júbilo esta info no se muestra (solo título y letra/acordes).</div>
+          <div class="versiculo-box" id="pVersiculoBox" style="display:none;">
+            <div class="versiculo-box-head">&#128214; Versículo</div>
+            <div class="versiculo-box-text" id="pVersiculoText"></div>
+            <div class="versiculo-box-cita" id="pVersiculoCita"></div>
+          </div>
           <div class="song-content" id="pContent"></div>
         </div>
       </div>
@@ -744,6 +763,8 @@ function renderPreview(){
   var tono = document.getElementById('fTono').value || '-';
   var album = document.getElementById('fAlbum').value || '-';
   var version = document.getElementById('fVersion').value;
+  var versiculo = document.getElementById('fVersiculo').value.trim();
+  var versiculoCita = document.getElementById('fVersiculoCita').value.trim();
   var content = document.getElementById('fContent').value;
 
   document.getElementById('pTitle').textContent = titulo;
@@ -752,6 +773,17 @@ function renderPreview(){
     ' &nbsp;|&nbsp; <strong>Tono:</strong> ' + escH(tono) + '<br>' +
     '<strong>Álbum:</strong> ' + escH(album) +
     (version ? ' &nbsp;|&nbsp; <strong>Versión:</strong> ' + escH(version) : '');
+  var pVersiculoBox = document.getElementById('pVersiculoBox');
+  var esJubiloPreview = bibliotecaActiva === 'jubilo';
+  if (!esJubiloPreview && versiculo) {
+    document.getElementById('pVersiculoText').textContent = versiculo;
+    var pCita = document.getElementById('pVersiculoCita');
+    pCita.textContent = versiculoCita;
+    pCita.style.display = versiculoCita ? 'block' : 'none';
+    pVersiculoBox.style.display = 'block';
+  } else {
+    pVersiculoBox.style.display = 'none';
+  }
   document.getElementById('pContent').innerHTML = renderContentPreview(content);
   aplicarEstiloBiblioteca();
   renderizarVisorDirecto();
@@ -929,6 +961,8 @@ function generarHTMLVisorDirecto(){
   var tono = document.getElementById('fTono').value || '-';
   var album = document.getElementById('fAlbum').value || '-';
   var version = document.getElementById('fVersion').value || '';
+  var versiculo = document.getElementById('fVersiculo').value.trim();
+  var versiculoCita = document.getElementById('fVersiculoCita').value.trim();
   var content = document.getElementById('fContent').value || '';
   var esJubilo = bibliotecaActiva === 'jubilo';
   var claseVista = vistaCantante ? 'singer-view' : 'musician-view';
@@ -975,7 +1009,20 @@ function generarHTMLVisorDirecto(){
     body.musician-view .song-header{margin:0 0 0;background:#1b2152;}
     body.light-theme.singer-view .song-header,body.light-theme.musician-view .song-header{background:#fffaf0 !important;border-bottom:1px solid #d8cdb8 !important;}
     body.light-theme{background:#fffaf0;color:#111;}
+    .versiculo-box{position:relative;margin:10px 10px 10px;padding:14px 18px 12px 18px;border-left:3px solid var(--gold);border-radius:10px;background:linear-gradient(135deg, rgba(27,33,82,.95), rgba(18,21,52,.94));box-shadow:0 10px 24px rgba(0,0,0,.18);overflow:hidden;}
+    .versiculo-box::before{content:"275\D";position:absolute;top:-14px;right:10px;font-size:3.4rem;font-family:Georgia,"Times New Roman",serif;color:rgba(201,168,76,.16);line-height:1;pointer-events:none;}
+    .versiculo-box-head{display:flex;align-items:center;gap:6px;color:var(--gold2);font-size:0.7rem;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
+    .versiculo-box-text{color:var(--text);font-size:0.9rem;line-height:1.55;font-style:italic;white-space:pre-line;position:relative;z-index:1;}
+    .versiculo-box-cita{margin-top:8px;text-align:right;color:var(--gold);font-size:0.76rem;font-weight:700;letter-spacing:0.3px;position:relative;z-index:1;}
+    body.light-theme .versiculo-box{background:linear-gradient(135deg, #fdf6e3, #f3ecd8);border-left-color:#b8933c;}
+    body.light-theme .versiculo-box::before{color:rgba(184,147,60,.22);}
+    body.light-theme .versiculo-box-head{color:#7f5f19;}
+    body.light-theme .versiculo-box-text{color:#22303b;}
+    body.light-theme .versiculo-box-cita{color:#7f5f19;}
   `;
+  var versiculoHtml = (!esJubilo && versiculo)
+    ? '<div class="versiculo-box"><div class="versiculo-box-head">&#128214; Versículo</div><div class="versiculo-box-text">' + escH(versiculo) + '</div>' + (versiculoCita ? '<div class="versiculo-box-cita">' + escH(versiculoCita) + '</div>' : '') + '</div>'
+    : '';
   var contentHtml = renderContentPreview(content);
   var contentClass = 'song-content';
   var contentStyle = '';
@@ -983,7 +1030,7 @@ function generarHTMLVisorDirecto(){
     contentClass += ' tipo-jubilo' + (vistaCantante ? ' vista-cantante-jubilo' : '');
     contentStyle = 'font-size:' + jubiloFontSizeMock + 'px;';
   }
-  return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><style>' + css + '<\/style><\/head><body class="' + bodyClass + '"><div class="preview-card"><div class="song-header"><div class="song-title">' + escH(titulo) + '</div>' + metaHtml + '</div><div class="' + contentClass + '" style="' + contentStyle + '">' + contentHtml + '</div></div><\/body><\/html>';
+  return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"><style>' + css + '<\/style><\/head><body class="' + bodyClass + '"><div class="preview-card"><div class="song-header"><div class="song-title">' + escH(titulo) + '</div>' + metaHtml + '</div>' + versiculoHtml + '<div class="' + contentClass + '" style="' + contentStyle + '">' + contentHtml + '</div></div><\/body><\/html>';
 }
 
 function renderizarVisorDirecto(){
@@ -1025,6 +1072,8 @@ function cargarCancion(song){
   document.getElementById('fAlbum').value = song.album || '';
   document.getElementById('fVersion').value = song.version || '';
   document.getElementById('fYoutube').value = song.youtube || '';
+  document.getElementById('fVersiculo').value = song.versiculo || '';
+  document.getElementById('fVersiculoCita').value = song.versiculoCita || '';
   document.getElementById('fContent').value = song.content || '';
   document.getElementById('selectorCanciones').value = song.id;
   renderPreview();
@@ -1174,6 +1223,8 @@ function nuevaCancion(){
   document.getElementById('fAlbum').value = '';
   document.getElementById('fVersion').value = '';
   document.getElementById('fYoutube').value = '';
+  document.getElementById('fVersiculo').value = '';
+  document.getElementById('fVersiculoCita').value = '';
   document.getElementById('fContent').value = '';
   document.getElementById('selectorCanciones').value = '';
   renderPreview();
@@ -1213,6 +1264,8 @@ function eliminarCancionActual(){
   document.getElementById('fAlbum').value = '';
   document.getElementById('fVersion').value = '';
   document.getElementById('fYoutube').value = '';
+  document.getElementById('fVersiculo').value = '';
+  document.getElementById('fVersiculoCita').value = '';
   document.getElementById('fContent').value = '';
   document.getElementById('inputId').value = '';
   document.getElementById('selectorCanciones').value = '';
@@ -1260,8 +1313,12 @@ function leerFormulario(){
   };
   var version = document.getElementById('fVersion').value.trim();
   var youtube = document.getElementById('fYoutube').value.trim();
+  var versiculo = document.getElementById('fVersiculo').value.trim();
+  var versiculoCita = document.getElementById('fVersiculoCita').value.trim();
   if (version) obj.version = version;
   if (youtube) obj.youtube = youtube;
+  if (versiculo) obj.versiculo = versiculo;
+  if (versiculoCita) obj.versiculoCita = versiculoCita;
   return obj;
 }
 
