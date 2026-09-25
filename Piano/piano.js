@@ -3,10 +3,13 @@ const $ = (id) => document.getElementById(id);
 const SONGS_ADORACION = Array.isArray(window.SONGS) ? window.SONGS : [];
 const SONGS_JUBILO = Array.isArray(window.SONGS_JUBILO) ? window.SONGS_JUBILO : [];
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const NOTE_NAMES_LATINO = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si'];
+const NOTE_ROOT_LATINO = { C:'Do', D:'Re', E:'Mi', F:'Fa', G:'Sol', A:'La', B:'Si' };
 const state = {
   view: 'adoracion', category: 'adoracion', song: null, admin: false,
   melodies: readMelodyCache(), recording: false, recordStart: 0, notes: [],
-  buffers: new Map(), playing: false, playTimers: [], transpose: 0, originalTonic: 'C', db: null, auth: null,
+  buffers: new Map(), playing: false, playTimers: [], transpose: 0, originalTonic: 'C',
+  notation: localStorage.getItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano', lastMidi: null, db: null, auth: null,
   ref: null, set: null, onValue: null, signIn: null, signOut: null, authListener: null
 };
 
@@ -15,7 +18,11 @@ function readMelodyCache() {
   catch (_) { return {}; }
 }
 function toast(message) { $('toast').textContent = message; $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 2400); }
-function noteName(midi) { return NOTE_NAMES[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1); }
+function canonicalNoteName(midi) { return NOTE_NAMES[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1); }
+function noteName(midi) {
+  const names = state.notation === 'latino' ? NOTE_NAMES_LATINO : NOTE_NAMES;
+  return names[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1);
+}
 function melodyFor(category, id) { return state.melodies[category]?.[String(id)] || null; }
 function hasMelody(category, id) { const melody = melodyFor(category, id); return !!(melody?.notas?.length); }
 function escapeHTML(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
@@ -98,7 +105,7 @@ function updateAdminControls() {
   $('adminBtn').textContent = state.admin ? '🔓 Admin activo' : '🔑 Admin';
   $('adminBtn').classList.toggle('active', state.admin);
 }
-function renderRecorded() { $('recordedNotes').innerHTML = state.notes.map(note => `<span class="note-chip">${escapeHTML(note.note || noteName(note.midi))}</span>`).join(''); }
+function renderRecorded() { $('recordedNotes').innerHTML = state.notes.map(note => `<span class="note-chip">${escapeHTML(noteName(note.midi))}</span>`).join(''); }
 
 const CHROMATIC_SHARPS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const FLAT_TO_SHARP = { Db:'C#', Eb:'D#', Gb:'F#', Ab:'G#', Bb:'A#' };
@@ -148,7 +155,7 @@ function transposeMelody(delta) {
   }
   state.transpose = nextShift;
   state.notes = state.notes.map(note => ({ ...note, midi: Math.max(48, Math.min(83, Number(note.midi) + delta)) }));
-  state.notes.forEach(note => note.note = noteName(note.midi));
+  state.notes.forEach(note => note.note = canonicalNoteName(note.midi));
   updateTransposeUI(); renderRecorded();
   toast(state.transpose ? `Melodía transportada ${state.transpose > 0 ? '+' : ''}${state.transpose} semitonos.` : 'Tono original restaurado.');
 }
@@ -160,22 +167,25 @@ function jumpToMelodyNotes() {
 
 function renderKeyboard() {
   const low = 48, high = 83;
-  const shortcuts = { 60:'a', 61:'w', 62:'s', 63:'e', 64:'d', 65:'f', 66:'t', 67:'g', 68:'y', 69:'h', 70:'u', 71:'j', 72:'k', 73:'o', 74:'l', 75:'p', 76:';' };
+  const scroll = $('keyboardScroll');
+  const oldScrollLeft = scroll?.scrollLeft || 0;
   let html = '';
   for (let midi = low; midi <= high; midi++) {
     if (NOTE_NAMES[midi % 12].includes('#')) continue;
     const hasBlack = midi % 12 !== 4 && midi % 12 !== 11;
-    const whiteShortcut = shortcuts[midi] ? ` (${shortcuts[midi]})` : '';
-    const blackShortcut = shortcuts[midi + 1] ? ` (${shortcuts[midi + 1]})` : '';
-    html += `<div class="keys"><button class="key white" data-midi="${midi}" aria-label="${noteName(midi)}${whiteShortcut}"><span>${noteName(midi)}${whiteShortcut}</span></button>${hasBlack ? `<button class="key black" data-midi="${midi + 1}" aria-label="${noteName(midi + 1)}${blackShortcut}"><span>${noteName(midi + 1)}${blackShortcut}</span></button>` : ''}</div>`;
+    const whiteName = noteName(midi);
+    const blackName = noteName(midi + 1);
+    const octaveClass = midi % 12 === 0 ? ' octave-marker' : '';
+    html += `<div class="keys"><button class="key white" data-midi="${midi}" aria-label="${whiteName}"><span class="note-label${octaveClass}">${whiteName}</span></button>${hasBlack ? `<button class="key black" data-midi="${midi + 1}" aria-label="${blackName}"><span class="note-label">${blackName}</span></button>` : ''}</div>`;
   }
   $('keyboard').innerHTML = html;
+  if (scroll) scroll.scrollLeft = oldScrollLeft;
   document.querySelectorAll('.key').forEach(key => {
     key.addEventListener('pointerdown', event => { event.preventDefault(); playNote(Number(key.dataset.midi), key); });
   });
-  $('keyboard').addEventListener('transitionend', event => {
+  $('keyboard').ontransitionend = event => {
     if (event.target.tagName !== 'SPAN') event.target.classList.remove('playing');
-  });
+  };
 }
 function initializeSplash() {
   const splash = $('splashScreen');
@@ -223,10 +233,11 @@ async function getSample(midi) {
 async function playNote(midi, element, duration = 0.4) {
   if (midi < 48 || midi > 83) return;
   element?.classList.add('playing');
+  state.lastMidi = midi;
   $('currentNote').textContent = noteName(midi);
   $('currentNote').style.opacity = '1';
   if (state.recording) {
-    state.notes.push({ midi, note: noteName(midi), start: (performance.now() - state.recordStart) / 1000, duration: 0.35 });
+    state.notes.push({ midi, note: canonicalNoteName(midi), start: (performance.now() - state.recordStart) / 1000, duration: 0.35 });
     renderRecorded();
   }
   try {
@@ -296,7 +307,7 @@ async function saveMelody() {
     updatedAt: new Date().toISOString(),
     notas: state.notes.map((note, index, all) => {
       const next = all[index + 1];
-      return { midi: Number(note.midi), note: note.note || noteName(note.midi), start: Number(Number(note.start || 0).toFixed(3)), duration: Number((next ? Math.max(0.12, next.start - note.start) : Math.max(0.35, note.duration || 0.35)).toFixed(3)) };
+      return { midi: Number(note.midi), note: canonicalNoteName(Number(note.midi)), start: Number(Number(note.start || 0).toFixed(3)), duration: Number((next ? Math.max(0.12, next.start - note.start) : Math.max(0.35, note.duration || 0.35)).toFixed(3)) };
     })
   };
   try {
@@ -351,6 +362,14 @@ function bindInterface() {
   $('stopMelody').onclick = () => {
     const wasPlaying = state.playing;
     stopPlayback(); $('status').textContent = wasPlaying ? 'Reproducción detenida.' : 'No había una melodía reproduciéndose.';
+  };
+  $('keyboardNotation').value = state.notation;
+  $('keyboardNotation').onchange = event => {
+    state.notation = event.target.value === 'latino' ? 'latino' : 'americano';
+    try { localStorage.setItem('yhwh_cifrado_latino', state.notation === 'latino' ? '1' : '0'); } catch (_) {}
+    renderKeyboard(); renderRecorded();
+    if (state.lastMidi !== null) $('currentNote').textContent = noteName(state.lastMidi);
+    if (state.song) updateTransposeUI();
   };
   $('showNotesBtn').onclick = jumpToMelodyNotes;
   $('transposeDown').onclick = () => transposeMelody(-1);
