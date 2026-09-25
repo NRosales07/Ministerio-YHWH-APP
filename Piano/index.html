@@ -1,6 +1,24 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0d0d14"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Piano YHWH"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="piano.css"><title>Piano · Ministerio YHWH</title><script src="../canciones-adoracion.js"></script><script src="../canciones-jubilo.js"></script></head>
-<body><header><div class="brand"><span class="brand-icon">♫</span><div><b>PIANO</b><small>MINISTERIO YHWH</small></div></div><button id="adminBtn" class="admin">🔑 Admin</button></header>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0d0d14"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Piano YHWH"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" sizes="192x192" href="apple-touch-icon.png"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Parisienne&display=swap" rel="stylesheet"><link rel="stylesheet" href="piano.css"><title>Piano · Ministerio YHWH</title><script src="../canciones-adoracion.js"></script><script src="../canciones-jubilo.js"></script></head>
+<body>
+<div id="splashScreen" class="splash-screen" aria-label="Pantalla de bienvenida">
+  <div class="ambient-glow"></div>
+  <div class="splash-particles" aria-hidden="true">
+    <span class="sp-nota" style="left:8%;font-size:1.1rem;animation-duration:9s">♪</span><span class="sp-gota" style="left:16%;animation-duration:7.5s;animation-delay:1s"></span>
+    <span class="sp-nota" style="left:24%;font-size:.9rem;animation-duration:10s;animation-delay:2s">♫</span><span class="sp-gota" style="left:33%;animation-duration:8s;animation-delay:.5s"></span>
+    <span class="sp-nota" style="left:42%;font-size:1.25rem;animation-duration:11s;animation-delay:3s">♪</span><span class="sp-gota" style="left:57%;animation-duration:9s;animation-delay:1.5s"></span>
+    <span class="sp-nota" style="left:68%;font-size:1rem;animation-duration:8.5s;animation-delay:.3s">♩</span><span class="sp-gota" style="left:82%;animation-duration:7s;animation-delay:2.5s"></span>
+    <span class="sp-nota" style="left:91%;font-size:1.1rem;animation-duration:10s;animation-delay:1.2s">♫</span>
+  </div>
+  <div class="splash-content">
+    <img class="splash-logo" src="icon-512.png" alt="Manantial de Alabanza YHWH">
+    <h1 class="splash-title"><span>Manantial de Alabanza</span></h1>
+    <p class="splash-subtitle">Piano y Melodías · YHWH</p>
+    <div class="splash-verse"><span>“Porque yo derramaré aguas sobre el sequedal, y ríos sobre la tierra árida, y mi bendición sobre tus renuevos.”</span><span>— Isaías 44:3</span></div>
+    <div class="splash-loader" id="splashLoader"><span></span><span></span><span></span></div>
+    <button id="btnEntrarSplash" class="btn-entrar-splash">Entrar</button>
+  </div>
+</div><header><div class="brand"><span class="brand-icon">♫</span><div><b>PIANO</b><small>MINISTERIO YHWH</small></div></div><button id="adminBtn" class="admin">🔑 Admin</button></header>
 <main><nav class="tabs"><button class="tab active" data-view="adoracion">🙏 Adoración</button><button class="tab" data-view="jubilo">🎉 Júbilo</button><button class="tab" data-view="crear">🎹 Crear melodía</button></nav><div id="connection" class="connection">Conectando…</div>
 <section id="songView" class="view"><div class="toolbar"><h1 id="sectionTitle">Adoración</h1><input id="search" type="search" placeholder="Buscar alabanza…" autocomplete="off"></div><p id="helper" class="hint"></p><div id="songList" class="song-list"></div></section>
 <section id="createView" class="view hidden"><div class="toolbar"><h1>Crear o editar melodía</h1><input id="createSearch" type="search" placeholder="Buscar alabanza…" autocomplete="off"></div><p class="hint">Elige una alabanza. Solo Admin puede grabar y guardar; todos pueden ver melodías guardadas.</p><div id="createList" class="song-list"></div></section>

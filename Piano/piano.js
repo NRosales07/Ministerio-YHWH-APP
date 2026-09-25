@@ -177,6 +177,34 @@ function renderKeyboard() {
     if (event.target.tagName !== 'SPAN') event.target.classList.remove('playing');
   });
 }
+function initializeSplash() {
+  const splash = $('splashScreen');
+  const enter = $('btnEntrarSplash');
+  if (!splash || !enter) return;
+  const startedAt = Date.now();
+  let autoCloseTimer = null;
+  const hide = () => {
+    if (splash.dataset.hidden) return;
+    splash.dataset.hidden = '1';
+    if (autoCloseTimer) clearTimeout(autoCloseTimer);
+    splash.classList.add('splash-hide');
+    setTimeout(() => splash.remove(), 650);
+  };
+  const showEnter = () => {
+    if (!document.body.contains(splash) || splash.dataset.ready) return;
+    splash.dataset.ready = '1';
+    setTimeout(() => {
+      if (!document.body.contains(splash)) return;
+      $('splashLoader').style.display = 'none';
+      enter.classList.add('show');
+      autoCloseTimer = setTimeout(hide, 4000);
+    }, Math.max(0, 1800 - (Date.now() - startedAt)));
+  };
+  enter.addEventListener('click', hide);
+  if (document.readyState === 'complete') showEnter();
+  else window.addEventListener('load', showEnter, { once: true });
+  setTimeout(showEnter, 9000);
+}
 let audioContext = null;
 function getAudioContext() {
   if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -389,4 +417,5 @@ renderKeyboard();
 bindInterface();
 updateAdminControls();
 renderLists();
+initializeSplash();
 initializeFirebase();
