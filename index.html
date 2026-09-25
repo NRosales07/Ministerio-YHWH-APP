@@ -1055,6 +1055,34 @@ body.light-theme .pdf-list-wrap{
 .welcome p{font-size:0.9rem;line-height:1.7;max-width:340px;}
 .song-view{display:none;}
 .song-view.visible{display:block;}
+.versiculo-inline-panel{
+  box-sizing:border-box;
+  padding:12px 14px;
+  margin:2px 12px 10px;
+  border:1px solid rgba(201,168,76,.45);
+  border-radius:12px;
+  background:linear-gradient(135deg,rgba(27,33,82,.98),rgba(18,21,52,.98));
+  color:var(--text);
+  box-shadow:0 5px 16px rgba(0,0,0,.24);
+}
+.versiculo-song-card{
+  margin:0 12px 10px;
+  padding:10px 14px;
+  border:1px solid rgba(201,168,76,.42);
+  border-radius:10px;
+  background:linear-gradient(135deg,rgba(27,33,82,.92),rgba(18,21,52,.96));
+  color:var(--text);
+  text-align:left;
+  font-size:0.82rem;
+  line-height:1.5;
+}
+.versiculo-song-card .versiculo-card-title{color:var(--gold2);font-weight:700;font-size:0.76rem;margin-bottom:4px;}
+body.light-theme .versiculo-song-card{background:linear-gradient(135deg,#fff8ea,#f3e0bb);color:#263341;border-color:rgba(184,147,60,.5);}
+body.light-theme .versiculo-inline-panel{
+  background:linear-gradient(135deg,#fff8ea,#f3e0bb);
+  color:#263341;
+  border-color:rgba(184,147,60,.5);
+}
 .song-header{margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);}
 .song-title{font-family:'Inter',Helvetica,serif;font-size:1rem;color:var(--gold2);text-align: center;font-weight:700;margin-bottom:4px;}
 .song-cover{width:130px;height:130px;margin:2px auto 10px;border-radius:14px;overflow:hidden;display:none;box-shadow:0 4px 14px rgba(0,0,0,0.28);}
@@ -2786,50 +2814,7 @@ body.light-theme .transition-box-head{ color:#7f5f19; }
 body.light-theme .transition-box-text{ color:#22303b; }
 body:not(.musician-view) #transitionControlArea{ display:none !important; }
 
-/* === CAJA DE VERSÍCULO BÍBLICO === */
-.versiculo-box{
-  position:relative;
-  margin:12px 0 10px;
-  padding:14px 18px 12px 18px;
-  border-left:3px solid var(--gold);
-  border-radius:10px;
-  background: linear-gradient(135deg, rgba(27,33,82,.95), rgba(18,21,52,.94));
-  box-shadow:0 10px 24px rgba(0,0,0,.18);
-  overflow:hidden;
-}
-.versiculo-box::before{
-  content:"\275D";
-  position:absolute;
-  top:-14px;
-  right:10px;
-  font-size:3.4rem;
-  font-family:Georgia, "Times New Roman", serif;
-  color:rgba(201,168,76,.16);
-  line-height:1;
-  pointer-events:none;
-}
-.versiculo-box-head{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  color:var(--gold2);
-  font-size:0.7rem;
-  font-weight:700;
-  letter-spacing:0.6px;
-  text-transform:uppercase;
-  margin-bottom:6px;
-  position:relative;
-  z-index:1;
-}
-.versiculo-box-text{
-  color:var(--text);
-  font-size:0.9rem;
-  line-height:1.55;
-  font-style:italic;
-  white-space:pre-line;
-  position:relative;
-  z-index:1;
-}
+/* === VERSÍCULO BÍBLICO: ícono de esquina + contenido del modal === */
 .versiculo-box-cita{
   margin-top:8px;
   text-align:right;
@@ -2840,17 +2825,40 @@ body:not(.musician-view) #transitionControlArea{ display:none !important; }
   position:relative;
   z-index:1;
 }
-body.light-theme .versiculo-box{
-  background: linear-gradient(135deg, #fdf6e3, #f3ecd8);
-  border-left-color:#b8933c;
+.versiculo-box-item + .versiculo-box-item{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px dashed rgba(201,168,76,.35);
+  position:relative;
+  z-index:1;
 }
-body.light-theme .versiculo-box::before{ color:rgba(184,147,60,.22); }
-body.light-theme .versiculo-box-head{ color:#7f5f19; }
-body.light-theme .versiculo-box-text{ color:#22303b; }
+.versiculo-corner-btn{
+  position:static !important;
+  vertical-align:middle;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  background:linear-gradient(135deg, rgba(27,33,82,.95), rgba(18,21,52,.94));
+  border:1px solid var(--gold);
+  color:var(--gold2);
+  font-size:0.78rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+  z-index:2 !important;
+  padding:0;
+}
+.versiculo-corner-btn:active{ transform:scale(0.93); }
+body.light-theme .versiculo-corner-btn{
+  background:linear-gradient(135deg, #fdf6e3, #f3ecd8);
+  border-color:#b8933c;
+  color:#7f5f19;
+}
 body.light-theme .versiculo-box-cita{ color:#7f5f19; }
-.versiculo-modal-card{max-width:540px;max-height:calc(100vh - 40px);overflow-y:auto;}
+body.light-theme .versiculo-box-item + .versiculo-box-item{ border-top-color:rgba(184,147,60,.35); }
 .versiculo-modal-text{white-space:pre-line;font-style:italic;line-height:1.6;}
-@media(max-width:580px){.versiculo-modal-card{max-width:520px;padding:20px 18px;}}
 
 /* Pega esto al final del bloque de estilos de light-theme */
 
@@ -3274,9 +3282,6 @@ body.singer-view.mostrar-mas-opciones-vista:not(.rol-cantante) #screen-chords #t
 .song-nav-bar { display: none; align-items: center; justify-content:center; gap: 6px; width:100%; flex-wrap:wrap; }
 body.singer-view.mostrar-mas-opciones-vista #screen-chords .song-nav-bar,
 body.musician-view.mostrar-mas-opciones-vista #screen-chords .song-nav-bar { display: inline-flex; }
-.mas-opciones-row #btnVersiculoVista { display:none !important; }
-body.singer-view.tiene-versiculo-vista.mostrar-mas-opciones-vista #screen-chords #btnVersiculoVista,
-body.musician-view.tiene-versiculo-vista.mostrar-mas-opciones-vista #screen-chords #btnVersiculoVista { display:inline-flex !important; align-items:center; justify-content:center; }
 .song-nav-bar .font-btn { min-width: 78px; }
 .song-nav-bar {
   width: 100%;
@@ -4250,7 +4255,6 @@ document.addEventListener('DOMContentLoaded', function(){
        ellas el transpositor ya está siempre visible más abajo). -->
   <div class="fila-botones mas-opciones-row" style="padding:0 14px 6px;">
     <button id="btnMasOpcionesVista" class="action-btn" onclick="toggleMasOpcionesVista()" style="flex:1;height:32px;font-size:0.75rem;font-weight:bold;">Más opciones ▾</button>
-    <button id="btnVersiculoVista" class="action-btn" onclick="abrirVersiculoModal()" style="width:42px;height:32px;font-size:1rem;padding:0;" title="Ver versículo bíblico" aria-label="Ver versículo bíblico">📖</button>
   </div>
 
   <div class="musician-cifrado-bar solo-musico" style="display:none; width:100%;">
@@ -4417,11 +4421,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
       </div>
-    <div class="versiculo-box" id="versiculoBox" style="display:none;">
-      <div class="versiculo-box-head">&#128214; Versículo</div>
-      <div class="versiculo-box-text" id="versiculoBoxText"></div>
-      <div class="versiculo-box-cita" id="versiculoBoxCita"></div>
-    </div>
+    <div class="versiculo-song-card" id="versiculoSongCard" style="display:none;"></div>
     <div class="song-content" id="viewContent"></div>
       <!-- NOTAS POR CANCIÓN -->
 <div class="notas-container" id="notasContainer" style="display:none;">
@@ -5667,6 +5667,7 @@ out += '<span class="lc' + (cifradoLatino ? ' latino-shift' : '') + '">' + tlCli
     }
   }
   document.getElementById('viewContent').innerHTML=out;
+  actualizarVersiculoCancion(currentSong);
   animarEntradaContenido('viewContent', retrasoMs || 0);
   
   var tonoMuestreo = currentKey || getOrigKey(currentSong);
@@ -5686,49 +5687,75 @@ out += '<span class="lc' + (cifradoLatino ? ' latino-shift' : '') + '">' + tlCli
   actualizarSiguienteAlabanza();
 }
 
-// Muestra el versículo bíblico cargado manualmente en la canción
-// (song.versiculo / song.versiculoCita). Si la canción no tiene versículo,
-// la caja simplemente se oculta.
+// Devuelve los versículos de una canción como array [{texto, cita}, ...].
+// Soporta el formato nuevo (song.versiculos, varios) y por compatibilidad
+// el formato viejo de un único versículo (song.versiculo/song.versiculoCita).
+function obtenerVersiculosSong(song) {
+  if (!song) return [];
+  if (Array.isArray(song.versiculos) && song.versiculos.length) {
+    return song.versiculos
+      .map(function(v){ return { texto: String(v.texto || '').trim(), cita: String(v.cita || '').trim() }; })
+      .filter(function(v){ return v.texto; });
+  }
+  var verso = song.versiculo ? String(song.versiculo).trim() : '';
+  if (!verso) return [];
+  return [{ texto: verso, cita: song.versiculoCita ? String(song.versiculoCita).trim() : '' }];
+}
+
+// Muestra u oculta el ícono de esquina 📖 según si la canción tiene
+// versículo(s) cargado(s). Al tocarlo, el texto se despliega junto al icono.
 function actualizarVersiculoBox(song) {
-  var box = document.getElementById('versiculoBox');
-  var txt = document.getElementById('versiculoBoxText');
-  var cita = document.getElementById('versiculoBoxCita');
-  var boton = document.getElementById('btnVersiculoVista');
-  if (!box || !txt || !cita) return;
-  var verso = song && song.versiculo ? String(song.versiculo).trim() : '';
-  if (!verso) {
-    box.style.display = 'none';
-    document.body.classList.remove('tiene-versiculo-vista');
-    if (boton) boton.style.display = 'none';
+  actualizarVersiculoCancion(song);
+}
+
+function actualizarVersiculoCancion(song) {
+  var tarjeta = document.getElementById('versiculoSongCard');
+  if (!tarjeta) return;
+  var versiculos = obtenerVersiculosSong(song);
+  if (!versiculos.length) {
+    tarjeta.style.display = 'none';
+    tarjeta.innerHTML = '';
     return;
   }
-  document.body.classList.add('tiene-versiculo-vista');
-  txt.textContent = verso;
-  var citaTexto = song.versiculoCita ? String(song.versiculoCita).trim() : '';
-  cita.textContent = citaTexto;
-  cita.style.display = citaTexto ? 'block' : 'none';
-  box.style.display = 'none';
-  if (boton) boton.style.display = '';
+  tarjeta.innerHTML = '<div class="versiculo-card-title">📖 Versículo bíblico</div>' + versiculos.map(function(v){
+    return '<div class="versiculo-box-item"><div>' + escH(v.texto) + '</div>' +
+      (v.cita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
+  }).join('');
+  tarjeta.style.display = 'block';
+  tarjeta.style.fontSize = fontSizeCurrent + 'px';
+  tarjeta.querySelectorAll('.versiculo-card-title').forEach(function(el){
+    el.style.fontSize = Math.max(12, fontSizeCurrent - 2) + 'px';
+  });
+  tarjeta.querySelectorAll('.versiculo-box-cita').forEach(function(el){
+    el.style.fontSize = Math.max(11, fontSizeCurrent - 2) + 'px';
+  });
 }
 
 function abrirVersiculoModal() {
-  if (!currentSong || !currentSong.versiculo) return;
-  var modal = document.getElementById('versiculoCancionModal');
+  var versiculos = obtenerVersiculosSong(currentSong);
+  if (!versiculos.length) return;
   var texto = document.getElementById('versiculoCancionModalTexto');
-  var cita = document.getElementById('versiculoCancionModalCita');
-  if (!modal || !texto || !cita) return;
-  texto.textContent = String(currentSong.versiculo).trim();
-  cita.textContent = currentSong.versiculoCita ? String(currentSong.versiculoCita).trim() : '';
-  cita.style.display = cita.textContent ? 'block' : 'none';
+  var panel = document.getElementById('versiculoInlinePanel');
+  var boton = document.getElementById('versiculoCornerBtn');
+  if (!panel || !texto || !boton) return;
+  if (panel.style.display !== 'none') {
+    cerrarVersiculoModal();
+    return;
+  }
+  texto.innerHTML = versiculos.map(function(v){
+    return '<div class="versiculo-box-item"><div>' + escH(v.texto) + '</div>' +
+      (v.cita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
+  }).join('');
   texto.style.fontSize = fontSizeCurrent + 'px';
-  var tarjeta = document.getElementById('versiculoCancionModalCard');
-  if (tarjeta) tarjeta.style.fontSize = fontSizeCurrent + 'px';
-  modal.style.display = 'flex';
+  panel.style.display = 'block';
+  boton.setAttribute('aria-expanded', 'true');
 }
 
 function cerrarVersiculoModal() {
-  var modal = document.getElementById('versiculoCancionModal');
-  if (modal) modal.style.display = 'none';
+  var panel = document.getElementById('versiculoInlinePanel');
+  var boton = document.getElementById('versiculoCornerBtn');
+  if (panel) panel.style.display = 'none';
+  if (boton) boton.setAttribute('aria-expanded', 'false');
 }
 
 function setActiveKey(key){
@@ -9524,6 +9551,9 @@ function aplicarFuente() {
   el.querySelectorAll('.lc, .ll, .ls, .lm').forEach(function(span) {
     span.style.fontSize = fontSizeCurrent + 'px';
   });
+  if (typeof actualizarVersiculoCancion === 'function' && currentSong) {
+    actualizarVersiculoCancion(currentSong);
+  }
   var disp = document.getElementById('fontSizeDisplay');
   if (disp) disp.textContent = fontSizeCurrent + 'px';
 }
@@ -15687,18 +15717,6 @@ function aplicarAjusteJubilo() {
         ✨ Sugerir
       </button>
     </div>
-  </div>
-</div>
-
-<!-- ===== MODAL VERSÍCULO DE LA CANCIÓN ===== -->
-<div id="versiculoCancionModal" class="modal-overlay" style="display:none;z-index:10000;" onclick="if(event.target===this) cerrarVersiculoModal();">
-  <div class="modal-card versiculo-modal-card" id="versiculoCancionModalCard">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;">
-      <div style="color:var(--gold2);font-weight:bold;font-size:1rem;">📖 Versículo bíblico</div>
-      <button onclick="cerrarVersiculoModal()" aria-label="Cerrar" style="background:#42426e;border:none;color:#e8e6f0;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:bold;">✕</button>
-    </div>
-    <div class="versiculo-modal-text" id="versiculoCancionModalTexto"></div>
-    <div class="versiculo-box-cita" id="versiculoCancionModalCita" style="font-size:0.9em;"></div>
   </div>
 </div>
 

@@ -74,10 +74,10 @@ var SONGS_JUBILO =
   {
     "num": null,
     "title": "LOS QUE ESPERAN",
-    "compositor": "Tradicional",
+    "compositor": "Coros",
     "tono": "Em",
     "album": "Alabanzas de Júbilo",
-    "content": "[VERSO 1]:\nTROMPETAS\n                        Em                                            B     Em\nX2  Los que esperan, Los que esperan en Jehová. X2\n                           Am-D                   G-Em\nX2      Como las águilas, como las águilas, \n         B         Em\nSus alas levantarán.    X2\n[CORO]:\n       D                         G    \n Correrán y no se cansarán, \n        D                         G\nCaminarán y no se fatigarán,\n                     Am-D                              G-Em\nX2   Nuevas fuerzas tendrán, nuevas fuerzas tendrán\n                   B                                          Em\nLos que esperan, los que esperan en Jehová.   X2",
+    "content": "[VERSO 1]:\n                        Em                                            B     Em\nX2  Los que esperan, Los que esperan en Jehová. X2\n                           Am-D                   G-Em\nX2      Como las águilas, como las águilas, \n         B         Em\nSus alas levantarán.    X2\n\n\n\n\n\n\n\n\nSE REPITE OTRA VEZ\n\n\n\n\n[CORO]:\n       D                         G    \n Correrán y no se cansarán, \n        D                         G\nCaminarán y no se fatigarán,\n                     Am-D                              G-Em\nX2   Nuevas fuerzas tendrán, nuevas fuerzas tendrán\n                   B                                          Em\nLos que esperan, los que esperan en Jehová.   X2\n\n\n\n\nTROMPETAS\n",
     "id": 308
   },
   {
@@ -398,10 +398,10 @@ var SONGS_JUBILO =
   {
     "num": null,
     "title": "YA VIENE LA RECOMPENSA",
-    "compositor": "Tradicional",
+    "compositor": "Coros",
     "tono": "Em",
     "album": "Alabanzas de Júbilo",
-    "content": "[VERSO 1]:\n          Em\nX2    Vamos escalando peldaños, \n                 C            B\nVamos llevando la cruz, Sigamos el camino angosto, \n                                           Em\nQue con Cristo es mucho mejor.   X2\n[CORO]:\n                 E               Am         D                  G\nX2    Ya viene la recompensa, ya no voy a llorar,\n Em                             B                               Em\nTengo a Cristo en mi vida, por eso puedo escalar.    X2\n[VERSO 2]:\n            Em                                          C          B\nX2   A veces me siento débil, ya no puedo escalar,                                                                                   \nAlzo mis manos al cielo, \n                                         Em\nViene Cristo y fuerzas me da.  X2                      \n\n[CORO]: X2",
+    "content": "[VERSO 1]:\n          Em\nX2    Vamos escalando peldaños, \n                 C            B\nVamos llevando la cruz, Sigamos el camino angosto, \n                                           Em\nQue con Cristo es mucho mejor.   X2\n[CORO]:\n                 E               Am         D                  G\nX2    Ya viene la recompensa, ya no voy a llorar,\n Em                             B                               Em\nTengo a Cristo en mi vida, por eso puedo escalar.    X2\n[VERSO 2]:\n            Em                                          C          B\nX2   A veces me siento débil, ya no puedo escalar,                                                                                   \nAlzo mis manos al cielo, \n                                         Em\nViene Cristo y fuerzas me da.  X2                      \n\n\n[VERSO 1]:  X2     |     [CORO]:   X2",
     "id": 346
   },
   {
@@ -1338,7 +1338,7 @@ var SONGS_JUBILO =
     "compositor": "",
     "tono": "Em",
     "album": "Coros",
-    "content": "[VERSO 1]:\n           Em                                         G\nX4    ¿Quién, quién, quién como Jehová?, \n             Am   B                 Em\nQue con su poder el mar abrió.   X4\n[CORO]:\n Am             B                   Em  \nOirán las naciones lo que hizo \n    Am                     D            G-Em\nCantaran cuando vean sus prodigios,\n                  B                                  C \nX2     Su pueblo le alabara, con pandero danzara, \n      D       B                           Em\nY dirán quién, quién como Jehová.  X2\n\n\n                                      \n[VERSO 1]:   X2      |      [CORO]:   X2\n",
+    "content": "[VERSO 1]:\n           Em                                         G\nX4    ¿Quién, quién, quién como Jehová?, \n             Am   B                 Em\nQue con su poder el mar abrió.   X4\n[CORO]:\n Am             B                   Em  \nOirán las naciones lo que hizo \n    Am                     D            G-Em\nCantaran cuando vean sus prodigios,\n                  B                                  C \nX2     Su pueblo le alabara, con pandero danzara, \n      D       B                           Em\nY dirán quién, quién como Jehová.  X2\n\n\n\n\n\n\nTROMPETAS\n\n\n                                      \n[VERSO 1]:   X2      |      [CORO]:   \n",
     "id": 456
   },
   {

@@ -1,0 +1,92 @@
+:root{--bg:#0d0d14;--panel:#171729;--panel2:#20203a;--line:#343450;--text:#f2f0fa;--muted:#aaa9c1;--gold:#c9a84c;--gold2:#f3d58a}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#202044 0,#0d0d14 55%);color:var(--text);font:15px Inter,system-ui,Arial,sans-serif;min-height:100vh}header{height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 max(16px,calc((100vw - 1100px)/2));border-bottom:1px solid #ffffff12;background:#10101be8;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px)}.brand{display:flex;gap:11px;align-items:center}.brand-icon{font-size:27px;color:var(--gold2)}.brand b{display:block;letter-spacing:.15em}.brand small{font-size:10px;letter-spacing:.12em;color:var(--muted)}button,input{font:inherit}button{cursor:pointer;color:inherit;border:0}.admin,.soft,.gold,.tab{border-radius:999px;padding:10px 15px;background:var(--panel2);border:1px solid var(--line)}.admin.active{background:var(--gold);color:#171717}.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#15151e;font-weight:750;border-color:transparent}.soft:hover,.tab:hover{border-color:var(--gold)}main{max-width:1100px;margin:auto;padding:22px 16px 60px}.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:14px}.tab{white-space:nowrap;background:#171729}.tab.active{background:#37305e;border-color:#8176e0}.connection{font-size:12px;color:var(--muted);min-height:20px}.connection.online{color:#78dba3}.connection.offline{color:#ffc16d}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:12px 0}.toolbar h1{font-size:1.35rem;margin:0}.toolbar input,.modal input{width:min(320px,52vw);background:#11111d;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 13px;outline:none}.toolbar input:focus,.modal input:focus{border-color:var(--gold)}.hint{color:var(--muted);font-size:.9rem}.song-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}.song-card{background:linear-gradient(140deg,#1d1d33,#151522);border:1px solid var(--line);padding:14px 15px;border-radius:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left}.song-card:hover{border-color:var(--gold);transform:translateY(-1px)}.song-card b{font-size:.91rem;display:block}.song-card small{color:var(--muted);display:block;margin-top:5px}.badge{font-size:11px;background:#2b3d34;color:#9ce1b8;padding:5px 8px;border-radius:99px;white-space:nowrap}.empty{color:var(--muted);padding:30px;text-align:center;background:var(--panel);border-radius:12px}.hidden{display:none!important}.player{margin-top:18px}.player-top{display:flex;align-items:center;gap:15px;margin-bottom:14px}.player-top h1{margin:0;font-size:1.3rem}.player-top p{margin:5px 0 0;color:var(--muted)}.chord-preview,.piano-panel{background:linear-gradient(150deg,#1b1b2e,#14141f);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}.chord-heading,.piano-heading{font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:10px}.chord-heading span{color:var(--gold2)}.chords{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0}.chord{padding:6px 10px;background:#302b50;border:1px solid #514777;border-radius:8px;color:#f3d58a;font-weight:700}.lyrics{font:14px/1.7 ui-monospace,monospace;color:#d8d6e7;white-space:pre-wrap;max-height:180px;overflow:auto;border-top:1px solid var(--line);padding-top:12px;margin-bottom:0}.player-controls{display:flex;gap:7px;flex-wrap:wrap}.player-controls button{padding:9px 12px;border-radius:999px;background:var(--panel2);border:1px solid var(--line)}.player-controls .gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#15151e}.admin-only{background:#32305b!important;border-color:#7169c5!important}.status{font-size:12px;color:var(--muted);margin:12px 0}#keyboardScroll{overflow-x:auto;touch-action:pan-x;scrollbar-color:#514777 #171729}.keyboard{height:205px;display:flex;position:relative;min-width:max-content;padding:0 4px 7px;user-select:none}.key-wrap{position:relative;width:54px;flex:0 0 54px;height:100%}.key{position:absolute;touch-action:none;user-select:none;transition:transform .07s,background .08s,box-shadow .08s}.white{height:100%;width:52px;background:linear-gradient(110deg,#fff,#e8e7ee);border:1px solid #aaa8b4;border-radius:0 0 7px 7px;color:#383746;z-index:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;font-size:11px}.white.active{background:#f3d58a;transform:translateY(2px);box-shadow:0 0 17px #f3d58a99}.black{height:62%;width:33px;right:-16px;top:0;background:linear-gradient(100deg,#383747,#08080c 65%);border:1px solid #050509;border-radius:0 0 5px 5px;color:#ddd;z-index:2;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;font-size:9px;box-shadow:0 4px 6px #0008}.black.active{background:linear-gradient(#8875dc,#3e3476);transform:translateY(2px)}.recorded{display:flex;gap:5px;flex-wrap:wrap;margin-top:11px}.note-chip{font-size:11px;color:#15151e;background:var(--gold2);padding:4px 7px;border-radius:6px}.modal{position:fixed;inset:0;z-index:30;background:#05050bdc;display:grid;place-items:center;padding:15px}.modal-card{position:relative;background:#1b1b2e;border:1px solid var(--line);border-radius:18px;padding:24px;width:min(380px,100%)}.modal-card h2{margin:0 0 8px}.modal-card p{color:var(--muted);font-size:14px}.modal-card input{width:100%;margin:9px 0}.close{position:absolute;right:13px;top:11px;background:none;font-size:25px;color:var(--muted)}.full{width:100%;margin-top:6px}.error{color:#ff9c9c;font-size:12px;min-height:18px}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#25253b;border:1px solid var(--line);padding:11px 16px;border-radius:12px;z-index:40;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.splash{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(ellipse at center,#1c1c3f 0,#0d0d14 75%);transition:opacity .5s,visibility .5s}.splash.hide{opacity:0;visibility:hidden}.stars{position:absolute;inset:0;background-image:radial-gradient(#f1d8a188 1px,transparent 1px),radial-gradient(#8bc7ff66 1px,transparent 1px);background-size:93px 93px,147px 147px;background-position:0 0,34px 49px;opacity:.5}.splash-card{position:relative;text-align:center;padding:35px}.splash-logo{font-size:58px;color:var(--gold2);text-shadow:0 0 24px #d6b55566}.splash-title{letter-spacing:.15em;font-size:16px}.splash-title b{color:var(--gold2)}.splash-sub{font-size:11px;letter-spacing:.25em;color:var(--muted);margin-top:10px}.loader{display:flex;justify-content:center;gap:7px;margin:24px}.loader i{width:7px;height:7px;background:var(--gold2);border-radius:50%;animation:bounce 1s infinite alternate}.loader i:nth-child(2){animation-delay:.2s}.loader i:nth-child(3){animation-delay:.4s}@keyframes bounce{to{transform:translateY(-8px);opacity:.4}}#enterBtn{padding:10px 24px;border-radius:99px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#181818;font-weight:700}@media(max-width:620px){main{padding:15px 12px 40px}.toolbar{align-items:stretch;flex-direction:column}.toolbar input{width:100%}.keyboard{height:180px}.key-wrap{width:48px;flex-basis:48px}.white{width:46px}.black{right:-14px;width:29px}.piano-heading{align-items:flex-start;flex-direction:column}.song-list{grid-template-columns:1fr}}
+
+/* Teclado inspirado directamente en Piano-master; conserva teclas extendidas y audio WAV. */
+.piano-panel .piano-container{width:100%;height:340px;padding:42px 24px 22px;background:#000;border-radius:20px 20px 0 0;overflow:hidden}
+.piano-panel #keyboardScroll{width:100%;height:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:pan-x;scrollbar-color:#555 #111}
+.piano-panel .piano{display:flex;width:max-content;min-width:100%;height:100%;padding:0;position:relative;user-select:none;cursor:default}
+.piano-panel .keys{height:100%;width:44px;flex:0 0 44px;position:relative}
+.piano-panel .key{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;transition:transform 80ms ease;padding:8px 2px;position:absolute;top:0;touch-action:pan-x;user-select:none}
+.piano-panel .key span{opacity:0;transition:opacity .2s ease-in;white-space:nowrap;pointer-events:none;font-size:10px;line-height:1.15}
+.piano-panel .white span{color:rgba(0,0,0,.7)}
+.piano-panel .black span{color:rgba(255,255,255,.68)}
+.piano-panel .piano:hover .key span,.piano-panel .key:focus span,.piano-panel .key:focus-visible span{opacity:1}
+.piano-panel .white{position:relative;width:100%;height:100%;background:#fff;color:#222;border:1px solid #ddd;border-radius:0;box-shadow:0 1px 1px rgba(0,0,0,.5);z-index:1;font-weight:400}
+.piano-panel .black{position:absolute;width:70%;height:56%;right:-35%;top:0;background:#000;color:#fff;border:0;border-radius:0;z-index:2;box-shadow:1px 0 #777,0 2px 0 #777,0 3px 0 #666,0 4px 0 #555,0 5px 0 #444,0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15)}
+.piano-panel .white:active{box-shadow:-1px 0 15px rgba(0,0,0,.7) inset}
+.piano-panel .black:active{box-shadow:1px 0 #555,0 1px 0 #555,0 1px 0 #444,0 2px 0 #333}
+.piano-panel .key.playing{transform:scale(.98);border-color:#0571ff;box-shadow:0 0 16px #046ffa;z-index:1}
+.piano-panel .note{font-size:3rem;opacity:0;text-align:center;line-height:1.15;margin:10px 0 0;color:var(--text);transition:opacity .2s ease}
+/* Diseño táctil: conservar las etiquetas y proporciones del piano en pantallas sin cursor. */
+.piano-panel .piano-container{height:clamp(245px,38vw,340px);padding:clamp(22px,4vw,42px) clamp(10px,2vw,24px) clamp(14px,2vw,22px);overflow:hidden}
+.piano-panel #keyboardScroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;overscroll-behavior-x:contain}
+.piano-panel .piano{min-width:max-content}
+.piano-panel .key{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.piano-panel .key.playing{transform:scale(.99);border-color:#5b9ee8;box-shadow:0 0 5px 1px #4c8fd744,0 0 10px #4c8fd722;z-index:3}
+.piano-panel .black.playing{z-index:4}
+.piano-panel .note{min-height:1.15em}
+.transpose-controls{display:flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 12px;flex-wrap:wrap}
+.transpose-controls button{min-height:38px;padding:8px 13px}
+.transpose-controls span{min-width:120px;text-align:center;color:var(--gold2);font-size:.9rem;font-weight:650}
+.transpose-controls button:disabled{opacity:.4;cursor:not-allowed}
+@media(hover:none),(pointer:coarse){.piano-panel .key span{opacity:1}}
+@media(max-width:700px){
+  header{height:60px;padding:0 14px}
+  main{padding:14px 10px calc(24px + env(safe-area-inset-bottom))}
+  .tabs{gap:7px;margin:0 -2px 12px;padding:2px 2px 7px;scroll-snap-type:x proximity}
+  .tab{padding:10px 13px;scroll-snap-align:start;min-height:42px}
+  .toolbar{align-items:stretch;flex-direction:column;gap:10px;margin:14px 0 9px}
+  .toolbar h1{font-size:1.25rem}
+  .toolbar input{width:100%;min-height:44px;font-size:16px}
+  .song-list{grid-template-columns:1fr;gap:8px}
+  .song-card{min-height:62px;padding:13px;border-radius:12px}
+  .song-card b{font-size:.95rem}
+  .player{margin-top:12px}
+  .player-top{align-items:flex-start;gap:10px}
+  .player-top .soft{flex:0 0 auto;min-height:42px;padding:9px 12px}
+  .player-top h1{font-size:1.1rem;line-height:1.25;overflow-wrap:anywhere}
+  .chord-preview,.piano-panel{padding:13px;border-radius:14px;margin-bottom:11px}
+  .chord-heading{align-items:flex-start;flex-wrap:wrap;font-size:.95rem}
+  .chords{gap:6px;margin:10px 0}
+  .chord{padding:6px 9px}
+  .lyrics{font-size:12px;line-height:1.55;max-height:34vh;overflow:auto;overscroll-behavior:contain}
+  .piano-heading{align-items:stretch;flex-direction:column;gap:11px}
+  .player-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;width:100%}
+  .player-controls button{min-height:42px;padding:9px 8px;font-size:13px;white-space:normal}
+  .transpose-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:4px 0 10px}
+  .transpose-controls button{min-height:42px;padding:8px 6px;font-size:13px}
+  .transpose-controls span{grid-column:1/-1;grid-row:1;min-width:0}
+  .piano-panel .piano-container{height:clamp(218px,58vw,290px);padding:22px 8px 14px;border-radius:14px 14px 0 0}
+  .piano-panel #keyboardScroll{scrollbar-width:thin}
+  .piano-panel .keys{width:clamp(35px,9vw,43px);flex-basis:clamp(35px,9vw,43px)}
+  .piano-panel .key span{font-size:clamp(8px,2.1vw,10px);opacity:1}
+  .piano-panel .white{padding:5px 1px}
+  .piano-panel .black{height:53%;padding:4px 1px}
+  .piano-panel .note{font-size:2.2rem;margin-top:4px}
+  .recorded{gap:4px}
+  .note-chip{font-size:10px;padding:4px 6px}
+  .status{line-height:1.4}
+}
+@media(max-width:380px){
+  .tab{font-size:13px;padding:9px 10px}
+  .piano-panel .piano-container{height:220px;padding:18px 6px 12px}
+  .piano-panel .keys{width:35px;flex-basis:35px}
+  .player-controls button{font-size:12px}
+}
+
+/* La ficha de melodía toma el lenguaje visual del grabador de YHWH. */
+.piano-panel{background:linear-gradient(155deg,#171528,#11111f);border-color:#34334f;border-radius:14px}
+.piano-panel .piano-heading>span{color:#e8c97a;font-size:.94rem}
+.piano-panel .player-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+.piano-panel .player-controls button{min-width:0;min-height:40px;padding:8px 9px;background:#24233d;border-color:#48456f;color:#eeedfe;font-size:.77rem;font-weight:700}
+.piano-panel .player-controls #playMelody,.piano-panel .player-controls #recordBtn{background:linear-gradient(135deg,#c9a84c,#f3d58a)!important;border-color:transparent!important;color:#171520!important}
+.piano-panel .player-controls #playMelody{grid-column:span 2}
+.piano-panel .player-controls #deleteBtn{background:#481d26!important;border-color:#8a2b3c!important;color:#ffb4b4!important}
+.piano-panel .status{padding:9px 11px;margin:10px 0;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);border-radius:9px;min-height:35px}
+.transpose-controls{padding:10px 12px;margin:8px 0 12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:10px}
+.transpose-controls span{color:#f3d58a}
+@media(max-width:700px){
+  .piano-panel .player-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .piano-panel .player-controls #playMelody{grid-column:span 2}
+  .piano-panel .piano-heading{gap:8px}
+  .piano-panel .status{margin:8px 0}
+}

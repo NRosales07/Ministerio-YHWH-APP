@@ -82,6 +82,35 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
 .versiculo-box-head{display:flex;align-items:center;gap:6px;color:var(--gold2);font-size:0.7rem;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
 .versiculo-box-text{color:var(--text);font-size:0.9rem;line-height:1.55;font-style:italic;white-space:pre-line;position:relative;z-index:1;}
 .versiculo-box-cita{margin-top:8px;text-align:right;color:var(--gold);font-size:0.76rem;font-weight:700;letter-spacing:0.3px;position:relative;z-index:1;}
+.versiculo-box-item + .versiculo-box-item{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(201,168,76,.35);}
+
+/* Bloques repetibles del formulario (uno por versículo) */
+.versiculo-item{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;background:var(--bg2);}
+.versiculo-item textarea{min-height:110px;font-family:'Inter',Arial,sans-serif;font-size:0.85rem;white-space:pre-line;}
+.versiculo-item .versiculo-item-row{display:flex;gap:8px;margin-top:6px;align-items:center;}
+.versiculo-item .versiculo-item-row input{flex:1;}
+.versiculo-item .versiculo-item-quitar{background:transparent;border:1px solid #a03a3a;color:#ff9d9d;padding:6px 10px;font-size:0.72rem;white-space:nowrap;}
+.versiculo-item .versiculo-item-quitar:hover{border-color:#ff7a6a;}
+
+/* ==== Panel "Ver todas" (lista completa de la biblioteca activa) ==== */
+.lista-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:9999;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px;box-sizing:border-box;}
+.lista-overlay.visible{display:flex;}
+.lista-card{width:100%;max-width:480px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.6);overflow:hidden;}
+.lista-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border);}
+.lista-card-head h2{font-size:0.95rem;color:var(--gold2);}
+.lista-card-head button{padding:6px 12px;font-size:0.9rem;}
+.lista-card-buscar{padding:10px 18px;border-bottom:1px solid var(--border);}
+.lista-card-buscar input{width:100%;}
+.lista-items{max-height:60vh;overflow-y:auto;}
+.lista-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;border-left:3px solid transparent;border-bottom:1px solid rgba(255,255,255,0.04);}
+.lista-item:hover{background:var(--bg3);border-left-color:var(--gold);}
+.lista-item.activa{background:var(--bg3);border-left-color:var(--gold);}
+.lista-item .li-num{font-size:0.72rem;color:var(--gold);font-family:'Inter',monospace;min-width:26px;}
+.lista-item .li-body{flex:1;min-width:0;}
+.lista-item .li-title{font-size:0.85rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lista-item .li-meta{font-size:0.7rem;color:var(--text2);margin-top:1px;}
+.lista-item .li-key{font-size:0.72rem;color:var(--chord);font-family:monospace;}
+.lista-vacia{padding:26px 18px;text-align:center;color:var(--text2);font-size:0.82rem;}
 
 .song-content{
   font-family:Arial,Helvetica,sans-serif;
@@ -475,6 +504,7 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
 
   <label>Alabanza</label>
   <select id="selectorCanciones" onchange="cargarDesdeSelector()"></select>
+  <button onclick="abrirListaCanciones()">📋 Ver todas</button>
 
   <label>ID directo</label>
   <input type="number" id="inputId" step="1" style="width:80px" placeholder="ej. 5">
@@ -532,12 +562,10 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
       <input type="text" id="fYoutube" placeholder="https://www.youtube.com/embed/...">
     </div>
     <div class="field">
-      <label>Versículo bíblico (opcional)</label>
-      <textarea id="fVersiculo" oninput="renderPreview()" style="min-height:260px;" placeholder="Ej. El Señor es mi pastor, nada me faltará."></textarea>
-    </div>
-    <div class="field">
-      <label>Cita del versículo (opcional)</label>
-      <input type="text" id="fVersiculoCita" oninput="renderPreview()" placeholder="Ej. Salmos 23:1">
+      <label>Versículos bíblicos (opcional)</label>
+      <div id="versiculosContainer"></div>
+      <button type="button" onclick="agregarVersiculoBlock()" style="width:100%;">+ Añadir versículo</button>
+      <div class="hint">Puedes añadir varios versículos; se mostrarán en el mismo orden en la app. Cada uno con su propio texto y cita (opcional).</div>
     </div>
     <div class="field">
       <label>Contenido (letra y acordes)</label>
@@ -634,6 +662,20 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
   </div>
 </div>
 
+<!-- ===== PANEL "VER TODAS" (lista completa de la biblioteca activa) ===== -->
+<div class="lista-overlay" id="listaOverlay" onclick="if(event.target===this) cerrarListaCanciones();">
+  <div class="lista-card">
+    <div class="lista-card-head">
+      <h2 id="listaOverlayTitulo">📋 Todas las alabanzas</h2>
+      <button onclick="cerrarListaCanciones()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="lista-card-buscar">
+      <input type="text" id="listaOverlayBuscar" placeholder="Filtrar por título..." oninput="renderListaCanciones()">
+    </div>
+    <div class="lista-items" id="listaOverlayItems"></div>
+  </div>
+</div>
+
 <script src="canciones-adoracion.js"></script>
 <script src="canciones-jubilo.js"></script>
 <script>
@@ -672,6 +714,77 @@ var editandoId = null; // null = canción nueva sin id asignado todavía
 
 // ---- Helpers de renderizado (copiados 1:1 de la app para que la vista previa sea fiel) ----
 function escH(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ============================================================
+// VERSÍCULOS BÍBLICOS (repetibles): cada bloque tiene un
+// textarea (texto) y un input (cita, opcional). Se guardan como
+// song.versiculos = [{texto, cita}, ...]. Compatibilidad: si una
+// canción vieja solo trae song.versiculo / song.versiculoCita (un
+// único versículo, string), se convierte a un bloque al cargarla.
+// ============================================================
+function crearVersiculoBlock(texto, cita){
+  var item = document.createElement('div');
+  item.className = 'versiculo-item';
+  item.innerHTML =
+    '<textarea class="v-texto" oninput="renderPreview()" placeholder="Ej. El Señor es mi pastor, nada me faltará."></textarea>' +
+    '<div class="versiculo-item-row">' +
+      '<input type="text" class="v-cita" oninput="renderPreview()" placeholder="Cita, ej. Salmos 23:1">' +
+      '<button type="button" class="versiculo-item-quitar" onclick="eliminarVersiculoBlock(this)">🗑️ Quitar</button>' +
+    '</div>';
+  item.querySelector('.v-texto').value = texto || '';
+  item.querySelector('.v-cita').value = cita || '';
+  document.getElementById('versiculosContainer').appendChild(item);
+  return item;
+}
+
+function agregarVersiculoBlock(texto, cita){
+  crearVersiculoBlock(texto, cita);
+  renderPreview();
+}
+
+function eliminarVersiculoBlock(btn){
+  var item = btn.closest('.versiculo-item');
+  if (item) item.remove();
+  renderPreview();
+}
+
+// Vacía el repetidor y lo deja con un único bloque en blanco.
+function reiniciarVersiculosForm(){
+  document.getElementById('versiculosContainer').innerHTML = '';
+  crearVersiculoBlock('', '');
+}
+
+// Lee todos los bloques del formulario y devuelve un array
+// [{texto, cita}, ...] solo con los que tienen texto.
+function obtenerVersiculosForm(){
+  var items = document.querySelectorAll('#versiculosContainer .versiculo-item');
+  var out = [];
+  items.forEach(function(item){
+    var texto = item.querySelector('.v-texto').value.trim();
+    var cita = item.querySelector('.v-cita').value.trim();
+    if (texto) out.push({ texto: texto, cita: cita });
+  });
+  return out;
+}
+
+// Puebla el repetidor a partir de song.versiculos (nuevo formato) o,
+// si no existe, de song.versiculo/song.versiculoCita (formato viejo).
+function cargarVersiculosForm(song){
+  document.getElementById('versiculosContainer').innerHTML = '';
+  var lista = (song && Array.isArray(song.versiculos)) ? song.versiculos : null;
+  if (!lista || !lista.length) {
+    if (song && song.versiculo) {
+      lista = [{ texto: song.versiculo, cita: song.versiculoCita || '' }];
+    } else {
+      lista = [];
+    }
+  }
+  if (!lista.length) {
+    crearVersiculoBlock('', '');
+  } else {
+    lista.forEach(function(v){ crearVersiculoBlock(v.texto, v.cita); });
+  }
+}
 
 function isChordLine(line){
   var s=line.trim();
@@ -762,8 +875,7 @@ function renderPreview(){
   var tono = document.getElementById('fTono').value || '-';
   var album = document.getElementById('fAlbum').value || '-';
   var version = document.getElementById('fVersion').value;
-  var versiculo = document.getElementById('fVersiculo').value.trim();
-  var versiculoCita = document.getElementById('fVersiculoCita').value.trim();
+  var versiculos = obtenerVersiculosForm();
   var content = document.getElementById('fContent').value;
 
   document.getElementById('pTitle').textContent = titulo;
@@ -774,11 +886,12 @@ function renderPreview(){
     (version ? ' &nbsp;|&nbsp; <strong>Versión:</strong> ' + escH(version) : '');
   var pVersiculoBox = document.getElementById('pVersiculoBox');
   var esJubiloPreview = bibliotecaActiva === 'jubilo';
-  if (!esJubiloPreview && versiculo) {
-    document.getElementById('pVersiculoText').textContent = versiculo;
-    var pCita = document.getElementById('pVersiculoCita');
-    pCita.textContent = versiculoCita;
-    pCita.style.display = versiculoCita ? 'block' : 'none';
+  if (!esJubiloPreview && versiculos.length) {
+    document.getElementById('pVersiculoText').innerHTML = versiculos.map(function(v){
+      return '<div class="versiculo-box-item"><div class="versiculo-box-text">' + escH(v.texto) + '</div>' +
+        (v.cita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
+    }).join('');
+    document.getElementById('pVersiculoCita').style.display = 'none';
     pVersiculoBox.style.display = 'block';
   } else {
     pVersiculoBox.style.display = 'none';
@@ -960,8 +1073,7 @@ function generarHTMLVisorDirecto(){
   var tono = document.getElementById('fTono').value || '-';
   var album = document.getElementById('fAlbum').value || '-';
   var version = document.getElementById('fVersion').value || '';
-  var versiculo = document.getElementById('fVersiculo').value.trim();
-  var versiculoCita = document.getElementById('fVersiculoCita').value.trim();
+  var versiculos = obtenerVersiculosForm();
   var content = document.getElementById('fContent').value || '';
   var esJubilo = bibliotecaActiva === 'jubilo';
   var claseVista = vistaCantante ? 'singer-view' : 'musician-view';
@@ -1013,14 +1125,20 @@ function generarHTMLVisorDirecto(){
     .versiculo-box-head{display:flex;align-items:center;gap:6px;color:var(--gold2);font-size:0.7rem;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
     .versiculo-box-text{color:var(--text);font-size:0.9rem;line-height:1.55;font-style:italic;white-space:pre-line;position:relative;z-index:1;}
     .versiculo-box-cita{margin-top:8px;text-align:right;color:var(--gold);font-size:0.76rem;font-weight:700;letter-spacing:0.3px;position:relative;z-index:1;}
+    .versiculo-box-item + .versiculo-box-item{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(201,168,76,.35);}
     body.light-theme .versiculo-box{background:linear-gradient(135deg, #fdf6e3, #f3ecd8);border-left-color:#b8933c;}
 
     body.light-theme .versiculo-box-head{color:#7f5f19;}
     body.light-theme .versiculo-box-text{color:#22303b;}
     body.light-theme .versiculo-box-cita{color:#7f5f19;}
   `;
-  var versiculoHtml = (!esJubilo && versiculo)
-    ? '<div class="versiculo-box"><div class="versiculo-box-head">&#128214; Versículo</div><div class="versiculo-box-text">' + escH(versiculo) + '</div>' + (versiculoCita ? '<div class="versiculo-box-cita">' + escH(versiculoCita) + '</div>' : '') + '</div>'
+  var versiculoHtml = (!esJubilo && versiculos.length)
+    ? '<div class="versiculo-box"><div class="versiculo-box-head">&#128214; Versículo</div>' +
+      versiculos.map(function(v){
+        return '<div class="versiculo-box-item"><div class="versiculo-box-text">' + escH(v.texto) + '</div>' +
+          (v.cita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
+      }).join('') +
+      '</div>'
     : '';
   var contentHtml = renderContentPreview(content);
   var contentClass = 'song-content';
@@ -1053,6 +1171,56 @@ function poblarSelector(){
   });
 }
 
+// ============================================================
+// PANEL "VER TODAS": lista completa de la biblioteca activa
+// (Adoración o Júbilo), ordenada alfabéticamente, con filtro por
+// título y un clic para cargar la alabanza en el formulario.
+// ============================================================
+function abrirListaCanciones(){
+  document.getElementById('listaOverlayTitulo').textContent =
+    '📋 Todas las alabanzas — ' + (bibliotecaActiva === 'jubilo' ? 'Júbilo' : 'Adoración');
+  document.getElementById('listaOverlayBuscar').value = '';
+  renderListaCanciones();
+  document.getElementById('listaOverlay').classList.add('visible');
+}
+
+function cerrarListaCanciones(){
+  document.getElementById('listaOverlay').classList.remove('visible');
+}
+
+function renderListaCanciones(){
+  var cont = document.getElementById('listaOverlayItems');
+  var q = quitarAcentos(document.getElementById('listaOverlayBuscar').value.trim());
+  var ordenadas = listaActiva().slice().sort(function(a,b){
+    return (a.title||'').localeCompare(b.title||'', 'es', { sensitivity: 'base' });
+  });
+  if (q) {
+    ordenadas = ordenadas.filter(function(s){
+      return quitarAcentos(s.title || '').indexOf(q) !== -1;
+    });
+  }
+  if (!ordenadas.length) {
+    cont.innerHTML = '<div class="lista-vacia">Sin alabanzas' + (q ? ' que coincidan con "' + escH(document.getElementById('listaOverlayBuscar').value) + '"' : ' en esta biblioteca') + '.</div>';
+    return;
+  }
+  cont.innerHTML = ordenadas.map(function(s){
+    var activa = editandoId != null && String(editandoId) === String(s.id);
+    return '<div class="lista-item' + (activa ? ' activa' : '') + '" onclick="cargarDesdeLista(' + JSON.stringify(String(s.id)) + ')">' +
+      '<div class="li-num">' + (s.num != null ? '#' + s.num : '') + '</div>' +
+      '<div class="li-body"><div class="li-title">' + escH(s.title || '(sin título)') + '</div>' +
+      '<div class="li-meta">' + escH(s.compositor || '-') + '</div></div>' +
+      '<div class="li-key">' + (s.tono ? '&#9836; ' + escH(s.tono) : '') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function cargarDesdeLista(id){
+  var song = buscarPorId(id);
+  if (!song) return;
+  cargarCancion(song);
+  cerrarListaCanciones();
+}
+
 function buscarPorId(id){
   var lista = listaActiva();
   for (var i = 0; i < lista.length; i++) {
@@ -1071,8 +1239,7 @@ function cargarCancion(song){
   document.getElementById('fAlbum').value = song.album || '';
   document.getElementById('fVersion').value = song.version || '';
   document.getElementById('fYoutube').value = song.youtube || '';
-  document.getElementById('fVersiculo').value = song.versiculo || '';
-  document.getElementById('fVersiculoCita').value = song.versiculoCita || '';
+  cargarVersiculosForm(song);
   document.getElementById('fContent').value = song.content || '';
   document.getElementById('selectorCanciones').value = song.id;
   renderPreview();
@@ -1222,8 +1389,7 @@ function nuevaCancion(){
   document.getElementById('fAlbum').value = '';
   document.getElementById('fVersion').value = '';
   document.getElementById('fYoutube').value = '';
-  document.getElementById('fVersiculo').value = '';
-  document.getElementById('fVersiculoCita').value = '';
+  reiniciarVersiculosForm();
   document.getElementById('fContent').value = '';
   document.getElementById('selectorCanciones').value = '';
   renderPreview();
@@ -1263,8 +1429,7 @@ function eliminarCancionActual(){
   document.getElementById('fAlbum').value = '';
   document.getElementById('fVersion').value = '';
   document.getElementById('fYoutube').value = '';
-  document.getElementById('fVersiculo').value = '';
-  document.getElementById('fVersiculoCita').value = '';
+  reiniciarVersiculosForm();
   document.getElementById('fContent').value = '';
   document.getElementById('inputId').value = '';
   document.getElementById('selectorCanciones').value = '';
@@ -1312,12 +1477,10 @@ function leerFormulario(){
   };
   var version = document.getElementById('fVersion').value.trim();
   var youtube = document.getElementById('fYoutube').value.trim();
-  var versiculo = document.getElementById('fVersiculo').value.trim();
-  var versiculoCita = document.getElementById('fVersiculoCita').value.trim();
+  var versiculos = obtenerVersiculosForm();
   if (version) obj.version = version;
   if (youtube) obj.youtube = youtube;
-  if (versiculo) obj.versiculo = versiculo;
-  if (versiculoCita) obj.versiculoCita = versiculoCita;
+  if (versiculos.length) obj.versiculos = versiculos;
   return obj;
 }
 
