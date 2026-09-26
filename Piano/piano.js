@@ -7,7 +7,7 @@ const NOTE_NAMES_LATINO = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', '
 const NOTE_ROOT_LATINO = { C:'Do', D:'Re', E:'Mi', F:'Fa', G:'Sol', A:'La', B:'Si' };
 const state = {
   view: 'home', category: 'adoracion', song: null, admin: false, selectedSongChord:null, theoryChord: { root:'C', quality:'major' }, theoryCircleChord: null, theoryCircleIndex:0, theoryCircleMinor:false, theoryCircleChords:null, theoryScale:'major', theoryInterval:7, theoryPianoIntervals:null, theoryPianoMode:'chord',
-  melodies: readMelodyCache(), recording: false, recordStart: 0, notes: [], chords: [], chordTarget: null,
+  melodies: readMelodyCache(), melodyDirty:false, recording: false, recordStart: 0, notes: [], chords: [], chordTarget: null,
   buffers: new Map(), instrumentBuffers: new Map(), instrument: localStorage.getItem('yhwh_piano_instrument') === 'trumpet' ? 'trumpet' : 'grand-piano', sustain: localStorage.getItem('yhwh_piano_sustain') === '1', playing: false, playTimers: [], transpose: 0, originalTonic: 'C',
   notation: localStorage.getItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano', lastMidi: null, db: null, auth: null,
   ref: null, set: null, onValue: null, signIn: null, signOut: null, authListener: null
@@ -82,7 +82,13 @@ function transitionScreen(target, candidates) {
     screenTransitionTimer=null;
   },current?delay:0);
 }
+function confirmDiscardUnsavedMelody(){
+  if(!state.melodyDirty)return true;
+  if(!window.confirm('Hay cambios de la melodía que todavía no se han guardado en Firebase. ¿Quieres descartarlos?'))return false;
+  state.melodyDirty=false;return true;
+}
 function setView(view) {
+  if(!$('player').classList.contains('hidden')&&!confirmDiscardUnsavedMelody())return;
   state.view = view;
   document.body.classList.toggle('home-active',view==='home');
   stopPlayback();
@@ -272,7 +278,9 @@ function selectTheoryCircle(index,minor,play=false){
 }
 function changeTheoryTab(tab){document.querySelectorAll('.theory-tab').forEach(button=>button.classList.toggle('active',button.dataset.theoryTab===tab));const panels=['theoryPanelChords','theoryPanelKeys','theoryPanelScales','theoryPanelIntervals','theoryPanelCircle','theoryPanelPiano'];const target=`theoryPanel${tab[0].toUpperCase()}${tab.slice(1)}`;transitionScreen(target,panels);if(tab==='chords')state.theoryPianoMode='chord';if(tab==='scales')state.theoryPianoMode='scale';if(tab==='intervals')state.theoryPianoMode='interval';if(tab==='piano'||tab==='chords'||tab==='scales'||tab==='intervals'){if(state.theoryPianoMode==='chord')renderTheorySelection();else if(state.theoryPianoMode==='scale')renderTheoryScale();else renderTheoryIntervals();}}
 function openSong(song, category) {
+  if(state.melodyDirty&&!confirmDiscardUnsavedMelody())return;
   state.song = { song, category };
+  state.melodyDirty=false;
   state.selectedSongChord=null;document.querySelectorAll('#keyboard .key.chord-selected').forEach(key=>key.classList.remove('chord-selected'));
   state.category = category;
   state.transpose = 0;
@@ -340,8 +348,9 @@ function saveSelectedChord() {
   const chord = { noteIndex: state.chordTarget, root: $('chordRoot').value, quality: $('chordQuality').value, inversion: Number($('chordInversion').value), octave: Number($('chordOctave').value), duration: Number($('chordDuration').value), arpeggio:$('chordArpeggio').checked };
   const existing = state.chords.findIndex(item => Number(item.noteIndex) === state.chordTarget);
   if (existing >= 0) state.chords[existing] = chord; else state.chords.push(chord);
+  state.melodyDirty=true;
   renderRecorded(); chooseChordTarget(chord.noteIndex);
-  $('status').textContent = `Acorde ${chordDisplayName(chord)} asignado a ${noteName(state.notes[chord.noteIndex].midi)}. Pulsa Guardar para sincronizar.`;
+  $('status').textContent = `Acorde ${chordDisplayName(chord)} asignado a ${noteName(state.notes[chord.noteIndex].midi)}. Pulsa “Guardar melodía” para subir todos los cambios a Firebase.`;
 }
 function syncChordEditorMode(){
   const arpeggio=$('chordArpeggio')?.checked||false;
@@ -350,8 +359,9 @@ function syncChordEditorMode(){
 function removeSelectedChord() {
   if (state.chordTarget === null) return;
   state.chords = state.chords.filter(item => Number(item.noteIndex) !== state.chordTarget);
+  state.melodyDirty=true;
   renderRecorded(); chooseChordTarget(state.chordTarget);
-  $('status').textContent = 'Acorde quitado. Pulsa Guardar para sincronizar.';
+  $('status').textContent = 'Acorde quitado de la melodía. Pulsa “Guardar melodía” para subir los cambios a Firebase.';
 }
 function chordMidiNotes(chord) {
   const shapes = { major:[0,4,7], minor:[0,3,7], '7':[0,4,7,10], maj7:[0,4,7,11], m7:[0,3,7,10], mMaj7:[0,3,7,11], '6':[0,4,7,9], add9:[0,4,7,14], '5':[0,7], dim7:[0,3,6,9], m7b5:[0,3,6,10], sus2:[0,2,7], sus4:[0,5,7], dim:[0,3,6], aug:[0,4,8] };
@@ -411,6 +421,7 @@ function transposeMelody(delta) {
   }
   state.transpose = nextShift;
   state.notes = state.notes.map(note => ({ ...note, midi: Math.max(36, Math.min(95, Number(note.midi) + delta)) }));
+  state.melodyDirty=true;
   state.notes.forEach(note => note.note = canonicalNoteName(note.midi));
   updateTransposeUI(); renderRecorded();
   toast(state.transpose ? `Melodía transportada ${state.transpose > 0 ? '+' : ''}${state.transpose} semitonos.` : 'Tono original restaurado.');
@@ -565,6 +576,7 @@ async function playNote(midi, element, duration = 0.4) {
   $('currentNote').style.opacity = '1';
   if (state.recording) {
     state.notes.push({ midi, note: canonicalNoteName(midi), start: (performance.now() - state.recordStart) / 1000, duration: 0.35 });
+    state.melodyDirty=true;
     renderRecorded();
   }
   try {
@@ -655,12 +667,14 @@ function toggleRecord() {
     state.recording = false; setPlayerControl('recordBtn','⏺','Grabar'); $('status').textContent = 'Grabación detenida. Puedes escucharla y guardarla.'; return;
   }
   state.notes = []; state.chords = []; state.chordTarget = null; state.recordStart = performance.now(); state.recording = true;
+  state.melodyDirty=true;
   setPlayerControl('recordBtn','⏹','Detener grabación'); $('status').textContent = 'Grabando… toca las notas.'; renderRecorded();
 }
 async function saveMelody() {
   if (!state.admin || !state.song || !state.set || !state.ref || !state.db) { toast('Inicia sesión y conéctate para guardar.'); return; }
   if (!state.notes.length) { toast('Graba al menos una nota.'); return; }
   const { song, category } = state.song;
+  $('status').textContent='Guardando melodía y acordes en Firebase…';
   const payload = {
     songId: song.id,
     updatedAt: new Date().toISOString(),
@@ -672,16 +686,26 @@ async function saveMelody() {
   };
   try {
     await state.set(state.ref(state.db, `melodias/${category}/${song.id}`), payload);
+    state.melodies[category] ||= {};
+    state.melodies[category][String(song.id)] = payload;
+    try { localStorage.setItem('yhwh_melodias_cache', JSON.stringify(state.melodies)); } catch (_) {}
+    state.melodyDirty=false;
+    $('playerLabel').textContent='Melodía guardada';
+    renderLists();
     toast('Melodía guardada y sincronizada.');
     $('status').textContent = 'Melodía guardada.';
-  } catch (error) { toast('No se pudo guardar. Comprueba la conexión.'); }
+  } catch (error) {
+    $('status').textContent=`Error al guardar en Firebase${error?.code?`: ${error.code}`:''}. Revisa la conexión e inténtalo de nuevo.`;
+    toast('No se pudo guardar en Firebase.');
+    console.error('Error al guardar la melodía:',error);
+  }
 }
 async function deleteMelody() {
   if (!state.admin || !state.song || !state.set || !state.ref || !state.db || !hasMelody(state.song.category, state.song.song.id)) return;
   if (!confirm('¿Eliminar la melodía guardada de esta alabanza?')) return;
   try {
     await state.set(state.ref(state.db, `melodias/${state.song.category}/${state.song.song.id}`), null);
-    state.notes = []; state.chords = []; state.chordTarget = null; renderRecorded(); toast('Melodía eliminada.');
+    state.notes = []; state.chords = []; state.chordTarget = null; state.melodyDirty=false; renderRecorded(); toast('Melodía eliminada.');
   } catch (_) { toast('No se pudo eliminar.'); }
 }
 
@@ -730,6 +754,7 @@ function bindInterface() {
   $('closeLogin').onclick = () => $('loginModal').classList.add('hidden');
   $('loginModal').onclick = event => { if (event.target === $('loginModal')) $('loginModal').classList.add('hidden'); };
   $('backBtn').onclick = () => {
+    if(!confirmDiscardUnsavedMelody())return;
     stopPlayback();stopTheorySequence();
     const returnTo=state.view==='crear'?'createView':state.view==='teoria'?'theoryView':'songView';
     transitionScreen(returnTo,['homeView','songView','createView','theoryView','player']);
@@ -789,7 +814,7 @@ function bindInterface() {
   $('undoBtn').onclick = () => {
     if (!state.admin) { toast('Solo Admin puede quitar notas.'); return; }
     if (!state.notes.length) { toast('No hay notas para quitar.'); return; }
-    state.notes.pop(); state.chords=state.chords.filter(chord=>Number(chord.noteIndex)<state.notes.length); if(state.chordTarget!==null&&state.chordTarget>=state.notes.length)state.chordTarget=null; renderRecorded(); $('status').textContent = 'Se quitó la última nota.';
+    state.notes.pop(); state.chords=state.chords.filter(chord=>Number(chord.noteIndex)<state.notes.length); if(state.chordTarget!==null&&state.chordTarget>=state.notes.length)state.chordTarget=null; state.melodyDirty=true; renderRecorded(); $('status').textContent = 'Se quitó la última nota. Pulsa “Guardar melodía” para sincronizar.';
   };
   $('deleteBtn').onclick = deleteMelody;
   window.addEventListener('online', () => { $('connection').textContent = '🌐 Con conexión'; $('connection').className = 'connection online'; });
@@ -827,7 +852,7 @@ function initializeFirebase() {
       try { localStorage.setItem('yhwh_melodias_cache', JSON.stringify(state.melodies)); } catch (_) {}
       $('connection').textContent = '🌐 Sincronizado con YHWH'; $('connection').className = 'connection online';
       renderLists();
-      if (state.song && hasMelody(state.song.category, state.song.song.id)) {
+      if (state.song && hasMelody(state.song.category, state.song.song.id) && !state.melodyDirty) {
         const syncedMelody=melodyFor(state.song.category,state.song.song.id);
         state.notes = (syncedMelody.notas||[]).map(note => ({ ...note }));
         state.chords = (syncedMelody.acordes||[]).map(chord => ({ ...chord }));
@@ -848,4 +873,5 @@ bindInterface();
 updateAdminControls();
 renderLists();
 initializeSplash();
+window.addEventListener('beforeunload',event=>{if(state.melodyDirty){event.preventDefault();event.returnValue='';}});
 initializeFirebase();
