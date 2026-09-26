@@ -603,13 +603,20 @@ function stopPlayback() {
   state.playTimers.forEach(clearTimeout);
   state.playTimers = [];
   if (audioContext?.state === 'running') audioContext.suspend();
-  if ($('playMelody')) $('playMelody').textContent = '▶ Reproducir';
+  setPlayerControl('playMelody','▶','Reproducir');
+}
+function setPlayerControl(id,icon,label){
+  const button=$(id);if(!button)return;
+  button.innerHTML=`${icon}<small>${label}</small>`;
+  button.setAttribute('aria-label',label);
 }
 function playMelody() {
   if (!state.notes.length) { toast('Esta alabanza todavía no tiene melodía guardada.'); $('status').textContent = 'No hay melodía guardada para reproducir.'; return; }
   stopPlayback();
+  state.selectedSongChord=null;
+  document.querySelectorAll('#keyboard .key.chord-selected,#lyrics .lyrics-chord.selected').forEach(element=>element.classList.remove('chord-selected','selected'));
   state.playing = true;
-  $('playMelody').textContent = '⏸ Reproduciendo…';
+  setPlayerControl('playMelody','⏸','Reproduciendo');
   $('status').textContent = 'Reproduciendo melodía…';
   // Encuadra una sola vez la primera nota de la melodía. Mantiene fijo el
   // teclado durante el resto de la reproducción para evitar saltos por nota.
@@ -640,15 +647,15 @@ function playMelody() {
   const noteEnd = Math.max(...state.notes.map(note => (Number(note.start) || 0) + (Number(note.duration) || 0.35) * (state.sustain ? 2.4 : 1) + noteRelease));
   const chordEnd = state.chords.reduce((end, chord) => { const note=state.notes[Number(chord.noteIndex)]; return note ? Math.max(end, (Number(note.start)||0)+(Number(chord.duration)||2)+(chord.arpeggio?0.4:0)+(state.instrument === 'trumpet' ? 0.22 : (state.sustain ? 0.9 : 0.32))) : end; }, 0);
   const end = Math.max(noteEnd, chordEnd);
-  state.playTimers.push(setTimeout(() => { state.playing = false; $('playMelody').textContent = '▶ Reproducir'; $('status').textContent = 'Melodía terminada.'; }, end * 1000 + 500));
+  state.playTimers.push(setTimeout(() => { state.playing = false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = 'Melodía terminada.'; }, end * 1000 + 500));
 }
 function toggleRecord() {
   if (!state.admin) { toast('Solo Admin puede grabar.'); return; }
   if (state.recording) {
-    state.recording = false; $('recordBtn').textContent = '⏺ Grabar'; $('status').textContent = 'Grabación detenida. Puedes escucharla y guardarla.'; return;
+    state.recording = false; setPlayerControl('recordBtn','⏺','Grabar'); $('status').textContent = 'Grabación detenida. Puedes escucharla y guardarla.'; return;
   }
   state.notes = []; state.chords = []; state.chordTarget = null; state.recordStart = performance.now(); state.recording = true;
-  $('recordBtn').textContent = '⏹ Detener'; $('status').textContent = 'Grabando… toca las notas.'; renderRecorded();
+  setPlayerControl('recordBtn','⏹','Detener grabación'); $('status').textContent = 'Grabando… toca las notas.'; renderRecorded();
 }
 async function saveMelody() {
   if (!state.admin || !state.song || !state.set || !state.ref || !state.db) { toast('Inicia sesión y conéctate para guardar.'); return; }

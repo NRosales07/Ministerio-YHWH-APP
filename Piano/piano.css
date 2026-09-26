@@ -460,6 +460,7 @@
 .lyrics-viewer .lb{height:.55em;min-height:.55em}
 @media(max-width:900px) and (orientation:landscape){body.home-active header{height:48px;padding:0 12px}body.home-active main{display:flex;flex-direction:column;height:calc(100dvh - 48px);max-height:calc(100dvh - 48px);padding:5px 10px calc(5px + env(safe-area-inset-bottom));overflow:hidden}body.home-active .home-view{flex:1;min-height:0;height:100%;margin:0;padding:9px;border-radius:14px}body.home-active .home-content{width:100%;max-width:720px}.home-branding{margin-bottom:10px}.home-note{width:36px;height:36px;margin-bottom:4px;font-size:22px;border-radius:11px}.home-branding h1{font-size:1.35rem}.home-branding p{font-size:.82rem;margin-top:2px}.home-divider{margin:7px auto;width:42px}.home-prompt{font-size:.75rem}.home-menu-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.home-menu-card{min-height:88px;padding:8px 5px;gap:4px;border-radius:11px}.home-card-icon{width:32px;height:32px;border-radius:9px;font-size:19px}.home-menu-card b{font-size:.76rem}.home-menu-card small{display:none}}
 @media(max-width:900px) and (orientation:landscape){body.home-active header{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}body.home-active main{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}}
+@media(max-width:900px) and (orientation:landscape){.view:not(.hidden) .song-list{grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:6px}.view:not(.hidden) .song-card{min-height:46px;padding:8px 10px;border-radius:10px;gap:6px}.view:not(.hidden) .song-card b{font-size:.82rem;line-height:1.2}.view:not(.hidden) .song-card small{font-size:.69rem;margin-top:2px;line-height:1.2}.view:not(.hidden) .song-card .badge{font-size:9px;padding:4px 6px}}
 .lyrics-viewer{max-height:none!important;overflow-x:auto;overflow-y:hidden;white-space:pre;font-family:Arial,Helvetica,sans-serif;font-size:.82rem;line-height:1.4;color:var(--text);border:0;padding:4px 0 12px;margin:0;-webkit-overflow-scrolling:touch}
 .lyrics-viewer .lc,.lyrics-viewer .ll,.lyrics-viewer .ls,.lyrics-viewer .lm,.lyrics-viewer .lb{display:block;white-space:pre;font-family:Arial,Helvetica,sans-serif}
 .lyrics-viewer .lc{color:var(--gold2);font-size:.7rem;font-weight:700;line-height:1.4}
@@ -487,3 +488,18 @@
 .chord-editor-fields .arpeggio-toggle{grid-column:1/-1;display:flex!important;flex-direction:row!important;align-items:center;gap:9px!important;min-height:45px;padding:7px 10px;border:1px solid #514a73;border-radius:9px;background:#191827;cursor:pointer}
 .arpeggio-toggle input{width:18px;height:18px;flex:0 0 auto;accent-color:#e8c97a}
 .arpeggio-toggle>span{display:flex;flex-direction:column;gap:2px}.arpeggio-toggle b{color:#f0d580;font-size:12px}.arpeggio-toggle small{color:#bbb5ce;font-size:10px}.chord-editor-fields select:disabled{opacity:.52}
+
+/* Evita el zoom táctil accidental y mantiene estable la barra inferior en iPhone. */
+button,select,input,summary{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+@keyframes playerFadeOpacity{from{opacity:0}to{opacity:1}}
+.player.screen-fade-in{animation:playerFadeOpacity .25s ease both}
+.player.screen-fade-out{animation:playerFadeOpacity .14s ease reverse both}
+@media(max-width:700px) and (orientation:portrait){
+  body:has(#player:not(.hidden)) .mobile-quick-settings select,
+  body:has(#player:not(.hidden)) #chordEditor select,
+  body:has(#player:not(.hidden)) .modal input{font-size:16px!important}
+  body:has(#player:not(.hidden)) .mobile-player-controls{left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:0;width:auto;max-width:520px;margin-inline:auto;transform:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));border:1px solid #ffffff20;border-bottom:0;border-radius:15px 15px 0 0;background:linear-gradient(180deg,#211f30f7,#111119fa);box-shadow:0 -5px 20px #0009}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{width:100%;max-width:none;min-width:0;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px 2px;border:1px solid #5b5677;border-radius:10px;background:linear-gradient(180deg,#35324f,#25233a);color:#eeedfe;font-size:18px;line-height:1;box-shadow:0 2px 6px #0004}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{display:block;max-width:100%;overflow:visible;text-overflow:clip;font-size:10px;line-height:1.1;white-space:normal;text-align:center;overflow-wrap:anywhere}
+  body:has(#player:not(.hidden)):has(.mobile-player-controls .admin-only:not(.hidden)) main{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
+}
