@@ -82,6 +82,9 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
 .versiculo-box-head{display:flex;align-items:center;gap:6px;color:var(--gold2);font-size:0.7rem;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
 .versiculo-box-text{color:var(--text);font-size:0.9rem;line-height:1.55;font-style:italic;white-space:pre-line;position:relative;z-index:1;}
 .versiculo-box-cita{margin-top:8px;text-align:right;color:var(--gold);font-size:0.76rem;font-weight:700;letter-spacing:0.3px;position:relative;z-index:1;}
+.versiculo-cita-inline{color:var(--gold);font-weight:700;font-style:normal;}
+.versiculo-numero{color:#9bd8ff;font-weight:700;font-style:normal;}
+body.light-theme .versiculo-numero{color:#356b91;}
 .versiculo-box-item + .versiculo-box-item{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(201,168,76,.35);}
 
 /* Bloques repetibles del formulario (uno por versículo) */
@@ -565,7 +568,7 @@ button.danger{border-color:#c0392b;color:#ff7a6a;}
       <label>Versículos bíblicos (opcional)</label>
       <div id="versiculosContainer"></div>
       <button type="button" onclick="agregarVersiculoBlock()" style="width:100%;">+ Añadir versículo</button>
-      <div class="hint">Puedes añadir varios versículos; se mostrarán en el mismo orden en la app. Cada uno con su propio texto y cita (opcional).</div>
+      <div class="hint">Escribe el pasaje completo en el cuadro: incluye el libro, capítulo y verso (ej. “Salmos 145:14” o “Isaías 53:3-7”). Puedes poner citas de libros distintos en el mismo bloque; las referencias se resaltan automáticamente.</div>
     </div>
     <div class="field">
       <label>Contenido (letra y acordes)</label>
@@ -715,9 +718,38 @@ var editandoId = null; // null = canción nueva sin id asignado todavía
 // ---- Helpers de renderizado (copiados 1:1 de la app para que la vista previa sea fiel) ----
 function escH(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+function renderVersiculoTextoHTML(texto, cita){
+  var libros = 'Génesis|Genesis|Éxodo|Exodo|Levítico|Levitico|Números|Numeros|Deuteronomio|Josué|Josue|Jueces|Rut|1\s+Samuel|2\s+Samuel|1\s+Reyes|2\s+Reyes|1\s+Crónicas|1\s+Cronicas|2\s+Crónicas|2\s+Cronicas|Esdras|Nehemías|Nehemias|Ester|Job|Salmos?|Proverbios|Eclesiastés|Eclesiastes|Cantares|Cantar\s+de\s+los\s+Cantares|Isaías|Isaias|Jeremías|Jeremias|Lamentaciones|Ezequiel|Daniel|Oseas|Joel|Amós|Amos|Abdías|Abdias|Jonás|Jonas|Miqueas|Nahúm|Nahum|Habacuc|Sofonías|Sofonias|Hageo|Zacarías|Zacarias|Malaquías|Malaquias|Mateo|Marcos|Lucas|Juan|Hechos|Romanos|1\s+Corintios|2\s+Corintios|Gálatas|Galatas|Efesios|Filipenses|Colosenses|1\s+Tesalonicenses|2\s+Tesalonicenses|1\s+Timoteo|2\s+Timoteo|Tito|Filemón|Filemon|Hebreos|Santiago|1\s+Pedro|2\s+Pedro|1\s+Juan|2\s+Juan|3\s+Juan|Judas|Apocalipsis';
+  var barra = String.fromCharCode(92);
+  libros = libros.replace(/s\+/g, ' ');
+  libros = libros.replace(/ /g, barra + 's+');
+  var regex = new RegExp('(^|[' + barra + 's(])(' + libros + ')' + barra + 's+(' + barra + 'd{1,3}:' + barra + 'd{1,3}(?:[-–]' + barra + 'd{1,3})?)', 'gi');
+  var encontrado = false;
+  var html = String(texto || '').split('\n').map(function(line){
+    var partes = [];
+    var ultimo = 0;
+    var match;
+    regex.lastIndex = 0;
+    while ((match = regex.exec(line)) !== null) {
+      var inicio = match.index + match[1].length;
+      partes.push(escH(line.slice(ultimo, inicio)));
+      partes.push('<span class="versiculo-cita-inline">' + escH(match[2] + ' ' + match[3]) + '</span>');
+      ultimo = regex.lastIndex;
+      encontrado = true;
+    }
+    partes.push(escH(line.slice(ultimo)));
+    var htmlLinea = partes.join('');
+    var numero = htmlLinea.match(/^(\s*)(\d{1,3})([.)]?)(\s+)(.*)$/);
+    if (numero) htmlLinea = numero[1] + '<span class="versiculo-numero">' + numero[2] + numero[3] + '</span>' + numero[4] + numero[5];
+    htmlLinea = htmlLinea.replace(/(<\/span>\s+)(\d{1,3})([.)]?)(\s+)/g, '$1<span class="versiculo-numero">$2$3</span>$4');
+    return htmlLinea;
+  }).join('\n');
+  return { html: html, mostrarCita: !encontrado };
+}
+
 // ============================================================
 // VERSÍCULOS BÍBLICOS (repetibles): cada bloque tiene un
-// textarea (texto) y un input (cita, opcional). Se guardan como
+// textarea de texto con referencias detectadas automáticamente. Se guardan como
 // song.versiculos = [{texto, cita}, ...]. Compatibilidad: si una
 // canción vieja solo trae song.versiculo / song.versiculoCita (un
 // único versículo, string), se convierte a un bloque al cargarla.
@@ -725,14 +757,9 @@ function escH(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 function crearVersiculoBlock(texto, cita){
   var item = document.createElement('div');
   item.className = 'versiculo-item';
-  item.innerHTML =
-    '<textarea class="v-texto" oninput="renderPreview()" placeholder="Ej. El Señor es mi pastor, nada me faltará."></textarea>' +
-    '<div class="versiculo-item-row">' +
-      '<input type="text" class="v-cita" oninput="renderPreview()" placeholder="Cita, ej. Salmos 23:1">' +
-      '<button type="button" class="versiculo-item-quitar" onclick="eliminarVersiculoBlock(this)">🗑️ Quitar</button>' +
-    '</div>';
+  item.innerHTML = '<textarea class="v-texto" oninput="renderPreview()" placeholder="Ej. Salmos 145:14&#10;Sostiene Jehová a todos los que caen...&#10;&#10;Isaías 53:3-7&#10;Despreciado y desechado..."></textarea>' +
+    '<div class="versiculo-item-row"><button type="button" class="versiculo-item-quitar" onclick="eliminarVersiculoBlock(this)">🗑️ Quitar</button></div>';
   item.querySelector('.v-texto').value = texto || '';
-  item.querySelector('.v-cita').value = cita || '';
   document.getElementById('versiculosContainer').appendChild(item);
   return item;
 }
@@ -761,8 +788,7 @@ function obtenerVersiculosForm(){
   var out = [];
   items.forEach(function(item){
     var texto = item.querySelector('.v-texto').value.trim();
-    var cita = item.querySelector('.v-cita').value.trim();
-    if (texto) out.push({ texto: texto, cita: cita });
+    if (texto) out.push({ texto: texto, cita: '' });
   });
   return out;
 }
@@ -888,8 +914,9 @@ function renderPreview(){
   var esJubiloPreview = bibliotecaActiva === 'jubilo';
   if (!esJubiloPreview && versiculos.length) {
     document.getElementById('pVersiculoText').innerHTML = versiculos.map(function(v){
-      return '<div class="versiculo-box-item"><div class="versiculo-box-text">' + escH(v.texto) + '</div>' +
-        (v.cita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
+      var biblia = renderVersiculoTextoHTML(v.texto, v.cita);
+      return '<div class="versiculo-box-item"><div class="versiculo-box-text">' + biblia.html + '</div>' +
+        (v.cita && biblia.mostrarCita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
     }).join('');
     document.getElementById('pVersiculoCita').style.display = 'none';
     pVersiculoBox.style.display = 'block';
@@ -1125,6 +1152,9 @@ function generarHTMLVisorDirecto(){
     .versiculo-box-head{display:flex;align-items:center;gap:6px;color:var(--gold2);font-size:0.7rem;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
     .versiculo-box-text{color:var(--text);font-size:0.9rem;line-height:1.55;font-style:italic;white-space:pre-line;position:relative;z-index:1;}
     .versiculo-box-cita{margin-top:8px;text-align:right;color:var(--gold);font-size:0.76rem;font-weight:700;letter-spacing:0.3px;position:relative;z-index:1;}
+    .versiculo-cita-inline{color:var(--gold);font-weight:700;font-style:normal;}
+    .versiculo-numero{color:#9bd8ff;font-weight:700;font-style:normal;}
+    body.light-theme .versiculo-numero{color:#356b91;}
     .versiculo-box-item + .versiculo-box-item{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(201,168,76,.35);}
     body.light-theme .versiculo-box{background:linear-gradient(135deg, #fdf6e3, #f3ecd8);border-left-color:#b8933c;}
 
@@ -1135,8 +1165,9 @@ function generarHTMLVisorDirecto(){
   var versiculoHtml = (!esJubilo && versiculos.length)
     ? '<div class="versiculo-box"><div class="versiculo-box-head">&#128214; Versículo</div>' +
       versiculos.map(function(v){
-        return '<div class="versiculo-box-item"><div class="versiculo-box-text">' + escH(v.texto) + '</div>' +
-          (v.cita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
+        var biblia = renderVersiculoTextoHTML(v.texto, v.cita);
+        return '<div class="versiculo-box-item"><div class="versiculo-box-text">' + biblia.html + '</div>' +
+          (v.cita && biblia.mostrarCita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
       }).join('') +
       '</div>'
     : '';

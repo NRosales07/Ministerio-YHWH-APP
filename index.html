@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -12,7 +12,6 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Parisienne&display=swap" rel="stylesheet">
 
-<script src="Tone.js"></script>
 <script>
   // Estados globales tempranos para que Firebase pueda escribir aunque el resto aún no haya cargado.
   window.REPERTORIOS_KEY = window.REPERTORIOS_KEY || 'yhwh_repertorios_v3';
@@ -67,7 +66,6 @@
   onAuthStateChanged(auth, function(user) {
     window.esAdmin = !!(user && user.email === 'rosalesjrnain07@gmail.com');
     actualizarBotonesAdmin();
-    if (window.pianoRenderMelodyRecorder) pianoRenderMelodyRecorder();
   });
 
   // Refresca texto y estilo (activado/desactivado) de todos los botones "Admin" de la app
@@ -263,26 +261,6 @@ onValue(ref(db, 'jubilo_ediciones'), function(snapshot) {
   }
 });
 
-  onValue(ref(db, 'melodias'), function(snapshot) {
-    var data = snapshot.val();
-    if (data && typeof data === 'object') {
-      window.melodiasDB = data;
-      localStorage.setItem('yhwh_melodias_cache', JSON.stringify(data));
-    } else {
-      window.melodiasDB = window.melodiasDB || JSON.parse(localStorage.getItem('yhwh_melodias_cache') || '{}');
-    }
-    // Refresca cualquier panel de melodía abierto para que otros dispositivos
-    // vean al instante lo que grabó el admin, sin recargar la página.
-    if (window.jubiloGrupoActivo && window.jubiloCadenaActiva && window.renderJubiloCadena) {
-      window.renderJubiloCadena(window.jubiloGrupoActivo, window.jubiloCadenaActiva);
-    }
-    if (window.currentSong && window.loadSong) {
-      window.loadSong(window.currentSong.id);
-    }
-    if (window.filterSongs) {
-      window.filterSongs();
-    }
-  });
 
 // Escuchar nombres de cultos editados en tiempo real
 onValue(ref(db, 'cultos_nombres'), function(snapshot) {
@@ -1077,6 +1055,10 @@ body.light-theme .pdf-list-wrap{
   line-height:1.5;
 }
 .versiculo-song-card .versiculo-card-title{color:var(--gold2);font-weight:700;font-size:0.76rem;margin-bottom:4px;}
+.versiculo-song-card .versiculo-box-item > div:first-child{white-space:pre-line;}
+.versiculo-cita-inline{color:var(--gold);font-weight:700;font-style:normal;}
+.versiculo-numero{color:#9bd8ff;font-weight:700;font-style:normal;}
+body.light-theme .versiculo-numero{color:#356b91;}
 body.light-theme .versiculo-song-card{background:linear-gradient(135deg,#fff8ea,#f3e0bb);color:#263341;border-color:rgba(184,147,60,.5);}
 body.light-theme .versiculo-inline-panel{
   background:linear-gradient(135deg,#fff8ea,#f3e0bb);
@@ -1212,24 +1194,6 @@ body.light-theme .audio-player.floating{background:rgba(241,236,224,0.96);}
   left:auto !important;
 }
 
-.piano-melody-progress{
-  width:100%;
-  height:8px;
-  border-radius:999px;
-  overflow:hidden;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.08);
-}
-.piano-melody-progress-bar{
-  width:100%;
-  height:100%;
-  background:linear-gradient(90deg,#c9a84c,#8bc7ff);
-  border-radius:999px;
-  transform-origin:left center;
-  transform:scaleX(0);
-  will-change:transform;
-  transition:none;
-}
 .controls{display:flex;align-items:center;gap:8px;margin-bottom:16px;background:#1b2152;padding:12px 14px;border-radius:10px;border:1px solid var(--border);flex-wrap:wrap;}
 .controls label{font-size:0.75rem;color:var(--text2);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
 .key-selector{display:flex;gap:2px;flex-wrap:wrap;}
@@ -1598,132 +1562,6 @@ body.light-theme .btn-abrir-biblia {
 }
 .galeria-item:hover .galeria-overlay{ background: rgba(10,10,25,0.32); opacity:1; }
 
-/* === Pantalla Teoría de Acordes y Escalas === */
-#screen-teoria{ --minor:#3ddc84; }
-body.light-theme #screen-teoria{ --minor:#1a8f57; }
-.teoria-card-grid{
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
-  gap:10px; margin-bottom:6px;
-}
-.teoria-card{
-  background:var(--bg2); border:1px solid var(--border); border-radius:12px;
-  padding:12px 14px; cursor:pointer; transition:border-color .15s, transform .15s;
-}
-.teoria-card:hover{ border-color:var(--gold); }
-.teoria-card:active{ transform:scale(0.97); }
-.teoria-card .tc-name{ color:var(--gold2); font-weight:700; font-size:0.95rem; }
-.teoria-card .tc-sym{ font-family:monospace; color:var(--chord); font-size:0.8rem; margin-top:2px; }
-.teoria-card .tc-deg{ color:var(--text); opacity:0.75; font-size:0.78rem; margin-top:8px; }
-.teoria-card .tc-tap{ color:var(--gold); opacity:0.85; font-size:0.7rem; margin-top:10px; }
-.teoria-tabla-wrap{
-  overflow-x:auto; border:1px solid var(--border); border-radius:12px; background:var(--bg2);
-}
-table.teoria-tabla{ width:100%; border-collapse:collapse; font-size:0.85rem; min-width:640px; }
-table.teoria-tabla th{
-  text-align:center; font-size:0.68rem; letter-spacing:0.5px; text-transform:uppercase;
-  color:var(--gold); border-bottom:1px solid var(--border); padding:9px 6px; white-space:nowrap;
-}
-table.teoria-tabla td{ padding:7px 6px; border-bottom:1px solid rgba(255,255,255,0.05); text-align:center; }
-table.teoria-tabla td.tk-root{ color:var(--gold2); font-weight:700; text-align:left; padding-left:12px; }
-table.teoria-tabla tr:hover td{ background:rgba(201,168,76,0.06); }
-.tk-chip{
-  display:inline-block; background:var(--bg3); border:1px solid var(--border); color:var(--text);
-  border-radius:7px; padding:4px 8px; font-size:0.78rem; font-weight:600; cursor:pointer;
-}
-.tk-chip:hover{ border-color:var(--gold); }
-/* Vista de tarjetas para Tonalidades en móvil (la tabla se oculta y esto la reemplaza) */
-.teoria-tonalidades-mobile{ display:none; flex-direction:column; gap:10px; }
-.tk-card{
-  background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px 14px;
-}
-.tk-card .tk-card-root{ color:var(--gold2); font-weight:700; font-size:0.95rem; margin-bottom:10px; }
-.tk-card .tk-card-chips{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px 6px; }
-.tk-chip-wrap{ display:flex; flex-direction:column; align-items:center; gap:3px; }
-.tk-chip-wrap .tk-chip-deg{ font-size:0.62rem; letter-spacing:0.3px; text-transform:uppercase; color:var(--text); opacity:0.55; }
-.tk-chip-wrap .tk-chip{ width:100%; text-align:center; box-sizing:border-box; }
-@media(max-width:640px){
-  .teoria-tabla-wrap{ display:none; }
-  .teoria-tonalidades-mobile{ display:flex; }
-}
-.teoria-circle-panel{
-  display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start; justify-content:center;
-}
-.teoria-circle-svg{ flex:0 0 auto; }
-.teoria-key-node{ cursor:pointer; }
-.teoria-key-node circle{ transition:fill .2s, stroke .2s; }
-.teoria-key-node text{ pointer-events:none; font-weight:700; }
-.teoria-circle-info{ flex:1 1 230px; min-width:220px; }
-.teoria-circle-info h3{ margin:0 0 4px; color:var(--gold2); font-size:1.1rem; }
-.teoria-circle-info .tci-sig{ color:var(--text); opacity:0.7; font-size:0.78rem; margin-bottom:14px; }
-/* Brillo suave en las teclas que forman el acorde mostrado en el piano */
-.pk-key.pk-active,.pk-key.pk-playing{
-  animation: pkGlow 1.7s ease-in-out infinite;
-  filter: brightness(1.08);
-  transform: translateY(1px);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.10) inset, 0 0 18px rgba(201,168,76,0.26);
-}
-@keyframes pkGlow{
-  0%,100%{ box-shadow:none; }
-  50%{ box-shadow:0 0 12px 3px rgba(127,119,221,0.65); }
-}
-@media (prefers-reduced-motion: reduce){
-  .pk-key.pk-active{ animation:none; }
-}
-/* === Teclas 3D: se "hunden" al presionarlas, como una tecla real === */
-.pk-key{
-  transition: transform 0.06s ease-out, filter 0.06s ease-out;
-  -webkit-user-select:none;
-  user-select:none;
-  -webkit-touch-callout:none;
-  touch-action:none;
-}
-#pianoModal, #pianoModal *{
-  -webkit-user-select:none;
-  user-select:none;
-  -webkit-touch-callout:none;
-}
-#pianoModalContent{
-  touch-action:none;
-}
-.pk-key.pk-touching{
-  transform: translateY(3px) scale(0.98) !important;
-  filter: brightness(0.92);
-}
-.pk-key.pk-active.pk-touching, .pk-key.pk-playing.pk-touching{
-  transform: translateY(4px) scale(0.98) !important;
-}
-@media (prefers-reduced-motion: reduce){
-  .pk-key{ transition:none; }
-}
-/* === Onda de sonido: destello circular al tocar cada tecla === */
-.pk-ripple{
-  position:absolute; left:50%; bottom:8px; width:22px; height:22px; border-radius:50%;
-  background:radial-gradient(circle, rgba(241,207,109,0.65), rgba(241,207,109,0) 70%);
-  transform:translate(-50%,0) scale(0.3); opacity:0.9;
-  pointer-events:none; z-index:85;
-  animation: pkRippleAnim 0.55s ease-out forwards;
-}
-@keyframes pkRippleAnim{
-  0%{ transform:translate(-50%,0) scale(0.3); opacity:0.85; }
-  100%{ transform:translate(-50%,0) scale(3); opacity:0; }
-}
-@media (prefers-reduced-motion: reduce){
-  .pk-ripple{ display:none; }
-}
-/* Scroll suave al centrar el acorde activo dentro del teclado */
-.piano-keyboard-scroll{ scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce){
-  .piano-keyboard-scroll{ scroll-behavior: auto; }
-}
-.tci-row{
-  display:flex; justify-content:space-between; align-items:center; padding:8px 0;
-  border-bottom:1px solid rgba(255,255,255,0.06); font-size:0.85rem;
-}
-.tci-row .tci-label{ color:var(--text); opacity:0.7; display:flex; align-items:center; }
-.tci-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:7px; flex-shrink:0; }
-.tci-row .tci-val{ font-weight:700; cursor:pointer; }
-.tci-legend{ display:flex; gap:12px; flex-wrap:wrap; margin-top:14px; font-size:0.72rem; color:var(--text); opacity:0.65; }
-.tci-legend span{ display:flex; align-items:center; }
 .galeria-thumb{
   width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:10px;
   border:1px solid var(--border); cursor:pointer; transition:transform 0.15s, border-color 0.15s;
@@ -2078,16 +1916,14 @@ body.light-theme .btn-guardar-cadena {
    Se activa via JS (ver observarAperturaModales) agregando/quitando
    estas clases justo cuando un modal pasa de display:none a visible,
    sin tener que tocar cada función que abre un modal por separado. */
-.modal-overlay, #pianoModal { transition: opacity 0.22s ease; }
-.modal-card, #pianoModal > div { transition: transform 0.22s ease; }
-.modal-overlay.modal-pop-start, #pianoModal.modal-pop-start { opacity: 0; }
-.modal-overlay.modal-pop-start .modal-card,
-#pianoModal.modal-pop-start > div { transform: scale(0.94); }
-.modal-overlay.modal-pop-in, #pianoModal.modal-pop-in { opacity: 1; }
-.modal-overlay.modal-pop-in .modal-card,
-#pianoModal.modal-pop-in > div { transform: scale(1); }
+.modal-overlay { transition: opacity 0.22s ease; }
+.modal-card { transition: transform 0.22s ease; }
+.modal-overlay.modal-pop-start { opacity: 0; }
+.modal-overlay.modal-pop-start .modal-card { transform: scale(0.94); }
+.modal-overlay.modal-pop-in { opacity: 1; }
+.modal-overlay.modal-pop-in .modal-card { transform: scale(1); }
 @media (prefers-reduced-motion: reduce) {
-  .modal-overlay, #pianoModal, .modal-card, #pianoModal > div { transition: none !important; }
+  .modal-overlay, .modal-card { transition: none !important; }
 }
 
 /* Resalte punteado que "pulsa" en los mini-dibujos de la guía de Ayuda,
@@ -2505,18 +2341,6 @@ body.light-theme .cierre-card-saved {
     padding: 8px 6px;
     font-size: 0.62rem;
   }
-}
-body.light-theme #pianoModal > div {
-  background: #fffaf0 !important;
-  border-color: #d8cdb8 !important;
-}
-body.light-theme #pianoModalTitle {
-  color: #7f5f19 !important;
-}
-body.light-theme #pianoModalContent button {
-  background: #e8f1ea !important;
-  color: #31424f !important;
-  border-color: #d8cdb8 !important;
 }
 body.light-theme .comparador-col {
   background: #fffaf0 !important;
@@ -3418,7 +3242,7 @@ body.musician-view #screen-chords .etiquetas-panel,
 body.musician-view #screen-chords .notas-container { display: none !important; }
 
 body.musician-view #screen-chords .layout { height: auto; display: block; }
-body.musician-view #screen-chords .main { padding: 10px 8px 40px; overflow-y: visible !important; }
+body.musician-view #screen-chords .main { padding: 10px 8px 10px; overflow-y: visible !important; }
 body.musician-view #screen-chords .song-header {
   border-bottom: none;
   margin: 0 -8px 0;
@@ -3782,45 +3606,6 @@ body.jubilo-singer-view #screen-jubilo .jubilo-content .lb { height: 10px; }
 .jubilo-suggestion:hover{border-color:var(--gold);color:var(--gold);}
 @media(max-width:850px){.jubilo-layout{grid-template-columns:1fr;align-content:start;}.jubilo-main{padding:12px; }}
 
-@media(max-width:600px){
-  #pianoModal { padding: 4px !important; }
-  #pianoModal > div { width: 100% !important; max-width: 100% !important; padding: 10px !important; border-radius: 12px !important; }
-  #pianoModalContent { overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch; }
-  #pianoModal .piano-extra-row { display: flex !important; }
-  #pianoModal .piano-extra-row.piano-extra-label { display: block !important; }
-  #pianoModal .piano-main-actions { gap: 6px !important; }
-  #pianoModal .piano-main-actions button { min-width: 0 !important; flex: 1 1 0 !important; padding: 10px 8px !important; font-size: 0.74rem !important; }
-  #pianoModal #pianoMelodyRecorder { padding: 10px !important; }
-  #pianoModal #pianoMelodyRecorder button { flex: 1 1 140px !important; }
-  #pianoModal .pk-key { touch-action: manipulation !important; }
-  #pianoModal .piano-keyboard-scroll { overflow-x: auto !important; overflow-y: visible !important; }
-  #pianoModal .piano-keyboard-stage { transform: none !important; margin-right: 8px; }
-  #pianoModal .piano-keyboard-whites { height: 140px !important; }
-  #pianoModal .piano-keyboard-blacks { height: 88px !important; z-index: 20 !important; }
-}
-
-/* Aviso "gira tu teléfono": en celulares (pointer: coarse) en modo
-   vertical, tapamos el contenido del piano con un mensaje que pide girar
-   el teléfono a horizontal, en vez de dejar tocar el teclado en vertical.
-   Es puro CSS: en cuanto el teléfono gira de verdad a horizontal, deja de
-   cumplirse "orientation: portrait" y el piano aparece solo, sin JS. En
-   pantallas anchas, tablets o mouse/trackpad, el aviso nunca aparece. */
-#pianoGirarAviso { display: none; }
-@media (max-width: 600px) and (orientation: portrait) and (pointer: coarse) {
-  #pianoModal #pianoModalContent { display: none !important; }
-  #pianoModal #pianoGirarAviso { display: flex !important; }
-  #pianoModal .piano-subtitulo-horizontal { display: none !important; }
-  /* Con el teclado oculto, solo quedan el encabezado y el aviso; sin esto
-     el aviso queda pegado arriba, con todo el resto de la pantalla vacío
-     debajo. Centramos el modal completo en el viewport para que el aviso
-     quede a media pantalla en vez de "flotando" cerca del borde superior. */
-  #pianoModal.piano-open { display: flex !important; align-items: center !important; justify-content: center !important; }
-}
-@keyframes pianoGirarBounce {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(90deg); }
-}
-
 
 @media(max-width: 850px) {
   .jubilo-layout {
@@ -3984,8 +3769,6 @@ document.addEventListener('DOMContentLoaded', function(){
   var inicio = Date.now();
 
   function ocultarSplashFinal() {
-    if (typeof pianoDesbloquearAudioConMp3Real === 'function') pianoDesbloquearAudioConMp3Real();
-    if (typeof pianoDesbloquearAudioSession === 'function') pianoDesbloquearAudioSession();
     var el = document.getElementById('splashScreen');
     if (!el || el.dataset.oculto) return;
     el.dataset.oculto = '1';
@@ -4098,7 +3881,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
     <div class="menu-secondary-row">
       <button class="menu-secondary-btn" onclick="showScreen('screen-historia')" id="btnMenuHistoriaMore">📖 Acerca de</button>
-      <button class="menu-secondary-btn" onclick="showScreen('screen-teoria')" id="btnMenuTeoriaMore">🎼 Teoría</button>
       <button class="menu-secondary-btn" onclick="toggleAdminLogin()" id="btnAdminLoginMenuMore">🔑 Admin</button>
       <button class="menu-secondary-btn" onclick="buscarActualizaciones()" id="btnActualizarMenuMore">🔄 Actualizar</button>
       <button class="menu-secondary-btn" onclick="mostrarTutorial(true)" id="btnAyudaMenuMore">❓ Ayuda</button>
@@ -4371,12 +4153,6 @@ document.addEventListener('DOMContentLoaded', function(){
     </button>
   </div>
 
-  <div class="fila-botones solo-musico">
-    <button id="btnMelodiaCancion" class="action-btn" onclick="abrirMenuMelodiaAdoracion()" style="width:100%;background:linear-gradient(135deg,#c9a84c,#f3d58a);border-color:#c9a84c;color:#1a1a2e;font-weight:bold;">
-      🎼 Melodía
-    </button>
-  </div>
-
   <div class="fila-botones">
     <button id="btnFavSong" class="action-btn" onclick="toggleFavoritoActual()">
       ⭐ Favorito
@@ -4459,8 +4235,6 @@ document.addEventListener('DOMContentLoaded', function(){
       <button id="btnRolUsuarioJubilo" class="header-menu-item" onclick="mostrarModalRol();cerrarHeaderMenus();">🎤 Rol</button>
     </div>
   </header>
-
-  <div id="jubiloMelodiaPanel" style="display:none;"></div>
 
  <!-- BARRA DE CONTROLES GLOBALES -->
   <div id="jubiloControlsBar" style="display:none;">
@@ -4803,10 +4577,10 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
 
       <div class="ht-item">
-        <div class="ht-dot">🎹</div>
+        <div class="ht-dot">🎶</div>
         <div class="ht-card">
           <h3>El Despertar de un Sueño</h3>
-          <p>La respuesta de Dios llegó a través de la disposición y la enseñanza. El Señor puso el sentir en un hermano de una iglesia vecina, quien con un corazón generoso comenzó a instruir a cuatro jóvenes en el piano y la batería. Lo que empezó como simples lecciones de instrumentos, pronto se convirtió en el nacimiento del Ministerio Manantial de Alabanza.</p>
+          <p>La respuesta de Dios llegó a través de la disposición y la enseñanza. El Señor puso el sentir en un hermano de una iglesia vecina, quien con un corazón generoso comenzó a instruir a cuatro jóvenes en música. Lo que empezó como simples lecciones de instrumentos, pronto se convirtió en el nacimiento del Ministerio Manantial de Alabanza.</p>
         </div>
       </div>
 
@@ -4889,65 +4663,6 @@ document.addEventListener('DOMContentLoaded', function(){
   <div id="tabContentGaleria" class="historia-tab-content" style="display:none; max-width: 720px; margin: 0 auto; padding: 20px 20px 60px; overflow-y: auto;">
     <h2 style="color: var(--gold2); font-family:'Parisienne','Inter',Arial,serif; font-size: 1.5rem; margin-bottom: 16px; text-align:center;">Galería del Ministerio</h2>
     <div class="galeria-grid" id="galeriaGrid"></div>
-  </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- === PANTALLA: TEORÍA DE ACORDES Y ESCALAS ===================== -->
-<!-- ============================================================ -->
-<div id="screen-teoria" class="app-screen">
-  <header class="scene-header" style="background: linear-gradient(135deg,#1d2677,#101038,#1c1c3f); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; gap: 15px;">
-    <button class="back-btn" onclick="volverAlMenu()">⬅ Menú</button>
-    <div class="logo">&#10022; <span>Teoría</span> de Acordes </div>
-  </header>
-
-  <div style="display:flex; gap:8px; justify-content:center; padding:14px 12px 0; flex-wrap:wrap;">
-    <button class="historia-tab-btn active" id="tabBtnTeoAcordes" onclick="cambiarTabTeoria('acordes')">🎹 Acordes</button>
-    <button class="historia-tab-btn" id="tabBtnTeoTonalidades" onclick="cambiarTabTeoria('tonalidades')">🎵 Tonalidades</button>
-    <button class="historia-tab-btn" id="tabBtnTeoCirculo" onclick="cambiarTabTeoria('circulo')">🔵 Círculo de quintas</button>
-    <button class="historia-tab-btn" id="tabBtnTeoPiano" onclick="cambiarTabTeoria('piano')">🎹 Piano</button>
-  </div>
-
-  <!-- TAB: ACORDES -->
-  <div id="tabContentTeoAcordes" class="historia-tab-content" style="max-width: 780px; margin: 0 auto; padding: 20px 20px 60px; overflow-y: auto;">
-    <h2 style="color: var(--gold2); font-family:'Parisienne','Inter',Arial,serif; font-size: 1.5rem; margin-bottom: 6px; text-align:center;">Cómo se arman los acordes</h2>
-    <p style="color: var(--text); opacity:0.75; font-size:0.85rem; text-align:center; max-width:560px; margin:0 auto 18px;">Cada acorde tiene una fórmula fija en semitonos desde su raíz. Toca cualquier tarjeta para verlo y escucharlo en el piano.</p>
-    <div class="teoria-card-grid" id="teoriaCardGrid"></div>
-  </div>
-
-  <!-- TAB: TONALIDADES -->
-  <div id="tabContentTeoTonalidades" class="historia-tab-content" style="display:none; max-width: 780px; margin: 0 auto; padding: 20px 20px 60px; overflow-y: auto;">
-    <h2 style="color: var(--gold2); font-family:'Parisienne','Inter',Arial,serif; font-size: 1.5rem; margin-bottom: 6px; text-align:center;">Acordes de cada tonalidad</h2>
-    <p style="color: var(--text); opacity:0.75; font-size:0.85rem; text-align:center; max-width:560px; margin:0 auto 18px;">Los 7 acordes que nacen naturalmente de cada tonalidad mayor (I · ii · iii · IV · V · vi · vii°). Toca un acorde para verlo en el piano.</p>
-    <div class="teoria-tabla-wrap">
-      <table class="teoria-tabla">
-        <thead><tr><th>Tono</th><th>I</th><th>ii</th><th>iii</th><th>IV</th><th>V</th><th>vi</th><th>vii°</th></tr></thead>
-        <tbody id="teoriaTonalidadesBody"></tbody>
-      </table>
-    </div>
-    <div class="teoria-tonalidades-mobile" id="teoriaTonalidadesMobile"></div>
-  </div>
-
-  <!-- TAB: CÍRCULO DE QUINTAS -->
-  <div id="tabContentTeoCirculo" class="historia-tab-content" style="display:none; max-width: 780px; margin: 0 auto; padding: 20px 20px 60px; overflow-y: auto;">
-    <h2 style="color: var(--gold2); font-family:'Parisienne','Inter',Arial,serif; font-size: 1.5rem; margin-bottom: 6px; text-align:center;">Círculo de quintas</h2>
-    <p style="color: var(--text); opacity:0.75; font-size:0.85rem; text-align:center; max-width:560px; margin:0 auto 18px;">Toca cualquier tonalidad para ver su subdominante (IV), dominante (V) y relativa menor (vi).</p>
-    <div class="teoria-circle-panel">
-      <div class="teoria-circle-svg" id="teoriaCircleHolder"></div>
-      <div class="teoria-circle-info">
-        <h3 id="teoCircleKeyName">Do mayor</h3>
-        <div class="tci-sig" id="teoCircleKeySig">Armadura: 0 alteraciones</div>
-        <div class="tci-row"><span class="tci-label"><span class="tci-dot" style="background:var(--section)"></span><span id="teoLabelIV">Subdominante (IV)</span></span><span class="tci-val" id="teoValIV">—</span></div>
-        <div class="tci-row"><span class="tci-label"><span class="tci-dot" style="background:var(--chord)"></span><span id="teoLabelV">Dominante (V)</span></span><span class="tci-val" id="teoValV">—</span></div>
-        <div class="tci-row"><span class="tci-label"><span class="tci-dot" style="background:var(--minor)"></span><span id="teoLabelVI">Relativa menor (vi)</span></span><span class="tci-val" id="teoValVI">—</span></div>
-        <div class="tci-legend">
-          <span><span class="tci-dot" style="background:var(--gold)"></span>Tónica</span>
-          <span><span class="tci-dot" style="background:var(--section)"></span>Subdominante</span>
-          <span><span class="tci-dot" style="background:var(--chord)"></span>Dominante</span>
-          <span><span class="tci-dot" style="background:var(--minor)"></span>Relativa menor</span>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -5313,8 +5028,7 @@ function buildSmoothBridge(fromKey, toKey) {
 
 function transitionChordHTML(chord) {
   var display = cifradoLatino ? lineToLatino(chord) : chord;
-  var chordEscapado = escH(chord).replace(/'/g, "\\'");
-  return '<span onclick="abrirPiano(\'' + chordEscapado + '\')" style="cursor:pointer;text-decoration:none;" title="Ver acorde en piano">' + escH(display) + '</span>';
+  return '<span>' + escH(display) + '</span>';
 }
 
 // Tono "efectivo" de una canción para calcular transiciones: si es la
@@ -5652,11 +5366,7 @@ function renderContent(retrasoMs){
       var tlEscapada = escH(tl);
 tlEscapada = tlEscapada.replace(/\b(X[0-9]+)\b/g, '<span class="word-repeticion">$1</span>');
 tlEscapada = tlEscapada.replace(/\b(TROMPETAS|VIOLIN|VIOLÍN)\b/gi, '<span class="word-red">$1</span>');
-var tlClickable = tlEscapada.replace(
-  /((?:Do|Re|Mi|Fa|Sol|La|Si|[A-G])[b#]?(?:m(?:aj)?7?|7|dim7?|aug|sus[24]?|add9|9|m9|6|5)?)/g,
-  '<span onclick="abrirPiano(chordLatinoToAmericano(\'$1\'), this)" style="cursor:pointer;text-decoration:none;" title="Ver acorde en piano">$1</span>'
-);
-out += '<span class="lc' + (cifradoLatino ? ' latino-shift' : '') + '">' + tlClickable + '</span>';
+out += '<span class="lc' + (cifradoLatino ? ' latino-shift' : '') + '">' + tlEscapada + '</span>';
     } else {
       var partesCantante = vistaCantanteActiva ? separarSeccionesCantante(raw) : [raw];
       for (var j = 0; j < partesCantante.length; j++) {
@@ -5690,6 +5400,36 @@ out += '<span class="lc' + (cifradoLatino ? ' latino-shift' : '') + '">' + tlCli
 // Devuelve los versículos de una canción como array [{texto, cita}, ...].
 // Soporta el formato nuevo (song.versiculos, varios) y por compatibilidad
 // el formato viejo de un único versículo (song.versiculo/song.versiculoCita).
+
+function renderVersiculoTextoHTML(texto, cita){
+  var libros = 'Génesis|Genesis|Éxodo|Exodo|Levítico|Levitico|Números|Numeros|Deuteronomio|Josué|Josue|Jueces|Rut|1\s+Samuel|2\s+Samuel|1\s+Reyes|2\s+Reyes|1\s+Crónicas|1\s+Cronicas|2\s+Crónicas|2\s+Cronicas|Esdras|Nehemías|Nehemias|Ester|Job|Salmos?|Proverbios|Eclesiastés|Eclesiastes|Cantares|Cantar\s+de\s+los\s+Cantares|Isaías|Isaias|Jeremías|Jeremias|Lamentaciones|Ezequiel|Daniel|Oseas|Joel|Amós|Amos|Abdías|Abdias|Jonás|Jonas|Miqueas|Nahúm|Nahum|Habacuc|Sofonías|Sofonias|Hageo|Zacarías|Zacarias|Malaquías|Malaquias|Mateo|Marcos|Lucas|Juan|Hechos|Romanos|1\s+Corintios|2\s+Corintios|Gálatas|Galatas|Efesios|Filipenses|Colosenses|1\s+Tesalonicenses|2\s+Tesalonicenses|1\s+Timoteo|2\s+Timoteo|Tito|Filemón|Filemon|Hebreos|Santiago|1\s+Pedro|2\s+Pedro|1\s+Juan|2\s+Juan|3\s+Juan|Judas|Apocalipsis';
+  var barra = String.fromCharCode(92);
+  libros = libros.replace(/s\+/g, ' ');
+  libros = libros.replace(/ /g, barra + 's+');
+  var regex = new RegExp('(^|[' + barra + 's(])(' + libros + ')' + barra + 's+(' + barra + 'd{1,3}:' + barra + 'd{1,3}(?:[-–]' + barra + 'd{1,3})?)', 'gi');
+  var encontrado = false;
+  var html = String(texto || '').split('\n').map(function(line){
+    var partes = [];
+    var ultimo = 0;
+    var match;
+    regex.lastIndex = 0;
+    while ((match = regex.exec(line)) !== null) {
+      var inicio = match.index + match[1].length;
+      partes.push(escH(line.slice(ultimo, inicio)));
+      partes.push('<span class="versiculo-cita-inline">' + escH(match[2] + ' ' + match[3]) + '</span>');
+      ultimo = regex.lastIndex;
+      encontrado = true;
+    }
+    partes.push(escH(line.slice(ultimo)));
+    var htmlLinea = partes.join('');
+    var numero = htmlLinea.match(/^(\s*)(\d{1,3})([.)]?)(\s+)(.*)$/);
+    if (numero) htmlLinea = numero[1] + '<span class="versiculo-numero">' + numero[2] + numero[3] + '</span>' + numero[4] + numero[5];
+    htmlLinea = htmlLinea.replace(/(<\/span>\s+)(\d{1,3})([.)]?)(\s+)/g, '$1<span class="versiculo-numero">$2$3</span>$4');
+    return htmlLinea;
+  }).join('\n');
+  return { html: html, mostrarCita: !encontrado };
+}
+
 function obtenerVersiculosSong(song) {
   if (!song) return [];
   if (Array.isArray(song.versiculos) && song.versiculos.length) {
@@ -5718,8 +5458,9 @@ function actualizarVersiculoCancion(song) {
     return;
   }
   tarjeta.innerHTML = '<div class="versiculo-card-title">📖 Versículo bíblico</div>' + versiculos.map(function(v){
-    return '<div class="versiculo-box-item"><div>' + escH(v.texto) + '</div>' +
-      (v.cita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
+    var biblia = renderVersiculoTextoHTML(v.texto, v.cita);
+    return '<div class="versiculo-box-item"><div>' + biblia.html + '</div>' +
+      (v.cita && biblia.mostrarCita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
   }).join('');
   tarjeta.style.display = 'block';
   tarjeta.style.fontSize = fontSizeCurrent + 'px';
@@ -5743,8 +5484,9 @@ function abrirVersiculoModal() {
     return;
   }
   texto.innerHTML = versiculos.map(function(v){
-    return '<div class="versiculo-box-item"><div>' + escH(v.texto) + '</div>' +
-      (v.cita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
+    var biblia = renderVersiculoTextoHTML(v.texto, v.cita);
+    return '<div class="versiculo-box-item"><div>' + biblia.html + '</div>' +
+      (v.cita && biblia.mostrarCita ? '<div class="versiculo-box-cita">' + escH(v.cita) + '</div>' : '') + '</div>';
   }).join('');
   texto.style.fontSize = fontSizeCurrent + 'px';
   panel.style.display = 'block';
@@ -5958,6 +5700,57 @@ function urlAudioCloudinary(id, extension) {
   return CLOUDINARY_AUDIO_BASE + idCloudinary + '.' + extension;
 }
 
+function intentarReproducirAudioPrincipal(audio){
+  if (!audio) return;
+  var p = audio.play();
+  if (p && p.catch) {
+    p.catch(function(err){
+      mostrarToast('⚠️ El audio no pudo sonar: ' + (err && err.message ? err.message : err));
+    });
+  }
+}
+
+function actualizarReproductorFlotanteAdoracion(audio, playBtn, seek, timeLabel){
+  var floating = document.getElementById('floatingAudioPlayer');
+  if (!floating) {
+    floating = document.createElement('div');
+    floating.id = 'floatingAudioPlayer';
+    floating.className = 'audio-player floating';
+    floating.innerHTML = '<button type="button" class="ap-play ap-play-mini" aria-label="Reproducir">▶</button>' +
+      '<span class="ap-time">Audio</span>';
+    document.body.appendChild(floating);
+  }
+  // El flotante debe poder aparecer tanto en vista cantante como en vista músico.
+  // Solo lo ocultamos si todavía no hay un audio real que controlar.
+  if (!audio) {
+    floating.style.display = 'none';
+    return;
+  }
+  var miniBtn = floating.querySelector('.ap-play');
+  var miniTime = floating.querySelector('.ap-time');
+  if (miniBtn) miniBtn.textContent = audio && audio.paused ? '▶' : '❚❚';
+  if (miniTime) {
+    if (audio && isFinite(audio.duration) && audio.duration) {
+      var m = Math.floor(audio.currentTime / 60);
+      var s = Math.floor(audio.currentTime % 60);
+      var dm = Math.floor(audio.duration / 60);
+      var ds = Math.floor(audio.duration % 60);
+      miniTime.textContent = m + ':' + (s < 10 ? '0' : '') + s + ' / ' + dm + ':' + (ds < 10 ? '0' : '') + ds;
+    } else {
+      miniTime.textContent = 'Audio';
+    }
+  }
+  if (miniBtn) {
+    // Se reasigna en CADA llamada (no solo la primera vez) para que el
+    // botón flotante siempre controle el <audio> de la canción actual.
+    miniBtn.onclick = function(){
+      if (!audio) return;
+      if (audio.paused) { intentarReproducirAudioPrincipal(audio); } else { audio.pause(); }
+    };
+  }
+  floating.style.display = 'flex';
+}
+
 function loadSong(id){
   // ⬇️ NUEVA FORMA INTELIGENTE DE BUSCAR ⬇️
   var song = null;
@@ -6030,17 +5823,6 @@ function loadSong(id){
   animarEntradaContenido('viewHeader', 0);
   animarEntradaContenido('adoracionControlsBar', 90);
   renderContent(180);
-  var adoracionMelodiaPanel = document.getElementById('adoracionMelodiaPanel');
-  if (adoracionMelodiaPanel) adoracionMelodiaPanel.style.display = 'block';
-  var adoracionMelodiaEstado = document.getElementById('adoracionMelodiaEstado');
-  var savedAdoracionMel = jubiloLeerMelodias()[song.id];
-  if (adoracionMelodiaEstado) {
-    adoracionMelodiaEstado.textContent = (savedAdoracionMel && Array.isArray(savedAdoracionMel.notas) && savedAdoracionMel.notas.length)
-      ? (savedAdoracionMel.notas.length + ' notas guardadas')
-      : 'Lista para grabar';
-  }
-  var btnVerMelodiaAdor = document.getElementById('btnAdoracionVerMelodia');
-  if (btnVerMelodiaAdor) btnVerMelodiaAdor.style.display = (savedAdoracionMel && Array.isArray(savedAdoracionMel.notas) && savedAdoracionMel.notas.length) ? 'inline-flex' : 'none';
   var vieneDeRepertorio = origenRepertorioPendiente;
   origenRepertorioPendiente = false;
   cancionActualVieneDeRepertorio = vieneDeRepertorio;
@@ -6994,7 +6776,6 @@ function alternarCifrado() {
   if (currentSong) buildKeySelector(currentSong);
   renderContent();
   actualizarTransicionActual();
-  pianoActualizarSiAbierto();
 }
 
 
@@ -7253,10 +7034,6 @@ function showScreen(screenId) {
     if (screenId === 'screen-setlist') {
       mostrarTabRepertorio('servicio');
       renderSetlist();
-    }
-    if (screenId === 'screen-teoria' && !teoriaInicializada && typeof inicializarTeoria === 'function') {
-      inicializarTeoria();
-      teoriaInicializada = true;
     }
     actualizarContadorRepertorio();
   }
@@ -9413,9 +9190,6 @@ window.buscarActualizaciones = async function() {
   function retrocederEnLaApp() {
     // 1) Ventanas abiertas encima de todo (de la de más arriba a la de más abajo)
     var capas = [
-      [visible('pianoModal'),            'cerrarPiano'],
-      [visible('pianoTeoriaModal'),      'cerrarPianoTeoria'],
-      [visible('melodiaMenuModal'),      'cerrarMenuMelodia'],
       [visible('exportSetlistModal'),    'cerrarExportarSetlist'],
       [visible('recomendadorModal'),     'cerrarRecomendador'],
       [conClase('comparadorOverlay', 'visible'),    'cerrarComparador'],
@@ -9752,7 +9526,7 @@ function crearItemHtml(s, num) {
     '<div class="song-item-inner">' +
       '<div class="song-item-texto">' +
         '<div class="snum">#' + num + '</div>' +
-        '<div class="stitle">' + escH(s.title) + obtenerBadgeDificultad(s.id) + obtenerBadgeMelodia(s) + obtenerBadgeSinAudio(s.id) + '</div>' +
+        '<div class="stitle">' + escH(s.title) + obtenerBadgeDificultad(s.id) + obtenerBadgeSinAudio(s.id) + '</div>' +
         (match ? '<div class="ssearch-match">' + match + '</div>' : '') +
         '<div class="skey">' + (s.tono ? '&#9836; ' + escH(s.tono) : '') + '</div>' +
       '</div>' +
@@ -10093,45 +9867,6 @@ function obtenerBadgeDificultad(id) {
   var clases = { facil: 'dif-facil', media: 'dif-media', dificil: 'dif-dificil' };
   var textos = { facil: 'Fácil', media: 'Media', dificil: 'Difícil' };
   return '<span class="dificultad-badge ' + clases[nivel] + '">' + textos[nivel] + '</span>';
-}
-
-// ============================================================
-// === INDICADOR "MELODÍA" / "SIN AUDIO" ======================
-// ============================================================
-// Objetivo: que se note DESDE LA LISTA (antes de entrar a la canción)
-// cuándo una canción tiene melodía disponible y cuándo falta el archivo
-// de audio, en vez de que el músico se entere recién al tocar play.
-
-function obtenerBadgeMelodia(song) {
-  if (!song) return '';
-
-  var idSong = String(song.id);
-  var tieneMelodia = false;
-  try {
-    if (window.melodiasDB && typeof window.melodiasDB === 'object') {
-      var base = window.melodiasDB.adoracion || window.melodiasDB;
-      if (base && typeof base === 'object' && (base[idSong] || base[song.id])) {
-        tieneMelodia = true;
-      }
-      if (!tieneMelodia && window.melodiasDB.jubilo && typeof window.melodiasDB.jubilo === 'object') {
-        if (window.melodiasDB.jubilo[idSong] || window.melodiasDB.jubilo[song.id]) {
-          tieneMelodia = true;
-        }
-      }
-      if (!tieneMelodia && window.melodiasDB[idSong]) {
-        tieneMelodia = true;
-      }
-    }
-    if (!tieneMelodia && typeof jubiloLeerMelodias === 'function') {
-      var melodiasLocales = jubiloLeerMelodias();
-      if (melodiasLocales && (melodiasLocales[idSong] || melodiasLocales[song.id] || melodiasLocales['jubilo:' + idSong])) {
-        tieneMelodia = true;
-      }
-    }
-  } catch (e) {}
-
-  if (!tieneMelodia) return '';
-  return '<span class="media-badge" title="Esta canción tiene melodía disponible">🎼 Melodía</span>';
 }
 
 function obtenerBadgeSinAudio(id) {
@@ -10901,7 +10636,6 @@ function toggleJubiloLatinoGlobal() {
     rerenderJubiloActive();
   }
   aplicarFuenteJubilo();
-  pianoActualizarSiAbierto();
 }
 
 
@@ -11449,118 +11183,6 @@ function renderJubiloCadenaPanel(found, cadena, cadenaId){
   return html;
 }
 
-function jubiloLeerMelodias(){
-  var local = {};
-  try { local = JSON.parse(localStorage.getItem(JUBILO_MELODIA_KEY) || '{}') || {}; }
-  catch (e) { local = {}; }
-  // Fusiona con lo que haya llegado de Firebase (melodias/jubilo y melodias/adoracion),
-  // dando prioridad a Firebase para que las melodías grabadas por el admin
-  // se vean también en otros dispositivos. Las de Júbilo van con prefijo
-  // 'jubilo:' para que un mismo ID numérico no choque con uno de Adoración.
-  var remoto = (window.melodiasDB && typeof window.melodiasDB === 'object') ? window.melodiasDB : {};
-  var merged = {};
-  Object.keys(local).forEach(function(id){ merged[id] = local[id]; });
-  if (remoto.jubilo && typeof remoto.jubilo === 'object') {
-    Object.keys(remoto.jubilo).forEach(function(id){ merged['jubilo:' + id] = remoto.jubilo[id]; });
-  }
-  if (remoto.adoracion && typeof remoto.adoracion === 'object') {
-    Object.keys(remoto.adoracion).forEach(function(id){ merged[id] = remoto.adoracion[id]; });
-  }
-  return merged;
-}
-
-function jubiloGuardarMelodias(all){
-  try { localStorage.setItem(JUBILO_MELODIA_KEY, JSON.stringify(all || {})); } catch (e) {}
-}
-
-
-function cerrarGrabadorMelodiaJubilo(){
-  cerrarPiano();
-  jubiloMelodiaRecording = false;
-  jubiloMelodiaActiveKey = null;
-}
-
-function jubiloRenderGrabadorMelodia(){
-  var title = document.getElementById('melodyRecorderTitle');
-  var status = document.getElementById('melodyRecorderStatus');
-  var saveBtn = document.getElementById('btnMelodyRecorderSave');
-  var recBtn = document.getElementById('btnMelodyRecorderRecord');
-  if (title && jubiloMelodiaEditor) title.textContent = '🎼 Grabador de melodía';
-  if (status) status.textContent = jubiloMelodiaRecording ? 'Grabando... toca las notas' : 'Listo para grabar';
-  if (saveBtn) saveBtn.textContent = '💾 Guardar (' + jubiloMelodiaEvents.length + ')';
-  if (recBtn) recBtn.textContent = jubiloMelodiaRecording ? '⏸ Detener' : '⏺ Grabar';
-  var keyboard = document.getElementById('melodyRecorderKeyboard');
-  if (keyboard) {
-    var notes = ['C4','Db4','D4','Eb4','E4','F4','Gb4','G4','Ab4','A4','Bb4','B4'];
-    keyboard.innerHTML = notes.map(function(n){
-      return '<button class="jubilo-melody-key" onclick="jubiloTocarNotaGrabador(\'' + n + '\')" style="min-width:46px;flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:12px 6px;cursor:pointer;font-weight:bold;">' + n + '</button>';
-    }).join('');
-  }
-}
-
-function pianoActualizarControlesMelodia(){
-  pianoModalActualizarControlesMelodia();
-}
-
-function jubiloTocarNotaGrabador(note){
-  var ctx = pianoGetAudioCtx();
-  if (!ctx) return;
-  var midiMap = {C4:60,Db4:61,D4:62,Eb4:63,E4:64,F4:65,Gb4:66,G4:67,Ab4:68,A4:69,Bb4:70,B4:71};
-  var midi = midiMap[note];
-  if (!midi) return;
-  vibrar(10); // toque de tecla: vibración corta y sutil
-  if (jubiloMelodiaRecording) {
-    var now = performance.now();
-    if (!jubiloMelodiaStart) jubiloMelodiaStart = now;
-    var start = (now - jubiloMelodiaStart) / 1000;
-    jubiloMelodiaEvents.push({ note: note, midi: midi, start: start, duration: 0.35 });
-    jubiloRenderGrabadorMelodia();
-  }
-  pianoLoadBuffer(ctx, midi).then(function(){
-    var t = ctx.currentTime + 0.02;
-    pianoPlayNoteSample(ctx, midi, t, 0.35);
-  });
-}
-
-function jubiloToggleRecording(){
-  jubiloMelodiaRecording = !jubiloMelodiaRecording;
-  if (jubiloMelodiaRecording) {
-    jubiloMelodiaStart = performance.now();
-    jubiloMelodiaEvents = [];
-    vibrar(22); // empieza a grabar: un toque
-  } else {
-    vibrar([12, 30, 12]); // detiene: doble toque
-  }
-  jubiloRenderGrabadorMelodia();
-}
-
-function jubiloGuardarMelodiaGrabada(){
-  if (!jubiloMelodiaEditor) { mostrarToast('⚠️ No hay cadena seleccionada.'); return; }
-  if (!jubiloMelodiaEvents.length) { mostrarToast('⚠️ Graba al menos una nota.'); return; }
-  var all = jubiloLeerMelodias();
-  var notas = jubiloMelodiaEvents.map(function(n, i, arr){
-    var next = arr[i + 1];
-    var dur = next ? Math.max(0.12, next.start - n.start) : 0.45;
-    return { note:n.note, midi:n.midi, start:+n.start.toFixed(3), duration:+dur.toFixed(3) };
-  });
-  all[jubiloMelodiaEditor.cadenaId] = {
-    cadenaId: jubiloMelodiaEditor.cadenaId,
-    grupoId: jubiloMelodiaEditor.grupoId,
-    updatedAt: new Date().toISOString(),
-    notas: notas
-  };
-  jubiloGuardarMelodias(all);
-  cerrarGrabadorMelodiaJubilo();
-  if (jubiloGrupoActivo && jubiloCadenaActiva) renderJubiloCadena(jubiloGrupoActivo, jubiloCadenaActiva);
-  mostrarToast('✅ Melodía guardada.');
-}
-
-function jubiloBorrarUltimaNota(){
-  vibrar(15);
-  jubiloMelodiaEvents.pop();
-  jubiloRenderGrabadorMelodia();
-}
-
 function getJubiloCardState(song, key){
   if (!jubiloState[key]) {
     var guardadoJubilo = localStorage.getItem('yhwh_jubilo_tono_' + song.id);
@@ -11590,10 +11212,6 @@ function renderJubiloSongCard(song, index, cadena){
       '<button onclick="activarEditorJubilo(\'' + key + '\',' + song.id + ')" ' +
         'class="jubilo-card-edit-btn jubilo-edit-btn" style="background:#2d304e;border:1px solid #c9a84c;color:#f3c641;border-radius:999px;padding:5px 10px;font-size:0.72rem;cursor:pointer;white-space:nowrap;">' +
         '✏️ Editar' +
-      '</button>' +
-      '<button onclick="abrirMenuMelodiaCancionJubilo(\'' + key + '\',' + song.id + ')" ' +
-        'class="jubilo-card-edit-btn jubilo-melody-btn" style="background:#2d304e;border:1px solid #c9a84c;color:#f3c641;border-radius:999px;padding:5px 10px;font-size:0.72rem;cursor:pointer;white-space:nowrap;">' +
-        '🎼 Melodía' +
       '</button>' +
       (window.esAdmin && tieneEdicionLocal ?
         '<button onclick="restaurarJubilo(' + song.id + ',\'' + key + '\')" ' +
@@ -12070,11 +11688,7 @@ getJubiloContent(song).split('\n').forEach(function(raw){    var s = raw.trim();
       if (st.latino) line = lineToLatino(line);
       line = escH(line).replace(/\b(X[0-9]+)\b/g, '<span class="word-repeticion">$1</span>');
       line = line.replace(/\b(TROMPETAS|VIOLIN|VIOLÍN)\b/gi, '<span class="word-red">$1</span>');
-     var lineClickable = line.replace(
-  /((?:Do|Re|Mi|Fa|Sol|La|Si|[A-G])[b#]?(?:m(?:aj)?7?|7|dim7?|aug|sus[24]?|add9|9|m9|6|5)?)/g,
-  '<span onclick="abrirPiano(chordLatinoToAmericano(\'$1\'), this)" style="cursor:pointer;text-decoration:none;" title="Ver acorde en piano">$1</span>'
-);
-out += '<span class="lc' + (st.latino ? ' latino-shift' : '') + '">' + lineClickable + '</span>';
+     out += '<span class="lc' + (st.latino ? ' latino-shift' : '') + '">' + line + '</span>';
     } else {
       var partesJubilo = jubiloVistaActual ? separarSeccionesCantante(raw) : [raw];
       for (var j = 0; j < partesJubilo.length; j++) {
@@ -12192,8 +11806,6 @@ function salirVistasJubilo() {
   document.body.classList.remove('jubilo-singer-view', 'jubilo-musician-view');
   var bar = document.getElementById('jubiloControlsBar');
   if (bar) bar.style.display = 'none';
-  var melodiaPanel = document.getElementById('jubiloMelodiaPanel');
-  if (melodiaPanel) melodiaPanel.style.display = 'none';
   if (jubiloSingerPrevChords !== null) {
     setJubiloChordsGlobal(jubiloSingerPrevChords);
     jubiloSingerPrevChords = null;
@@ -12572,8 +12184,6 @@ showScreen = function(screenId){
   if (typeof salirVistasJubilo === 'function') salirVistasJubilo();
   var bar = document.getElementById('jubiloControlsBar');
   if (bar) bar.style.display = 'none';
-  var panel = document.getElementById('jubiloMelodiaPanel');
-  if (panel) panel.style.display = 'none';
   }
   if (screenId === 'screen-jubilo') initJubilo();
 };
@@ -12790,1220 +12400,12 @@ function moverRepertorioIndice(desde, hasta) {
 })();
 
 
-// ============================================================
-// === VISUALIZADOR DE ACORDES EN PIANO =======================
-// ============================================================
-var PIANO_SEMIS    = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-var PIANO_ENH      = {Db:'C#',Eb:'D#',Fb:'E',Gb:'F#',Ab:'G#',Bb:'A#',Cb:'B'};
-var PIANO_WHITE    = [0,2,4,5,7,9,11];
-var PIANO_BLACK    = [1,3,6,8,10];
-var PIANO_INTERVAL = {0:'R',1:'b2',2:'2',3:'b3',4:'3',5:'4',
-                      6:'b5',7:'5',8:'b6',9:'6',10:'b7',11:'7',14:'9'};
-var PIANO_CHORD_TYPES = {
-  '':    [0,4,7],   'm':[0,3,7],
-  'sus4':[0,5,7],   'sus2':[0,2,7],
-  '7':   [0,4,7,10],'m7':[0,3,7,10],
-  'dim': [0,3,6],    'aug':[0,4,8]
-};
 
-function pianoNormRoot(r){ return PIANO_ENH[r] || r; }
-function pianoSemiOf(r){ return PIANO_SEMIS.indexOf(pianoNormRoot(r)); }
 
-// ¿El modal del piano debe mostrar los nombres en cifrado latino (Do, Re, Mi...)?
-// Revisa tanto el cifrado global de las canciones como el de Júbilo.
-function pianoUsaLatino(){
-  return !!cifradoLatino || (typeof jubiloGlobalLatino !== 'undefined' && !!jubiloGlobalLatino);
-}
-function pianoLabelRoot(root){
-  if (!pianoUsaLatino()) return root;
-  var m = String(root||'').match(/^([A-G])(#|b)?$/);
-  if (!m) return root;
-  var base = DICCIONARIO_LATINO[m[1]] || m[1];
-  return base + (m[2] || '');
-}
-function pianoLabelChord(root, type){
-  return pianoLabelRoot(root) + (type || '');
-}
 
-// Medidas REALES con las que se dibujó por última vez el teclado (ver
-// pianoRenderHTML). No se pueden recalcular "en frío" mirando
-// window.innerWidth en el momento de reproducir la melodía: si el modal se
-// abrió en vertical (teclado compacto) y el usuario luego giró el celular a
-// horizontal, window.innerWidth ya cambió, pero el teclado dibujado en el
-// DOM sigue teniendo las medidas compactas de cuando se creó (no se vuelve a
-// dibujar solo por rotar). Si pianoTeclaGeom() recalculaba su propio
-// "esCompacto" con el ancho ACTUAL, las barras quedaban calculadas con un
-// ancho de tecla distinto al real y se iban desalineando progresivamente
-// hacia la derecha (se veían "una octava" más arriba de la tecla real).
-var pianoUltimaMedidaTeclado = { whiteWidth: 30, whiteGap: 2, blackWidth: 18 };
+// 1. Preguntamos al celular o compu si prefiere el modo claro
+var mqLight = window.matchMedia('(prefers-color-scheme: light)');
 
-// Calcula la posición X y el ancho de una tecla (blanca o negra) dado su
-// midi, usando exactamente las mismas medidas con las que se dibujó el
-// teclado (pianoUltimaMedidaTeclado), para que las barras que caen (efecto
-// "Synthesia") queden perfectamente alineadas con cada tecla del teclado
-// dibujado debajo.
-function pianoTeclaGeom(midi){
-  var whiteWidth = pianoUltimaMedidaTeclado.whiteWidth;
-  var whiteGap = pianoUltimaMedidaTeclado.whiteGap;
-  var blackWidth = pianoUltimaMedidaTeclado.blackWidth;
-  var whiteTotal = whiteWidth + whiteGap;
-  var startMidi = 21;
-  while ([1,3,6,8,10].indexOf(startMidi % 12) !== -1) startMidi--;
-  var whiteIndex = 0;
-  var lastWhiteX = 0;
-  for (var m = startMidi; m <= midi; m++){
-    var s = m % 12;
-    var esBlanca = PIANO_WHITE.indexOf(s) !== -1;
-    if (esBlanca){
-      lastWhiteX = whiteIndex * whiteTotal;
-      if (m === midi) return { x: lastWhiteX, width: whiteWidth, isBlack: false };
-      whiteIndex++;
-    } else if (m === midi){
-      return { x: lastWhiteX + whiteWidth - blackWidth / 2, width: blackWidth, isBlack: true };
-    }
-  }
-  return null;
-}
-
-function pianoRequestLandscapeMode(){
-  // IMPORTANTE: en varios navegadores/webviews móviles, screen.orientation.lock()
-  // no solo rechaza la promesa cuando no se puede bloquear (p.ej. sin estar en
-  // fullscreen): a veces LANZA una excepción síncrona. Como esta función se
-  // llama al principio de abrirPiano(), una excepción aquí interrumpía TODO el
-  // resto de abrirPiano() (título, contenido, notas de la melodía), dejando el
-  // modal con el contenido "viejo" (parecía "Abrir piano" en vez de "Ver
-  // melodía") hasta que se reabría y, esa segunda vez, la llamada ya no
-  // lanzaba la excepción. Por eso todo va envuelto en try/catch.
-  try {
-    var el = document.documentElement;
-    if (screen.orientation && screen.orientation.lock) {
-      screen.orientation.lock('landscape').catch(function(){});
-    } else if (el && el.requestFullscreen && !document.fullscreenElement) {
-      // No forzamos fullscreen; solo intentamos dejar al navegador en un estado
-      // donde algunos móviles permiten mejor la vista horizontal.
-      el.requestFullscreen().catch(function(){});
-    }
-  } catch (e) {}
-}
-
-function pianoReadKeyboardScale(){
-  try {
-    var raw = localStorage.getItem('yhwh_piano_keyboard_scale');
-    var n = raw !== null ? parseFloat(raw) : NaN;
-    if (!isNaN(n)) {
-      pianoKeyboardScale = Math.max(0.8, Math.min(1.2, n));
-    }
-  } catch (e) {}
-  return pianoKeyboardScale || 1;
-}
-
-function pianoSetKeyboardScale(delta){
-  var next = Math.max(0.8, Math.min(1.2, (pianoKeyboardScale || 1) + delta));
-  pianoKeyboardScale = next;
-  try { localStorage.setItem('yhwh_piano_keyboard_scale', String(next)); } catch (e) {}
-  pianoActualizarSiAbierto();
-}
-
-function pianoGetKeyboardScalePct(){
-  return Math.round((pianoKeyboardScale || 1) * 100);
-}
-
-function pianoRenderKeyboardZoomControls(esCompacto){
-  if (!esCompacto) return '';
-  return '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end;">' +
-    '<button type="button" onclick="pianoSetKeyboardScale(-0.08)" title="Ver menos teclas" style="width:34px;height:34px;background:#42426e;border:1px solid #2a2a45;color:#e8e6f0;border-radius:999px;padding:0;cursor:pointer;font-size:1rem;font-weight:bold;line-height:1;">−</button>' +
-    '<button type="button" onclick="pianoSetKeyboardScale(0.08)" title="Ver más teclas" style="width:34px;height:34px;background:#42426e;border:1px solid #2a2a45;color:#e8e6f0;border-radius:999px;padding:0;cursor:pointer;font-size:1rem;font-weight:bold;line-height:1;">+</button>' +
-    '<span style="color:#8888aa;font-size:0.7rem;min-width:42px;text-align:right;">' + pianoGetKeyboardScalePct() + '%</span>' +
-  '</div>';
-}
-
-// Cuando se está viendo/reproduciendo una melodía guardada, ocultamos la
-// marcación morada de "acorde actual" en el teclado (no aporta info útil
-// mientras suena la melodía y puede confundir). Se vuelve a mostrar en
-// cuanto el usuario toca cualquier acorde (variación, tonalidad, etc.).
-var pianoOcultarMarcaAcorde = false;
-var pianoKeyboardScale = 1;
-var pianoMelodyRecording = false;
-var pianoMelodyStart = 0;
-var pianoMelodyNotes = [];
-var pianoMelodyTarget = null;
-var pianoMelodyPlaybackTimers = [];
-var pianoMelodyPlaybackState = { paused: false, active: false, start: 0, elapsed: 0, duration: 0, raf: 0 };
-var pianoMelodyPlaybackNotas = null;
-var pianoMelodyModalState = { active: false, paused: false, start: 0, elapsed: 0, duration: 0, raf: 0 };
-var pianoMelodyReplayBloqueado = false;
-// Notas de la última melodía abierta en modo "Ver" (sin grabar), para poder
-// repetirla con el botón "🔁 Reproducir de nuevo" sin tener que volver a
-// buscarla en Firebase/localStorage.
-var pianoMelodyViewNotas = null;
-var pianoMelodyViewRoot = 'C';
-var pianoMelodyTransposeKey = 'C';
-var pianoMelodyTranspose = 0;
-var pianoSoloMode = false;
-
-function pianoTransposeMidi(midi, semitones){
-  var next = Number(midi);
-  var shift = Number(semitones) || 0;
-  if (!isFinite(next)) return midi;
-  next += shift;
-  if (next < 0) next = 0;
-  if (next > 127) next = 127;
-  return next;
-}
-
-function pianoTransposeMelodyNotes(notas, semitones){
-  var shift = Number(semitones) || 0;
-  if (!shift || !Array.isArray(notas)) return Array.isArray(notas) ? notas.slice() : [];
-  return notas.map(function(n){
-    var clone = Object.assign({}, n);
-    clone.midi = pianoTransposeMidi(clone.midi, shift);
-    clone.note = pianoMidiToNoteName(clone.midi);
-    return clone;
-  });
-}
-
-function pianoMelodyKeyList(){
-  return ['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
-}
-
-function pianoMelodyKeyDisplay(key){
-  return pianoLabelRoot(key);
-}
-
-function pianoMelodySetTransposeKey(targetKey){
-  var key = pianoNormRoot(String(targetKey || '').replace(/m$/,''));
-  if (pianoMelodyKeyList().indexOf(key) === -1) key = 'C';
-  pianoMelodyTransposeKey = key;
-  var base = pianoNormRoot(String(pianoMelodyViewRoot || 'C').replace(/m$/,''));
-  pianoMelodyTranspose = getSemitonesTo(key, base);
-  try { localStorage.setItem('yhwh_piano_melody_transpose_key', key); } catch (e) {}
-  try { localStorage.setItem('yhwh_piano_melody_transpose', String(pianoMelodyTranspose)); } catch (e) {}
-  pianoModalActualizarControlesMelodia();
-  var vistaLabel = document.getElementById('melodiaVistaTransposeValue');
-  var vistaSelect = document.getElementById('melodiaVistaTransposeSelect');
-  if (vistaLabel) vistaLabel.textContent = pianoMelodyKeyDisplay(key);
-  if (vistaSelect) vistaSelect.value = key;
-  if (pianoMelodyModalState && pianoMelodyModalState.active) {
-    pianoModalDetenerMelodia(true);
-  }
-}
-
-function pianoCargarTransposeMelodia(){
-  try {
-    var rawKey = localStorage.getItem('yhwh_piano_melody_transpose_key');
-    var raw = localStorage.getItem('yhwh_piano_melody_transpose');
-    var key = pianoNormRoot(String(rawKey || '').replace(/m$/,''));
-    if (pianoMelodyKeyList().indexOf(key) === -1) key = 'C';
-    pianoMelodyTransposeKey = key;
-    var n = raw === null ? 0 : parseInt(raw, 10);
-    pianoMelodyTranspose = isFinite(n) ? Math.max(-12, Math.min(12, n)) : 0;
-  } catch (e) {
-    pianoMelodyTransposeKey = 'C';
-    pianoMelodyTranspose = 0;
-  }
-}
-
-pianoCargarTransposeMelodia();
-// requestAnimationFrame del resaltado de teclas + destello ("ripple") durante
-// la reproducción de una melodía. Antes cada nota programaba sus propios
-// setTimeout (uno para encender la tecla, otro para apagarla); con una
-// melodía de varias notas eso eran decenas de timers de Safari (impreciso
-// en iPhone) disparándose casi juntos y peleando por el hilo principal con
-// el requestAnimationFrame de las barras que caen — eso era lo que se veía
-// "trabado". Ahora todo el resaltado vive en este único RAF, igual que las
-// barras, así que no compite consigo mismo.
-// Un solo bucle que en cada frame: mueve las barras que caen, enciende/apaga
-// las teclas resaltadas (con su destello) y actualiza la barra de progreso.
-// Antes esto eran 3 requestAnimationFrame separados compitiendo entre sí por
-// el hilo principal; ahora es uno solo con un único "t".
-function pianoLoopReproduccionMelodia(finMax, notas, playBaseMs){
-  var bar = document.getElementById('pianoMelodyProgressBar');
-  var text = document.getElementById('pianoMelodyProgressText');
-
-  function frame(){
-    if (!pianoMelodyModalState.active || pianoMelodyModalState.paused) {
-      pianoMelodyPlaybackRAF = null;
-      return;
-    }
-    var t = (performance.now() - playBaseMs) / 1000;
-
-    // 1) Resaltado de teclas + destello
-    for (var i = 0; i < notas.length; i++){
-      var n = notas[i];
-      var start = Math.max(0, Number(n.start) || 0);
-      var dur = Math.max(0.15, Number(n.duration) || 0.35);
-      var suena = (t >= start) && (t < start + dur);
-      if (suena && !n._resaltada){
-        n._resaltada = true;
-        pianoSetKeyActive(n.midi, true);
-        pianoKeyRipple(n.midi);
-      } else if (!suena && n._resaltada){
-        n._resaltada = false;
-        pianoSetKeyActive(n.midi, false);
-      }
-    }
-
-    // 2) Barra de progreso
-    pianoMelodyModalState.elapsed = Math.max(0, t);
-    if (bar && pianoMelodyModalState.duration) {
-      var pct = Math.max(0, Math.min(100, (pianoMelodyModalState.elapsed / pianoMelodyModalState.duration) * 100));
-      bar.style.transform = 'scaleX(' + (pct / 100) + ')';
-      if (text) text.textContent = Math.round(pct) + '%';
-    }
-
-    if (t < finMax + 0.4) {
-      pianoMelodyPlaybackRAF = requestAnimationFrame(frame);
-    } else {
-      pianoMelodyPlaybackRAF = null;
-    }
-  }
-  pianoMelodyPlaybackRAF = requestAnimationFrame(frame);
-}
-
-// Un solo requestAnimationFrame para TODA la reproducción visual de la
-// melodía (resaltado de teclas + barra de progreso).
-// Antes eran 3 rAF independientes corriendo en paralelo, cada uno leyendo
-// performance.now() y escribiendo al DOM por su cuenta; eso era trabajo de
-// más en cada frame y es lo que sumaba al trabón en iPhone. Ahora todo se
-// calcula con un solo "t" y se actualiza en un solo paso por frame.
-var pianoMelodyPlaybackRAF = null;
-// Cache de elementos <button> de las teclas por midi, para no hacer
-// querySelector por cada nota en cada cambio de estado (se reconstruye cada
-// vez que arranca una reproducción, es barata: un solo querySelectorAll).
-var pianoTeclaElCache = null;
-function pianoConstruirCacheTeclas(){
-  pianoTeclaElCache = {};
-  var modal = document.getElementById('pianoModalContent');
-  if (!modal) return;
-  var keys = modal.querySelectorAll('.pk-key[data-midi]');
-  for (var i = 0; i < keys.length; i++){
-    pianoTeclaElCache[keys[i].getAttribute('data-midi')] = keys[i];
-  }
-}
-function pianoTeclaEl(midi){
-  if (!pianoTeclaElCache) pianoConstruirCacheTeclas();
-  return pianoTeclaElCache[String(midi)] || null;
-}
-
-// Cancela el requestAnimationFrame de la reproducción visual en curso
-// (resaltado de teclas + barra de progreso) si hay uno corriendo.
-function pianoDetenerLoopVisual(){
-  if (pianoMelodyPlaybackRAF) { cancelAnimationFrame(pianoMelodyPlaybackRAF); pianoMelodyPlaybackRAF = null; }
-}
-
-function pianoMelodyClaveDeDestino(){
-  return String(pianoMelodyTarget || '').replace(/^jubilo:/, '');
-}
-
-function pianoLimpiarPlaybackMelodia(){
-  while (pianoMelodyPlaybackTimers.length) {
-    clearTimeout(pianoMelodyPlaybackTimers.pop());
-  }
-  pianoDetenerLoopVisual();
-  var modal = document.getElementById('pianoModalContent');
-  if (!modal) return;
-  var keys = modal.querySelectorAll('.pk-key.pk-playing');
-  for (var i = 0; i < keys.length; i++) keys[i].classList.remove('pk-playing');
-  var touching = modal.querySelectorAll('.pk-key.pk-touching');
-  for (var j = 0; j < touching.length; j++) touching[j].classList.remove('pk-touching');
-}
-
-function pianoModalActualizarControlesMelodia(){
-  var playBtn = document.getElementById('btnPianoModalPlayMelodia');
-  var transposeLabel = document.getElementById('pianoMelodyTransposeValue');
-  var transposeSelect = document.getElementById('pianoMelodyTransposeSelect');
-  var tieneMelodia = !!(pianoMelodyViewNotas && pianoMelodyViewNotas.length);
-
-  if (playBtn) {
-    playBtn.style.display = tieneMelodia ? 'inline-flex' : 'none';
-    playBtn.disabled = !!pianoMelodyReplayBloqueado;
-    playBtn.style.opacity = pianoMelodyReplayBloqueado ? '0.65' : '1';
-    playBtn.style.cursor = pianoMelodyReplayBloqueado ? 'not-allowed' : 'pointer';
-    playBtn.textContent = '▶ Reproducir';
-  }
-  if (transposeLabel) {
-    transposeLabel.textContent = pianoMelodyKeyDisplay(pianoMelodyTransposeKey || 'C');
-  }
-  if (transposeSelect) {
-    transposeSelect.value = pianoMelodyTransposeKey || 'C';
-  }
-}
-
-function pianoModalDetenerMelodia(resetearEstado){
-  if (resetearEstado === undefined) resetearEstado = true;
-  pianoDetenerLoopVisual();
-  pianoMelodyPlaybackTimers.forEach(function(t){ clearTimeout(t); });
-  pianoMelodyPlaybackTimers.length = 0;
-  var audio = window.audioPrincipalEl;
-  try { if (audio && audio.pause) audio.pause(); } catch (e) {}
-  if (audio) {
-    try { audio.currentTime = 0; } catch (e) {}
-  }
-  pianoSetMelodyMuted(!resetearEstado);
-  if (resetearEstado) {
-    pianoMelodyModalState.active = false;
-    pianoMelodyModalState.paused = false;
-    pianoMelodyModalState.start = 0;
-    pianoMelodyModalState.elapsed = 0;
-    pianoMelodyModalState.duration = 0;
-    var bar = document.getElementById('pianoMelodyProgressBar');
-    var text = document.getElementById('pianoMelodyProgressText');
-    if (bar) bar.style.transform = 'scaleX(0)';
-    if (text) text.textContent = '0%';
-    var modal = document.getElementById('pianoModalContent');
-    if (modal) {
-      var keys = modal.querySelectorAll('.pk-key.pk-playing');
-      for (var i = 0; i < keys.length; i++) keys[i].classList.remove('pk-playing');
-    }
-  }
-  pianoModalActualizarControlesMelodia();
-}
-
-function pianoModalProgramarMelodiaDesde(offsetSegundos){
-  if (!pianoMelodyViewNotas || !pianoMelodyViewNotas.length) {
-    mostrarToast('⚠️ No hay melodía para reproducir.');
-    return false;
-  }
-  if (pianoMelodyReplayBloqueado) return false;
-
-  var inicio = Math.max(0, Number(offsetSegundos) || 0);
-  pianoMelodyReplayBloqueado = true;
-  pianoModalActualizarControlesMelodia();
-  pianoLimpiarPlaybackMelodia();
-  pianoSetMelodyMuted(false);
-  pianoMelodyPlaybackNotas = pianoTransposeMelodyNotes(pianoMelodyViewNotas, pianoMelodyTranspose);
-  pianoMelodyModalState.active = true;
-  pianoMelodyModalState.paused = false;
-  pianoMelodyModalState.elapsed = inicio;
-  pianoMelodyModalState.start = performance.now() - (inicio * 1000);
-  pianoMelodyModalState.duration = pianoMelodyPlaybackNotas.reduce(function(max, n){
-    return Math.max(max, (Number(n.start) || 0) + (Number(n.duration) || 0.35));
-  }, 0);
-  pianoModalActualizarControlesMelodia();
-
-  var ctx = pianoGetAudioCtx();
-  if (!ctx) {
-    mostrarToast('⚠️ Tu navegador no soporta audio.');
-    pianoMelodyReplayBloqueado = false;
-    pianoModalActualizarControlesMelodia();
-    pianoModalDetenerMelodia();
-    return false;
-  }
-
-  var notasPendientes = pianoMelodyPlaybackNotas.filter(function(n){
-    var start = Math.max(0, Number(n.start) || 0);
-    var dur = Math.max(0.15, Number(n.duration) || 0.35);
-    return (start + dur) > inicio;
-  });
-  if (!notasPendientes.length) {
-    pianoMelodyReplayBloqueado = false;
-    pianoModalActualizarControlesMelodia();
-    pianoModalDetenerMelodia();
-    return false;
-  }
-
-  Promise.all(notasPendientes.map(function(n){ return pianoLoadBuffer(ctx, n.midi); })).then(function(){
-    if (!pianoMelodyModalState.active || pianoMelodyModalState.paused) return;
-    var base = ctx.currentTime + 0.05;
-    var playBaseMs = performance.now() + 50;
-    var finMax = notasPendientes.reduce(function(max, n){
-      return Math.max(max, (Number(n.start) || 0) + (Number(n.duration) || 0.35));
-    }, 0);
-    pianoConstruirCacheTeclas();
-    notasPendientes.forEach(function(n){
-      var start = Math.max(0, Number(n.start) || 0);
-      var dur = Math.max(0.15, Number(n.duration) || 0.35);
-      var delay = Math.max(0, start - inicio);
-      n._resaltada = false;
-      pianoPlayNoteSample(ctx, n.midi, base + delay, dur);
-    });
-    // Resaltado de teclas y progreso corren en un único requestAnimationFrame.
-    pianoLoopReproduccionMelodia(finMax, notasPendientes, playBaseMs);
-    var lastEnd = notasPendientes.reduce(function(max, n){
-      return Math.max(max, (Number(n.start) || 0) + (Number(n.duration) || 0.35));
-    }, inicio);
-    pianoMelodyPlaybackTimers.push(setTimeout(function(){
-      pianoModalDetenerMelodia();
-      pianoLimpiarPlaybackMelodia();
-      pianoMelodyReplayBloqueado = false;
-      pianoModalActualizarControlesMelodia();
-      var bar = document.getElementById('pianoMelodyProgressBar');
-      var text = document.getElementById('pianoMelodyProgressText');
-      if (bar) bar.style.transform = 'scaleX(0)';
-      if (text) text.textContent = '0%';
-    }, Math.max(0, (lastEnd - inicio + 0.3) * 1000)));
-  });
-
-  return true;
-}
-
-function pianoModalReproducirMelodia(){
-  pianoModalProgramarMelodiaDesde(0);
-}
-
-
-// Efecto "onda de sonido": un destello circular breve en la tecla que
-// acaba de sonar, para reforzar visualmente el toque (además del brillo
-// morado/dorado que ya marca las teclas del acorde).
-function pianoKeyRipple(midi){
-  var key = pianoTeclaEl(midi);
-  if (!key) return;
-  var ripple = document.createElement('span');
-  ripple.className = 'pk-ripple';
-  key.appendChild(ripple);
-  setTimeout(function(){
-    if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
-  }, 560);
-}
-
-// Efecto "tecla 3D": se marca con pk-touching mientras el dedo/mouse está
-// presionando, para que la tecla se "hunda" (ver CSS .pk-touching). Se usa
-// un solo listener delegado en vez de uno por tecla porque el teclado se
-// vuelve a dibujar por completo cada vez que se abre/cambia de acorde.
-(function(){
-  function marcar(e, activo){
-    var key = e.target && e.target.closest ? e.target.closest('.pk-key') : null;
-    if (key) key.classList.toggle('pk-touching', activo);
-  }
-  document.addEventListener('pointerdown', function(e){ marcar(e, true); });
-  document.addEventListener('pointerup', function(e){ marcar(e, false); });
-  document.addEventListener('pointercancel', function(){
-    var sueltas = document.querySelectorAll('.pk-key.pk-touching');
-    for (var i = 0; i < sueltas.length; i++) sueltas[i].classList.remove('pk-touching');
-  });
-})();
-
-function pianoSetKeyActive(midi, activo){
-  var key = pianoTeclaEl(midi);
-  if (!key) return;
-  key.classList.toggle('pk-playing', !!activo);
-  if (activo) {
-    key.style.background = key.classList.contains('pk-active') ? '#f1cf6d' : '#6f67d8';
-    key.style.borderColor = '#f1cf6d';
-    key.style.boxShadow = '0 0 0 1px rgba(255,255,255,0.16) inset, 0 0 18px rgba(241,207,109,0.34)';
-  } else {
-    key.style.background = '';
-    key.style.borderColor = '';
-    key.style.boxShadow = '';
-  }
-}
-
-function pianoPlayNoteMidi(ctx, midi, duration, velocity){
-  vibrar(10); // toque de tecla: vibración corta y sutil
-  pianoKeyRipple(midi);
-  var startTime = ctx.currentTime + 0.02;
-  if (pianoMelodyRecording && pianoMelodyTarget !== null && pianoMelodyTarget !== undefined && pianoMelodyTarget !== '') {
-    var now = performance.now();
-    if (!pianoMelodyStart) pianoMelodyStart = now;
-    var start = (now - pianoMelodyStart) / 1000;
-    var noteName = pianoLabelRoot(PIANO_SEMIS[midi % 12]) + (Math.floor(midi / 12) - 1);
-    pianoMelodyNotes.push({
-      midi: midi,
-      note: noteName,
-      start: start,
-      duration: Math.max(0.12, duration || 0.35)
-    });
-    pianoRenderMelodyRecorder();
-  }
-  pianoLoadBuffer(ctx, midi).then(function(){
-    pianoPlayNoteSample(ctx, midi, startTime, duration || 0.35);
-  });
-}
-
-function pianoAbrirMelodiaDesdeNotas(notas, titulo, autoGrabar, rootForModal, instrumento){
-  if (!Array.isArray(notas) || !notas.length) {
-    mostrarToast('⚠️ No hay melodía guardada.');
-    return;
-  }
-  var root = rootForModal || 'C';
-  pianoMelodyViewRoot = pianoNormRoot(String(root || 'C').replace(/m$/,''));
-  pianoMelodyTransposeKey = pianoMelodyViewRoot;
-  pianoMelodyTranspose = 0;
-  pianoMelodyViewNotas = notas.slice();
-  pianoMelodyReplayBloqueado = false;
-  pianoLimpiarPlaybackMelodia();
-  abrirPiano(root, null, false, true, instrumento);
-  var title = document.getElementById('pianoModalTitle');
-  if (title && titulo) title.textContent = titulo;
-  pianoMelodyViewNotas = notas.slice();
-  pianoMelodyTarget = autoGrabar ? pianoMelodyClaveDeDestino() : null;
-  pianoMelodyRecording = false;
-  pianoMelodyStart = 0;
-  pianoMelodyNotes = Array.isArray(notas) ? notas.slice() : [];
-  // Guardamos las notas "en limpio" para poder repetir esta misma melodía
-  // desde el botón "🔁 Reproducir de nuevo" sin volver a buscarla.
-  pianoRenderMelodyRecorder();
-  pianoModalActualizarControlesMelodia();
-  setTimeout(function(){
-    pianoModalActualizarControlesMelodia();
-  }, 0);
-  pianoAcomodarVistaMelodia();
-}
-
-function pianoActualizarProgresoMelodia(){
-  var bar = document.getElementById('pianoMelodyProgressBar');
-  var text = document.getElementById('pianoMelodyProgressText');
-  if (!bar || !pianoMelodyPlaybackState.duration) return;
-  var pct = Math.max(0, Math.min(100, (pianoMelodyPlaybackState.elapsed / pianoMelodyPlaybackState.duration) * 100));
-  // transform en vez de width: no fuerza layout en cada frame, solo
-  // composicion (mucho mas liviano en Safari de iPhone).
-  bar.style.transform = 'scaleX(' + (pct / 100) + ')';
-  if (text) text.textContent = Math.round(pct) + '%';
-}
-
-function pianoLoopProgresoMelodia(){
-  if (!pianoMelodyPlaybackState || pianoMelodyPlaybackState.paused) return;
-  var now = performance.now();
-  pianoMelodyPlaybackState.elapsed = Math.max(0, (now - pianoMelodyPlaybackState.start) / 1000);
-  pianoActualizarProgresoMelodia();
-  if (pianoMelodyPlaybackState.elapsed < pianoMelodyPlaybackState.duration + 0.15) {
-    pianoMelodyPlaybackState.raf = requestAnimationFrame(pianoLoopProgresoMelodia);
-  }
-}
-
-
-function pianoAcomodarVistaMelodia(){
-  var isMobile = window.innerWidth && window.innerWidth <= 768;
-  if (isMobile) {
-    setTimeout(function(){
-      var modal = document.getElementById('pianoModal');
-      var content = document.getElementById('pianoModalContent');
-      if (content && content.scrollIntoView) {
-        content.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      if (modal && modal.scrollTo) {
-        modal.scrollTo({ top: 120, behavior: 'smooth' });
-      }
-    }, 120);
-  }
-}
-
-// Antes audio.play() se llamaba "a ciegas": si la promesa se rechazaba
-// (típico en iPhone por políticas de reproducción de iOS), el botón ya
-// había cambiado de ícono por el evento 'play' esperado, pero el sonido
-// nunca salía y no había forma de saber por qué. Esta función centraliza
-// la llamada a .play() y muestra un toast con el error real de iOS/Safari
-// para poder diagnosticarlo en el propio teléfono.
-function intentarReproducirAudioPrincipal(audio){
-  if (!audio) return;
-  var p = audio.play();
-  if (p && p.catch) {
-    p.catch(function(err){
-      mostrarToast('⚠️ El audio no pudo sonar: ' + (err && err.message ? err.message : err));
-    });
-  }
-}
-
-function actualizarReproductorFlotanteAdoracion(audio, playBtn, seek, timeLabel){
-  var floating = document.getElementById('floatingAudioPlayer');
-  if (!floating) {
-    floating = document.createElement('div');
-    floating.id = 'floatingAudioPlayer';
-    floating.className = 'audio-player floating';
-    floating.innerHTML = '<button type="button" class="ap-play ap-play-mini" aria-label="Reproducir">▶</button>' +
-      '<span class="ap-time">Audio</span>';
-    document.body.appendChild(floating);
-  }
-  // El flotante debe poder aparecer tanto en vista cantante como en vista músico.
-  // Solo lo ocultamos si todavía no hay un audio real que controlar.
-  if (!audio) {
-    floating.style.display = 'none';
-    return;
-  }
-  var miniBtn = floating.querySelector('.ap-play');
-  var miniTime = floating.querySelector('.ap-time');
-  if (miniBtn) miniBtn.textContent = audio && audio.paused ? '▶' : '❚❚';
-  if (miniTime) {
-    if (audio && isFinite(audio.duration) && audio.duration) {
-      var m = Math.floor(audio.currentTime / 60);
-      var s = Math.floor(audio.currentTime % 60);
-      var dm = Math.floor(audio.duration / 60);
-      var ds = Math.floor(audio.duration % 60);
-      miniTime.textContent = m + ':' + (s < 10 ? '0' : '') + s + ' / ' + dm + ':' + (ds < 10 ? '0' : '') + ds;
-    } else {
-      miniTime.textContent = 'Audio';
-    }
-  }
-  if (miniBtn) {
-    // Se reasigna en CADA llamada (no solo la primera vez) para que el
-    // botón flotante siempre controle el <audio> de la canción actual.
-    // Antes, con el flag _pianoSynced, el clic quedaba enganchado para
-    // siempre al <audio> de la primera canción abierta; al cambiar de
-    // canción ese <audio> viejo se elimina del DOM (mediaContainer.innerHTML=''),
-    // y en iPhone reproducir un <audio> ya desconectado del DOM no suena
-    // (el ícono cambiaba pero no salía sonido).
-    miniBtn.onclick = function(){
-      if (!audio) return;
-      if (audio.paused) { intentarReproducirAudioPrincipal(audio); } else { audio.pause(); }
-    };
-  }
-  floating.style.display = 'flex';
-}
-
-// Muestra/oculta el botón de reproducir según si hay una melodía "en vista".
-function pianoActualizarBotonReplay(){
-  pianoActualizarControlesMelodia();
-}
-
-
-function esAdminActivo(){
-  return !!window.esAdmin;
-}
-
-function bloquearMelodiaSiNoAdmin(){
-  if (esAdminActivo()) return false;
-  mostrarToast('🔒 Solo el Admin puede grabar o guardar melodías.');
-  return true;
-}
-
-function tieneMelodiaGuardada(id, esJubilo){
-  var clave = esJubilo ? ('jubilo:' + id) : String(id);
-  try {
-    var melodias = jubiloLeerMelodias();
-    var mel = melodias && melodias[clave] ? melodias[clave] : melodias[String(id)];
-    return !!(mel && Array.isArray(mel.notas) && mel.notas.length);
-  } catch (e) {
-    return false;
-  }
-}
-
-function abrirMenuMelodiaAdoracion(){
-  abrirMenuMelodiaComun('adoracion');
-}
-
-
-// Canción de Júbilo activa para el menú de melodía (se fija al tocar el
-// botón "🎼 Melodía" de esa tarjeta, dentro de una cadena ya fija).
-var jubiloMelodiaSongId = null;
-var jubiloMelodiaSongKey = null;
-
-function abrirMenuMelodiaCancionJubilo(key, songId){
-  var song = getJubiloSong(songId);
-  if (!song) return;
-  jubiloMelodiaSongKey = key;
-  jubiloMelodiaSongId = songId;
-  abrirMenuMelodiaComun('jubilo');
-}
-
-// Tono real con el que se está mostrando esa alabanza de Júbilo en su
-// tarjeta (respeta transposición), igual que Adoración usa currentKey.
-function jubiloMelodiaTonoActivo(){
-  var song = getJubiloSong(jubiloMelodiaSongId);
-  var st = jubiloMelodiaSongKey ? jubiloState[jubiloMelodiaSongKey] : null;
-  return (st && st.key) || (song && getOrigKey(song)) || 'C';
-}
-
-function abrirMenuMelodiaComun(tipo){
-  var modal = document.getElementById('melodiaMenuModal');
-  if (!modal) return;
-  var titulo = document.getElementById('melodiaMenuTitle');
-  var estado = document.getElementById('melodiaMenuEstado');
-  var btnAbrir = document.getElementById('melodiaMenuAbrir');
-  var btnVer = document.getElementById('melodiaMenuVer');
-  var btnGuardar = document.getElementById('melodiaMenuGuardar');
-  var tiene = false;
-
-  if (tipo === 'adoracion' && currentSong) {
-    tiene = tieneMelodiaGuardada(currentSong.id, false);
-    if (titulo) titulo.textContent = '🎼 Melodía';
-    if (estado) estado.textContent = currentSong.title || 'Canción actual';
-    if (btnAbrir) {
-      btnAbrir.style.display = 'inline-flex';
-      btnAbrir.onclick = function(){ cerrarMenuMelodia(); abrirMelodiaCancionActual(); };
-    }
-    if (btnVer) {
-      btnVer.style.display = tiene ? 'inline-flex' : 'none';
-      btnVer.onclick = function(){ cerrarMenuMelodia(); jubiloReproducirMelodiaGuardada(currentSong.id, false); };
-    }
-    if (btnGuardar) btnGuardar.style.display = 'none';
-  } else if (tipo === 'jubilo' && jubiloMelodiaSongId) {
-    var song = getJubiloSong(jubiloMelodiaSongId);
-    if (!song) return;
-    tiene = tieneMelodiaGuardada(jubiloMelodiaSongId, true);
-    if (titulo) titulo.textContent = '🎼 Melodía';
-    if (estado) estado.textContent = 'Júbilo: ' + song.title;
-    if (btnAbrir) {
-      btnAbrir.style.display = 'inline-flex';
-      btnAbrir.onclick = function(){ cerrarMenuMelodia(); jubiloAbrirPianoMelodiaActual(false); };
-    }
-    if (btnVer) {
-      btnVer.style.display = tiene ? 'inline-flex' : 'none';
-      btnVer.onclick = function(){ cerrarMenuMelodia(); jubiloReproducirMelodiaGuardada(jubiloMelodiaSongId, true); };
-    }
-    if (btnGuardar) btnGuardar.style.display = 'none';
-  }
-  modal.style.display = 'flex';
-}
-
-function cerrarMenuMelodia(){
-  var modal = document.getElementById('melodiaMenuModal');
-  if (modal) modal.style.display = 'none';
-}
-
-// Igual que jubiloAbrirPianoMelodiaActual(false): abre el piano listo, y
-// si el usuario es Admin, muestra de una vez el panel de grabación
-// (Grabar / Guardar / Última nota / Limpiar) dentro del propio piano.
-function abrirMelodiaCancionActual(){
-  if (!currentSong) { mostrarToast('⚠️ Abre una canción primero.'); return; }
-  if (window.Tone && Tone.start) { pianoDesbloquearAudioSession(); Tone.start().catch(function(){}); }
-  pianoRequestLandscapeMode();
-  // Si ya estábamos grabando (o teníamos notas sin guardar) para esta MISMA
-  // canción, no las borremos solo por reabrir el menú de Melodía — antes
-  // esto reiniciaba pianoMelodyNotes a [] cada vez, así que si el panel se
-  // ocultaba (p.ej. al tocar un acorde de la fila "Acordes de esta
-  // alabanza") y el usuario volvía a abrir "Melodía", perdía todo lo ya
-  // tocado sin ningún aviso.
-  var esMismaCancionEnCurso = String(pianoMelodyTarget) === String(currentSong.id) && pianoMelodyNotes.length;
-  if (!esMismaCancionEnCurso) {
-    pianoMelodyTarget = currentSong.id;
-    pianoMelodyRecording = false;
-    pianoMelodyStart = 0;
-    pianoMelodyNotes = [];
-  }
-  var root = currentKey || getOrigKey(currentSong) || 'C';
-  var source = document.getElementById('viewContent');
-  abrirPiano(root, source, true);
-  if (esAdminActivo()) pianoRenderMelodyRecorder();
-  pianoAcomodarVistaMelodia();
-}
-
-
-function pianoToggleRecording(){
-  if (bloquearMelodiaSiNoAdmin()) return;
-  pianoMelodyRecording = !pianoMelodyRecording;
-  if (pianoMelodyRecording) {
-    pianoMelodyStart = performance.now();
-    pianoMelodyNotes = [];
-    vibrar(22); // empieza a grabar: un toque
-  } else {
-    vibrar([12, 30, 12]); // detiene: doble toque
-  }
-  pianoRenderMelodyRecorder();
-}
-
-// Nombre legible del destino de guardado (título de la canción), en vez
-// del ID crudo, tanto para Júbilo como para Adoración.
-function pianoMelodyNombreDestino(){
-  if (!pianoMelodyTarget) return '';
-  var idPuro = pianoMelodyClaveDeDestino();
-  if (String(pianoMelodyTarget).indexOf('jubilo:') === 0) {
-    var sJ = getJubiloSong(idPuro);
-    return sJ ? sJ.title : idPuro;
-  }
-  if (currentSong && String(currentSong.id) === String(pianoMelodyTarget)) return currentSong.title;
-  return idPuro;
-}
-
-function pianoRenderMelodyRecorder(){
-  var panel = document.getElementById('pianoMelodyRecorder');
-  if (pianoSoloMode) {
-    if (panel) panel.style.display = 'none';
-    return;
-  }
-  var status = document.getElementById('pianoMelodyStatus');
-  var btnRec = document.getElementById('btnPianoRecord');
-  var btnSave = document.getElementById('btnPianoSaveMelody');
-  var btnDel = document.getElementById('btnPianoDeleteNote');
-  if (!panel) return;
-  panel.style.display = 'block';
-  if (status) {
-    var destino = pianoMelodyNombreDestino();
-    status.textContent = (destino ? ('Guardando en ' + destino + ' · ') : '') + (pianoMelodyRecording ? 'Grabando... toca el piano' : 'Listo para grabar');
-  }
-  if (btnRec) btnRec.textContent = pianoMelodyRecording ? '⏸ Detener' : '⏺ Grabar';
-  if (btnSave) btnSave.textContent = '💾 Guardar (' + pianoMelodyNotes.length + ')';
-  if (btnDel) btnDel.textContent = '↩ Última nota';
-}
-
-function pianoDeleteLastNote(){
-  vibrar(15);
-  pianoMelodyNotes.pop();
-  pianoRenderMelodyRecorder();
-}
-
-function pianoSaveMelody(){
-  if (bloquearMelodiaSiNoAdmin()) return;
-  if (pianoMelodyTarget === null || pianoMelodyTarget === undefined || pianoMelodyTarget === '') { mostrarToast('⚠️ No hay melodía activa.'); return; }
-  if (!pianoMelodyNotes.length) { mostrarToast('⚠️ Graba al menos una nota.'); return; }
-  var esJubilo = String(pianoMelodyTarget).indexOf('jubilo:') === 0;
-  var idPuro = pianoMelodyClaveDeDestino();
-  // La clave local lleva el prefijo 'jubilo:' cuando corresponde, para que
-  // no choque con una canción de Adoración que use el mismo ID numérico.
-  var claveLocal = pianoMelodyTarget;
-  var all = jubiloLeerMelodias();
-  var payload = {
-    songId: idPuro,
-    updatedAt: new Date().toISOString(),
-    notas: pianoMelodyNotes.map(function(n, i, arr){
-      var next = arr[i + 1];
-      var dur = next ? Math.max(0.12, next.start - n.start) : Math.max(0.35, n.duration || 0.35);
-      return { midi: n.midi, note: n.note, start: +n.start.toFixed(3), duration: +dur.toFixed(3) };
-    })
-  };
-  all[claveLocal] = payload;
-  jubiloGuardarMelodias(all);
-  if (window.fbSet && window.fbRef && window.fbDb) {
-    var ruta = esJubilo ? 'melodias/jubilo/' + idPuro : 'melodias/adoracion/' + idPuro;
-    window.fbSet(window.fbRef(window.fbDb, ruta), payload).catch(function(){});
-  }
-  pianoMelodyRecording = false;
-  pianoMelodyStart = 0;
-  mostrarToast('✅ Melodía guardada.');
-  pianoRenderMelodyRecorder();
-}
-
-function pianoClearMelody(){
-  pianoMelodyNotes = [];
-  pianoMelodyRecording = false;
-  pianoMelodyStart = 0;
-  pianoRenderMelodyRecorder();
-}
-
-// Abre el piano para la canción de Júbilo elegida (jubiloMelodiaSongId),
-// siempre en el mismo tono con el que se está mostrando esa alabanza.
-// iniciarGrabacion=false → solo "ver/abrir" (para todos).
-// iniciarGrabacion=true  → arranca a grabar (bloqueado a no-admin dentro
-// de pianoToggleRecording, igual que en Adoración).
-function jubiloAbrirPianoMelodiaActual(iniciarGrabacion){
-  if (!jubiloMelodiaSongId) return;
-  if (window.Tone && Tone.start) { pianoDesbloquearAudioSession(); Tone.start().catch(function(){}); }
-  pianoRequestLandscapeMode();
-  pianoMelodyTarget = 'jubilo:' + jubiloMelodiaSongId;
-  pianoMelodyRecording = false;
-  pianoMelodyStart = 0;
-  pianoMelodyNotes = [];
-  abrirPiano(jubiloMelodiaTonoActivo(), null, false, false, 'trompeta');
-  if (esAdminActivo()) pianoRenderMelodyRecorder();
-  if (iniciarGrabacion) pianoToggleRecording();
-}
-
-function jubiloReproducirMelodiaGuardada(id, esJubilo){
-  var clave = esJubilo ? ('jubilo:' + id) : id;
-  var melodia = jubiloLeerMelodias()[clave];
-  if (!melodia || !Array.isArray(melodia.notas) || !melodia.notas.length) {
-    mostrarToast('⚠️ No hay melodía guardada todavía.');
-    return;
-  }
-  var root = esJubilo
-    ? jubiloMelodiaTonoActivo()
-    : (currentKey || (currentSong && getOrigKey(currentSong)) || 'C');
-  pianoAbrirMelodiaDesdeNotas(melodia.notas, '🎼 Melodía guardada', false, root, esJubilo ? 'trompeta' : 'piano');
-}
-
-// Recuerda el acorde que está mostrando el modal para poder refrescarlo
-// (por ejemplo, si el usuario cambia el cifrado a Latino mientras está abierto).
-var pianoModalActual = null;
-function pianoActualizarSiAbierto(){
-  if (!pianoModalActual) return;
-  var modal = document.getElementById('pianoModal');
-  if (!modal || modal.style.display === 'none') return;
-  abrirPiano(pianoModalActual.root + pianoModalActual.type, null, false, pianoOcultarMarcaAcorde);
-}
-
-// ===== Acordes usados en la alabanza que se está viendo (Adoración/Júbilo) =====
-// Se actualiza solo cuando el piano se abre desde un acorde clickeado dentro
-// de una canción; se conserva mientras el usuario navega por el filtro/las
-// variaciones dentro del propio modal (o cuando solo se refresca el idioma).
-var pianoContextoCancion = null;
-
-function pianoExtraerAcordesDeTexto(contenido, semitonos){
-  var chords = [];
-  var vistos = {};
-  String(contenido || '').split('\n').forEach(function(raw){
-    if (!isChordLine(raw)) return;
-    var linea = semitonos ? transposeChordLine(raw, semitonos) : raw;
-    var tokens = linea.match(/[A-G][b#]?(?:m(?:aj)?|M|dim|aug|sus[24]?|add[0-9]?|[679]|[24])?/g) || [];
-    tokens.forEach(function(tok){
-      var parsed = pianoParseChord(tok);
-      if (!parsed) return;
-      var clave = pianoNormRoot(parsed.root) + parsed.type;
-      if (!vistos[clave]) { vistos[clave] = true; chords.push(tok); }
-    });
-  });
-  return chords;
-}
-
-function pianoDetectarAcordesDesdeElemento(el){
-  if (!el || !el.closest) return null;
-  var cont = el.closest('#viewContent, [id^="jubiloContent_"]');
-  if (!cont) return null;
-  if (cont.id === 'viewContent') {
-    if (!currentSong) return null;
-    return pianoExtraerAcordesDeTexto(currentSong.content, currentSemitones || 0);
-  }
-  if (cont.id.indexOf('jubiloContent_') === 0) {
-    var key = cont.id.slice('jubiloContent_'.length);
-    var st = jubiloState[key];
-    if (!st) return null;
-    var partes = key.split('_');
-    var songId = partes[partes.length - 1];
-    var song = getJubiloSong(songId);
-    if (!song) return null;
-    return pianoExtraerAcordesDeTexto(getJubiloContent(song), st.semitones || 0);
-  }
-  return null;
-}
-
-function pianoParseChord(str){
-  str = str.trim();
-  var rm = str.match(/^([A-G][b#]?)/);
-  if (!rm) return null;
-  var root = rm[1];
-  var rest = str.slice(root.length);
-  var types = Object.keys(PIANO_CHORD_TYPES).sort(function(a,b){return b.length-a.length;});
-  for (var i = 0; i < types.length; i++){
-    if (rest.toLowerCase() === types[i].toLowerCase()) return {root:root, type:types[i]};
-  }
-  return {root:root, type:''};
-}
-
-function pianoGetSemis(root, type){
-  var ints = PIANO_CHORD_TYPES[type] || PIANO_CHORD_TYPES[''];
-  var base = pianoSemiOf(root) + 60;
-  return ints.map(function(i){ return base + i; });
-}
-
-// Llamada desde los botones del selector de instrumento dentro del modal
-// (ver pianoRenderHTML). Reabre el mismo acorde que ya se estaba viendo,
-// forzando el instrumento elegido; abrirPiano() se encarga de guardarlo
-// como preferencia de la sección actual (Adoración/Júbilo).
-function pianoCambiarInstrumento(instrumento){
-  if (!pianoModalActual) return;
-  if (window.Tone && Tone.start) { pianoDesbloquearAudioSession(); Tone.start().catch(function(){}); }
-  vibrar(10);
-  abrirPiano(pianoModalActual.root + pianoModalActual.type, null, false, pianoOcultarMarcaAcorde, instrumento);
-}
-
-function pianoRenderHTML(root, type){
-  var semisOn = pianoGetSemis(root, type);
-  var rootSemi = pianoSemiOf(root);
-  var ocultarMarca = !!pianoOcultarMarcaAcorde;
-  var startMidi = 21; // A0
-  var endMidi = 109;  // C8
-  while ([1,3,6,8,10].indexOf(startMidi % 12) !== -1) startMidi--;
-  var whiteKeys = [];
-  var blackKeys = [];
-  var whiteIndex = 0;
-  var isLightTheme = document.body.classList.contains('light-theme');
-  var bgWhite  = isLightTheme ? '#fff' : '#e8e6f0';
-  var bgBlack  = isLightTheme ? '#222' : '#1a1a2e';
-  var litColor = '#7F77DD';
-  var rootColor= '#3C3489';
-  var litText  = '#EEEDFE';
-  // Modo compacto: en pantallas angostas (móvil en horizontal) las teclas
-  // se dibujan un poco más finas para que se vean más octavas de contexto
-  // alrededor del acorde activo, en vez de tener que hacer tanto scroll.
-  var esCompacto = (typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 600);
-  var zoomTeclas = pianoReadKeyboardScale();
-  var baseWhiteWidth = esCompacto ? 24 : 30;
-  var baseWhiteGap = esCompacto ? 1 : 2;
-  var baseBlackWidth = esCompacto ? 14 : 18;
-  var whiteWidth = Math.max(18, Math.round(baseWhiteWidth * zoomTeclas));
-  var whiteGap = Math.max(1, Math.round(baseWhiteGap * zoomTeclas));
-  var blackWidth = Math.max(11, Math.round(baseBlackWidth * zoomTeclas));
-  var whiteHeight = 148;
-  var blackHeight = 94;
-  var blackHeightTop = 0;
-  var whiteTotal = whiteWidth + whiteGap;
-  // Guardamos estas medidas para que pianoTeclaGeom() (usada por las barras
-  // que caen) las reutilice tal cual, en vez de recalcular su propio
-  // "esCompacto" con el ancho de pantalla que haya en ese momento.
-  pianoUltimaMedidaTeclado = { whiteWidth: whiteWidth, whiteGap: whiteGap, blackWidth: blackWidth };
-  // Sombra 3D "de fábrica" de cada tecla (además del anillo de luz que ya
-  // se añade cuando la tecla forma parte del acorde). Da sensación de
-  // profundidad/relieve incluso en reposo; ver también .pk-touching en el
-  // CSS, que la "hunde" un poco más al presionarla.
-  var bevelWhite = isLightTheme
-    ? 'inset 0 -5px 7px -4px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.7), 0 2px 0 rgba(0,0,0,0.12)'
-    : 'inset 0 -5px 7px -4px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.35), 0 2px 0 rgba(0,0,0,0.16)';
-  var bevelBlack = 'inset 0 -4px 6px -2px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.10), 0 2px 3px rgba(0,0,0,0.4)';
-
-  for (var m = startMidi; m < endMidi; m++){
-    var s = m % 12;
-    if (PIANO_WHITE.indexOf(s) !== -1){
-      var x = whiteIndex * whiteTotal;
-      var isRoot = !ocultarMarca && semisOn.indexOf(m) !== -1 && rootSemi === s;
-      var isLit  = !ocultarMarca && semisOn.indexOf(m) !== -1 && !isRoot;
-      var wBg = isRoot ? rootColor : isLit ? litColor : bgWhite;
-      var wActiveClass = (isRoot||isLit) ? ' pk-active' : '';
-      // Cada Do arranca una octava nueva: se marca con un divisor vertical
-      // más grueso a la izquierda, para que el ojo agrupe las teclas en
-      // bloques de 12 de un vistazo. El Do central (C4, MIDI 60) además
-      // se resalta en dorado, ya que es la referencia con la que suenan
-      // los acordes ("Reproducir acorde"/"Arpegio").
-      var esInicioOctava = (s === 0 && whiteIndex !== 0);
-      var esDoCentral = (m === 60);
-      var divisorColor = isLightTheme ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.42)';
-      var borderLeft = esInicioOctava ? ('3px solid ' + divisorColor) : ('1px solid ' + (isRoot ? '#c9a84c' : '#a6a6b8'));
-      var octaveLabel = (
-        '<span style="position:absolute;left:0;right:0;bottom:5px;text-align:center;pointer-events:none;">' +
-          '<span style="display:inline-block;background:' + (esDoCentral ? '#c9a84c' : (isLightTheme ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.28)')) + ';' +
-          'color:' + (esDoCentral ? '#1a1a2e' : (isRoot||isLit ? litText : (isLightTheme ? '#333' : '#cfcfe0'))) + ';' +
-          'font-size:9.5px;font-weight:800;letter-spacing:0.2px;padding:1px 6px;border-radius:7px;">' +
-            pianoMidiToDisplayNoteName(m) +
-          '</span>' +
-        '</span>'
-      );
-      whiteKeys.push('<button class="pk-key pk-white'+wActiveClass+'" data-midi="'+m+'" onclick="return false" onpointerdown="return pianoTouchStart(event,'+m+',0.18)" onpointerup="return pianoTouchEnd(event)" onpointercancel="return pianoTouchEnd(event)" oncontextmenu="return false" style="position:absolute;left:'+x+'px;top:0;width:'+whiteWidth+'px;height:'+whiteHeight+'px;flex-shrink:0;overflow:hidden;' +
-        'border-top:1px solid '+(isRoot ? '#c9a84c' : '#a6a6b8')+';border-right:1px solid '+(isRoot ? '#c9a84c' : '#a6a6b8')+';border-bottom:1px solid '+(isRoot ? '#c9a84c' : '#a6a6b8')+';border-left:'+borderLeft+';border-radius:0 0 5px 5px;background:'+wBg+';' +
-        'margin-right:'+whiteGap+'px;display:flex;align-items:flex-end;justify-content:center;position:absolute;font-size:0;color:'+ (isRoot||isLit ? litText : '#555') +';box-shadow:' + (isRoot||isLit ? '0 0 0 1px rgba(255,255,255,0.12) inset, ' : '') + bevelWhite + ';cursor:pointer;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;">' +
-        octaveLabel +
-        '</button>');
-      var next = m + 1;
-      var ns = next % 12;
-      if (PIANO_BLACK.indexOf(ns) !== -1 && next < endMidi){
-        var bMidi = next;
-        var bRoot = !ocultarMarca && semisOn.indexOf(bMidi) !== -1 && rootSemi === ns;
-        var bLit  = !ocultarMarca && semisOn.indexOf(bMidi) !== -1 && !bRoot;
-        var bBg   = bRoot ? rootColor : bLit ? litColor : bgBlack;
-        var bActiveClass = (bRoot||bLit) ? ' pk-active' : '';
-        var bx = x + whiteWidth - (blackWidth / 2);
-        blackKeys.push('<button class="pk-key pk-black'+bActiveClass+'" data-midi="'+bMidi+'" onclick="return false" onpointerdown="return pianoTouchStart(event,'+bMidi+',0.14)" onpointerup="return pianoTouchEnd(event)" onpointercancel="return pianoTouchEnd(event)" oncontextmenu="return false" style="position:absolute;top:'+blackHeightTop+'px;left:'+bx+'px;width:'+blackWidth+'px;height:'+blackHeight+'px;overflow:hidden;' +
-          'background:'+bBg+';border:1px solid '+(bRoot ? '#c9a84c' : '#111')+';border-radius:0 0 4px 4px;z-index:60;cursor:pointer;pointer-events:auto;touch-action:none;box-shadow:' + (bRoot||bLit ? '0 0 0 1px rgba(255,255,255,0.08) inset, ' : '') + bevelBlack + ';-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;">' +
-          '<span style="position:absolute;left:0;right:0;bottom:3px;text-align:center;pointer-events:none;font-size:8.5px;font-weight:800;color:' + (bRoot||bLit ? '#f3d58a' : '#c8c8d2') + ';text-shadow:0 1px 2px rgba(0,0,0,0.75);">' + pianoMidiToDisplayNoteName(bMidi) + '</span>' +
-        '</button>');
-      }
-      whiteIndex++;
-    }
-  }
-
-  var ints = PIANO_CHORD_TYPES[type] || [];
-  var intervalHTML = ints.map(function(i){
-    var n = PIANO_INTERVAL[i] || i;
-    return '<span style="background:#EEEDFE;border:1px solid #7F77DD;color:#3C3489;' +
-      'border-radius:6px;padding:2px 8px;font-size:11px;font-weight:bold;">'+n+'</span>';
-  }).join(' ');
-
-  var noteNames = pianoGetSemis(root, type).map(function(m){
-    return pianoLabelRoot(PIANO_SEMIS[m%12]);
-  }).join(' · ');
-
-  var typeName = {
-    '':'Mayor','m':'menor','sus4':'Sus4','sus2':'Sus2',
-    '7':'7 (dominante)','m7':'Menor 7','dim':'Disminuido','aug':'Aumentado'
-  }[type] || type;
-
-  var variantBtns = ['','m','sus4','sus2','7','m7','dim','aug'].map(function(t){
-    var lbl = pianoLabelChord(root, t);
-    var active = t === type ? 'background:#7F77DD;color:#fff;border-color:#534AB7;' : '';
-    return '<button onclick="abrirPiano(\''+root+t+'\')" style="'+active+
-      'background:'+(active?'#7F77DD':'#42426e')+';border:1px solid #2a2a45;color:#e8e6f0;'+
-      'border-radius:6px;padding:4px 10px;cursor:pointer;font-size:0.72rem;font-weight:bold;margin:2px;">'+
-      lbl+'</button>';
-  }).join('');
-
-  // Filtro con los 12 acordes (raíces) posibles, conservando la variante actual
-  var rootActualNorm = pianoNormRoot(root);
-  var rootBtns = PIANO_SEMIS.map(function(r){
-    var active = r === rootActualNorm;
-    return '<button onclick="abrirPiano(\''+r+type+'\')" style="'+
-      (active ? 'background:#c9a84c;color:#1a1a2e;border-color:#c9a84c;' : 'background:#2a2a45;color:#e8e6f0;border-color:#42426e;') +
-      'border:1px solid;border-radius:6px;padding:4px 9px;cursor:pointer;font-size:0.72rem;font-weight:bold;margin:2px;">'+
-      pianoLabelRoot(r)+'</button>';
-  }).join('');
-
-  // Fila con los acordes propios de la alabanza que se está viendo (si se detectó alguna)
-  var songChordsHTML = '';
-  if (pianoContextoCancion && pianoContextoCancion.length){
-    var songBtns = pianoContextoCancion.map(function(tok){
-      var p = pianoParseChord(tok);
-      if (!p) return '';
-      var active = pianoNormRoot(p.root) === rootActualNorm && p.type === type;
-      var tokEscapado = tok.replace(/'/g, "\\'");
-      return '<button onclick="abrirPiano(\''+tokEscapado+'\')" style="'+
-        (active ? 'background:#3ddc84;color:#0c2b1c;border-color:#3ddc84;' : 'background:#2a2a45;color:#e8e6f0;border-color:#42426e;') +
-        'border:1px solid;border-radius:6px;padding:4px 9px;cursor:pointer;font-size:0.72rem;font-weight:bold;margin:2px;">'+
-        pianoLabelChord(p.root, p.type)+'</button>';
-    }).join('');
-    songChordsHTML = '<div style="margin-top:6px;font-size:0.72rem;color:#8888aa;margin-bottom:6px;">Acordes de esta alabanza:</div>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;">' + songBtns + '</div>';
-  }
-
-  // Selector de instrumento: piano, trompeta o guitarra eléctrica (un poco
-  // distorsionada). Se recuerda por separado para Adoración y Júbilo, ver
-  // pianoInstrumentoPref / pianoCambiarInstrumento().
-  var instrumentosDisponibles = [
-    { id: 'piano', emoji: '🎹', label: 'Piano' },
-    { id: 'trompeta', emoji: '🎺', label: 'Trompeta' },
-    { id: 'guitarra', emoji: '🎸', label: 'Guitarra' }
-  ];
-  var instrumentoBtns = instrumentosDisponibles.map(function(ins){
-    var active = pianoInstrumentoActivo === ins.id;
-    return '<button onclick="pianoCambiarInstrumento(\''+ins.id+'\')" title="Sonar en '+ins.label+'" style="'+
-      (active ? 'background:#7F77DD;color:#fff;border-color:#534AB7;' : 'background:#2a2a45;color:#e8e6f0;border-color:#42426e;') +
-      'border:1px solid;border-radius:999px;padding:5px 10px;cursor:pointer;font-size:0.72rem;font-weight:bold;white-space:nowrap;">'+
-      ins.emoji+' '+ins.label+'</button>';
-  }).join('');
-
-  var zoomBtns = pianoRenderKeyboardZoomControls(esCompacto);
-
-  return '<div style="font-size:0.82rem;color:#e0946a;margin-bottom:8px;display:flex;flex-direction:column;gap:8px;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">' +
-      '<div><strong style="color:#e8c97a;font-size:1.05rem;">'+pianoLabelChord(root,type)+'</strong> <span style="color:#8888aa;">' + typeName + '</span></div>' +
-      '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">' + instrumentoBtns + '</div>' +
-    '</div>' +
-    (zoomBtns ? '<div style="display:flex;justify-content:flex-end;">' + zoomBtns + '</div>' : '') +
-    '<div id="pianoMelodyRecorder" style="display:' + (pianoSoloMode ? 'none' : 'block') + ';background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:4px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">' +
-        '<div>' +
-          '<div style="color:var(--gold);font-weight:bold;font-size:0.82rem;">Grabación de melodía</div>' +
-          '<div id="pianoMelodyStatus" style="color:var(--text2);font-size:0.72rem;margin-top:2px;">Listo para grabar</div>' +
-        '</div>' +
-        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
-          '<button id="btnPianoModalPlayMelodia" onclick="pianoModalReproducirMelodia()" style="display:none;background:linear-gradient(135deg,#f3d58a,#c9a84c);border:none;color:#1a1a2e;border-radius:999px;padding:8px 12px;cursor:pointer;font-size:0.75rem;font-weight:bold;">▶ Reproducir</button>' +
-          '<button id="btnPianoRecord" onclick="pianoToggleRecording()" style="background:linear-gradient(135deg,#c9a84c,#f3d58a);border:none;color:#111;border-radius:999px;padding:8px 12px;cursor:pointer;font-size:0.75rem;font-weight:bold;">⏺ Grabar</button>' +
-          '<button id="btnPianoSaveMelody" onclick="pianoSaveMelody()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:8px 12px;cursor:pointer;font-size:0.75rem;font-weight:bold;">💾 Guardar</button>' +
-          '<button id="btnPianoDeleteNote" onclick="pianoDeleteLastNote()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:8px 12px;cursor:pointer;font-size:0.75rem;font-weight:bold;">↩ Última nota</button>' +
-          '<button onclick="pianoClearMelody()" style="background:#4a1a1a;border:1px solid #8a2b2b;color:#ffb4b4;border-radius:999px;padding:8px 12px;cursor:pointer;font-size:0.75rem;font-weight:bold;">🗑 Limpiar</button>' +
-        '</div>' +
-      '</div>' +
-      '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' +
-        '<span style="color:#8888aa;font-size:0.72rem;">Tono de melodía:</span>' +
-        '<select id="pianoMelodyTransposeSelect" onchange="pianoMelodySetTransposeKey(this.value)" style="background:#0d0d14;border:1px solid #42426e;color:#e8e6f0;border-radius:999px;padding:6px 10px;font-size:0.72rem;font-weight:bold;outline:none;">' +
-          pianoMelodyKeyList().map(function(k){
-            return '<option value="' + k + '">' + pianoMelodyKeyDisplay(k) + '</option>';
-          }).join('') +
-        '</select>' +
-        '<span style="color:#8888aa;font-size:0.72rem;">Actual:</span>' +
-        '<span id="pianoMelodyTransposeValue" style="color:#f3d58a;font-size:0.72rem;font-weight:bold;">C</span>' +
-      '</div>' +
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
-        '<div class="piano-melody-progress" style="flex:1;">' +
-          '<div id="pianoMelodyProgressBar" class="piano-melody-progress-bar"></div>' +
-        '</div>' +
-        '<div id="pianoMelodyProgressText" style="min-width:64px;text-align:right;color:var(--text2);font-size:0.72rem;font-variant-numeric:tabular-nums;">0%</div>' +
-      '</div>' +
-      '<div id="pianoMelodyList" style="max-height:120px;overflow:auto;"></div>' +
-    '</div>' +
-    '<div class="piano-extra-row" style="display:flex;gap:4px;flex-wrap:wrap;">' + intervalHTML + '</div>' +
-    '<div class="piano-keyboard-scroll" style="overflow-x:auto;overflow-y:visible;padding:10px 0 10px 0;-webkit-overflow-scrolling:touch;">' +
-      '<div class="piano-keyboard-stage" style="position:relative;display:inline-block;min-width:'+((whiteIndex * whiteTotal) + 4)+'px;height:'+whiteHeight+'px;">' +
-        '<div class="piano-keyboard-whites" style="position:relative;height:'+whiteHeight+'px;z-index:1;">' + whiteKeys.join('') + '</div>' +
-        '<div class="piano-keyboard-blacks" style="position:absolute;left:0;top:0;width:100%;height:'+blackHeight+'px;z-index:60;pointer-events:auto;">' + blackKeys.join('') + '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="piano-main-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;">' +
-      '<button onclick="pianoReproducirAcorde(\''+root+'\',\''+type+'\',false)" style="flex:1;min-width:150px;background:#3C3489;border:1px solid #534AB7;color:#EEEDFE;border-radius:999px;padding:10px 12px;cursor:pointer;font-size:0.8rem;font-weight:bold;">▶ Reproducir acorde</button>' +
-      '<button onclick="pianoReproducirAcorde(\''+root+'\',\''+type+'\',true)" style="flex:1;min-width:150px;background:#42426e;border:1px solid #2a2a45;color:#e8e6f0;border-radius:999px;padding:10px 12px;cursor:pointer;font-size:0.8rem;font-weight:bold;">🎵 Arpegio</button>' +
-    '</div>' +
-    '<div style="margin-top:4px;color:#8888aa;font-size:0.72rem;">' +
-      'Toca directamente las teclas del piano. Las negras ahora son independientes y el arpegio se escucha escalonado.' +
-    '</div>' +
-    '<div class="piano-extra-row piano-extra-label" style="margin-top:4px;font-size:0.72rem;color:#8888aa;margin-bottom:6px;">Acordes (toca para ver otro):</div>' +
-    '<div class="piano-extra-row" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;">' + rootBtns + '</div>' +
-    '<div class="piano-extra-row">' + songChordsHTML + '</div>' +
-    '<div class="piano-extra-row piano-extra-label" style="margin-top:6px;font-size:0.72rem;color:#8888aa;margin-bottom:6px;">Variaciones:</div>' +
-    '<div class="piano-extra-row" style="display:flex;flex-wrap:wrap;gap:4px;">' + variantBtns + '</div>';
-}
-
-// ===== AUDIO DEL ACORDE (Web Audio API, sin dependencias, funciona offline) =====
-var pianoAudioCtx = null;
-var jubiloMelodiaEditor = null;
-var jubiloMelodiaRecording = false;
-var jubiloMelodiaStart = 0;
-var jubiloMelodiaEvents = [];
-var jubiloMelodiaActiveKey = null;
-var JUBILO_MELODIA_KEY = 'yhwh_jubilo_melodias_v1';
 var HISTORIA_TABS = ['vision','historia','organigrama','galeria'];
 function cambiarTabHistoria(tab){
   for (var i = 0; i < HISTORIA_TABS.length; i++) {
@@ -14014,259 +12416,6 @@ function cambiarTabHistoria(tab){
     if (btn) btn.classList.toggle('active', t === tab);
   }
   if (tab === 'galeria' && window.renderGaleriaGrid) renderGaleriaGrid();
-}
-
-// ============================================================
-// === PANTALLA TEORÍA: pestañas, tarjetas de acordes, tabla de
-// === tonalidades y círculo de quintas (usa el mismo modal de
-// === piano — abrirPiano() — que el resto de la app).
-// ============================================================
-var TEORIA_TABS = ['acordes','tonalidades','circulo','piano'];
-var TEORIA_TAB_ID = {acordes:'TeoAcordes', tonalidades:'TeoTonalidades', circulo:'TeoCirculo', piano:'TeoPiano'};
-var teoriaInicializada = false;
-
-function cambiarTabTeoria(tab){
-  TEORIA_TABS.forEach(function(t){
-    var suf = TEORIA_TAB_ID[t];
-    var content = document.getElementById('tabContent' + suf);
-    var btn = document.getElementById('tabBtn' + suf);
-    if (content) content.style.display = (t === tab) ? 'block' : 'none';
-    if (btn) btn.classList.toggle('active', t === tab);
-  });
-  if (!teoriaInicializada) { inicializarTeoria(); teoriaInicializada = true; }
-  if (tab === 'piano') {
-    abrirPianoTeoria();
-  } else {
-    cerrarPianoTeoria();
-  }
-}
-
-var TEORIA_CHORDS = [
-  {name:'Mayor',            sym:'',     deg:'1 – 3 – 5',          type:''},
-  {name:'menor',             sym:'m',    deg:'1 – ♭3 – 5',        type:'m'},
-  {name:'disminuido',        sym:'dim',  deg:'1 – ♭3 – ♭5',       type:'dim'},
-  {name:'aumentado',         sym:'aum',  deg:'1 – 3 – #5',         type:'aug'},
-  {name:'suspendido 2',      sym:'sus2', deg:'1 – 2 – 5',          type:'sus2'},
-  {name:'suspendido 4',      sym:'sus4', deg:'1 – 4 – 5',          type:'sus4'},
-  {name:'séptima dominante', sym:'7',    deg:'1 – 3 – 5 – ♭7',    type:'7'},
-  {name:'menor séptima',     sym:'m7',   deg:'1 – ♭3 – 5 – ♭7',   type:'m7'}
-];
-
-function renderTeoriaAcordes(){
-  var grid = document.getElementById('teoriaCardGrid');
-  if (!grid) return;
-  grid.innerHTML = TEORIA_CHORDS.map(function(c){
-    var label = pianoLabelChord('C', c.type);
-    return '<div class="teoria-card" onclick="abrirPiano(\'C'+c.type+'\', null, true)">' +
-      '<div class="tc-name">'+c.name+'</div>' +
-      '<div class="tc-sym">ej.: '+label+'</div>' +
-      '<div class="tc-deg">Grados: '+c.deg+'</div>' +
-      '<div class="tc-tap">🎹 Toca para ver en el piano</div>' +
-      '</div>';
-  }).join('');
-}
-
-// Fórmula diatónica de la escala mayor: grado -> [semitonos, tipo de acorde]
-var TEORIA_GRADOS = [
-  {semi:0,  type:''},    // I
-  {semi:2,  type:'m'},   // ii
-  {semi:4,  type:'m'},   // iii
-  {semi:5,  type:''},    // IV
-  {semi:7,  type:''},    // V
-  {semi:9,  type:'m'},   // vi
-  {semi:11, type:'dim'}  // vii°
-];
-
-var TEORIA_GRADO_LABELS = ['I','ii','iii','IV','V','vi','vii°'];
-
-function renderTeoriaTonalidades(){
-  var body = document.getElementById('teoriaTonalidadesBody');
-  var mobile = document.getElementById('teoriaTonalidadesMobile');
-  if (!body && !mobile) return;
-  var rows = '', cards = '';
-  for (var r = 0; r < 12; r++){
-    var rootLabel = pianoLabelRoot(PIANO_SEMIS[r]);
-    rows += '<tr><td class="tk-root">'+rootLabel+'</td>';
-    var chipsHtml = '';
-    TEORIA_GRADOS.forEach(function(g, gi){
-      var root = PIANO_SEMIS[(r + g.semi) % 12];
-      var chordStr = root + g.type;
-      var chordEscapado = chordStr.replace(/'/g,"\\'");
-      var chipLabel = pianoLabelChord(root, g.type);
-      rows += '<td><span class="tk-chip" onclick="abrirPiano(\''+chordEscapado+'\', null, true)">'+chipLabel+'</span></td>';
-      chipsHtml += '<div class="tk-chip-wrap"><span class="tk-chip-deg">'+TEORIA_GRADO_LABELS[gi]+'</span>' +
-        '<span class="tk-chip" onclick="abrirPiano(\''+chordEscapado+'\', null, true)">'+chipLabel+'</span></div>';
-    });
-    rows += '</tr>';
-    cards += '<div class="tk-card"><div class="tk-card-root">'+rootLabel+' mayor</div>' +
-      '<div class="tk-card-chips">'+chipsHtml+'</div></div>';
-  }
-  if (body) body.innerHTML = rows;
-  if (mobile) mobile.innerHTML = cards;
-}
-
-// ----- Círculo de quintas -----
-var TEORIA_ORDER = []; // pitch classes en orden de quintas, empezando en C
-(function(){
-  var idx = 0;
-  for (var i = 0; i < 12; i++){ TEORIA_ORDER.push(idx); idx = (idx + 7) % 12; }
-})();
-var TEORIA_KEY_SIG = {0:'0 alteraciones',7:'1 sostenido',2:'2 sostenidos',9:'3 sostenidos',4:'4 sostenidos',
-  11:'5 sostenidos',6:'6 sostenidos / 6 bemoles',1:'7 sostenidos / 5 bemoles',8:'4 bemoles',3:'3 bemoles',
-  10:'2 bemoles',5:'1 bemol'};
-
-function teoriaCirclePos(i, r, cx, cy){
-  var theta = i * (Math.PI / 6);
-  return { x: cx + r * Math.sin(theta), y: cy - r * Math.cos(theta) };
-}
-
-function renderCirculoQuintas(){
-  var holder = document.getElementById('teoriaCircleHolder');
-  if (!holder) return;
-  var cx = 190, cy = 190, R1 = 152, R2 = 98, NR1 = 25, NR2 = 21;
-  var svg = '<svg viewBox="0 0 380 380" width="100%" style="max-width:380px;height:auto;display:block;" xmlns="http://www.w3.org/2000/svg">';
-  svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+R1+'" fill="none" stroke="var(--border)" stroke-width="1"/>';
-  svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+R2+'" fill="none" stroke="var(--border)" stroke-width="1"/>';
-  for (var i = 0; i < 12; i++){
-    var a = teoriaCirclePos(i, R1, cx, cy), b = teoriaCirclePos((i+1)%12, R1, cx, cy);
-    svg += '<line id="teoEdge_'+i+'" x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="var(--border)" stroke-width="2"/>';
-  }
-  for (var i2 = 0; i2 < 12; i2++){
-    var oPos = teoriaCirclePos(i2, R1, cx, cy), iPos = teoriaCirclePos(i2, R2, cx, cy);
-    svg += '<line id="teoSpoke_'+i2+'" x1="'+oPos.x+'" y1="'+oPos.y+'" x2="'+iPos.x+'" y2="'+iPos.y+'" stroke="var(--border)" stroke-width="2"/>';
-  }
-  for (var i3 = 0; i3 < 12; i3++){
-    var pc = TEORIA_ORDER[i3], p = teoriaCirclePos(i3, R1, cx, cy);
-    svg += '<g class="teoria-key-node" onclick="teoriaSelectKey('+i3+', false)">' +
-      '<circle cx="'+p.x+'" cy="'+p.y+'" r="'+NR1+'" fill="var(--bg2)" stroke="var(--border)" stroke-width="1.5" id="teoOuterC_'+i3+'"/>' +
-      '<text x="'+p.x+'" y="'+(p.y+5)+'" font-size="14" text-anchor="middle" fill="var(--text)">'+pianoLabelRoot(PIANO_SEMIS[pc])+'</text>' +
-      '</g>';
-  }
-  for (var i4 = 0; i4 < 12; i4++){
-    var pcMaj = TEORIA_ORDER[i4], pcMin = (pcMaj + 9) % 12, p2 = teoriaCirclePos(i4, R2, cx, cy);
-    svg += '<g class="teoria-key-node" onclick="teoriaSelectKey('+i4+', true)">' +
-      '<circle cx="'+p2.x+'" cy="'+p2.y+'" r="'+NR2+'" fill="var(--bg3)" stroke="var(--border)" stroke-width="1.5" id="teoInnerC_'+i4+'"/>' +
-      '<text x="'+p2.x+'" y="'+(p2.y+4)+'" font-size="10.5" text-anchor="middle" fill="var(--text)" opacity="0.8">'+pianoLabelRoot(PIANO_SEMIS[pcMin])+'m</text>' +
-      '</g>';
-  }
-  svg += '</svg>';
-  holder.innerHTML = svg;
-  teoriaSelectKey(0, false);
-}
-
-function abrirPianoTeoria(){
-  var modal = document.getElementById('pianoTeoriaModal');
-  var title = document.getElementById('pianoTeoriaModalTitle');
-  var content = document.getElementById('pianoTeoriaModalContent');
-  var aviso = document.getElementById('pianoTeoriaGirarAviso');
-  if (!modal || !title || !content || !aviso) return;
-
-  pianoSoloMode = true;
-  title.textContent = '🎹 Piano de teoría';
-  content.innerHTML = pianoRenderHTML('C', '');
-  modal.style.display = 'flex';
-  modal.classList.add('piano-open');
-  pianoActualizarPianoTeoria();
-}
-
-function cerrarPianoTeoria(){
-  var modal = document.getElementById('pianoTeoriaModal');
-  if (modal) { modal.style.display = 'none'; modal.classList.remove('piano-open'); }
-  pianoSoloMode = false;
-}
-
-function pianoActualizarPianoTeoria(){
-  var modal = document.getElementById('pianoTeoriaModal');
-  if (!modal || modal.style.display === 'none') return;
-  var aviso = document.getElementById('pianoTeoriaGirarAviso');
-  var content = document.getElementById('pianoTeoriaModalContent');
-  var portrait = window.innerHeight > window.innerWidth;
-  if (aviso) aviso.style.display = portrait ? 'flex' : 'none';
-  if (content) content.style.display = portrait ? 'none' : 'block';
-  if (!portrait) pianoActualizarSiAbierto();
-}
-
-function teoriaResetCircleColors(){
-  for (var i = 0; i < 12; i++){
-    var oc = document.getElementById('teoOuterC_' + i);
-    var ic = document.getElementById('teoInnerC_' + i);
-    if (oc) { oc.style.fill = 'var(--bg2)'; oc.style.stroke = 'var(--border)'; }
-    if (ic) { ic.style.fill = 'var(--bg3)'; ic.style.stroke = 'var(--border)'; }
-    var e = document.getElementById('teoEdge_' + i); if (e) { e.style.stroke = 'var(--border)'; e.setAttribute('stroke-width','2'); }
-    var s = document.getElementById('teoSpoke_' + i); if (s) { s.style.stroke = 'var(--border)'; s.setAttribute('stroke-width','2'); }
-  }
-}
-
-function teoriaSelectKey(i, isMinor){
-  teoriaResetCircleColors();
-
-  if (!isMinor){
-    // ----- Se tocó una tonalidad MAYOR (anillo exterior) -----
-    var pcTonic = TEORIA_ORDER[i];
-    var iV = (i + 1) % 12, iIV = (i - 1 + 12) % 12;
-    var pcV = TEORIA_ORDER[iV], pcIV = TEORIA_ORDER[iIV];
-    var pcMinor = (pcTonic + 9) % 12;
-
-    var tc = document.getElementById('teoOuterC_' + i); tc.style.fill = 'var(--gold)'; tc.style.stroke = 'var(--gold2)';
-    var tic = document.getElementById('teoInnerC_' + i); tic.style.fill = 'var(--minor)'; tic.style.stroke = 'var(--gold2)';
-    var vc = document.getElementById('teoOuterC_' + iV); vc.style.fill = 'var(--chord)'; vc.style.stroke = 'var(--gold2)';
-    var ivc = document.getElementById('teoOuterC_' + iIV); ivc.style.fill = 'var(--section)'; ivc.style.stroke = 'var(--gold2)';
-    document.getElementById('teoEdge_' + i).style.stroke = 'var(--chord)'; document.getElementById('teoEdge_' + i).setAttribute('stroke-width','3');
-    document.getElementById('teoEdge_' + iIV).style.stroke = 'var(--section)'; document.getElementById('teoEdge_' + iIV).setAttribute('stroke-width','3');
-    document.getElementById('teoSpoke_' + i).style.stroke = 'var(--minor)'; document.getElementById('teoSpoke_' + i).setAttribute('stroke-width','3');
-
-    document.getElementById('teoCircleKeyName').textContent = pianoLabelRoot(PIANO_SEMIS[pcTonic]) + ' mayor';
-    document.getElementById('teoCircleKeySig').textContent = 'Armadura: ' + TEORIA_KEY_SIG[pcTonic];
-    document.getElementById('teoLabelIV').textContent = 'Subdominante (IV)';
-    document.getElementById('teoLabelV').textContent = 'Dominante (V)';
-    document.getElementById('teoLabelVI').textContent = 'Relativa menor (vi)';
-    document.getElementById('teoValIV').textContent = pianoLabelRoot(PIANO_SEMIS[pcIV]);
-    document.getElementById('teoValV').textContent = pianoLabelRoot(PIANO_SEMIS[pcV]);
-    document.getElementById('teoValVI').textContent = pianoLabelRoot(PIANO_SEMIS[pcMinor]) + 'm';
-
-    document.getElementById('teoValIV').onclick = function(){ abrirPiano(PIANO_SEMIS[pcIV], null, true); };
-    document.getElementById('teoValV').onclick = function(){ abrirPiano(PIANO_SEMIS[pcV], null, true); };
-    document.getElementById('teoValVI').onclick = function(){ abrirPiano(PIANO_SEMIS[pcMinor] + 'm', null, true); };
-    document.getElementById('teoCircleKeyName').onclick = function(){ abrirPiano(PIANO_SEMIS[pcTonic], null, true); };
-    document.getElementById('teoCircleKeyName').style.cursor = 'pointer';
-  } else {
-    // ----- Se tocó un acorde MENOR (anillo interior) -----
-    // Las tonalidades menores del anillo interior también avanzan en
-    // quintas, así que su iv y su v son, respectivamente, los nodos
-    // interiores vecinos (i-1) e (i+1).
-    var pcMajRel = TEORIA_ORDER[i];        // mayor relativa (misma armadura)
-    var pcTonicM = (pcMajRel + 9) % 12;    // tónica menor tocada
-    var iIVm = (i - 1 + 12) % 12, iVm = (i + 1) % 12;
-    var pcIVm = (TEORIA_ORDER[iIVm] + 9) % 12;
-    var pcVm  = (TEORIA_ORDER[iVm]  + 9) % 12;
-
-    var ticSel = document.getElementById('teoInnerC_' + i); ticSel.style.fill = 'var(--gold)'; ticSel.style.stroke = 'var(--gold2)';
-    var tcSel = document.getElementById('teoOuterC_' + i); tcSel.style.fill = 'var(--minor)'; tcSel.style.stroke = 'var(--gold2)';
-    var vicSel = document.getElementById('teoInnerC_' + iVm); vicSel.style.fill = 'var(--chord)'; vicSel.style.stroke = 'var(--gold2)';
-    var ivicSel = document.getElementById('teoInnerC_' + iIVm); ivicSel.style.fill = 'var(--section)'; ivicSel.style.stroke = 'var(--gold2)';
-    document.getElementById('teoSpoke_' + i).style.stroke = 'var(--minor)'; document.getElementById('teoSpoke_' + i).setAttribute('stroke-width','3');
-
-    document.getElementById('teoCircleKeyName').textContent = pianoLabelRoot(PIANO_SEMIS[pcTonicM]) + ' menor';
-    document.getElementById('teoCircleKeySig').textContent = 'Armadura: ' + TEORIA_KEY_SIG[pcMajRel] + ' (igual que su relativa mayor)';
-    document.getElementById('teoLabelIV').textContent = 'Subdominante (iv)';
-    document.getElementById('teoLabelV').textContent = 'Dominante (v)';
-    document.getElementById('teoLabelVI').textContent = 'Relativa mayor (III)';
-    document.getElementById('teoValIV').textContent = pianoLabelRoot(PIANO_SEMIS[pcIVm]) + 'm';
-    document.getElementById('teoValV').textContent = pianoLabelRoot(PIANO_SEMIS[pcVm]) + 'm';
-    document.getElementById('teoValVI').textContent = pianoLabelRoot(PIANO_SEMIS[pcMajRel]);
-
-    document.getElementById('teoValIV').onclick = function(){ abrirPiano(PIANO_SEMIS[pcIVm] + 'm', null, true); };
-    document.getElementById('teoValV').onclick = function(){ abrirPiano(PIANO_SEMIS[pcVm] + 'm', null, true); };
-    document.getElementById('teoValVI').onclick = function(){ abrirPiano(PIANO_SEMIS[pcMajRel], null, true); };
-    document.getElementById('teoCircleKeyName').onclick = function(){ abrirPiano(PIANO_SEMIS[pcTonicM] + 'm', null, true); };
-    document.getElementById('teoCircleKeyName').style.cursor = 'pointer';
-  }
-}
-
-function inicializarTeoria(){
-  renderTeoriaAcordes();
-  renderTeoriaTonalidades();
-  renderCirculoQuintas();
 }
 
 var GALERIA_FOTOS = [
@@ -14348,618 +12497,6 @@ function galeriaTeclado(e){
     galeriaTouchStartX = null;
   }, { passive: true });
 })();
-
-// OJO: antes esta función creaba su PROPIO AudioContext "crudo" (new
-// AudioContext()), separado del que usa Tone.js internamente para los
-// Sampler (piano/trompeta/guitarra). En Chrome/Android eso no se notaba,
-// pero en iOS Safari el desbloqueo de audio por gesto del usuario solo
-// vale para el contexto que efectivamente se desbloqueó — y como el
-// sonido real sale por el contexto de Tone (vía .toDestination()), tener
-// dos contextos distintos podía dejar el de Tone sin desbloquear aunque
-// este de acá sí lo estuviera. Ahora, si Tone.js está disponible, se
-// reutiliza SU contexto (Tone.getContext().rawContext) para todo —
-// incluido el motor de respaldo con osciladores — para que solo exista un
-// AudioContext en toda la app.
-function pianoGetAudioCtx(){
-  if (window.Tone && Tone.getContext) {
-    var toneCtx = Tone.getContext().rawContext;
-    if (toneCtx && toneCtx.state === 'suspended') { try { toneCtx.resume(); } catch(e){} }
-    return toneCtx;
-  }
-  if (!pianoAudioCtx) {
-    var Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!Ctx) return null;
-    pianoAudioCtx = new Ctx();
-  }
-  if (pianoAudioCtx.state === 'suspended') pianoAudioCtx.resume();
-  return pianoAudioCtx;
-}
-
-// iOS (Safari) exige que el audio se "desbloquee" dentro de un gesto real
-// del usuario (touch/click), y solo cuenta la primera vez que ocurre.
-// Antes eso quedaba atado al primer toque a un acorde (dentro de
-// abrirPiano), lo cual coincidía con empezar a descargar las muestras del
-// instrumento — si esa descarga tardaba, la sensación era que "no sonaba
-// la primera vez". Con esto, el desbloqueo pasa en el primer toque a
-// CUALQUIER parte de la página (no hace falta que sea sobre el piano), así
-// para cuando el usuario realmente toca un acorde, Tone.js ya está listo
-// y lo único que puede demorar es la descarga de las muestras en sí.
-//
-// Además, en vez de confiar solo en Tone.start()/resume() (que en algunos
-// iPhone deja el contexto "running" en el papel pero sin sonar realmente
-// la primera vez), se reproduce un buffer silencioso de un sample dentro
-// del mismo gesto — es el truco clásico para que Safari cuente el
-// contexto como "audio real ya sonó" y no como un desbloqueo fantasma.
-//
-// pianoDebugToast: aviso TEMPORAL (quitar cuando confirmemos que ya suena
-// bien en iPhone) para poder ver en el propio teléfono, sin cable ni
-// consola, si el desbloqueo falló y por qué.
-function pianoDebugToast(msg){
-  try { mostrarToast('🔧 ' + msg, 3500); } catch(e){}
-}
-
-// Descubrimos probando en iPhone real: si el switch físico de silencio
-// está activado, el Web Audio API "puro" (el que usa Tone.js) NO suena
-// — iOS lo trata como sonido "ambient" y lo mutea — A MENOS que la
-// página ya haya reproducido antes un elemento <audio>/<video> real, lo
-// cual cambia la categoría de la sesión de audio a "playback" y a partir
-// de ahí sí suena todo, switch de silencio o no. Por eso abrir el piano
-// directo quedaba mudo, pero tocar primero una canción (que usa <audio>
-// real) y después abrir el piano sí sonaba: la canción ya había hecho
-// ese cambio de categoría.
-//
-// iOS necesita un audio real para cambiar la sesión a playback. En vez de
-// depender de un WAV casi vacío, generamos un clip diminuto y lo usamos una
-// sola vez como "calentamiento" del audio. Es tan corto y suave que no se
-// percibe, pero sí ayuda a que Safari registre una reproducción real.
-var pianoAudioWarmupUrl = null;
-function pianoDesbloquearAudioSession(){
-  // NEUTRALIZADO POR COMPLETO: crear/arrancar el AudioContext de Tone.js
-  // (Web Audio API) apenas se toca la pantalla por primera vez, antes de
-  // que el usuario elija una cancion, es lo que rompe el sonido en
-  // iPhone: en cuanto existe un AudioContext de Web Audio activo, Safari
-  // en iOS empieza a tratar TODO el audio de la pagina (incluido el
-  // audio normal de las canciones) como si debiera respetar el
-  // interruptor fisico de silencio, aunque normalmente el audio comun lo
-  // ignora. Por eso el boton se veia reproduciendo pero no sonaba.
-  // El piano (Tone.js) ya arranca su propio Tone.start() en el momento
-  // exacto en que el usuario lo abre (ver abrirPiano y funciones
-  // relacionadas), asi que aqui ya no hace falta hacer nada.
-}
-function pianoDesbloquearAudioConMp3Real(){
-  if (window._pianoWarmupPlayed) return false;
-  window._pianoWarmupPlayed = true;
-  try {
-    var apoyo = null;
-    if (Array.isArray(SONGS) && SONGS.length) {
-      apoyo = SONGS[0];
-    }
-    var baseId = apoyo && apoyo.id !== undefined && apoyo.id !== null ? apoyo.id : '0';
-    var audio = new Audio();
-    audio.preload = 'auto';
-    audio.playsInline = true;
-    audio.volume = 0.01;
-    // El temporizador debe comenzar cuando el audio realmente empieza a sonar.
-    // Si se iniciara al pedir play(), una red lenta podría hacerlo sonar después
-    // de que ya intentamos pausarlo, dejando la canción 0 de fondo.
-    var warmupFinalizado = false;
-    var warmupTimer = null;
-    function detenerWarmup() {
-      if (warmupFinalizado) return;
-      warmupFinalizado = true;
-      if (warmupTimer) clearTimeout(warmupTimer);
-      try { audio.pause(); audio.src = ''; } catch (e) {}
-    }
-    audio.addEventListener('playing', function() {
-      if (!warmupFinalizado) warmupTimer = setTimeout(detenerWarmup, 800);
-    });
-    audio.src = urlAudioCloudinary(baseId, 'm4a');
-    audio.addEventListener('error', function() {
-      if (warmupFinalizado) return;
-      try { audio.src = urlAudioCloudinary(baseId, 'mp3'); audio.load(); audio.play().catch(function(){ window._pianoWarmupPlayed = false; }); } catch (e) { window._pianoWarmupPlayed = false; }
-    }, { once: true });
-    var p = audio.play();
-    if (p && p.catch) {
-      p.catch(function(){
-        if (warmupFinalizado) return;
-        try { audio.src = urlAudioCloudinary(baseId, 'mp3'); audio.load(); audio.play().catch(function(){ window._pianoWarmupPlayed = false; }); } catch (e) { window._pianoWarmupPlayed = false; }
-      });
-    }
-  } catch (e) {
-    window._pianoWarmupPlayed = false;
-    return false;
-  }
-  return true;
-}
-
-function pianoStartToneIfNeeded(){
-  if (!(window.Tone && Tone.start)) return Promise.resolve();
-  try {
-    if (Tone.context && Tone.context.state === 'running') return Promise.resolve();
-  } catch (e) {}
-  return Tone.start().catch(function(){});
-}
-
-// DESACTIVADO: este bloque escuchaba el PRIMER toque en cualquier parte de
-// toda la app (aun antes de elegir una cancion) para arrancar el
-// AudioContext de Tone.js por adelantado. Ese arranque temprano era la
-// causa real de que el audio de las canciones sonara mudo en iPhone (ver
-// la explicacion en pianoDesbloquearAudioSession, arriba). El piano sigue
-// funcionando igual: se desbloquea solo, en el momento en que el usuario
-// realmente lo abre (abrirPiano() y funciones relacionadas ya llaman a
-// Tone.start() ahi mismo).
-
-var pianoSampler = null;
-var pianoSamplerPromise = null;
-
-// Instrumento con el que suena el piano en este momento: 'piano', 'trompeta'
-// o 'guitarra'. Antes se fijaba solo por la sección (Adoración/Teoría =
-// piano, Júbilo = trompeta); ahora el selector dentro del propio modal deja
-// elegir, y esa elección se recuerda por separado para cada sección en
-// pianoInstrumentoPref, para no perderla al tocar el siguiente acorde.
-var pianoInstrumentoActivo = 'piano';
-var pianoInstrumentoPref = { adoracion: 'piano', jubilo: 'trompeta' };
-// 'adoracion' o 'jubilo': de qué sección viene el acorde que se está viendo
-// ahora mismo. Sirve para saber en qué entrada de pianoInstrumentoPref
-// guardar/leer cuando no hay pistas nuevas (p.ej. al pulsar el selector).
-var pianoSeccionActual = 'adoracion';
-
-var pianoTrumpetSampler = null;
-var pianoTrumpetSamplerPromise = null;
-var pianoGuitarraSampler = null;
-var pianoGuitarraSamplerPromise = null;
-
-function pianoCrearSamplerLocal(tipo){
-  var ctx = pianoGetAudioCtx();
-  if (!ctx || !window.Tone) return Promise.reject(new Error('Tone.js no disponible'));
-
-  var cached = tipo === 'trompeta' ? pianoTrumpetSampler : tipo === 'guitarra' ? pianoGuitarraSampler : pianoSampler;
-  var cachedPromise = tipo === 'trompeta' ? pianoTrumpetSamplerPromise : tipo === 'guitarra' ? pianoGuitarraSamplerPromise : pianoSamplerPromise;
-  if (cached) return Promise.resolve(cached);
-  if (cachedPromise) return cachedPromise;
-
-  var inst;
-  if (tipo === 'trompeta') {
-    inst = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: 'sawtooth' },
-      envelope: { attack: 0.045, decay: 0.14, sustain: 0.18, release: 0.42 },
-      portamento: 0.01
-    });
-    var trumpetFilter = new Tone.Filter(1500, 'lowpass');
-    trumpetFilter.Q.value = 1.1;
-    var trumpetComp = new Tone.Compressor(-22, 4);
-    var trumpetVerb = new Tone.Reverb({ decay: 1.1, preDelay: 0.01, wet: 0.08 });
-    trumpetVerb.toDestination();
-    inst.chain(trumpetFilter, trumpetComp, trumpetVerb, Tone.Destination);
-    pianoTrumpetSampler = inst;
-    pianoTrumpetSamplerPromise = Promise.resolve(inst);
-    return pianoTrumpetSamplerPromise;
-  }
-
-  if (tipo === 'guitarra') {
-    inst = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: 'fatsawtooth', count: 3, spread: 22 },
-      envelope: { attack: 0.004, decay: 0.14, sustain: 0.06, release: 0.26 },
-      portamento: 0.005
-    });
-    var gtrFilter = new Tone.Filter(2400, 'lowpass');
-    gtrFilter.Q.value = 0.9;
-    var dist = new Tone.Distortion(0.16);
-    dist.oversample = '4x';
-    var gtrChorus = new Tone.Chorus(2.2, 0.35, 0.18).start();
-    var gtrComp = new Tone.Compressor(-24, 4);
-    inst.chain(gtrFilter, gtrChorus, dist, gtrComp, Tone.Destination);
-    pianoGuitarraSampler = inst;
-    pianoGuitarraSamplerPromise = Promise.resolve(inst);
-    return pianoGuitarraSamplerPromise;
-  }
-
-  inst = new Tone.PolySynth(Tone.Synth, {
-    oscillator: { type: 'triangle' },
-    envelope: { attack: 0.006, decay: 0.2, sustain: 0.24, release: 1.05 },
-    portamento: 0.01
-  });
-  var pianoEq = new Tone.Filter(2600, 'lowpass');
-  pianoEq.Q.value = 0.7;
-  var pianoVerb = new Tone.Reverb({ decay: 1.8, preDelay: 0.015, wet: 0.12 });
-  pianoVerb.toDestination();
-  var pianoComp = new Tone.Compressor(-20, 5);
-  inst.chain(pianoEq, pianoVerb, pianoComp, Tone.Destination);
-  pianoSampler = inst;
-  pianoSamplerPromise = Promise.resolve(inst);
-  return pianoSamplerPromise;
-}
-
-// Devuelve la promesa del instrumento correspondiente al instrumento activo.
-function pianoObtenerSamplerActivo(){
-  if (pianoInstrumentoActivo === 'trompeta') return pianoCrearSamplerLocal('trompeta');
-  if (pianoInstrumentoActivo === 'guitarra') return pianoCrearSamplerLocal('guitarra');
-  return pianoCrearSamplerLocal('piano');
-}
-
-
-function pianoMidiToFreq(midi){
-  return 440 * Math.pow(2, (midi - 69) / 12);
-}
-
-function pianoMidiToNoteName(midi){
-  var names = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-  var octave = Math.floor(midi / 12) - 1;
-  return names[((midi % 12) + 12) % 12] + octave;
-}
-
-function pianoMidiToDisplayNoteName(midi){
-  var note = pianoMidiToNoteName(midi);
-  var m = String(note).match(/^([A-G](?:#)?)(-?\d+)$/);
-  if (!m) return note;
-  var root = pianoLabelRoot(m[1]);
-  if (m[1] === 'C') return root + m[2];
-  return root;
-}
-
-// Nodo compartido que suaviza el volumen cuando suenan varias notas del
-// acorde a la vez, para que no se sature/distorsione.
-function pianoGetMasterOut(ctx){
-  if (!ctx._pianoMasterOut) {
-    var comp = ctx.createDynamicsCompressor();
-    var gain = ctx.createGain();
-    comp.threshold.value = -18;
-    comp.knee.value = 20;
-    comp.ratio.value = 8;
-    comp.attack.value = 0.003;
-    comp.release.value = 0.25;
-    gain.gain.value = 1;
-    comp.connect(gain);
-    gain.connect(ctx.destination);
-    ctx._pianoMasterOut = comp;
-    ctx._pianoMasterGain = gain;
-  }
-  return ctx._pianoMasterOut;
-}
-
-function pianoSetMelodyMuted(muted){
-  var ctx = pianoAudioCtx;
-  if (!ctx || !ctx._pianoMasterGain) return;
-  try {
-    ctx._pianoMasterGain.gain.setValueAtTime(muted ? 0 : 1, ctx.currentTime);
-  } catch (e) {
-    ctx._pianoMasterGain.gain.value = muted ? 0 : 1;
-  }
-}
-
-// ===== NUEVO MOTOR DE PIANO (Web Audio API, más musical que samples planos) =====
-// Piano, trompeta y guitarra usan muestras reales: la primera vez hay que
-// esperar a que terminen de bajar sus .mp3 (por eso el aviso de "Cargando").
-var pianoAvisoCargaMostrado = false;
-function pianoInstrumentoListo(){
-  var s = pianoInstrumentoActivo === 'trompeta' ? pianoTrumpetSampler :
-    pianoInstrumentoActivo === 'guitarra' ? pianoGuitarraSampler : pianoSampler;
-  return !!(s && s.loaded);
-}
-
-function pianoCreateVoice(ctx, midi, startTime, duration, velocity){
-  var note = pianoMidiToNoteName(midi);
-  var vel = Math.max(0.15, Math.min(1, velocity || 0.8));
-  // La primera vez que se toca un instrumento (piano/trompeta) puede tardar
-  // un momento en sonar mientras se terminan de bajar sus muestras — sobre
-  // todo en el primer uso, antes de que el service worker las tenga en
-  // caché. Sin este aviso, esa demora se sentía como que "no sonaba".
-  if (!pianoInstrumentoListo() && !pianoAvisoCargaMostrado) {
-    pianoAvisoCargaMostrado = true;
-    mostrarToast('🔊 Cargando el sonido, esperá un segundo…');
-  }
-  pianoObtenerSamplerActivo().then(function(sampler){
-    var when = (typeof startTime === 'number' && isFinite(startTime)) ? startTime : ((window.Tone && Tone.now) ? Tone.now() : (ctx ? ctx.currentTime + 0.02 : 0));
-    sampler.triggerAttackRelease(note, Math.max(0.1, duration || 0.22), when, vel);
-  }).catch(function(err){
-    pianoDebugToast('Sampler no cargó, sonando con respaldo: ' + (err && err.message ? err.message : err));
-    pianoCreateFallbackVoice(ctx, midi, startTime, duration, velocity);
-  });
-}
-
-function pianoLoadBuffer(ctx, midi){
-  return pianoObtenerSamplerActivo().then(function(){ return midi; });
-}
-
-function pianoPlayNoteSample(ctx, midiObjetivo, startTime, duration){
-  pianoCreateVoice(ctx, midiObjetivo, startTime, duration || 0.24, 0.84);
-}
-
-// Curva clásica de distorsión para WaveShaperNode (recorte progresivo
-// según "amount"). Solo se usa aquí, en el motor de respaldo sin Tone.js
-// (si Tone.js no cargó, no hay muestras reales ni de piano/trompeta/guitarra
-// y todo suena con estos osciladores en su lugar).
-function pianoMakeDistortionCurve(amount){
-  var k = typeof amount === 'number' ? amount : 20;
-  var n = 44100;
-  var curve = new Float32Array(n);
-  var deg = Math.PI / 180;
-  for (var i = 0; i < n; i++){
-    var x = (i * 2) / n - 1;
-    curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
-  }
-  return curve;
-}
-
-function pianoCreateFallbackVoice(ctx, midi, startTime, duration, velocity){
-  var out = pianoGetMasterOut(ctx);
-  var freq = pianoMidiToFreq(midi);
-  var vel = Math.max(0.15, Math.min(1, velocity || 0.8));
-  var osc1 = ctx.createOscillator();
-  var osc2 = ctx.createOscillator();
-  var osc3 = ctx.createOscillator();
-  var gain = ctx.createGain();
-  var filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.Q.value = 0.5;
-  var esTrompeta = pianoInstrumentoActivo === 'trompeta';
-  var esGuitarra = pianoInstrumentoActivo === 'guitarra';
-  filter.frequency.value = esGuitarra ? 2600 : 3200;
-  osc1.type = (esTrompeta || esGuitarra) ? 'sawtooth' : 'triangle';
-  osc1.frequency.value = freq;
-  // En la guitarra, el segundo oscilador va un poquito desafinado (en vez
-  // de una octava arriba como en piano/trompeta) para dar cuerpo, como si
-  // fueran dos cuerdas de la misma nota.
-  osc2.type = esTrompeta ? 'square' : (esGuitarra ? 'sawtooth' : 'sine');
-  osc2.frequency.value = esGuitarra ? freq * 1.006 : freq * 2;
-  osc3.type = 'sine'; osc3.frequency.value = freq * 0.5;
-  gain.gain.setValueAtTime(0.0001, startTime);
-  gain.gain.exponentialRampToValueAtTime((esGuitarra ? 0.45 : 0.7) * vel, startTime + 0.008);
-  gain.gain.exponentialRampToValueAtTime(0.0001, startTime + Math.max(0.12, duration || 0.22));
-  if (esGuitarra){
-    var waveshaper = ctx.createWaveShaper();
-    waveshaper.curve = pianoMakeDistortionCurve(18);
-    waveshaper.oversample = '2x';
-    osc1.connect(waveshaper); osc2.connect(waveshaper); osc3.connect(waveshaper);
-    waveshaper.connect(filter);
-  } else {
-    osc1.connect(filter); osc2.connect(filter); osc3.connect(filter);
-  }
-  filter.connect(gain);
-  gain.connect(out);
-  osc1.start(startTime); osc2.start(startTime); osc3.start(startTime);
-  var stopAt = startTime + Math.max(0.16, duration || 0.22) + 0.08;
-  osc1.stop(stopAt); osc2.stop(stopAt); osc3.stop(stopAt);
-}
-
-function pianoTouchStart(ev, midi, duration){
-  if (ev) {
-    if (ev.preventDefault) ev.preventDefault();
-    if (ev.stopPropagation) ev.stopPropagation();
-    if (ev.currentTarget && ev.pointerId !== undefined && ev.currentTarget.setPointerCapture) {
-      try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
-    }
-    if (ev.currentTarget && ev.currentTarget.classList) {
-      ev.currentTarget.classList.add('pk-touching');
-    }
-  }
-  pianoStartToneIfNeeded();
-  pianoPlayNoteMidi(pianoGetAudioCtx(), midi, duration);
-  return false;
-}
-
-function pianoTouchEnd(ev){
-  if (ev && ev.preventDefault) ev.preventDefault();
-  if (ev && ev.stopPropagation) ev.stopPropagation();
-  if (ev && ev.currentTarget && ev.currentTarget.classList) {
-    ev.currentTarget.classList.remove('pk-touching');
-  }
-  return false;
-}
-
-function pianoReproducirAcorde(root, type, modoArpegio){
-  var ctx = pianoGetAudioCtx();
-  if (!ctx) { mostrarToast('⚠️ Tu navegador no soporta audio.'); return; }
-  vibrar(14);
-  // Todas las notas del acorde suenan dentro de la MISMA octava, partiendo
-  // del Do central (C4 = MIDI 60) para que el sonido no quede tan grave.
-  // El teclado visual sigue mostrando las teclas en su posición real/completa;
-  // esto solo afecta cómo se escucha el acorde.
-  var PIANO_OCTAVA_SONIDO = 60; // C4
-  var rootPc = pianoSemiOf(root);
-  var ints = PIANO_CHORD_TYPES[type] || PIANO_CHORD_TYPES[''];
-  var semis = ints.map(function(i){
-    return PIANO_OCTAVA_SONIDO + ((rootPc + i) % 12);
-  });
-
-  // Precargamos (o reutilizamos del cache) los samples que hacen falta
-  // antes de programar la reproducción, así el timing queda preciso.
-  var cargas = semis.map(function(m){ return pianoLoadBuffer(ctx, m); });
-
-  Promise.all(cargas).then(function(){
-    var now = ctx.currentTime + 0.03;
-    if (modoArpegio) {
-      semis.forEach(function(m, i){
-        pianoPlayNoteSample(ctx, m, now + i * 0.18, 0.4);
-        setTimeout(function(){ pianoKeyRipple(m); }, i * 180);
-      });
-    } else {
-      semis.forEach(function(m, i){
-        pianoPlayNoteSample(ctx, m, now + (i * 0.01), 0.5);
-        setTimeout(function(){ pianoKeyRipple(m); }, i * 10);
-      });
-    }
-  }).catch(function(err){
-    console.error('Error cargando sonido de piano:', err);
-    mostrarToast('⚠️ No se pudo cargar el sonido del piano.');
-  });
-}
-
-function abrirPiano(chordStr, sourceEl, autoPlay, ocultarMarcaAcorde, instrumento, soloPiano){
-  chordStr = chordLatinoToAmericano(chordStr);
-  var parsed = pianoParseChord(chordStr);
-  if (!parsed) return;
-  pianoSoloMode = !!soloPiano;
-  pianoDesbloquearAudioSession();
-  pianoDesbloquearAudioConMp3Real();
-  pianoStartToneIfNeeded();
-  pianoAvisoCargaMostrado = false;
-  pianoRequestLandscapeMode();
-  var modal = document.getElementById('pianoModal');
-  var title = document.getElementById('pianoModalTitle');
-  var content = document.getElementById('pianoModalContent');
-  var modalYaAbierto = modal && modal.style.display === 'flex';
-  if (sourceEl) {
-    pianoContextoCancion = pianoDetectarAcordesDesdeElemento(sourceEl);
-  } else if (!modalYaAbierto) {
-    // Apertura "limpia" (p.ej. desde Teoría): no arrastrar el contexto
-    // de una canción que se haya visto antes en otra pantalla del piano.
-    pianoContextoCancion = null;
-  }
-  // Instrumento: se recuerda por separado para Adoración y para Júbilo en
-  // pianoInstrumentoPref (así, si el usuario eligió guitarra en Júbilo, el
-  // siguiente acorde de Júbilo sigue sonando en guitarra, no vuelve a
-  // trompeta por defecto).
-  // - Si el llamador fuerza un instrumento ('trompeta', 'piano' o
-  //   'guitarra' — esto último solo llega desde el propio selector del
-  //   piano), se respeta y además queda guardado como preferencia de la
-  //   sección detectada.
-  // - Si no, se detecta la sección mirando de dónde viene el toque
-  //   (acordes dentro de una alabanza de Júbilo = jubiloContent_...) y se
-  //   aplica la preferencia ya guardada para esa sección.
-  // - En una reapertura sin pistas nuevas (modal ya abierto, sin sourceEl
-  //   ni instrumento) se mantiene tal cual lo que ya estaba sonando.
-  if (instrumento === 'trompeta' || instrumento === 'piano' || instrumento === 'guitarra') {
-    if (sourceEl && sourceEl.closest) {
-      pianoSeccionActual = sourceEl.closest('[id^="jubiloContent_"]') ? 'jubilo' : 'adoracion';
-    } else if (instrumento === 'trompeta') {
-      pianoSeccionActual = 'jubilo';
-    } else if (!modalYaAbierto) {
-      pianoSeccionActual = 'adoracion';
-    }
-    pianoInstrumentoActivo = instrumento;
-    pianoInstrumentoPref[pianoSeccionActual] = instrumento;
-  } else if (sourceEl && sourceEl.closest) {
-    pianoSeccionActual = sourceEl.closest('[id^="jubiloContent_"]') ? 'jubilo' : 'adoracion';
-    pianoInstrumentoActivo = pianoInstrumentoPref[pianoSeccionActual] || (pianoSeccionActual === 'jubilo' ? 'trompeta' : 'piano');
-  } else if (!modalYaAbierto) {
-    pianoSeccionActual = 'adoracion';
-    pianoInstrumentoActivo = pianoInstrumentoPref.adoracion || 'piano';
-  }
-  if (!modal) return;
-  // Por defecto, cualquier apertura del piano (tocar un acorde, una
-  // variación, una tonalidad, etc.) muestra la marca morada normalmente.
-  // Solo se oculta cuando el llamador lo pide explícitamente (ver melodía
-  // guardada), y se revela de nuevo en cuanto se toque un acorde.
-  pianoOcultarMarcaAcorde = !!ocultarMarcaAcorde;
-  // Si esta apertura NO es para "ver una melodía guardada" (ocultarMarcaAcorde
-  // solo llega en true desde pianoAbrirMelodiaDesdeNotas), olvidamos la
-  // última melodía vista para que el botón "🔁 Reproducir de nuevo" no se
-  // quede pegado mostrando algo que ya no corresponde a este acorde.
-  if (!ocultarMarcaAcorde) pianoMelodyViewNotas = null;
-  pianoModalActual = parsed;
-  var pianoEmojiInstrumento = pianoInstrumentoActivo === 'trompeta' ? '🎺 ' : pianoInstrumentoActivo === 'guitarra' ? '🎸 ' : '🎹 ';
-  title.textContent = pianoEmojiInstrumento + pianoLabelChord(parsed.root, parsed.type);
-  content.innerHTML = pianoRenderHTML(parsed.root, parsed.type);
-  // Abrimos como contenedor flexible desde la primera vez para que el
-  // modal quede centrado de forma consistente en la primera apertura y en
-  // las reaperturas.
-  modal.style.display = 'flex';
-  modal.classList.add('piano-open');
-
-  // Si había una grabación de melodía activa (o en pausa) para esta misma
-  // canción, el cambio de acorde de arriba acaba de reconstruir todo el
-  // HTML del piano — incluido el panel de grabación, que siempre nace
-  // oculto. Sin esto, cualquier toque a los botones de "Acordes" o
-  // "Variaciones" mientras se graba (mucho más frecuente en Adoración,
-  // que sí muestra los acordes propios de la alabanza) hacía "desaparecer"
-  // el panel de Grabar/Guardar sin avisar.
-  if (esAdminActivo() && pianoMelodyTarget) pianoRenderMelodyRecorder();
-  pianoActualizarBotonReplay();
-
-  // Precargamos ya los samples de este acorde para que "Reproducir" /
-  // "Arpegio" respondan al toque, sin esperar la descarga.
-  var ctxPre = pianoGetAudioCtx();
-  if (ctxPre) {
-    pianoGetSemis(parsed.root, parsed.type).map(function(m){ return m - 12; })
-      .forEach(function(m){ pianoLoadBuffer(ctxPre, m); });
-  }
-  requestAnimationFrame(function(){
-    var scroller = content.querySelector('.piano-keyboard-scroll');
-    if (!scroller) return;
-    var stage = content.querySelector('.piano-keyboard-stage');
-    if (!stage) return;
-    var targetMidi = 60 + pianoSemiOf(parsed.root);
-    // Mismas medidas que pianoRenderHTML, para que el centrado coincida
-    // con el ancho real de las teclas dibujadas (incluido el modo
-    // compacto en pantallas angostas).
-    var esCompacto = (typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 600);
-    var whiteWidth = esCompacto ? 24 : 30;
-    var whiteGap = esCompacto ? 1 : 2;
-    var whiteTotal = whiteWidth + whiteGap;
-    var startMidi = 21;
-    while ([1,3,6,8,10].indexOf(startMidi % 12) !== -1) startMidi--;
-    var whiteIndex = 0;
-    var targetWhiteIndex = 0;
-    for (var m = startMidi; m < 109; m++) {
-      var esBlancaAqui = [0,2,4,5,7,9,11].indexOf(m % 12) !== -1;
-      if (!esBlancaAqui) continue;
-      // Coincidencia directa con una tecla blanca.
-      if (m === targetMidi) {
-        targetWhiteIndex = whiteIndex;
-        break;
-      }
-      // El acorde pedido es sostenido/bemol (tecla negra): esa tecla se
-      // dibuja justo encima de esta blanca (mismo whiteIndex), así que
-      // si el objetivo es la negra siguiente usamos este mismo índice,
-      // en vez de seguir buscando entre las blancas (donde nunca aparece).
-      if (m + 1 === targetMidi && [1,3,6,8,10].indexOf((m + 1) % 12) !== -1) {
-        targetWhiteIndex = whiteIndex;
-        break;
-      }
-      whiteIndex++;
-    }
-    // Centrado (no pegado a la izquierda): dejamos el acorde activo un
-    // poco más al centro del área visible, en vez de cerca del borde.
-    var fraccionCentrado = esCompacto ? 0.42 : 0.35;
-    var approxLeft = Math.max(0, (targetWhiteIndex * whiteTotal) - (scroller.clientWidth * fraccionCentrado));
-    var maxScroll = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
-    approxLeft = Math.min(approxLeft, maxScroll);
-    if (scroller.scrollTo) {
-      try { scroller.scrollTo({ left: approxLeft, behavior: 'smooth' }); }
-      catch (e) { scroller.scrollLeft = approxLeft; }
-    } else {
-      scroller.scrollLeft = approxLeft;
-    }
-  });
-
-  if (autoPlay) {
-    pianoReproducirAcorde(parsed.root, parsed.type, false);
-  }
-}
-
-function cerrarPiano(){
-  var modal = document.getElementById('pianoModal');
-  if (modal) { modal.style.display = 'none'; modal.classList.remove('piano-open'); }
-  pianoSoloMode = false;
-  pianoLimpiarPlaybackMelodia();
-}
-
-// Si el piano está abierto y el celular gira (o cambia el ancho de la
-// ventana), volvemos a dibujar el teclado con las medidas correctas para
-// ese tamaño. Antes, al girar el teléfono desde el aviso "Gira tu teléfono",
-// el teclado se quedaba con las medidas "compactas" con las que se dibujó
-// en vertical (nunca se refrescaba), y eso hacía que las barras de la
-// melodía (recalculadas con el ancho nuevo) quedaran desalineadas de las
-// teclas reales — se veían como una octava más arriba.
-window.addEventListener('orientationchange', function(){
-  setTimeout(pianoActualizarSiAbierto, 200);
-  setTimeout(pianoActualizarPianoTeoria, 200);
-});
-window.addEventListener('resize', function(){
-  setTimeout(pianoActualizarSiAbierto, 200);
-  setTimeout(pianoActualizarPianoTeoria, 200);
-});
-
-// Cerrar con Escape
-document.addEventListener('keydown', function(e){
-  if (e.key === 'Escape') cerrarPiano();
-});
-
-
-
-// 1. Preguntamos al celular o compu si prefiere el modo claro
-var mqLight = window.matchMedia('(prefers-color-scheme: light)');
 
 function verificarTemaDispositivo(e) {
   // Si el usuario YA eligió manualmente un tema en la app, respetarlo siempre
@@ -15282,19 +12819,17 @@ var TUTORIAL_SLIDES = [
       112)
   },
   {
-    titulo: 'Melodía, dificultad y notas',
-    texto: 'El botón "🎼 Melodía" (Vista músico) abre un piano virtual para grabar o repasar la melodía de la canción. Marca la "Dificultad" (🟢 Fácil / 🟡 Media / 🔴 Difícil) para saber de un vistazo qué tanto hay que ensayar. En "Notas del director" escribe indicaciones para el equipo: se guardan solas, sin botón de guardar.',
+    titulo: 'Dificultad y notas del director',
+    texto: 'Marca la dificultad (🟢 Fácil / 🟡 Media / 🔴 Difícil) para que el equipo sepa qué tanto hay que ensayar. En “Notas del director” escribe indicaciones para el equipo: se guardan solas, sin botón de guardar.',
     svg: tgFrame(
-      tgBtn(70, 16, 160, 28, '🎼 Melodía', true) +
-      tgHi(70, 16, 160, 28) +
-      tgTxt(20, 62, 'Dificultad:', 9, '#8888aa') +
-      tgChip(20, 68, 62, 22, '🟢 Fácil', '#1a4a1a', '#4caf50') +
-      tgChip(90, 68, 66, 22, '🟡 Media', '#4a3a00', '#f1c40f') +
-      tgChip(164, 68, 66, 22, '🔴 Difícil', '#4a1a1a', '#e74c3c') +
-      tgBox(20, 100, 260, 36, '#0d0d14') +
-      tgTxt(30, 115, '📝 Notas del director', 9.5, '#8bc7ff') +
-      tgTxt(30, 129, 'Se guardan solas mientras escribes', 8, '#55607a'),
-      150)
+      tgTxt(20, 28, 'Dificultad:', 9, '#8888aa') +
+      tgChip(20, 38, 62, 22, '🟢 Fácil', '#1a4a1a', '#4caf50') +
+      tgChip(90, 38, 66, 22, '🟡 Media', '#4a3a00', '#f1c40f') +
+      tgChip(164, 38, 66, 22, '🔴 Difícil', '#4a1a1a', '#e74c3c') +
+      tgBox(20, 78, 260, 44, '#0d0d14') +
+      tgTxt(30, 96, '📝 Notas del director', 9.5, '#8bc7ff') +
+      tgTxt(30, 112, 'Se guardan solas mientras escribes', 8, '#55607a'),
+      140)
   },
   {
     titulo: 'Compartir y comparar tonos',
@@ -15353,14 +12888,13 @@ var TUTORIAL_SLIDES = [
   },
   {
     titulo: 'Tema, Verso del día y Recursos',
-    texto: 'Los botones flotantes 🌙 y 📖 cambian el tema claro/oscuro y muestran el Verso del día. "Recursos PDF" reúne partituras, letras u otros documentos. "Acerca de" cuenta la historia del ministerio, y "Teoría" trae apuntes de teoría musical.',
+    texto: 'Los botones flotantes 🌙 y 📖 cambian el tema claro/oscuro y muestran el Verso del día. "Recursos PDF" reúne partituras, letras u otros documentos. "Acerca de" cuenta la historia del ministerio.',
     svg: tgFrame(
       '<circle cx="242" cy="30" r="15" fill="#2a2a45"/>' + tgTxt(242, 35, '&#127769;', 13, '#e8e6f0', 'middle') +
       '<circle cx="272" cy="30" r="15" fill="#2a2a45"/>' + tgTxt(272, 35, '&#128214;', 13, '#e8e6f0', 'middle') +
       tgHi(227, 15, 60, 30, 20) +
       tgBtn(20, 60, 260, 26, '🎤 Recursos PDF') +
       tgBtn(20, 96, 122, 24, '📖 Acerca de') +
-      tgBtn(158, 96, 122, 24, '🎼 Teoría'),
       134)
   },
   {
@@ -15507,100 +13041,6 @@ function aplicarAjusteJubilo() {
       <h3><span id="comparadorLabelB">Nuevo tono / B</span> — <select id="tonoComparadorB" onchange="renderComparador()" style="background:var(--bg3);border:1px solid var(--border);color:var(--gold);border-radius:6px;padding:4px 8px;font-weight:bold;"></select></h3>
       <div class="song-content" id="contenidoComparadorB" style="font-size:0.75rem;"></div>
     </div>
-  </div>
-</div>
-
-
-
-
-
-<div id="pianoModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;
-  background:rgba(5,5,12,0.92);z-index:9000;overflow-y:auto;padding:10px;box-sizing:border-box;">
-  <div style="max-width:1280px;width:96vw;margin:0 auto;background:linear-gradient(180deg,#17172b,#0f0f1a);border-radius:16px;
-    border:1px solid #2a2a45;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,0.45);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
-      <div style="display:flex;flex-direction:column;gap:2px;">
-        <span id="pianoModalTitle" style="color:#c9a84c;font-weight:bold;font-size:1rem;"></span>
-        <span class="piano-subtitulo-horizontal" style="color:#8888aa;font-size:0.72rem;">Vista horizontal para tocar y grabar como práctica real</span>
-      </div>
-      <button onclick="cerrarPiano()" style="background:#42426e;border:none;color:#e8e6f0;
-        border-radius:999px;padding:7px 14px;cursor:pointer;font-weight:bold;">✕ Cerrar</button>
-    </div>
-    <div id="pianoGirarAviso" style="align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:46px 20px;text-align:center;">
-      <div style="font-size:2.8rem;display:inline-block;animation:pianoGirarBounce 1.6s ease-in-out infinite;">📱</div>
-      <div style="font-weight:bold;color:#c9a84c;font-size:1.05rem;">Gira tu teléfono</div>
-      <div style="color:#8888aa;font-size:0.82rem;max-width:260px;line-height:1.4;">Pon el celular en horizontal para ver el piano completo y grabar más cómodo.</div>
-    </div>
-    <div id="pianoModalContent"></div>
-  </div>
-</div>
-
-<div id="pianoTeoriaModal" class="modal-overlay" style="display:none;z-index:9050;">
-  <div class="modal-card" style="max-width:1280px;width:96vw;margin:0 auto;background:linear-gradient(180deg,#17172b,#0f0f1a);border-radius:16px;border:1px solid #2a2a45;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,0.45);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
-      <div style="display:flex;flex-direction:column;gap:2px;">
-        <span id="pianoTeoriaModalTitle" style="color:#c9a84c;font-weight:bold;font-size:1rem;">🎹 Piano de teoría</span>
-        <span class="piano-subtitulo-horizontal" style="color:#8888aa;font-size:0.72rem;">Vista horizontal para explorar acordes y tonalidades</span>
-      </div>
-      <button onclick="cerrarPianoTeoria()" style="background:#42426e;border:none;color:#e8e6f0;border-radius:999px;padding:7px 14px;cursor:pointer;font-weight:bold;">✕ Cerrar</button>
-    </div>
-    <div id="pianoTeoriaGirarAviso" style="display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:46px 20px;text-align:center;">
-      <div style="font-size:2.8rem;display:inline-block;animation:pianoGirarBounce 1.6s ease-in-out infinite;">📱</div>
-      <div style="font-weight:bold;color:#c9a84c;font-size:1.05rem;">Gira tu teléfono</div>
-      <div style="color:#8888aa;font-size:0.82rem;max-width:260px;line-height:1.4;">Pon el celular en horizontal para ver el piano completo.</div>
-    </div>
-    <div id="pianoTeoriaModalContent"></div>
-  </div>
-</div>
-
-<div id="melodyRecorderModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;
-  background:rgba(0,0,0,0.88);z-index:9100;overflow-y:auto;padding:18px;box-sizing:border-box;">
-  <div style="max-width:760px;margin:0 auto;background:linear-gradient(180deg,#1b1b3b,#121225);border-radius:14px;
-    border:1px solid #2a2a45;padding:16px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;">
-      <div>
-        <div id="melodyRecorderTitle" style="color:#c9a84c;font-weight:bold;font-size:1rem;">🎼 Grabador de melodía</div>
-        <div id="melodyRecorderStatus" style="color:#8888aa;font-size:0.76rem;margin-top:4px;">Listo para grabar</div>
-      </div>
-      <button onclick="cerrarGrabadorMelodiaJubilo()" style="background:#42426e;border:none;color:#e8e6f0;
-        border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:bold;">✕ Cerrar</button>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-      <button id="btnMelodyRecorderRecord" onclick="jubiloToggleRecording()" style="flex:1;min-width:120px;background:var(--gold);border:none;color:#111;border-radius:999px;padding:10px 12px;font-weight:bold;cursor:pointer;">⏺ Grabar</button>
-      <button id="btnMelodyRecorderSave" onclick="jubiloGuardarMelodiaGrabada()" style="flex:1;min-width:120px;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:10px 12px;font-weight:bold;cursor:pointer;">💾 Guardar</button>
-      <button onclick="jubiloBorrarUltimaNota()" style="flex:1;min-width:120px;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:10px 12px;font-weight:bold;cursor:pointer;">↩ Última nota</button>
-    </div>
-    <div id="melodyRecorderKeyboard" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;"></div>
-    <div style="display:none;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;">
-      <div style="color:#c9a84c;font-size:0.82rem;font-weight:bold;margin-bottom:6px;">Notas registradas</div>
-      <div id="melodyRecorderList" style="max-height:220px;overflow:auto;"></div>
-    </div>
-    <div style="color:#8888aa;font-size:0.76rem;line-height:1.5;">
-      Consejo: graba con un tempo constante. Si luego quieres, le metemos metrónomo y cuantización para que quede todavía más limpio.
-    </div>
-  </div>
-</div>
-
-<div id="melodiaMenuModal" class="modal-overlay" style="display:none;z-index:9150;">
-  <div class="modal-card" style="max-width:420px;width:min(92vw,420px);">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;">
-      <div>
-        <div id="melodiaMenuTitle" style="color:#c9a84c;font-weight:bold;font-size:1rem;">🎼 Melodía</div>
-        <div id="melodiaMenuEstado" style="color:#8888aa;font-size:0.76rem;margin-top:4px;">Opciones rápidas</div>
-      </div>
-      <button onclick="cerrarMenuMelodia()" style="background:transparent;border:none;color:#8888aa;cursor:pointer;font-size:0.9rem;font-weight:bold;">✕</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <button id="melodiaMenuVer" style="display:none;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:12px 14px;font-weight:bold;cursor:pointer;">▶ Ver melodía</button>
-      <button id="melodiaMenuAbrir" style="background:linear-gradient(135deg,#c9a84c,#f3d58a);border:none;color:#1a1a2e;border-radius:999px;padding:12px 14px;font-weight:bold;cursor:pointer;">🎹 Abrir piano</button>
-    </div>
-  </div>
-</div>
-
-  <!-- TAB: PIANO -->
-  <div id="tabContentTeoPiano" class="historia-tab-content" style="display:none; max-width: 780px; margin: 0 auto; padding: 20px 20px 60px; overflow-y: auto;">
-    <h2 style="color: var(--gold2); font-family:'Parisienne','Inter',Arial,serif; font-size: 1.5rem; margin-bottom: 6px; text-align:center;">Piano de teoría</h2>
-    <p style="color: var(--text); opacity:0.75; font-size:0.85rem; text-align:center; max-width:560px; margin:0 auto 18px;">Usa este piano para ver acordes y tonalidades sin grabación ni melodías.</p>
   </div>
 </div>
 
@@ -15820,7 +13260,7 @@ function aplicarAjusteJubilo() {
 // === ANIMACIÓN DE APERTURA AUTOMÁTICA PARA TODOS LOS MODALES ==
 // ============================================================
 // En vez de tocar cada función que abre un modal (login admin, rol,
-// tutorial, exportar, PDF, piano, etc.), observamos el atributo
+// tutorial, exportar, PDF, etc.), observamos el atributo
 // "style" de cada uno: en cuanto detectamos que pasó de oculto a
 // visible, disparamos un fade + zoom suave (mismo patrón de doble
 // requestAnimationFrame que ya usa animarEntradaContenido()).
@@ -15844,7 +13284,7 @@ function aplicarAjusteJubilo() {
     return d === 'flex' || d === 'block';
   }
 
-  var modales = document.querySelectorAll('.modal-overlay, #pianoModal');
+  var modales = document.querySelectorAll('.modal-overlay');
   modales.forEach(function(el) {
     var estabaVisible = esVisible(el);
     var obs = new MutationObserver(function() {

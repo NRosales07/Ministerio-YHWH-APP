@@ -1,15 +1,15 @@
 // ============================================================
 //  Service Worker - Alabanzas (uso sin conexión)
-//  Cuando cambies PDFs, imágenes o Tone.js, sube CACHE_NAME
-//  (v143 -> v144). Las canciones y index.html se actualizan solas.
+//  Cuando cambies PDFs o imágenes, sube CACHE_NAME. Las canciones y
+//  index.html se actualizan solas.
 // ============================================================
-const CACHE_NAME = 'alabanzas-v143';        // index, Tone.js, íconos, PDFs, imágenes
+const CACHE_NAME = 'alabanzas-v144';        // index, íconos, PDFs, imágenes
 const DATA_CACHE_NAME = 'alabanzas-data-v43'; // canciones, Firebase, fuentes
 const AUDIO_CACHE_NAME = 'alabanzas-audio-v1'; // solo el audio de la primera alabanza
 
 // ---- Audio que se guarda para uso sin conexión --------------------------
-// Solo la primera alabanza (la que el piano usa para "despertar" el audio
-// en iPhone). Pon aquí el ID TAL COMO ESTÁ EN CLOUDINARY (ej. '0' o '110_1').
+// Solo la primera alabanza se guarda para uso sin conexión. Pon aquí el ID
+// TAL COMO ESTÁ EN CLOUDINARY (ej. '0' o '110_1').
 // El resto de audios se reproducen por streaming y NO se guardan.
 const CLOUDINARY_BASE = 'https://res.cloudinary.com/hie4so71/video/upload/';
 const AUDIO_OFFLINE_IDS = ['0'];
@@ -19,7 +19,6 @@ const AUDIO_OFFLINE_URLS = AUDIO_OFFLINE_IDS.map((id) => CLOUDINARY_BASE + id + 
 const APP_SHELL = [
   'index.html',
   'manifest.json',
-  'Tone.js',
   'icon-192.png',
   'icon-512.png'
 ];
@@ -302,6 +301,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 5) Todo lo demás (Tone.js, íconos, PDFs, imágenes): caché primero
+  // 5) Todo lo demás (íconos, PDFs, imágenes): caché primero
   event.respondWith(cachePrimero(CACHE_NAME, request));
 });
