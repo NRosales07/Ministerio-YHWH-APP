@@ -139,3 +139,290 @@
   .piano-panel .piano-container{height:min(48vh,240px);padding:14px max(8px,env(safe-area-inset-left)) 10px}
   .piano-panel .piano-heading{gap:7px}
 }
+/* La tecla blanca conserva su blanco; el relieve interior indica la pulsación igual que en las negras. */
+.piano-panel .white.playing,.piano-panel .white:active{background:#fff!important;border-color:#ddd!important;box-shadow:inset 0 3px 6px rgba(0,0,0,.32)!important}
+
+/* Las blancas hundidas conservan su capa; las negras quedan siempre delante. */
+.piano-panel .white.playing,.piano-panel .white:active{z-index:1!important}
+
+.audio-credit{margin:0 0 10px;text-align:right;font-size:11px;color:var(--muted)}.audio-credit a{color:var(--gold2)}
+
+
+.keyboard-options{flex-wrap:wrap}.audio-credit{margin:0 0 10px;text-align:right;font-size:11px;color:var(--muted)}.audio-credit a{color:var(--gold2)}
+
+
+/* Vista táctil móvil inspirada en OnlinePianist: teclado protagonista y controles fijos abajo. */
+.mobile-player-controls{display:none}
+.mobile-song-details{display:block}
+.mobile-song-details>summary{cursor:pointer;color:var(--gold2);font-weight:700;padding:9px 2px}
+@media(max-width:700px){
+  body:has(#player:not(.hidden)){height:100dvh;min-height:0;overflow:hidden}
+  body:has(#player:not(.hidden)) header{height:calc(54px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 12px 0;flex:none}
+  body:has(#player:not(.hidden)) main{height:calc(100dvh - 54px - env(safe-area-inset-top));max-width:none;padding:4px 0 calc(env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow:hidden}
+  body:has(#player:not(.hidden)) .tabs,body:has(#player:not(.hidden)) #connection{display:none}
+  body:has(#player:not(.hidden)) #player{display:flex;flex:1;min-height:0;flex-direction:column;gap:0;margin:0;overflow:hidden}
+  body:has(#player:not(.hidden)) #player>.player-top{flex:0 0 auto;margin:0;padding:3px 10px 5px;align-items:center}
+  body:has(#player:not(.hidden)) #player>.player-top h1{font-size:1rem}
+  body:has(#player:not(.hidden)) #player>.player-top p{font-size:.75rem;margin-top:2px}
+  body:has(#player:not(.hidden)) .mobile-song-details{order:5;flex:0 0 auto;margin:0 8px;max-height:35dvh;overflow:auto;border-radius:10px;background:#181827}
+  body:has(#player:not(.hidden)) .mobile-song-details[open]{flex:1;min-height:70px}
+  body:has(#player:not(.hidden)) .mobile-song-details>summary{padding:7px 10px;font-size:.82rem}
+  body:has(#player:not(.hidden)) .mobile-song-details .chords{padding:0 9px;margin:4px 0}
+  body:has(#player:not(.hidden)) .mobile-song-details .lyrics{max-height:22dvh;padding:8px 10px;font-size:12px}
+  body:has(#player:not(.hidden)) .piano-panel{order:1;flex:1;min-height:0;margin:0;padding:5px 9px 2px;border:0;border-radius:0;background:transparent;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+  body:has(#player:not(.hidden)) .piano-heading{flex:0 0 auto;display:block;margin:0;font-size:.8rem}
+  body:has(#player:not(.hidden)) .status{flex:0 0 auto;margin:2px 0;padding:3px 6px;min-height:0;border:0;background:transparent;font-size:10px}
+  body:has(#player:not(.hidden)) .transpose-controls{order:4;flex:0 0 auto;padding:2px 5px;margin:1px 0 3px;display:flex;gap:5px;background:transparent;border:0}
+  body:has(#player:not(.hidden)) .transpose-controls button{min-height:32px;padding:4px 9px;font-size:12px}
+  body:has(#player:not(.hidden)) .transpose-controls span{min-width:0;flex:1;font-size:.76rem}
+  body:has(#player:not(.hidden)) .keyboard-options{order:3;flex:0 0 auto;justify-content:center;gap:5px;margin:1px 0;padding:0;font-size:10px}
+  body:has(#player:not(.hidden)) .keyboard-options select{min-height:30px;padding:3px 6px;font-size:11px}
+  body:has(#player:not(.hidden)) .audio-credit{display:none}
+  body:has(#player:not(.hidden)) .piano-panel .piano-container{order:2;flex:1;min-height:145px;height:auto;width:100%;padding:15px 0 7px;border-radius:8px;background:#08080c;overflow:hidden}
+  body:has(#player:not(.hidden)) .piano-panel #keyboardScroll{scrollbar-width:none;touch-action:none;overscroll-behavior-x:contain;overflow-x:auto;overflow-y:hidden}
+  body:has(#player:not(.hidden)) .piano-panel #keyboardScroll::-webkit-scrollbar{display:none}
+  body:has(#player:not(.hidden)) .piano-panel .keys{width:clamp(34px,8.2vw,48px);flex-basis:clamp(34px,8.2vw,48px)}
+  body:has(#player:not(.hidden)) .piano-panel .key span{font-size:clamp(8px,2vw,11px);opacity:1}
+  body:has(#player:not(.hidden)) .piano-panel .black{height:58%}
+  body:has(#player:not(.hidden)) .note{flex:0 0 auto;min-height:0;font-size:1.4rem;margin:0;text-align:center}
+  body:has(#player:not(.hidden)) .recorded{order:5;flex:0 0 auto;max-height:54px;overflow:auto;justify-content:center;margin:0;padding:3px 0}
+  body:has(#player:not(.hidden)) .mobile-player-controls{order:2;z-index:4;display:flex;flex:0 0 auto;justify-content:space-around;align-items:center;gap:2px;min-height:62px;padding:5px max(7px,env(safe-area-inset-left)) calc(5px + env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-right));background:#15151d;border-top:1px solid #34343c;box-shadow:0 -7px 18px #0007}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{display:flex;flex:1;min-width:0;min-height:48px;padding:4px 2px;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-radius:9px;background:transparent;color:#e8e6f0;font-size:19px}
+  body:has(#player:not(.hidden)) .mobile-player-controls button.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1c1c3f}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:9px;line-height:1.1;white-space:nowrap}
+  body:has(#player:not(.hidden)) .mobile-player-controls button.hidden{display:none!important}
+}
+@media(max-width:700px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) header{height:calc(42px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+  body:has(#player:not(.hidden)) main{height:calc(100dvh - 42px - env(safe-area-inset-top))}
+  body:has(#player:not(.hidden)) .piano-panel{padding-top:2px}
+  body:has(#player:not(.hidden)) .piano-panel .piano-container{padding-top:8px}
+  body:has(#player:not(.hidden)) .mobile-player-controls{min-height:52px}
+}
+
+/* En horizontal se conserva la pantalla de piano y se respetan los recortes/notch en ambos lados. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)){height:100dvh;min-height:0;overflow:hidden}
+  body:has(#player:not(.hidden)) header{height:calc(42px + env(safe-area-inset-top));padding:env(safe-area-inset-top) max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left))}
+  body:has(#player:not(.hidden)) main{height:calc(100dvh - 42px - env(safe-area-inset-top));min-height:0;max-width:none;margin:0;padding:3px max(9px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom)) max(9px,env(safe-area-inset-left));display:flex;flex-direction:column;overflow:hidden}
+  body:has(#player:not(.hidden)) .tabs,body:has(#player:not(.hidden)) #connection{display:none}
+  body:has(#player:not(.hidden)) #player{display:flex;flex:1;min-height:0;flex-direction:column;gap:0;margin:0;overflow:hidden}
+  body:has(#player:not(.hidden)) #player>.player-top{flex:0 0 auto;margin:0;padding:1px 7px 3px;align-items:center}
+  body:has(#player:not(.hidden)) #player>.player-top h1{font-size:.92rem}
+  body:has(#player:not(.hidden)) #player>.player-top p{font-size:.68rem;margin-top:0}
+  body:has(#player:not(.hidden)) .mobile-song-details{order:5;flex:0 0 auto;margin:0 6px;max-height:30dvh;overflow:auto;border-radius:8px;background:#181827}
+  body:has(#player:not(.hidden)) .mobile-song-details[open]{flex:1;min-height:50px}
+  body:has(#player:not(.hidden)) .mobile-song-details>summary{padding:4px 8px;font-size:.72rem}
+  body:has(#player:not(.hidden)) .mobile-song-details .lyrics{max-height:19dvh;padding:5px 8px;font-size:11px}
+  body:has(#player:not(.hidden)) .piano-panel{order:1;flex:1;min-height:0;margin:0;padding:1px 5px;border:0;border-radius:0;background:transparent;display:flex;flex-direction:column;gap:0;overflow:hidden}
+  body:has(#player:not(.hidden)) .piano-heading{flex:0 0 auto;margin:0;font-size:.72rem}
+  body:has(#player:not(.hidden)) .status{flex:0 0 auto;margin:0;padding:1px 4px;font-size:9px;min-height:0}
+  body:has(#player:not(.hidden)) .piano-panel .piano-container{order:2;flex:1;min-height:80px;height:auto;width:100%;padding:8px 0 4px;border-radius:6px;background:#08080c;overflow:hidden}
+  body:has(#player:not(.hidden)) .piano-panel #keyboardScroll{touch-action:none;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:none}
+  body:has(#player:not(.hidden)) .piano-panel .keys{width:clamp(30px,6.2vw,48px);flex-basis:clamp(30px,6.2vw,48px)}
+  body:has(#player:not(.hidden)) .piano-panel .white{padding-bottom:4px}
+  body:has(#player:not(.hidden)) .piano-panel .black{height:56%;padding-bottom:3px}
+  body:has(#player:not(.hidden)) .piano-panel .key span{font-size:clamp(7px,1.5vw,10px)}
+  body:has(#player:not(.hidden)) .transpose-controls{order:4;flex:0 0 auto;padding:1px 4px;margin:0;gap:4px}
+  body:has(#player:not(.hidden)) .transpose-controls button{min-height:27px;padding:2px 7px;font-size:11px}
+  body:has(#player:not(.hidden)) .transpose-controls span{min-width:0;flex:1;font-size:.68rem}
+  body:has(#player:not(.hidden)) .keyboard-options{order:3;flex:0 0 auto;justify-content:center;gap:4px;margin:0;padding:0;font-size:9px}
+  body:has(#player:not(.hidden)) .keyboard-options select{min-height:25px;padding:1px 5px;font-size:10px}
+  body:has(#player:not(.hidden)) .audio-credit{display:none}
+  body:has(#player:not(.hidden)) .note{order:5;flex:0 0 auto;min-height:0;font-size:1rem;line-height:1;margin:0;text-align:center}
+  body:has(#player:not(.hidden)) .recorded{order:6;flex:0 0 auto;max-height:34px;overflow:auto;justify-content:center;margin:0;padding:1px 0}
+  body:has(#player:not(.hidden)) .mobile-player-controls{order:2;z-index:4;display:flex;flex:0 0 auto;justify-content:space-around;align-items:center;gap:2px;min-height:44px;padding:2px max(6px,env(safe-area-inset-left)) calc(2px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right));background:#15151d;border-top:1px solid #34343c;box-shadow:0 -5px 12px #0007}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{min-height:39px;font-size:16px}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:8px}
+}
+
+/* Ajuste fino: en horizontal el piano ocupa casi toda la pantalla y los botones quedan pegados abajo. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) header{display:none}
+  body:has(#player:not(.hidden)) main{height:100dvh;padding:0 max(7px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(7px,env(safe-area-inset-left))}
+  body:has(#player:not(.hidden)) .player-top{position:absolute;z-index:5;left:max(8px,env(safe-area-inset-left));top:env(safe-area-inset-top);margin:0!important;padding:0!important}
+  body:has(#player:not(.hidden)) .player-top>div{display:none}
+  body:has(#player:not(.hidden)) .player-top .soft{min-height:31px;padding:4px 10px;font-size:12px;background:#16161fe8;border-color:#ffffff24}
+  body:has(#player:not(.hidden)) .piano-panel{padding:0 2px!important;gap:0!important}
+  body:has(#player:not(.hidden)) .piano-heading,body:has(#player:not(.hidden)) .status{display:none}
+  body:has(#player:not(.hidden)) .piano-panel .piano-container{padding:0!important;border-radius:0;background:#08080c}
+  body:has(#player:not(.hidden)) .piano-panel .keys{width:clamp(36px,8.5vw,78px);flex-basis:clamp(36px,8.5vw,78px)}
+  body:has(#player:not(.hidden)) .piano-panel .white{font-size:clamp(9px,1.6vw,13px);padding-bottom:clamp(5px,1.3vh,12px)}
+  body:has(#player:not(.hidden)) .piano-panel .black{height:62%;font-size:clamp(8px,1.2vw,11px)}
+  body:has(#player:not(.hidden)) .keyboard-options{display:none}
+  body:has(#player:not(.hidden)) .transpose-controls{position:fixed;z-index:8;left:50%;bottom:calc(47px + env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:95vw;min-height:29px;padding:1px 6px!important;margin:0!important;gap:4px;background:#171720ed;border:1px solid #ffffff16;border-radius:10px}
+  body:has(#player:not(.hidden)) .transpose-controls button{min-height:25px;padding:1px 8px;font-size:11px}
+  body:has(#player:not(.hidden)) .transpose-controls span{min-width:100px;font-size:10px}
+  body:has(#player:not(.hidden)) .note{display:none}
+  body:has(#player:not(.hidden)) .recorded{position:fixed;z-index:7;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:90vw;max-height:24px;overflow:auto;justify-content:center;margin:0;padding:1px 4px;background:#12121dcc;border-radius:6px}
+  body:has(#player:not(.hidden)) .note-chip{font-size:9px;padding:2px 4px}
+  body:has(#player:not(.hidden)) .mobile-player-controls{min-height:44px;padding:1px max(5px,env(safe-area-inset-left)) calc(1px + env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-right));gap:1px}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{min-height:40px;padding:1px;font-size:16px}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:8px}
+  body:has(#player:not(.hidden)) .mobile-song-details{position:fixed;z-index:12;left:max(8px,env(safe-area-inset-left));bottom:calc(48px + env(safe-area-inset-bottom));width:min(360px,80vw);max-height:35dvh;margin:0;box-shadow:0 4px 25px #000b}
+}
+
+/* Horizontal con scroll vertical real: teclado primero; notas y letra siguen debajo. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)){height:auto;min-height:100dvh;overflow-x:hidden;overflow-y:auto}
+  body:has(#player:not(.hidden)) header{display:none}
+  body:has(#player:not(.hidden)) main{display:block;height:auto;min-height:100dvh;max-width:none;margin:0;padding:env(safe-area-inset-top) max(7px,env(safe-area-inset-right)) calc(58px + env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-left));overflow:visible}
+  body:has(#player:not(.hidden)) #player{display:block;height:auto;min-height:0;overflow:visible;margin:0}
+  body:has(#player:not(.hidden)) #player>.player-top{position:relative;inset:auto;z-index:2;min-height:34px;margin:0;padding:2px 5px!important}
+  body:has(#player:not(.hidden)) #player>.player-top>div{display:block}
+  body:has(#player:not(.hidden)) #player>.player-top h1{font-size:.85rem}
+  body:has(#player:not(.hidden)) #player>.player-top p{font-size:.65rem}
+  body:has(#player:not(.hidden)) #player>.player-top .soft{min-height:28px;padding:3px 9px}
+  body:has(#player:not(.hidden)) .piano-panel{display:flex;height:calc(100dvh - 86px - env(safe-area-inset-top) - env(safe-area-inset-bottom));min-height:190px;max-height:620px;margin:0;padding:0 2px 4px!important;flex-direction:column;gap:2px;overflow:visible}
+  body:has(#player:not(.hidden)) .piano-heading,body:has(#player:not(.hidden)) .status{display:none}
+  body:has(#player:not(.hidden)) .piano-panel .piano-container{order:1;display:block;flex:1;min-height:120px;height:auto;width:100%;padding:0!important;border-radius:0;background:#08080c;overflow:hidden}
+  body:has(#player:not(.hidden)) .piano-panel #keyboardScroll{width:100%;height:100%;overflow-x:auto;overflow-y:hidden;touch-action:pan-x pan-y;overscroll-behavior:contain;scrollbar-width:none}
+  body:has(#player:not(.hidden)) .piano-panel .keys{width:clamp(36px,8.5vw,78px);flex-basis:clamp(36px,8.5vw,78px)}
+  body:has(#player:not(.hidden)) .piano-panel .white{font-size:clamp(9px,1.6vw,13px);padding-bottom:clamp(5px,1.3vh,12px)}
+  body:has(#player:not(.hidden)) .piano-panel .black{height:62%;font-size:clamp(8px,1.2vw,11px)}
+  body:has(#player:not(.hidden)) .keyboard-options{display:flex;order:3;flex:0 0 auto;justify-content:center;gap:4px;margin:1px 0;padding:0;font-size:9px}
+  body:has(#player:not(.hidden)) .keyboard-options select{min-height:24px;padding:1px 5px;font-size:10px}
+  body:has(#player:not(.hidden)) .transpose-controls{position:static;inset:auto;order:2;transform:none;width:100%;min-height:27px;flex:0 0 auto;justify-content:center;padding:1px 5px!important;margin:0!important;gap:4px;background:#171720ed;border:1px solid #ffffff16;border-radius:8px}
+  body:has(#player:not(.hidden)) .transpose-controls button{min-height:23px;padding:1px 7px;font-size:10px}
+  body:has(#player:not(.hidden)) .transpose-controls span{min-width:95px;font-size:10px}
+  body:has(#player:not(.hidden)) .audio-credit{display:none}
+  body:has(#player:not(.hidden)) .note{display:block;min-height:0;margin:2px 0;font-size:1rem;line-height:1.1;text-align:center}
+  body:has(#player:not(.hidden)) .melody-notes{position:static;inset:auto;transform:none;width:auto;max-width:none;max-height:none;min-height:44px;overflow:visible;justify-content:flex-start;margin:0 4px 14px;padding:9px;background:#171720;border:1px solid #ffffff16;border-radius:9px}
+  body:has(#player:not(.hidden)) .melody-notes:empty{display:none}
+  body:has(#player:not(.hidden)) .note-chip{font-size:11px;padding:4px 6px}
+  body:has(#player:not(.hidden)) .mobile-song-details{position:static;inset:auto;display:block;width:auto;max-height:none;overflow:visible;margin:0 4px 18px;box-shadow:none;border-radius:9px;background:#181827}
+  body:has(#player:not(.hidden)) .mobile-song-details>summary{padding:10px;font-size:.82rem}
+  body:has(#player:not(.hidden)) .mobile-song-details .lyrics{max-height:55dvh;padding:8px 10px;font-size:12px;overflow:auto}
+  body:has(#player:not(.hidden)) .mobile-song-details .chords{padding:0 9px;margin:4px 0}
+  body:has(#player:not(.hidden)) .mobile-player-controls{position:fixed;left:0;right:0;bottom:0;z-index:20;order:0;display:flex;min-height:48px;padding:2px max(6px,env(safe-area-inset-left)) calc(2px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right));gap:1px;background:#15151d;border-top:1px solid #34343c;box-shadow:0 -5px 12px #0007}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{min-height:41px;padding:1px;font-size:16px}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:8px}
+}
+
+/* Una sola fila de transposición, cifrado e instrumento en móvil horizontal. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .mobile-quick-settings{order:2;display:flex;flex:0 0 auto;align-items:center;justify-content:center;gap:8px;width:100%;min-height:34px;margin:2px 0;padding:2px 6px;background:#171720ed;border:1px solid #ffffff16;border-radius:9px}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls{position:static;inset:auto;transform:none;display:flex;flex:0 1 auto;align-items:center;width:auto;min-height:0;margin:0!important;padding:0!important;gap:4px;border:0;background:transparent;border-radius:0}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls button{min-height:25px;padding:1px 7px;font-size:11px;white-space:nowrap}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls span{min-width:88px;font-size:10px;white-space:nowrap}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .keyboard-options{order:0;display:flex;flex:0 1 auto;align-items:center;justify-content:center;gap:4px;min-width:0;margin:0;padding:0;font-size:9px;white-space:nowrap}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .keyboard-options select{min-height:25px;max-width:125px;padding:1px 5px;font-size:10px}
+  body:has(#player:not(.hidden)) .mobile-player-controls{left:50%;right:auto;width:min(100% - 18px,560px);transform:translateX(-50%);justify-content:center;gap:9px;padding:4px max(6px,env(safe-area-inset-left)) calc(4px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right));background:#15151df5;border:1px solid #34343c;border-bottom:0;border-radius:13px 13px 0 0}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{flex:1;max-width:150px;min-width:75px;min-height:42px;padding:4px 10px;flex-direction:row;gap:7px;border:1px solid #484663;border-radius:11px;background:#29283f;color:#eeedfe;font-size:16px}
+  body:has(#player:not(.hidden)) .mobile-player-controls button.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:#1c1c3f}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:11px}
+  body:has(#player:not(.hidden)) .mobile-player-controls button.hidden{display:none!important}
+}
+
+/* Ajuste solicitado para horizontal: título centrado, opciones repartidas y notas por debajo de la barra. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) #player>.player-top{position:relative;display:flex;justify-content:center;align-items:center;min-height:34px}
+  body:has(#player:not(.hidden)) #player>.player-top>div{position:absolute;left:50%;transform:translateX(-50%);display:block;width:max-content;max-width:calc(100% - 125px);text-align:center}
+  body:has(#player:not(.hidden)) #player>.player-top h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.85rem}
+  body:has(#player:not(.hidden)) #player>.player-top p{white-space:nowrap}
+  body:has(#player:not(.hidden)) .mobile-quick-settings{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;justify-content:stretch;gap:8px;padding:2px 10px}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .keyboard-options{grid-column:1;grid-row:1;justify-content:flex-start}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls{grid-column:2;grid-row:1;justify-content:center}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .keyboard-options label[for="instrumentSelect"]{margin-left:4px}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .keyboard-options #instrumentSelect{max-width:clamp(85px,16vw,125px)}
+  body:has(#player:not(.hidden)) .melody-notes{margin-top:calc(48px + env(safe-area-inset-bottom));padding-bottom:12px}
+}
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .mobile-quick-settings{grid-template-columns:minmax(0,1fr) minmax(230px,auto) minmax(0,1fr);gap:5px}
+  body:has(#player:not(.hidden)) .quick-setting{display:flex;align-items:center;gap:4px;min-width:0;font-size:9px;white-space:nowrap}
+  body:has(#player:not(.hidden)) .quick-notation{grid-column:1;justify-content:flex-start}
+  body:has(#player:not(.hidden)) .quick-instrument{grid-column:3;justify-content:flex-end}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls{grid-column:2;justify-self:center}
+  body:has(#player:not(.hidden)) .quick-setting select{min-height:25px;max-width:clamp(88px,16vw,128px);padding:1px 5px;font-size:10px}
+}
+@media(max-width:900px) and (orientation:landscape){body:has(#player:not(.hidden)) .melody-notes{margin-top:calc(100px + env(safe-area-inset-bottom))}}
+
+/* En vertical, mantiene las acciones de melodía en dos filas legibles.
+   En Admin pueden aparecer siete controles y no caben en una sola línea estrecha. */
+@media(max-width:700px) and (orientation:portrait){
+  body:has(#player:not(.hidden)) .mobile-player-controls{left:8px;right:8px;bottom:env(safe-area-inset-bottom);width:auto;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px;background:linear-gradient(180deg,#211f30f7,#111119fa);border:1px solid #ffffff20;border-bottom:0;border-radius:15px 15px 0 0;box-shadow:0 -5px 20px #0009}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{width:100%;max-width:none;min-width:0;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 2px;border:1px solid #5b5677;border-radius:10px;background:linear-gradient(180deg,#35324f,#25233a);color:#eeedfe;font-size:18px;line-height:1;box-shadow:0 2px 6px #0004}
+  body:has(#player:not(.hidden)) .mobile-player-controls button.gold{background:linear-gradient(135deg,#c9a84c,#f0d58b);border-color:transparent;color:#211b0d}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:clamp(8px,2.5vw,10px);line-height:1.1;white-space:nowrap}
+  body:has(#player:not(.hidden)) main{padding-bottom:calc(124px + env(safe-area-inset-bottom))}
+}
+
+/* Lista fija a la izquierda y acabados refinados para la barra de controles horizontal. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) #player>.player-top{position:relative;min-height:36px;padding:2px 4px!important}
+  body:has(#player:not(.hidden)) #player>.player-top #backBtn{position:absolute!important;left:max(4px,env(safe-area-inset-left));top:3px;z-index:4;min-height:28px;padding:3px 11px;border:1px solid rgba(232,201,122,.42);border-radius:999px;background:linear-gradient(145deg,#29263d,#171722);color:#f2e7c0;box-shadow:0 2px 8px #0006;font-size:11px;font-weight:700}
+  body:has(#player:not(.hidden)) #player>.player-top #backBtn:active{transform:scale(.96);background:#393452}
+  body:has(#player:not(.hidden)) .mobile-quick-settings{min-height:39px;padding:3px 11px;background:linear-gradient(180deg,#1b1a29,#12121b);border:1px solid #ffffff1b;border-radius:11px;box-shadow:0 3px 10px #0004}
+  body:has(#player:not(.hidden)) .quick-setting label{color:#c9c4d8;font-weight:650}
+  body:has(#player:not(.hidden)) .quick-setting select{border:1px solid #5d5878;border-radius:8px;background:linear-gradient(180deg,#302d48,#242239);color:#f4f0ff;box-shadow:inset 0 1px #ffffff10}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls button{border:1px solid #5d5878;border-radius:999px;background:linear-gradient(180deg,#383450,#29263e);color:#f1e8c5;font-weight:750;box-shadow:0 2px 4px #0004}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls #transposeReset{border-color:rgba(232,201,122,.45);color:#f3d987}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls span{color:#f1d783;font-weight:750}
+  body:has(#player:not(.hidden)) .mobile-player-controls{min-height:55px;padding:6px max(8px,env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-right));gap:10px;background:linear-gradient(180deg,#211f30f5,#111119f8);border:1px solid #ffffff1b;border-bottom:0;border-radius:16px 16px 0 0;box-shadow:0 -5px 20px #0009}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{min-height:43px;padding:5px 13px;border:1px solid #5b5677;border-radius:12px;background:linear-gradient(180deg,#35324f,#25233a);box-shadow:0 3px 8px #0005;font-weight:700;transition:transform .12s ease,filter .12s ease}
+  body:has(#player:not(.hidden)) .mobile-player-controls button:active{transform:translateY(1px) scale(.98);filter:brightness(1.12)}
+  body:has(#player:not(.hidden)) .mobile-player-controls button.gold{background:linear-gradient(135deg,#c9a84c,#f0d58b);color:#211b0d;box-shadow:0 3px 10px #c9a84c44}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:10px;letter-spacing:.01em}
+}
+
+/* Vista vertical: teclado y controles ordenados, con las notas/letra bajo el área inicial. */
+@media(max-width:700px) and (orientation:portrait){
+  body:has(#player:not(.hidden)){height:auto;min-height:100dvh;overflow-x:hidden;overflow-y:auto}
+  body:has(#player:not(.hidden)) header{display:flex;height:calc(54px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 12px 0}
+  body:has(#player:not(.hidden)) main{display:block;height:auto;min-height:calc(100dvh - 54px - env(safe-area-inset-top));max-width:none;margin:0;padding:0 8px calc(68px + env(safe-area-inset-bottom));overflow:visible}
+  body:has(#player:not(.hidden)) #player{display:block;height:auto;min-height:0;overflow:visible;margin:0}
+  body:has(#player:not(.hidden)) #player>.player-top{position:relative;display:flex;justify-content:center;align-items:center;min-height:52px;margin:0;padding:4px!important}
+  body:has(#player:not(.hidden)) #player>.player-top>div{position:absolute;left:50%;transform:translateX(-50%);display:block;width:max-content;max-width:calc(100% - 112px);text-align:center}
+  body:has(#player:not(.hidden)) #player>.player-top h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.95rem}
+  body:has(#player:not(.hidden)) #player>.player-top p{font-size:.7rem;white-space:nowrap}
+  body:has(#player:not(.hidden)) #player>.player-top #backBtn{position:absolute;left:max(2px,env(safe-area-inset-left));top:8px;z-index:4;min-height:34px;padding:5px 11px;border:1px solid rgba(232,201,122,.42);border-radius:999px;background:linear-gradient(145deg,#29263d,#171722);color:#f2e7c0;box-shadow:0 2px 8px #0006;font-size:12px;font-weight:700}
+  body:has(#player:not(.hidden)) .piano-panel{display:flex;height:auto;min-height:0;max-height:none;overflow:visible;margin:0;padding:8px!important;flex-direction:column;gap:5px;border:1px solid #34334f;border-radius:13px;background:linear-gradient(155deg,#171528,#11111f)}
+  body:has(#player:not(.hidden)) .piano-heading{display:block;margin:0;font-size:.84rem}
+  body:has(#player:not(.hidden)) .status{display:block;min-height:0;margin:0;padding:3px 2px;border:0;background:transparent;font-size:10px}
+  body:has(#player:not(.hidden)) .mobile-quick-settings{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:6px;width:100%;margin:1px 0;padding:8px;background:#171720;border:1px solid #ffffff16;border-radius:10px}
+  body:has(#player:not(.hidden)) .quick-setting{display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0;color:#c9c4d8;font-size:10px;font-weight:650}
+  body:has(#player:not(.hidden)) .quick-setting select{width:auto;min-width:0;max-width:70%;min-height:34px;padding:4px 7px;border:1px solid #5d5878;border-radius:8px;background:linear-gradient(180deg,#302d48,#242239);color:#f4f0ff;font-size:11px}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls{grid-column:1/-1;grid-row:2;position:static;inset:auto;transform:none;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:36px;margin:0!important;padding:3px!important;border:0;border-top:1px solid #ffffff16;border-radius:0;background:transparent}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls button{min-height:30px;padding:4px 10px;border:1px solid #5d5878;border-radius:999px;background:linear-gradient(180deg,#383450,#29263e);color:#f1e8c5;font-size:12px;font-weight:750}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls #transposeReset{border-color:rgba(232,201,122,.45);color:#f3d987}
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls span{min-width:98px;color:#f1d783;font-size:11px;font-weight:750;text-align:center}
+  body:has(#player:not(.hidden)) .piano-panel .piano-container{order:2;display:block;flex:none;width:100%;height:clamp(220px,36dvh,320px);min-height:220px;padding:16px 4px 7px;border-radius:9px;background:#08080c;overflow:hidden}
+  body:has(#player:not(.hidden)) .piano-panel #keyboardScroll{width:100%;height:100%;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;overscroll-behavior-x:contain;scrollbar-width:none}
+  body:has(#player:not(.hidden)) .piano-panel #keyboardScroll::-webkit-scrollbar{display:none}
+  body:has(#player:not(.hidden)) .piano-panel .keys{width:clamp(38px,10vw,48px);flex-basis:clamp(38px,10vw,48px)}
+  body:has(#player:not(.hidden)) .piano-panel .black{height:58%}
+  body:has(#player:not(.hidden)) .piano-panel .key span{font-size:clamp(9px,2.2vw,11px);opacity:1}
+  body:has(#player:not(.hidden)) .note{display:block;min-height:0;margin:0;font-size:1.35rem;text-align:center}
+  body:has(#player:not(.hidden)) .audio-credit{display:none}
+  body:has(#player:not(.hidden)) .melody-notes{position:static;inset:auto;transform:none;width:auto;max-width:none;max-height:none;min-height:0;overflow:visible;justify-content:flex-start;flex-wrap:wrap;margin:12px 0;padding:10px;background:#171720;border:1px solid #ffffff16;border-radius:10px}
+  body:has(#player:not(.hidden)) .melody-notes:empty{display:none}
+  body:has(#player:not(.hidden)) .note-chip{font-size:11px;padding:4px 6px}
+  body:has(#player:not(.hidden)) .mobile-song-details{position:static;inset:auto;display:block;width:auto;max-height:none;overflow:visible;margin:10px 0 16px;box-shadow:none;border:1px solid #34334f;border-radius:11px;background:#181827}
+  body:has(#player:not(.hidden)) .mobile-song-details>summary{padding:12px;font-size:.9rem}
+  body:has(#player:not(.hidden)) .mobile-song-details .chords{padding:0 10px;margin:5px 0}
+  body:has(#player:not(.hidden)) .mobile-song-details .lyrics{max-height:50dvh;padding:10px;font-size:12px;overflow:auto}
+  body:has(#player:not(.hidden)) .mobile-player-controls{position:fixed;left:50%;right:auto;bottom:0;z-index:20;transform:translateX(-50%);display:flex;width:min(100% - 16px,520px);min-height:59px;justify-content:center;gap:7px;padding:6px max(7px,env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-right));background:linear-gradient(180deg,#211f30f5,#111119f8);border:1px solid #ffffff1b;border-bottom:0;border-radius:15px 15px 0 0;box-shadow:0 -5px 20px #0009}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{display:flex;flex:1;min-width:0;max-width:170px;min-height:45px;align-items:center;justify-content:center;flex-direction:row;gap:6px;padding:5px 7px;border:1px solid #5b5677;border-radius:11px;background:linear-gradient(180deg,#35324f,#25233a);color:#eeedfe;font-size:16px;font-weight:700;box-shadow:0 3px 8px #0005}
+  body:has(#player:not(.hidden)) .mobile-player-controls button.gold{background:linear-gradient(135deg,#c9a84c,#f0d58b);border-color:transparent;color:#211b0d}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:10px;line-height:1.1;white-space:nowrap}
+  body:has(#player:not(.hidden)) .mobile-player-controls button.hidden{display:none!important}
+}
+
+/* Acordes de acompañamiento: herramienta Admin oculta al público y etiqueta sobre la nota asignada. */
+.melody-note-item{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-width:34px;padding:2px 1px;border-radius:8px;transition:background .12s,box-shadow .12s}
+.melody-note-item.selected{background:#8f79e522;box-shadow:0 0 0 1px #8f79e577}
+.melody-note-item .note-chip{border:0;cursor:pointer}
+.melody-note-item .note-chip:disabled{cursor:default}
+.note-chord-label{min-height:14px;color:#92dcff;font-size:10px;font-weight:800;line-height:14px;text-shadow:0 1px 5px #61b8ff55;white-space:nowrap}
+.note-chord-label.empty{visibility:hidden}
+.chord-editor{margin:10px 4px 14px;padding:13px;border:1px solid #61568d;border-radius:12px;background:linear-gradient(145deg,#211e35,#151522);box-shadow:0 5px 18px #0003}
+.chord-editor-title{color:#e8c97a;font-weight:800}
+.chord-editor>p{margin:5px 0 10px;color:var(--muted);font-size:12px}
+.chord-editor-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chord-editor-fields label{display:flex;flex-direction:column;gap:4px;color:#c9c4d8;font-size:11px}
+.chord-editor-fields select{width:100%;min-height:36px;padding:5px 8px;border:1px solid #5d5878;border-radius:8px;background:#242239;color:#f4f0ff;font:inherit}
+.chord-editor-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.chord-editor-actions button{min-height:36px;padding:7px 11px;border-radius:9px;background:#302d48;border:1px solid #5d5878;color:#f4f0ff;font-size:12px;font-weight:700}
+.chord-editor-actions .gold{background:linear-gradient(135deg,#c9a84c,#f0d58b);color:#211b0d;border-color:transparent}
+@media(max-width:700px){.chord-editor-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.note-chord-label{font-size:9px}}
+@media(max-width:900px) and (orientation:landscape){.chord-editor{margin:10px 4px;padding:10px}.chord-editor-fields{grid-template-columns:repeat(6,minmax(0,1fr))}.melody-note-item{min-width:32px}}
