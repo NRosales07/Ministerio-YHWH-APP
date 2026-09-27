@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -1561,6 +1561,12 @@ body.light-theme .btn-abrir-biblia {
   background: rgba(10,10,25,0); opacity:0; transition: background .18s, opacity .18s; font-size:1.3rem;
 }
 .galeria-item:hover .galeria-overlay{ background: rgba(10,10,25,0.32); opacity:1; }
+.galeria-caption{
+  position:absolute; left:0; right:0; bottom:0; z-index:1;
+  padding:24px 10px 10px; color:#fff; text-align:center; font-size:.82rem;
+  line-height:1.3; font-weight:700; text-shadow:0 1px 4px rgba(0,0,0,.9);
+  background:linear-gradient(transparent,rgba(5,7,18,.86)); pointer-events:none;
+}
 
 .galeria-thumb{
   width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:10px;
@@ -4673,6 +4679,7 @@ document.addEventListener('DOMContentLoaded', function(){
   <button id="galeriaBtnNext" onclick="event.stopPropagation(); navegarGaleria(1)" aria-label="Siguiente" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,0.25); background:rgba(255,255,255,0.08); color:#fff; font-size:1.4rem; line-height:1; cursor:pointer; z-index:2002;">›</button>
   <div onclick="cerrarGaleriaLightbox()" style="position:absolute; inset:0;"></div>
   <img id="galeriaLightboxImg" src="" alt="Foto del Ministerio" style="position:relative; max-width:100%; max-height:85%; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.6); z-index:2001; -webkit-user-select:none; user-select:none;">
+  <div id="galeriaLightboxCaption" style="display:none; position:absolute; bottom:48px; left:15%; right:15%; padding:10px 14px; border-radius:8px; background:rgba(5,7,18,.72); color:#fff; text-align:center; font-weight:700; text-shadow:0 1px 3px #000; z-index:2002; pointer-events:none;"></div>
   <div id="galeriaLightboxContador" style="position:absolute; bottom:18px; left:0; right:0; text-align:center; color:rgba(255,255,255,0.75); font-size:0.85rem; z-index:2001;"></div>
 </div>
 
@@ -12419,10 +12426,29 @@ function cambiarTabHistoria(tab){
 }
 
 var GALERIA_FOTOS = [
-  'foto0.jpeg','foto1.jpeg','foto2.jpeg','foto3.jpeg','foto4.jpeg','foto5.jpeg',
-  'foto6.jpeg','foto7.jpeg','foto8.jpeg','foto9.jpeg','foto10.jpeg','foto11.jpeg',
-  'foto12.jpeg','foto13.jpeg'
+  'Foto0.jpeg','foto1.jpeg','foto6.jpeg','foto2.jpeg','foto3.jpeg','foto4.jpeg',
+  'foto5.jpeg','foto7.jpeg','foto8.jpeg','foto9.jpeg','foto10.jpeg','foto11.jpeg',
+  'Foto12.jpeg','foto13.jpeg','foto14.jpeg','Foto15.jpeg','Foto16.jpeg'
 ];
+var GALERIA_TEXTOS = {
+  'Foto0.jpeg': 'Logo oficial Ministerio "Manantial de Alabanza YHWH"',
+  'foto1.jpeg': 'Vigilia de Jóvenes, Centinelas - 2024',
+  'foto2.jpeg': 'Ministerio de Alabanza YHWH - 2024',
+  'foto3.jpeg': 'Congreso de Damas, Desierto - 2025',
+  'foto4.jpeg': 'Congreso de Damas, Desierto - 2025',
+  'foto5.jpeg': 'Congreso de Damas, Desierto - 2025',
+  'foto6.jpeg': 'Vigilia de Jóvenes, Centinelas - 2024',
+  'foto7.jpeg': 'Culto de Jóvenes - 2025',
+  'foto8.jpeg': 'Celebración cumpleaños - Líder',
+  'foto9.jpeg': 'Celebración cumpleaños - Jennifer',
+  'foto10.jpeg': 'Dibujo, Miembros Ministerio YHWH - 2024',
+  'foto11.jpeg': 'Dibujo, Miembros Ministerio YHWH - 2024',
+  'Foto12.jpeg': 'Dibujo, Miembros Ministerio YHWH - 2024',
+  'foto13.jpeg': 'Vigilia de Jóvenes, Ruge - 2026',
+  'foto14.jpeg': 'Vigilia de Jóvenes, Ruge - 2026',
+  'Foto15.jpeg': 'Vigilia de Jóvenes, Despertar Espiritual - 2026',
+  'Foto16.jpeg': 'Vigilia de Jóvenes, Despertar Espiritual - 2026'
+};
 var galeriaIndiceActual = 0;
 var galeriaEsOrganigrama = false;
 var galeriaTouchStartX = null;
@@ -12434,6 +12460,7 @@ function renderGaleriaGrid(){
   GALERIA_FOTOS.forEach(function(src, i){
     html += '<div class="galeria-item" onclick="abrirGaleriaLightbox(' + i + ')">' +
               '<img class="galeria-thumb" src="' + src + '" alt="Foto del Ministerio ' + (i + 1) + '" loading="lazy" style="border:0; display:block;">' +
+              (GALERIA_TEXTOS[src] ? '<div class="galeria-caption">' + escH(GALERIA_TEXTOS[src]) + '</div>' : '') +
               '<div class="galeria-overlay">🔍</div>' +
             '</div>';
   });
@@ -12444,17 +12471,24 @@ window.renderGaleriaGrid = renderGaleriaGrid;
 
 function actualizarLightboxImagen(){
   var img = document.getElementById('galeriaLightboxImg');
+  var caption = document.getElementById('galeriaLightboxCaption');
   var contador = document.getElementById('galeriaLightboxContador');
   var prevBtn = document.getElementById('galeriaBtnPrev');
   var nextBtn = document.getElementById('galeriaBtnNext');
   if (galeriaEsOrganigrama) {
     img.src = 'Organigrama.jpeg';
+    if (caption) { caption.textContent = ''; caption.style.display = 'none'; }
     if (contador) contador.textContent = '';
     if (prevBtn) prevBtn.style.display = 'none';
     if (nextBtn) nextBtn.style.display = 'none';
     return;
   }
   img.src = GALERIA_FOTOS[galeriaIndiceActual];
+  if (caption) {
+    var texto = GALERIA_TEXTOS[GALERIA_FOTOS[galeriaIndiceActual]] || '';
+    caption.textContent = texto;
+    caption.style.display = texto ? 'block' : 'none';
+  }
   if (contador) contador.textContent = (galeriaIndiceActual + 1) + ' / ' + GALERIA_FOTOS.length;
   if (prevBtn) prevBtn.style.display = '';
   if (nextBtn) nextBtn.style.display = '';

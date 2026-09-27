@@ -3,7 +3,7 @@
 //  Cuando cambies PDFs o imágenes, sube CACHE_NAME. Las canciones y
 //  index.html se actualizan solas.
 // ============================================================
-const CACHE_NAME = 'alabanzas-v144';        // index, íconos, PDFs, imágenes
+const CACHE_NAME = 'alabanzas-v146';        // index, íconos, PDFs, imágenes
 const DATA_CACHE_NAME = 'alabanzas-data-v43'; // canciones, Firebase, fuentes
 const AUDIO_CACHE_NAME = 'alabanzas-audio-v1'; // solo el audio de la primera alabanza
 
@@ -94,7 +94,13 @@ self.addEventListener('message', (event) => {
 // descargan las imágenes que aparecen en index.html y en los archivos de
 // canciones, y se reintenta el audio inicial. Lo que ya está guardado se
 // salta, así que si se interrumpe, continúa la próxima vez.
-const IMAGENES_EXTRA = ['Portadajubilo.jpeg', 'Portadaadoracion.jpeg', 'Organigrama.jpeg'];
+const IMAGENES_EXTRA = [
+  'Portadajubilo.jpeg', 'Portadaadoracion.jpeg', 'Organigrama.jpeg',
+  'Foto0.jpeg', 'foto1.jpeg', 'foto2.jpeg', 'foto3.jpeg', 'foto4.jpeg',
+  'foto5.jpeg', 'foto6.jpeg', 'foto7.jpeg', 'foto8.jpeg', 'foto9.jpeg',
+  'foto10.jpeg', 'foto11.jpeg', 'Foto12.jpeg', 'foto13.jpeg', 'foto14.jpeg',
+  'Foto15.jpeg', 'Foto16.jpeg'
+];
 let precargando = false;
 
 async function agregarSiFalta(cache, urls, lote) {

@@ -11,7 +11,7 @@ var SONGS =
     "youtube": "https://www.youtube.com/embed/cjwiVwlnvcg",
     "versiculos": [
       {
-        "texto": "ISAÍAS 53:3-7:\n3 Despreciado y desechado entre los hombres, varón de dolores, experimentado en quebranto; y como que escondimos de él el rostro, fue menospreciado, y no lo estimamos.\n\n4 Ciertamente llevó él nuestras enfermedades, y sufrió nuestros dolores; y nosotros le tuvimos por azotado, por herido de Dios y abatido. \n\n5 Mas él herido fue por nuestras rebeliones, molido por nuestros pecados; el castigo de nuestra paz fue sobre él, y por su llaga fuimos nosotros curados. \n\n6 Todos nosotros nos descarriamos como ovejas, cada cual se apartó por su camino; mas Jehová cargó en él el pecado de todos nosotros.\n\n7 Angustiado él, y afligido, no abrió su boca; como cordero fue llevado al matadero; y como oveja delante de sus trasquiladores, enmudeció, y no abrió su boca.",
+        "texto": "Isaías 53:3-7:\n3 \"Despreciado y desechado entre los hombres, varón de dolores, experimentado en quebranto; y como que escondimos de él el rostro, fue menospreciado, y no lo estimamos.\n\n4 Ciertamente llevó él nuestras enfermedades, y sufrió nuestros dolores; y nosotros le tuvimos por azotado, por herido de Dios y abatido. \n\n5 Mas él herido fue por nuestras rebeliones, molido por nuestros pecados; el castigo de nuestra paz fue sobre él, y por su llaga fuimos nosotros curados. \n\n6 Todos nosotros nos descarriamos como ovejas, cada cual se apartó por su camino; mas Jehová cargó en él el pecado de todos nosotros.\n\n7 Angustiado él, y afligido, no abrió su boca; como cordero fue llevado al matadero; y como oveja delante de sus trasquiladores, enmudeció, y no abrió su boca.\"",
         "cita": ""
       }
     ]
@@ -25,8 +25,12 @@ var SONGS =
     "content": "[INTRO]:\n                                            | C | G | Am | F |\n                                               | C | G | Am |\n        [VERSO 1]:\n        C     G    Am7   Gsus4         F                                     C\nX4 Dios está aquí,              tan cierto como el aire que, respiro,\n          F                                            C      G     Am7\nTan cierto como en la mañana se leva - nta el sol,\n          F                               G                        Am7\nTan cierto que cuando le hablo, él me puede oír. X4",
     "id": 1,
     "version": "Cindy Barrera",
-    "versiculo": "\"Cercano está Jehová a todos los que le invocan, A todos los que le invocan de veras.\"",
-    "versiculoCita": "SALMOS 45:18"
+    "versiculos": [
+      {
+        "texto": "Salmo 145:18:\n18 \"Cercano está Jehová a todos los que le invocan, A todos los que le invocan de veras.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 3,
@@ -37,8 +41,12 @@ var SONGS =
     "content": "[INTRO]: MELODÍA\n                                             | C | G | C | F | \n                                             | C | G | F | C |\n        [VERSO 1]: \n                    C                                     Em\nX2   Mírame aquí donde estoy abatido y pobre gorrión,\n                   F                                                           G\nLa tormenta día y noche en mis fuerzas me quitó.    X2\n        \n\nHABLADO\n\nAm                                        Gsus4                             G                             \nAhora no te levantarás nunca más en tus fuerzas,\n                             Am\n si no que lo harás en mi nombre que es poder,\n                     G                                                                 Am                                                                         \nY te levantarás hasta las cumbres más altas donde yo habito,\n                                                  G                     C \n y lo harás como el vuelo majestuoso de un águila.\n        [CORO]:\n                                      C              Am                                            \nComo el vuelo de un águila me levantaré,\n                                      F                G\n como el vuelo de un águila me levantaré,\n                                        C               Am                                            \nY como el vuelo de un águila me levantaré,\n                                       F               G\n como el vuelo de un águila me levantaré,\n       Em                                                  Am                 \nYo subiré hasta el monte donde habitas tú,\n                 G                 F-G              C\n como el vuelo de un águila me levantaré.\n  \n \nMELODÍA\n        [VERSO 2]:\n           Em                                         Am\nYa no seré el gorrión, de aquella tormenta,\n  G                   F    G                  C        A\nCon su gran fuerza, mis alas quebró.\n        Dm                             G                                    C\nQue lindo, es llegar a comprender, que un gorrión solo\n                                           Am                 F          G\nLa tormenta no no podrá vencer, que necesita, volar.\n        [CORO]:             |        [VERSO 2]:",
     "id": 2,
     "youtube": "https://www.youtube.com/embed/btkTzK_LU6o",
-    "versiculo": "\"Pero los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas; correrán, y no se cansarán; caminarán, y no se fatigarán.",
-    "versiculoCita": "ISAÍAS 40:31"
+    "versiculos": [
+      {
+        "texto": "Isaías 40:31:\n31 \"Pero los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas; correrán, y no se cansarán; caminarán, y no se fatigarán.",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 4,
@@ -48,8 +56,12 @@ var SONGS =
     "album": "Presencia de Dios - 2014",
     "content": "[INTRO]:\n                                         | Fm | C# | Ab | Eb |\n        [VERSO 1]:\n        Fm                C#             Ab - Eb\nHay poder en el nombre de Cristo,\n        Fm                C#             Ab - Eb\nHay poder en el nombre de Cristo,\n        Fm                 C#            Ab - Eb\nHay poder en el nombre de Cristo.\n        [CORO]:\n                               Fm                        C#\nX2 Para cadenas romper, cadenas romper,\n                   Ab - Eb\nCadenas romper. X2\n        [VERSO 1]:             |             [CORO]: \n        [VERSO 2]: \n         Fm        C# - Ab - Eb\nSe levanta un ejército,\n         Fm        C# - Ab - Eb\nSe levanta un ejército,\n          Fm        C# - Ab - Eb\nSe levanta un ejército.\n [CORO]:  \n\n          Fm      C#        Ab - Eb    Fm       C#      Ab - Eb\nX3    Oigo cadenas caer,         Oigo cadenas caer.     X3",
     "id": 3,
-    "versiculo": "2 Corintios 3:17: \n\"Porque el Señor es el Espíritu; y donde está el Espíritu del Señor, allí hay libertad.\"\n\n\nHechos 16:25-26: \n\"Pero a medianoche, orando Pablo y Silas, cantaban himnos a Dios; y los presos los oían. \n\nEntonces sobrevino de repente un gran terremoto, de tal manera que los cimientos de la cárcel se sacudían; y al instante se abrieron todas las puertas, y las cadenas de todos se soltaron.",
-    "versiculoCita": "2 CORINTIOS 3:17 - HECHOS 16:25-26"
+    "versiculos": [
+      {
+        "texto": "2 Corintios 3:17: \n17 \"Porque el Señor es el Espíritu; y donde está el Espíritu del Señor, allí hay libertad.\"\n\n\nHechos 16:25-26: \n25 \"Pero a medianoche, orando Pablo y Silas, cantaban himnos a Dios; y los presos los oían. \n\n26 Entonces sobrevino de repente un gran terremoto, de tal manera que los cimientos de la cárcel se sacudían; y al instante se abrieron todas las puertas, y las cadenas de todos se soltaron.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 5,
@@ -59,8 +71,12 @@ var SONGS =
     "album": "Paul Wilbur Colección - 2014",
     "content": "[INTRO]:\n                                        | Cm | Ab | Bb | Bb |\n        [VERSO 1]:\n      Cm                        Bb\nYo entro al lugar más santo,\n     Ab             Bb          Cm\nA través del cordero de Dios,\n                                   Bb\nY vengo tan solo a adorarte,\n       Ab          Bb  Gm    Cm\nYo vengo a honrar al Yo Soy.\n        [CORO]:\n                     Eb    Bb        Fm   Cm\nX2 Dios, te adoro a ti, Te adoro a ti… X2\n                                       Ab       Bb   Cm\nX2 Pues tu nombre es Santo, Santo Dios,\n                                 Ab      Bb    Cm\nPues tu nombre es Santo, Santo Dios. X2\n        [VERSO 1]:            |             [CORO]:",
     "id": 4,
-    "versiculo": "\"Para ver tu poder y tu gloria,\nAsí como te he mirado en el santuario.\"",
-    "versiculoCita": "SALMO 63:2"
+    "versiculos": [
+      {
+        "texto": "Salmo 63:2:\n2 \"Para ver tu poder y tu gloria,\nAsí como te he mirado en el santuario.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 6,
@@ -71,8 +87,12 @@ var SONGS =
     "content": "[INTRO]:\n                                | C#| Fm | Bbm | F# | Ab | C# |\n        [VERSO 1]:\n       C#       Fm      Bbm    F#                    Ab\nX2 Vine a adorar a Dios, Vine a adorar a Dios,\n  \n C#      Fm            Bbm       F#        Ab        C#\nVine a adorar su nombre, Vine a adorar a Dios. X2\n         [CORO]: \n                F#           Ab           Fm            Bbm\nX2      Él vino a mi vida en un día muy especial,\n     F#             Ab               C#                       Fm      C#\nCambió mi corazón, me mostró un camino mejor,\n     F#            Ab       Fm              Bbm   F#        Ab       C#           \nY esa es la razón por la que digo que: Vine a adorar a Dios. \n       F#        Ab        C# \nX2 Vine a adorar a Dios. \n       \n\nMELODÍA\n        [VERSO 2]:\n               C#               Ab                 F#            C#\nNo por Gloria, ni por pan, no por vestido, te serviré Señor,\n              C#               Ab                                C#-Ab-C#\nNo por Gloria, ni por una bendición, no por salud, te serviré Señor,\n                  Ab                    F#-C#                       \nSolo por amarte, solo por amarte, \n                      Ab            F#-Ab    C#\n y no me rechazaste te serviré Señor,\n                         Ab                             F#-C#                       \nPorque tú me amaste, porque tú me amaste, \n                     Ab           F#-Ab     C#\ny no me rechazaste te serviré Señor,\n              F# - Ab                          Fm - Bbm                           D#m            \nX2 Sienteloo - o, Jesucristo está aquíi - í, cada vez que se acerca \n         Ab                 C#               Ab      C#\ntu presencia, en mi ser, hoy lo puedo sentir. X2",
     "id": 5,
     "version": "Miguel Martínez",
-    "versiculo": "\"Venid, adoremos y postrémonos;\nArrodillémonos delante de Jehová nuestro Hacedor.\"",
-    "versiculoCita": "SALMOS 95:6"
+    "versiculos": [
+      {
+        "texto": "Salmo 95:6:\n6 \"Venid, adoremos y postrémonos;\nArrodillémonos delante de Jehová nuestro Hacedor.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 7,
@@ -446,8 +466,12 @@ var SONGS =
     "album": "Corre a la Gracia - 1997",
     "content": "[INTRO]: \n                                                | G | Dm7 |\n        [VERSO 1]:\nDm7               C7     D7           Bm7      Em7\nX2   Espíritu Santo,     yo te necesito,\n                 Am7  D7             Em7      Dm7 - G\nManda tu fuego        a este lugar.\n                 C     D           Bm7      Em7       \nEspíritu Santo,     solo anhelo,\n              Am7   D          G7       Dm7 - C#\nMirar tu gloria       y majestad.   X2\n        [CORO]: \n                             C      D                   Bm7   Em7\nX2   Tú eres mi fuerza,     tú eres mi ayuda,\n              Am7   D                      G - Am7\nEspíritu Santo,     ven a este lugar.   X2\n       [VERSO 1]   X2          |         [CORO]   X2    ",
     "id": 39,
-    "versiculo": "\"Y yo rogaré al Padre, y os dará otro Consolador, para que esté con vosotros para siempre:\"",
-    "versiculoCita": "JUAN 14:16"
+    "versiculos": [
+      {
+        "texto": "Juan 14:16:\n16 \"Y yo rogaré al Padre, y os dará otro Consolador, para que esté con vosotros para siempre:\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 3,
@@ -689,8 +713,12 @@ var SONGS =
     "album": "Te daré lo mejor - 2004",
     "content": "[INTRO]:\n                                   | A | C#m | F#m | D | A |\n        [VERSO 1]:\nA                                     C#m    F#m                                      D\nPor un momento en tu presencia,       por un instante de tu amor,\nA                                C#m   F#m                                   D      A\nPor un destello de tu gloria,         por un minuto nada más.\n        [PRE - CORO]:\n            A                 E                     Bm\nTodo daría, no importaría, lo que tenga que pasar,\n               E\nLo que tenga que esperar.\n        [VERSO 1]:         |        [PRE - CORO]: \n        [CORO]: \n D                    E          A                 C#                   F#m                  D\nX2   Tengo hambre de ti, de tu presencia, de tu fragancia, de tu poder.\n                        A                 C#                F#m            D\nHambre que duele, que debilita, que desespera, por ti.   X2",
     "id": 63,
-    "versiculo": "\"Como el ciervo brama por las corrientes de las aguas, Así clama por ti, oh Dios, el alma mía. \n\nMi alma tiene sed de Dios, del Dios vivo; ¿Cuándo vendré, y me presentaré delante de Dios?\"",
-    "versiculoCita": "SALMOS 42:1-2"
+    "versiculos": [
+      {
+        "texto": "Salmo 42:1-2:\n1 \"Como el ciervo brama por las corrientes de las aguas, Así clama por ti, oh Dios, el alma mía. \n\n2 Mi alma tiene sed de Dios, del Dios vivo; ¿Cuándo vendré, y me presentaré delante de Dios?\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 7,
@@ -744,7 +772,7 @@ var SONGS =
     "youtube": "https://www.youtube.com/embed/uSt_tLrGqEM",
     "versiculos": [
       {
-        "texto": "SALMO 145:14: \n\"Sostiene Jehová a todos los que caen, Y levanta a todos los oprimidos.\"\n\nSALMO 147:3: \n\"El sana a los quebrantados de corazón, Y venda sus heridas.\"",
+        "texto": "Salmo 145:14: \n14 \"Sostiene Jehová a todos los que caen, Y levanta a todos los oprimidos.\"\n\nSalmo 147:3: \n3 \"El sana a los quebrantados de corazón, Y venda sus heridas.\"",
         "cita": ""
       }
     ]
