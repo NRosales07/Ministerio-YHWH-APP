@@ -8,7 +8,7 @@ const NOTE_ROOT_LATINO = { C:'Do', D:'Re', E:'Mi', F:'Fa', G:'Sol', A:'La', B:'S
 const state = {
   view: 'home', category: 'adoracion', song: null, admin: false, selectedSongChord:null, theoryChord: { root:'C', quality:'major' }, theoryCircleChord: null, theoryCircleIndex:0, theoryCircleMinor:false, theoryCircleChords:null, theoryScale:'major', theoryInterval:7, theoryPianoIntervals:null, theoryPianoMode:'chord',
   melodies: readMelodyCache(), melodyDirty:false, recording: false, recordStart: 0, notes: [], chords: [], chordTarget: null,
-  buffers: new Map(), instrumentBuffers: new Map(), instrument: localStorage.getItem('yhwh_piano_instrument') === 'trumpet' ? 'trumpet' : 'grand-piano', sustain: localStorage.getItem('yhwh_piano_sustain') === '1', playing: false, playTimers: [], transpose: 0, originalTonic: 'C',
+  buffers: new Map(), instrumentBuffers: new Map(), instrument: ['steinway-grand'].includes(localStorage.getItem('yhwh_piano_instrument')) ? localStorage.getItem('yhwh_piano_instrument') : 'grand-piano', sustain: localStorage.getItem('yhwh_piano_sustain') === '1', playing: false, playTimers: [], transpose: 0, originalTonic: 'C',
   notation: localStorage.getItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano', lastMidi: null, db: null, auth: null,
   ref: null, set: null, onValue: null, signIn: null, signOut: null, authListener: null
 };
@@ -514,20 +514,36 @@ async function getSample(midi) {
   return state.buffers.get(sampleMidi);
 }
 const INSTRUMENTS = {
-  'grand-piano': { folder: 'grand-piano', first: 30, last: 96, step: 3, release: 0.4 },
-  trumpet: { folder: 'trumpet', first: 27, last: 99, step: 9, release: 0.1 }
-};
+  'grand-piano': { folder: 'grand-piano', first: 30, last: 96, step: 3, release: 0.4 },  'steinway-grand': { folder: 'steinway-grand', first: 36, last: 95, step: 1, release: 0.7 },};
+const STEINWAY_PREFIX = 'Mp';
+const STEINWAY_SAMPLE_NAMES = ["FF-A#2.m4a","FF-A#4.m4a","FF-A0.m4a","FF-A1.m4a","FF-A2.m4a","FF-A3.m4a","FF-A4.m4a","FF-A5.m4a","FF-B-1.m4a","FF-B0.m4a","FF-B1.m4a","FF-B2.m4a","FF-B3.m4a","FF-B4.m4a","FF-C#1.m4a","FF-C#5.m4a","FF-C2.m4a","FF-C3.m4a","FF-C4.m4a","FF-D#0.m4a","FF-D1.m4a","FF-D2.m4a","FF-D3.m4a","FF-D4.m4a","FF-D5.m4a","FF-E1.m4a","FF-E2.m4a","FF-E3.m4a","FF-E4.m4a","FF-E5.m4a","FF-F0.m4a","FF-F1.m4a","FF-F2.m4a","FF-F3.m4a","FF-F4.m4a","FF-F5.m4a","FF-G#2.m4a","FF-G#4.m4a","FF-G0.m4a","FF-G1.m4a","FF-G2.m4a","FF-G3.m4a","FF-G4.m4a","FF-G5.m4a","Mp-A#2.m4a","Mp-A#4.m4a","Mp-A#5.m4a","Mp-A#6.m4a","Mp-A0.m4a","Mp-A1.m4a","Mp-A2.m4a","Mp-A3.m4a","Mp-A4.m4a","Mp-A5.m4a","Mp-A6.m4a","Mp-B-1.m4a","Mp-B0.m4a","Mp-B1.m4a","Mp-B2.m4a","Mp-B3.m4a","Mp-B4.m4a","Mp-B5.m4a","Mp-C#1.m4a","Mp-C#5.m4a","Mp-C#6.m4a","Mp-C2.m4a","Mp-C3.m4a","Mp-C4.m4a","Mp-C6.m4a","Mp-D#0.m4a","Mp-D#5.m4a","Mp-D#6.m4a","Mp-D1.m4a","Mp-D2.m4a","Mp-D3.m4a","Mp-D4.m4a","Mp-D5.m4a","Mp-D6.m4a","Mp-E1.m4a","Mp-E2.m4a","Mp-E3.m4a","Mp-E4.m4a","Mp-E5.m4a","Mp-F#5.m4a","Mp-F#6.m4a","Mp-F0.m4a","Mp-F1.m4a","Mp-F2.m4a","Mp-F3.m4a","Mp-F4.m4a","Mp-F5.m4a","Mp-F6.m4a","Mp-G#2.m4a","Mp-G#4.m4a","Mp-G#5.m4a","Mp-G#6.m4a","Mp-G0.m4a","Mp-G1.m4a","Mp-G2.m4a","Mp-G3.m4a","Mp-G4.m4a","Mp-G5.m4a","Mp-G6.m4a","PP-A#2.m4a","PP-A#4.m4a","PP-A#5.m4a","PP-A#6.m4a","PP-A0.m4a","PP-A1.m4a","PP-A2.m4a","PP-A3.m4a","PP-A4.m4a","PP-A5.m4a","PP-A6.m4a","PP-B-1.m4a","PP-B0.m4a","PP-B1.m4a","PP-B2.m4a","PP-B3.m4a","PP-B4.m4a","PP-B5.m4a","PP-B6.m4a","PP-C#1.m4a","PP-C#5.m4a","PP-C#6.m4a","PP-C2.m4a","PP-C3.m4a","PP-C4.m4a","PP-C6.m4a","PP-C7.m4a","PP-D#0.m4a","PP-D#5.m4a","PP-D#6.m4a","PP-D1.m4a","PP-D2.m4a","PP-D3.m4a","PP-D4.m4a","PP-D5.m4a","PP-D6.m4a","PP-E1.m4a","PP-E2.m4a","PP-E3.m4a","PP-E4.m4a","PP-E6.m4a","PP-F#5.m4a","PP-F#6.m4a","PP-F0.m4a","PP-F1.m4a","PP-F2.m4a","PP-F3.m4a","PP-F4.m4a","PP-F5.m4a","PP-F6.m4a","PP-G#2.m4a","PP-G#4.m4a","PP-G#5.m4a","PP-G#6.m4a","PP-G0.m4a","PP-G1.m4a","PP-G2.m4a","PP-G3.m4a","PP-G4.m4a","PP-G5.m4a","PP-G6.m4a"];
+function steinwayMidi(name) { const octave = Number(name.slice(-1)); const pitch = name.slice(0, -1); return (octave + 1) * 12 + NOTE_NAMES.indexOf(pitch); }
+function steinwayNoteName(midi) {
+  const semitones = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const candidates = STEINWAY_SAMPLE_NAMES.filter(file => file.startsWith(STEINWAY_PREFIX + '-')).map(file => file.slice(STEINWAY_PREFIX.length + 1, -4));
+  const toMidi = value => {
+    const octave = Number(value.slice(-1));
+    const pitch = value.slice(0, -1);
+    return (octave + 1) * 12 + semitones.indexOf(pitch);
+  };
+  return candidates.reduce((best, candidate) => Math.abs(toMidi(candidate) - midi) < Math.abs(toMidi(best) - midi) ? candidate : best, candidates[0] || 'C4');
+}
 async function getInstrumentSample(midi) {
   const spec = INSTRUMENTS[state.instrument];
-  const sampleMidi = Math.max(spec.first, Math.min(spec.last, Math.round((midi - spec.first) / spec.step) * spec.step + spec.first));
-  const key = state.instrument + ':' + sampleMidi;
+  const sample = spec.samples?.find(item => midi >= item[0] && midi <= item[1]);
+  const sampleMidi = sample
+    ? sample[2]
+    : Math.max(spec.first, Math.min(spec.last, Math.round((midi - spec.first) / spec.step) * spec.step + spec.first));
+  const actualSampleMidi = state.instrument === 'steinway-grand' ? steinwayMidi(steinwayNoteName(midi)) : sampleMidi;
+  const key = state.instrument + ':' + actualSampleMidi;
   if (!state.instrumentBuffers.has(key)) {
-    const filename = state.instrument === 'trumpet' ? `trumpet-${sampleMidi}.mp3` : `pno0${sampleMidi}.mp3`;
-    const response = await fetch(`audio/${spec.folder}/${filename}`);
+    const sampleName = sample?.[3];
+    const filename = state.instrument === 'steinway-grand' ? `${STEINWAY_PREFIX}-${steinwayNoteName(actualSampleMidi)}.m4a` : sampleName ? `${sampleName}vH.flac` : `pno0${sampleMidi}.mp3`;
+    const response = await fetch(`audio/${spec.folder}/${encodeURIComponent(filename)}`);
     if (!response.ok) throw new Error(`No se pudo cargar la muestra ${filename}`);
     state.instrumentBuffers.set(key, await getAudioContext().decodeAudioData(await response.arrayBuffer()));
   }
-  return { buffer: state.instrumentBuffers.get(key), sampleMidi, release: spec.release };
+  return { buffer: state.instrumentBuffers.get(key), sampleMidi: actualSampleMidi, release: spec.release };
 }
 async function playChord(chord) {
   if (!state.playing && !chord.preview) return;
@@ -551,7 +567,7 @@ async function playChord(chord) {
       source.playbackRate.value = 2 ** ((entry.midi - entry.sampleMidi) / 12);
       const duration = Math.max(0.25, Number(chord.duration) || 2);
       const noteWhen=when+(chord.arpeggio?index*0.2:index*0.01);
-      const release = state.instrument === 'trumpet' ? 0.22 : (state.sustain ? 0.9 : 0.32);
+      const release = state.instrument === 'steinway-grand' ? 0.7 : (state.sustain ? 0.9 : 0.32);
       const stopAt = noteWhen + duration;
       gain.gain.setValueAtTime(0.78, noteWhen);
       gain.gain.setValueAtTime(0.78, stopAt);
@@ -596,7 +612,7 @@ async function playNote(midi, element, duration = 0.4) {
     const contextNow = context.currentTime;
     const attackAt = contextNow + 0.006;
     const noteDuration = Math.max(0.08, duration * (state.sustain ? 2.4 : 1));
-    const release = state.instrument === 'trumpet' ? 0.22 : (state.sustain ? 0.9 : 0.32);
+    const release = state.instrument === 'steinway-grand' ? 0.7 : (state.sustain ? 0.9 : 0.32);
     const stopAt = attackAt + noteDuration;
     gain.gain.setValueAtTime(0.0001, contextNow);
     gain.gain.linearRampToValueAtTime(0.88, attackAt + 0.018);
@@ -655,9 +671,9 @@ function playMelody() {
     const timer = setTimeout(() => { if (state.playing) playChord(chord); }, Math.max(0, Number(anchorNote.start) || 0) * 1000);
     state.playTimers.push(timer);
   });
-  const noteRelease = state.instrument === 'trumpet' ? 0.22 : (state.sustain ? 0.9 : 0.32);
+  const noteRelease = state.instrument === 'steinway-grand' ? 0.7 : (state.sustain ? 0.9 : 0.32);
   const noteEnd = Math.max(...state.notes.map(note => (Number(note.start) || 0) + (Number(note.duration) || 0.35) * (state.sustain ? 2.4 : 1) + noteRelease));
-  const chordEnd = state.chords.reduce((end, chord) => { const note=state.notes[Number(chord.noteIndex)]; return note ? Math.max(end, (Number(note.start)||0)+(Number(chord.duration)||2)+(chord.arpeggio?0.4:0)+(state.instrument === 'trumpet' ? 0.22 : (state.sustain ? 0.9 : 0.32))) : end; }, 0);
+  const chordEnd = state.chords.reduce((end, chord) => { const note=state.notes[Number(chord.noteIndex)]; return note ? Math.max(end, (Number(note.start)||0)+(Number(chord.duration)||2)+(chord.arpeggio?0.4:0)+(state.instrument === 'steinway-grand' ? 0.7 : (state.sustain ? 0.9 : 0.32))) : end; }, 0);
   const end = Math.max(noteEnd, chordEnd);
   state.playTimers.push(setTimeout(() => { state.playing = false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = 'Melodía terminada.'; }, end * 1000 + 500));
 }
@@ -775,9 +791,9 @@ function bindInterface() {
   };
   $('instrumentSelect').value = state.instrument;
   $('instrumentSelect').onchange = event => {
-    state.instrument = event.target.value === 'trumpet' ? 'trumpet' : 'grand-piano';
+    state.instrument = ['steinway-grand'].includes(event.target.value) ? event.target.value : 'grand-piano';
     try { localStorage.setItem('yhwh_piano_instrument', state.instrument); } catch (_) {}
-    $('status').textContent = `Instrumento seleccionado: ${state.instrument === 'trumpet' ? 'Trompeta' : 'Grand Piano'}.`;
+    $('status').textContent = `Instrumento seleccionado: ${{'steinway-grand':'Steinway de cola','grand-piano':'Grand Piano'}[state.instrument]}.`;
   };
   const sustainButton = $('sustainBtn');
   if (sustainButton) {
