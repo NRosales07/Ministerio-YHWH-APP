@@ -503,3 +503,18 @@ button,select,input,summary{-webkit-tap-highlight-color:transparent;touch-action
   body:has(#player:not(.hidden)) .mobile-player-controls button small{display:block;max-width:100%;overflow:visible;text-overflow:clip;font-size:10px;line-height:1.1;white-space:normal;text-align:center;overflow-wrap:anywhere}
   body:has(#player:not(.hidden)):has(.mobile-player-controls .admin-only:not(.hidden)) main{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
 }
+/* El teclado captura cada dedo por separado y evita selección de texto al sostener o deslizar. */
+.piano-panel #keyboard,.piano-panel .key{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+
+/* Evita selección de texto y entrega al piano los gestos de varios dedos y deslizamiento. */
+.piano-panel #keyboard,.piano-panel .key{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+
+/* Navegación compacta de octavas y zoom del teclado en pantallas pequeñas. */
+.keyboard-navigation{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px auto 8px}
+.keyboard-octave-controls,.keyboard-zoom-controls{display:flex;align-items:center;justify-content:center;gap:5px}
+.keyboard-navigation button{min-height:32px;padding:4px 9px;border:1px solid #5d5878;border-radius:9px;background:linear-gradient(180deg,#383450,#29263e);font-size:11px;font-weight:700;white-space:nowrap}
+.keyboard-octave-controls span{min-width:29px;color:#f1d783;text-align:center;font-size:11px;font-weight:800}
+body:has(#player:not(.hidden)) .piano-panel #keyboard .keys{width:calc(var(--keyboard-key-width,50px)*var(--keyboard-zoom,1));flex-basis:calc(var(--keyboard-key-width,50px)*var(--keyboard-zoom,1))}
+@media(max-width:700px){.keyboard-navigation{gap:6px;margin:1px auto 5px}.keyboard-navigation button{min-height:29px;padding:3px 7px;font-size:10px}}
+@media(max-width:700px) and (orientation:portrait){body:has(#player:not(.hidden)) .piano-panel #keyboard{--keyboard-key-width:clamp(35px,9vw,48px)}}
+@media(max-width:900px) and (orientation:landscape){body:has(#player:not(.hidden)) .piano-panel #keyboard{--keyboard-key-width:clamp(30px,6.2vw,48px)}}
