@@ -6,7 +6,7 @@ const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 
 const NOTE_NAMES_LATINO = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si'];
 const NOTE_ROOT_LATINO = { C:'Do', D:'Re', E:'Mi', F:'Fa', G:'Sol', A:'La', B:'Si' };
 const state = {
-  view: 'home', category: 'adoracion', song: null, melodyType:'introduccion', voiceMix:{principal:true,segunda:false,tercera:false}, pendingSong:null, pendingPurpose:'listen', admin: false, selectedSongChord:null, theoryChord: { root:'C', quality:'major' }, theoryCircleChord: null, theoryCircleIndex:0, theoryCircleMinor:false, theoryCircleChords:null, theoryScale:'major', theoryInterval:7, theoryPianoIntervals:null, theoryPianoMode:'chord',
+  view: 'home', category: 'adoracion', song: null, melodyType:'introduccion', voiceMix:{principal:true,segunda:false,tercera:false,acordes:true}, pendingSong:null, pendingPurpose:'listen', admin: false, selectedSongChord:null, theoryChord: { root:'C', quality:'major' }, theoryCircleChord: null, theoryCircleIndex:0, theoryCircleMinor:false, theoryCircleChords:null, theoryScale:'major', theoryInterval:7, theoryPianoIntervals:null, theoryPianoMode:'chord',
   melodies: readMelodyCache(), melodyDirty:false, recording: false, recordStart: 0, notes: [], chords: [], chordTarget: null,
   buffers: new Map(), instrumentBuffers: new Map(), sampleLoads:new Map(), instrumentSampleLoads:new Map(), instrument: ['steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_instrument')) ? localStorage.getItem('yhwh_piano_instrument') : 'grand-piano', bassInstrument: ['grand-piano','steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_bass_instrument')) ? localStorage.getItem('yhwh_piano_bass_instrument') : 'grand-piano', trumpetIntensity: localStorage.getItem('yhwh_piano_trumpet_intensity') === 'soft' ? 'soft' : 'strong', sustain: localStorage.getItem('yhwh_piano_sustain') === '1', tempo:Math.min(1.5,Math.max(.5,Number(localStorage.getItem('yhwh_piano_tempo'))||1)), playing: false, playTimers: [], activePlaybackSources:[], activePointers: new Map(), keyboardOctaveMidi:60, keyboardZoom:Math.min(1.8,Math.max(0.65,Number(localStorage.getItem('yhwh_piano_keyboard_zoom'))||1)), transpose: 0, originalTonic: 'C',
   notation: localStorage.getItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano', lastMidi: null, db: null, auth: null,
@@ -314,7 +314,7 @@ function openSong(song, category, trackType='introduccion') {
   const savedMelody = trackFor(category, song.id,trackType) || {};
   state.notes = (savedMelody.notas || []).map(note => ({ ...note }));
   state.chords = (savedMelody.acordes || []).map(chord => ({ ...chord }));
-  state.voiceMix={principal:true,segunda:false,tercera:false};
+  state.voiceMix={principal:true,segunda:false,tercera:false,acordes:true};
   state.chordTarget = null;
   $('songTitle').textContent = song.title || 'Alabanza';
   $('songMeta').textContent = `${category === 'jubilo' ? 'Júbilo' : 'Adoración'}${song.compositor ? ` · ${song.compositor}` : ''}`;
@@ -364,37 +364,30 @@ function renderRecorded() {
 }
 function renderVoiceMixer(){
   if(!$('voiceMixer'))return;
-  [['principal','voiceMain'],['segunda','voiceSecond'],['tercera','voiceThird']].forEach(([name,id])=>$(id).checked=!!state.voiceMix[name]);
+  [['principal','voiceMain'],['segunda','voiceSecond'],['tercera','voiceThird'],['acordes','voiceChords']].forEach(([name,id])=>{if($(id))$(id).checked=!!state.voiceMix[name];});
 }
 function generatedVoiceParts(){
-  const chordIntervals={major:[0,4,7],minor:[0,3,7],'7':[0,4,7,10],maj7:[0,4,7,11],m7:[0,3,7,10],mMaj7:[0,3,7,11],'6':[0,4,7,9],add9:[0,4,7,14],'5':[0,7],dim7:[0,3,6,9],m7b5:[0,3,6,10],sus2:[0,2,7],sus4:[0,5,7],dim:[0,3,6],aug:[0,4,8]};
-  const tonic=state.originalTonic.replace(/m$/,'');
-  const fallbackQuality=state.originalTonic.endsWith('m')?'minor':'major';
-  let previousSecond=null,previousThird=null;
-  const second=[],third=[];
-  const choosePitch=(reference,pitchClasses,minDelta,maxDelta,target,previous)=>{
-    let candidates=[];
-    for(let midi=36;midi<=95;midi++){const delta=midi-reference;if(delta>=minDelta&&delta<=maxDelta&&pitchClasses.includes(midi%12))candidates.push(midi);}
-    if(!candidates.length)return null;
-    candidates.sort((a,b)=>{
-      const score=midi=>Math.abs((midi-reference)-target)+(previous===null?0:.65*Math.abs(midi-previous));
-      return score(a)-score(b);
-    });return candidates[0];
+  // Voces por escala del tono: la segunda voz baja 2 notas de la escala (tercera diatónica)
+  // y la tercera baja 4 (quinta diatónica). No depende de los acordes.
+  const minor=state.originalTonic.endsWith('m');
+  const tonicIndex=NOTE_NAMES.indexOf(state.originalTonic.replace(/m$/,''));
+  const tonicPc=((Math.max(0,tonicIndex)+(Number(state.transpose)||0))%12+12)%12;
+  const scalePcs=(minor?[0,2,3,5,7,8,10]:[0,2,4,5,7,9,11]).map(interval=>(tonicPc+interval)%12);
+  const scaleMidis=[];
+  for(let midi=12;midi<=108;midi++)if(scalePcs.includes(midi%12))scaleMidis.push(midi);
+  const voiceBelow=(lead,steps)=>{
+    // Nota de la escala más cercana a la melodía (si está entre dos, la de abajo).
+    let index=0,best=Infinity;
+    scaleMidis.forEach((midi,i)=>{const distance=Math.abs(midi-lead);if(distance<best){best=distance;index=i;}});
+    let midi=scaleMidis[Math.max(0,index-steps)];
+    while(midi<36)midi+=12;
+    return midi;
   };
-  state.notes.forEach((note,index)=>{
-    const active=state.chords.filter(chord=>Number(chord.noteIndex)<=index).sort((a,b)=>Number(b.noteIndex)-Number(a.noteIndex))[0];
-    const chord=active||{root:tonic,quality:fallbackQuality};
-    const rootPc=((NOTE_NAMES.indexOf(chord.root)%12)+12)%12;
-    const pitchClasses=[...new Set((chordIntervals[chord.quality]||chordIntervals.major).map(interval=>(rootPc+interval)%12))];
+  const second=[],third=[];
+  state.notes.forEach(note=>{
     const lead=Number(note.midi);
-    let secondMidi=choosePitch(lead,pitchClasses,3,12,7,previousSecond);
-    if(secondMidi===null)secondMidi=choosePitch(lead,pitchClasses,-12,-3,-7,previousSecond);
-    let thirdMidi=secondMidi===null?null:choosePitch(secondMidi,pitchClasses,3,12,7,previousThird);
-    if(thirdMidi===null)thirdMidi=choosePitch(lead,pitchClasses,-19,-5,-12,previousThird);
-    second.push(secondMidi===null?null:{...note,midi:secondMidi});
-    third.push(thirdMidi===null?null:{...note,midi:thirdMidi});
-    if(secondMidi!==null)previousSecond=secondMidi;
-    if(thirdMidi!==null)previousThird=thirdMidi;
+    second.push({...note,midi:voiceBelow(lead,2)});
+    third.push({...note,midi:voiceBelow(lead,4)});
   });
   return {segunda:second,tercera:third};
 }
@@ -837,14 +830,15 @@ async function playMelody() {
     const midi=Number(note.midi),key=document.querySelector(`.key[data-midi="${midi}"]`);
     schedulePlaybackNote(midi,key,Number(note.duration)||.32,playbackStart+Math.max(0,Number(note.start)||0)/state.tempo,prepared);
   });
-  state.chords.forEach(chord => {
+  const playbackChords = (state.melodyType !== 'voz' || state.voiceMix.acordes) ? state.chords : [];
+  playbackChords.forEach(chord => {
     const anchorNote = state.notes[Number(chord.noteIndex)];
     if (!anchorNote) return;
     playChord({...chord,duration:chordSpanForPlayback(chord),tempo:state.tempo,startAt:playbackStart+Math.max(0,Number(anchorNote.start)||0)/state.tempo});
   });
   const noteRelease = state.instrument === 'trumpet-real' ? 0.25 : state.instrument === 'steinway-grand' ? 0.7 : (state.sustain ? 0.9 : 0.32);
   const noteEnd = Math.max(...playbackNotes.map(note => ((Number(note.start) || 0) + (Number(note.duration) || 0.35) * (state.sustain ? 2.4 : 1)) / state.tempo + noteRelease));
-  const chordEnd = state.chords.reduce((end, chord) => { const note=state.notes[Number(chord.noteIndex)]; const instrument=chord.instrument||state.bassInstrument; const release=instrument==='trumpet-real'?0.25:instrument==='steinway-grand'?0.7:(state.sustain?0.9:0.32); return note ? Math.max(end, ((Number(note.start)||0)+chordSpanForPlayback(chord)+(chord.arpeggio?0.4:0))/state.tempo+release) : end; }, 0);
+  const chordEnd = playbackChords.reduce((end, chord) => { const note=state.notes[Number(chord.noteIndex)]; const instrument=chord.instrument||state.bassInstrument; const release=instrument==='trumpet-real'?0.25:instrument==='steinway-grand'?0.7:(state.sustain?0.9:0.32); return note ? Math.max(end, ((Number(note.start)||0)+chordSpanForPlayback(chord)+(chord.arpeggio?0.4:0))/state.tempo+release) : end; }, 0);
   const end = Math.max(noteEnd, chordEnd);
   state.playTimers.push(setTimeout(() => { state.playing = false; $('tempoControl').disabled=false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = 'Melodía terminada.'; }, end * 1000 + 500));
 }
@@ -932,11 +926,11 @@ function bindInterface() {
   $('closeTrackModal').onclick=closeTrackChooser;
   $('trackModal').onclick=event=>{if(event.target===$('trackModal'))closeTrackChooser();};
   document.addEventListener('keydown',event=>{if(event.key==='Escape')closeTrackChooser();});
-  [['voiceMain','principal'],['voiceSecond','segunda'],['voiceThird','tercera']].forEach(([id,name])=>$(id).onchange=event=>{
+  [['voiceMain','principal'],['voiceSecond','segunda'],['voiceThird','tercera'],['voiceChords','acordes']].forEach(([id,name])=>$(id)&&($(id).onchange=event=>{
     state.voiceMix[name]=event.target.checked;
     if(state.playing)stopPlayback();
     $('status').textContent='Mezcla de voces actualizada. Pulsa reproducir para escuchar la selección.';
-  });
+  }));
   document.querySelectorAll('.theory-tab').forEach(button => button.onclick = () => changeTheoryTab(button.dataset.theoryTab));
   $('lyrics').onclick = event => {const chord=event.target.closest('[data-play-chord]');if(chord)playSongChord(chord.dataset.playChord,chord);};
   $('theoryRoot').onchange = event => { setTheoryChord(event.target.value,state.theoryChord.quality,true);renderTheory(); };
@@ -1150,6 +1144,3 @@ initializeSplash();
 window.addEventListener('load',()=>{if(navigator.onLine)downloadOfflineAudio();},{once:true});
 window.addEventListener('beforeunload',event=>{if(state.melodyDirty){event.preventDefault();event.returnValue='';}});
 initializeFirebase();
-
-
-
