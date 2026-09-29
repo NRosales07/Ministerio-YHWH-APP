@@ -518,3 +518,141 @@ body:has(#player:not(.hidden)) .piano-panel #keyboard .keys{width:calc(var(--key
 @media(max-width:700px){.keyboard-navigation{gap:6px;margin:1px auto 5px}.keyboard-navigation button{min-height:29px;padding:3px 7px;font-size:10px}}
 @media(max-width:700px) and (orientation:portrait){body:has(#player:not(.hidden)) .piano-panel #keyboard{--keyboard-key-width:clamp(35px,9vw,48px)}}
 @media(max-width:900px) and (orientation:landscape){body:has(#player:not(.hidden)) .piano-panel #keyboard{--keyboard-key-width:clamp(30px,6.2vw,48px)}}
+
+/* Lenguaje visual compartido con YHWH Alabanzas. */
+:root{--bg:#0d0d14;--panel:#1c1c3f;--panel2:#42426e;--line:#2a2a45;--gold:#c9a84c;--gold2:#e8c97a;--text:#e8e6f0;--muted:#aaa9c1}
+body{background:#0f0f29}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 12% 16%,#e8c97a13,transparent 22%),radial-gradient(circle at 88% 14%,#8bc7ff12,transparent 24%),radial-gradient(circle at 70% 82%,#f1824b0c,transparent 25%)}
+header{background:rgba(13,13,20,.88);border-bottom:1px solid #2a2a45;box-shadow:0 8px 28px #0003}
+.brand-icon{color:var(--gold2);text-shadow:0 0 12px #e8c97a66}
+.admin,.soft,.gold,.tab,.home-back{transition:border-color .16s,background .16s,transform .16s,box-shadow .16s}
+.admin,.soft,.tab{background:linear-gradient(145deg,#24244a,#19192e);border-color:#42426e}
+.admin:hover,.soft:hover,.tab:hover{border-color:var(--gold2);box-shadow:0 0 16px #c9a84c1c}
+.gold{background:linear-gradient(135deg,#c9a84c,#e8c97a);box-shadow:0 4px 14px #c9a84c2a}
+.connection{letter-spacing:.02em}
+.toolbar h1,.theory-header h1{color:var(--gold2)}
+.toolbar input,.modal input{background:#11111d;border-color:#3b3b5c;border-radius:12px}
+.song-card,.chord-preview,.piano-panel,.theory-panel,.theory-preview,.modal-card{background:linear-gradient(145deg,rgba(34,34,70,.94),rgba(20,20,37,.97));border-color:#343454;box-shadow:0 12px 30px #0003}
+.song-card{border-radius:15px}
+.song-card:hover{border-color:#c9a84c;box-shadow:0 10px 25px #0005,0 0 18px #c9a84c18}
+.home-view{border-color:#c9a84c55;background:linear-gradient(125deg,#11152f,#211d4a 46%,#121326 100%);box-shadow:0 18px 50px #0005}
+.home-menu-card{border-color:#e8c97a55;background:linear-gradient(145deg,#242a61ed,#181b3ced);box-shadow:0 9px 24px #0004}
+.home-menu-card:hover{border-color:var(--gold2);box-shadow:0 10px 25px #0005,0 0 20px #c9a84c24}
+.home-card-icon{background:linear-gradient(145deg,#ffffff12,#ffffff05);border:1px solid #ffffff12}
+.home-back{background:linear-gradient(145deg,#24244a,#19192e);border-color:#514b70}
+.piano-panel{border-radius:18px}
+.piano-panel .status{background:#ffffff08;border-color:#ffffff12}
+.theory-tab.active{border-color:var(--gold2);background:#39344e;color:#f1dc94;box-shadow:0 0 14px #c9a84c1c}
+.modal-card{border-radius:20px}
+.toast{background:#232342;border-color:#514b70;box-shadow:0 8px 24px #0005}
+@media(prefers-reduced-motion:reduce){.admin,.soft,.gold,.tab,.home-back{transition:none}}
+
+/* Portada con la misma composición centrada y el mismo fondo que YHWH. */
+body.home-active{background:#0f0f29}
+body.home-active main{position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:calc(100dvh - 70px);overflow:hidden}
+body.home-active main:before{content:"";position:absolute;z-index:-1;inset:0 -16px;background:linear-gradient(90deg,#f1824b,#1d2677,#3a2a7d,#101038);background-size:300% 100%;animation:pianoMenuGradient 12s ease infinite}
+@keyframes pianoMenuGradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+body.home-active .home-view{flex:1;min-height:0;margin:4px 0 10px;padding:24px 16px;border:0;border-radius:0;background:transparent;box-shadow:none}
+body.home-active .home-view:before,body.home-active .home-view:after{display:none}
+body.home-active .home-content{width:min(100%,400px);padding:25px 24px 20px;border:1px solid var(--line);border-radius:15px;background:var(--panel);box-shadow:0 18px 45px #09091c66}
+body.home-active .home-branding{margin-bottom:18px}
+body.home-active .home-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+body.home-active .home-menu-card{min-height:100px;padding:12px 8px;border-radius:12px}
+body.home-active .home-card-icon{width:36px;height:36px;font-size:21px}
+body.home-active .home-branding h1{font-size:clamp(1.55rem,5vw,1.9rem)}
+body.home-active .home-branding p{color:#e0946a}
+@media(max-width:700px){body.home-active main{min-height:calc(100dvh - 70px);padding:15px 12px 22px}body.home-active main:before{inset:0 -12px}body.home-active .home-view{margin:0;padding:12px 0}body.home-active .home-content{padding:22px 18px 18px}body.home-active .home-menu-card{min-height:96px}}
+@media(max-width:900px) and (orientation:landscape){body.home-active main{height:calc(100dvh - 48px);max-height:calc(100dvh - 48px);min-height:0;padding:5px 10px;overflow:auto}body.home-active main:before{inset:0 -10px}body.home-active .home-view{flex:0 0 auto;min-height:100%;height:auto;margin:0;padding:10px 0}body.home-active .home-content{width:min(100%,620px);padding:16px 22px}body.home-active .home-branding{margin-bottom:12px}body.home-active .home-note{width:40px;height:40px;margin-bottom:5px;font-size:23px}body.home-active .home-branding h1{font-size:1.55rem}body.home-active .home-branding p{font-size:.9rem}body.home-active .home-divider{margin:9px auto}body.home-active .home-prompt{font-size:.82rem}body.home-active .home-menu-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}body.home-active .home-menu-card{min-height:83px;padding:8px 5px}body.home-active .home-card-icon{width:30px;height:30px;font-size:18px}body.home-active .home-menu-card b{font-size:.75rem}body.home-active .home-menu-card small{display:none}}
+@media(prefers-reduced-motion:reduce){body.home-active main:before{animation:none}}
+
+/* Componentes interiores con el estilo del repertorio YHWH. */
+.view:not(.hidden){position:relative}
+.view:not(.hidden)>.home-back,.player-top>.soft{border:1px solid #c9a84c66;border-radius:999px;background:linear-gradient(135deg,#1d2677,#1b2152);color:#f1d783;font-weight:700;box-shadow:0 3px 12px #0003}
+.view:not(.hidden)>.home-back:hover,.player-top>.soft:hover{border-color:#e8c97a;background:linear-gradient(135deg,#292f82,#242b61)}
+.toolbar{padding:12px 14px;margin:8px 0 12px;border:1px solid #c9a84c55;border-radius:14px;background:linear-gradient(145deg,#1c1c3f,#17172f);box-shadow:0 8px 22px #0003}
+.toolbar h1{font-size:1.35rem;letter-spacing:-.02em}
+.toolbar input,.modal input{background:#10102a;border:1px solid #42426e;border-radius:9px;color:var(--text)}
+.toolbar input:focus,.modal input:focus{border-color:#c9a84c;box-shadow:0 0 0 3px #c9a84c20}
+.hint{margin:0 0 12px;color:#d0cde0;line-height:1.5}
+.song-list{gap:10px}
+.song-card{min-height:62px;padding:12px 13px;border:1px solid #c9a84c55;border-radius:11px;background:linear-gradient(135deg,#1d2677,#1b2152);box-shadow:0 5px 15px #0003}
+.song-card b{color:#f2efff;letter-spacing:.01em}
+.song-card small{color:#e0946a}
+.song-card:hover{transform:translateY(-2px);border-color:#e8c97a;background:linear-gradient(135deg,#252f87,#20285f);box-shadow:0 9px 20px #0005}
+.badge{background:#29473d;color:#a8e6c0;border:1px solid #6cb58a55;border-radius:999px}
+.empty{border:1px solid #c9a84c44;background:linear-gradient(145deg,#1d2677,#1b2152);color:#d0cde0}
+.player{margin-top:12px}
+.player-top{padding:10px 12px;margin-bottom:10px;border:1px solid #c9a84c55;border-radius:14px;background:linear-gradient(145deg,#1c1c3f,#17172f);box-shadow:0 7px 20px #0003}
+.player-top h1{color:#f1d783;letter-spacing:.01em}
+.player-top p{color:#e0946a}
+.piano-panel,.chord-preview,.theory-panel{border:1px solid #c9a84c55;background:linear-gradient(145deg,#1c1c3f,#17172f);box-shadow:0 10px 28px #0004}
+.piano-panel .piano-heading>span{color:#f1d783;letter-spacing:.03em;text-transform:uppercase;font-size:.78rem;font-weight:800}
+.piano-panel .status{border-color:#ffffff18;background:#ffffff08;color:#d0cde0}
+.mobile-quick-settings{border:1px solid #c9a84c44;border-radius:12px;background:linear-gradient(135deg,#1d2677aa,#1b2152aa);padding:8px}
+.quick-setting select,.mobile-quick-settings select,.chord-editor-fields select{border:1px solid #625a82!important;border-radius:8px!important;background:#17172f!important;color:#f2efff!important}
+.transpose-controls{border-color:#c9a84c44;background:#10102a}
+.transpose-controls button,.keyboard-navigation button{border:1px solid #c9a84c66;background:linear-gradient(135deg,#1d2677,#1b2152);color:#f1d783}
+.transpose-controls button:hover,.keyboard-navigation button:hover{border-color:#e8c97a;background:linear-gradient(135deg,#293184,#222a62)}
+.transpose-controls span,.keyboard-octave-controls span{color:#f1d783}
+.piano-panel .piano-container{border:1px solid #c9a84c66;border-radius:12px;background:linear-gradient(180deg,#080810,#15152b);box-shadow:inset 0 0 22px #0008}
+.keyboard-navigation{padding:6px;margin:4px auto 8px;border:1px solid #c9a84c33;border-radius:10px;background:#10102a}
+.recorded .note-chip{border:1px solid #e8c97a88;background:linear-gradient(135deg,#c9a84c,#e8c97a);color:#171520}
+.chord-editor,.mobile-song-details{border:1px solid #c9a84c55!important;border-radius:12px!important;background:linear-gradient(145deg,#1c1c3f,#17172f)!important}
+.mobile-song-details>summary{color:#f1d783}
+.mobile-song-details .lyrics{border-color:#42426e}
+.mobile-player-controls button,.piano-panel .player-controls button{border:1px solid #c9a84c66;background:linear-gradient(135deg,#1d2677,#1b2152);color:#f2efff}
+.mobile-player-controls button:hover,.piano-panel .player-controls button:hover{border-color:#e8c97a;filter:brightness(1.12)}
+.mobile-player-controls #playMelody,.piano-panel .player-controls #playMelody,.piano-panel .player-controls #recordBtn{background:linear-gradient(135deg,#c9a84c,#e8c97a)!important;color:#171520!important}
+.mobile-player-controls #sustainBtn[aria-pressed="true"]{background:linear-gradient(135deg,#c9a84c,#e8c97a);color:#171520}
+.admin-only{border-color:#9c84db!important;background:linear-gradient(135deg,#39306d,#28234f)!important;color:#efeaff!important}
+.modal{background:#080818dd;backdrop-filter:blur(5px)}
+.modal-card{border:1px solid #c9a84c66;background:linear-gradient(145deg,#1c1c3f,#17172f)}
+.modal-card h2{color:#f1d783}
+.modal-card p{color:#d0cde0}
+.close{color:#e8c97a}
+.toast{border-color:#c9a84c66;background:linear-gradient(135deg,#1d2677,#1b2152);color:#f2efff}
+.audio-credit{color:#aaa9c1}
+.audio-credit a{color:#e8c97a}
+.theory-panel h2,.theory-preview h3{color:#f1d783}
+.theory-panel,.theory-preview,.theory-chord-card,.theory-key-card,.theory-interval-card{border-color:#c9a84c44}
+.theory-chord-card,.theory-key-card,.theory-interval-card,.theory-circle-results button{background:linear-gradient(135deg,#1d2677aa,#1b2152aa)}
+.theory-chord-card:hover,.theory-chord-card.selected,.theory-interval-card:hover,.theory-interval-card.selected{border-color:#e8c97a;background:linear-gradient(135deg,#252f87,#20285f)}
+.offline-download{margin-top:16px;text-align:center}
+.offline-download button{padding:10px 15px;border-color:#c9a84c88;background:linear-gradient(135deg,#1d2677,#1b2152);color:#f1d783;font-weight:700}
+.offline-download button:disabled{opacity:.65;cursor:wait}
+.offline-download p{margin:7px 0 0;color:#d0cde0;font-size:.72rem;line-height:1.4}
+.quick-tempo{display:flex;flex-direction:column;gap:5px;min-width:150px;padding:2px 8px}
+.quick-tempo label{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#d0cde0;font-size:11px;font-weight:700}
+.quick-tempo output{color:#f1d783;font-variant-numeric:tabular-nums}
+.quick-tempo input{width:100%;height:20px;margin:0;accent-color:#e8c97a;touch-action:pan-x}
+.mobile-quick-settings:has(.quick-tempo){display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+@media(max-width:700px){.offline-download{margin-top:12px}.offline-download button{font-size:.78rem}.quick-tempo{flex:1 1 100%;order:2;min-width:0;padding:4px 7px;border:1px solid #c9a84c33;border-radius:8px;background:#10102a}.mobile-quick-settings:has(.quick-tempo) .transpose-controls{order:3}.mobile-quick-settings:has(.quick-tempo) .quick-instrument{order:4}.mobile-quick-settings:has(.quick-tempo) .quick-notation{order:1}}
+@media(max-width:700px){.toolbar{padding:11px 12px;border-radius:12px}.player-top{padding:7px 8px}.mobile-quick-settings{border-radius:10px}.piano-panel .piano-container{border-radius:9px}}
+@media(max-width:700px){body:has(#player:not(.hidden)) .mobile-quick-settings:has(.quick-tempo){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:7px}body:has(#player:not(.hidden)) .quick-notation{grid-column:1;grid-row:1}body:has(#player:not(.hidden)) .quick-instrument{grid-column:2;grid-row:1}body:has(#player:not(.hidden)) .quick-tempo{display:flex;grid-column:1/-1;grid-row:2;min-width:0;flex-direction:column;align-items:stretch;gap:3px}body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls{grid-column:1/-1;grid-row:3;border-top:1px solid #ffffff16!important;padding-top:5px!important}}
+@media(min-width:701px){body:has(#player:not(.hidden)) .quick-tempo{min-width:160px}.mobile-quick-settings:has(.quick-tempo){display:flex}}
+.track-modal{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:18px;background:#070715dd;backdrop-filter:blur(7px)}
+.track-modal.hidden{display:none}
+.track-modal-card{width:min(100%,390px);padding:22px;border:1px solid #c9a84c77;border-radius:18px;background:linear-gradient(145deg,#1c1c3f,#17172f);box-shadow:0 20px 60px #0008}
+.track-modal-card h2{margin:0 0 6px;color:#f1d783;font-size:1.2rem}
+.track-modal-card>p{margin:0 0 15px;color:#d0cde0;font-size:.86rem;line-height:1.45}
+.track-choice{display:flex;flex-direction:column;align-items:flex-start;gap:5px;width:100%;min-height:66px;margin:8px 0;padding:12px 14px;border:1px solid #c9a84c55;border-radius:12px;background:linear-gradient(135deg,#1d2677,#1b2152);color:#f2efff;text-align:left}
+.track-choice span{font-weight:800}
+.track-choice small{color:#e0946a;font-size:.75rem}
+.track-choice:hover{border-color:#e8c97a}
+.track-cancel{width:100%;margin-top:8px}
+.voice-mixer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 10px;margin:6px 0;border:1px solid #c9a84c55;border-radius:12px;background:linear-gradient(135deg,#1d2677aa,#1b2152aa)}
+.voice-mixer.hidden{display:none}
+.voice-switch{position:relative;display:flex;align-items:center;gap:8px;min-height:37px;padding:5px 10px;border:1px solid #c9a84c44;border-radius:999px;background:#12122a;color:#eeeafa;font-size:.76rem;font-weight:700;cursor:pointer;touch-action:manipulation}
+.voice-switch input{position:absolute;width:1px;height:1px;opacity:0}
+.voice-switch i{position:relative;width:31px;height:18px;flex:0 0 31px;border-radius:999px;background:#46445b;transition:background .18s}
+.voice-switch i:after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#e8e6f0;transition:transform .18s}
+.voice-switch input:checked+i{background:#c9a84c}
+.voice-switch input:checked+i:after{transform:translateX(13px);background:#171520}
+.voice-switch input:focus-visible+i{outline:2px solid #8bc7ff;outline-offset:2px}
+.voice-mixer>small{flex-basis:100%;color:#c9c4d8;font-size:.69rem;line-height:1.4}
+.chord-editor-help{margin:4px 0 10px;color:#c9c4d8;font-size:.76rem;line-height:1.45}
+.chord-editor-fields>label:first-child{grid-column:1/-1}
+@media(max-width:700px){.track-modal-card{padding:19px}.voice-mixer{gap:5px;padding:7px}.voice-switch{flex:1 1 auto;justify-content:space-between;min-width:130px}.voice-mixer>small{font-size:.66rem}}
+
+.suggested-voice-notes{display:block;min-height:10px;color:#c9c4d8;font-size:8px;line-height:1.15;white-space:nowrap}
+
