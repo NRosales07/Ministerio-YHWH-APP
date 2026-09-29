@@ -8,7 +8,7 @@ const NOTE_ROOT_LATINO = { C:'Do', D:'Re', E:'Mi', F:'Fa', G:'Sol', A:'La', B:'S
 const state = {
   view: 'home', category: 'adoracion', song: null, melodyType:'introduccion', voiceMix:{principal:true,segunda:false,tercera:false,acordes:true}, pendingSong:null, pendingPurpose:'listen', admin: false, selectedSongChord:null, theoryChord: { root:'C', quality:'major' }, theoryCircleChord: null, theoryCircleIndex:0, theoryCircleMinor:false, theoryCircleChords:null, theoryScale:'major', theoryInterval:7, theoryPianoIntervals:null, theoryPianoMode:'chord',
   melodies: readMelodyCache(), melodyDirty:false, recording: false, recordStart: 0, notes: [], chords: [], chordTarget: null,
-  buffers: new Map(), instrumentBuffers: new Map(), sampleLoads:new Map(), instrumentSampleLoads:new Map(), instrument: ['steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_instrument')) ? localStorage.getItem('yhwh_piano_instrument') : 'grand-piano', bassInstrument: ['grand-piano','steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_bass_instrument')) ? localStorage.getItem('yhwh_piano_bass_instrument') : 'grand-piano', trumpetIntensity: localStorage.getItem('yhwh_piano_trumpet_intensity') === 'soft' ? 'soft' : 'strong', sustain: localStorage.getItem('yhwh_piano_sustain') === '1', tempo:Math.min(1.5,Math.max(.5,Number(localStorage.getItem('yhwh_piano_tempo'))||1)), playing: false, playTimers: [], activePlaybackSources:[], activePointers: new Map(), keyboardOctaveMidi:60, keyboardZoom:Math.min(1.8,Math.max(0.65,Number(localStorage.getItem('yhwh_piano_keyboard_zoom'))||1)), transpose: 0, originalTonic: 'C',
+  buffers: new Map(), instrumentBuffers: new Map(), sampleLoads:new Map(), instrumentSampleLoads:new Map(), instrument: ['steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_instrument')) ? localStorage.getItem('yhwh_piano_instrument') : 'grand-piano', bassInstrument: ['grand-piano','steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_bass_instrument')) ? localStorage.getItem('yhwh_piano_bass_instrument') : 'grand-piano', trumpetIntensity: localStorage.getItem('yhwh_piano_trumpet_intensity') === 'soft' ? 'soft' : 'strong', sustain: localStorage.getItem('yhwh_piano_sustain') === '1', tempo:Math.min(1.5,Math.max(.5,Number(localStorage.getItem('yhwh_piano_tempo'))||1)), playing: false, playTimers: [], activePlaybackSources:[], activePointers: new Map(), keyboardOctaveMidi:60, keyboardZoom:Math.min(1.8,Math.max(0.65,Number(localStorage.getItem('yhwh_piano_keyboard_zoom'))||1)), transpose: 0, originalTonic: 'C', songTonic: null,
   notation: localStorage.getItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano', lastMidi: null, db: null, auth: null,
   ref: null, set: null, onValue: null, signIn: null, signOut: null, authListener: null
 };
@@ -137,8 +137,8 @@ function renderClickableChordLine(line,preferFlats){
   return chordLine.replace(expression,shown=>`<button type="button" class="lyrics-chord${state.selectedSongChord===shown?' selected':''}" data-play-chord="${escapeHTML(shown)}" aria-label="Escuchar acorde ${escapeHTML(shown)}">${escapeHTML(shown)}</button>`).replace(/(?<!>)\b(X[0-9]+)\b/g,'<span class="word-repeticion">$1</span>');
 }
 function transposeChordLineForViewer(line,preferFlats){
-  if(!state.transpose)return line;const expression=/([A-G](?:#|b)?(?:m7b5|mMaj7|maj7|m(?:aj)?7?|dim7?|aug|sus[24]?|add\d*|M|7|6|9|5|4|2)?(?:\/[A-G](?:#|b)?)?)(?=[^a-z]|$)/g;let result='',position=0,match;
-  while((match=expression.exec(line))!==null){result+=line.slice(position,match.index);if(result.length>match.index){const spaces=result.match(/ *$/)?.[0].length||0;const remove=Math.min(result.length-match.index,Math.max(0,spaces-1));if(remove)result=result.slice(0,-remove);}else if(result.length<match.index)result+=' '.repeat(match.index-result.length);result+=transposeChordName(match[0],state.transpose,preferFlats);position=match.index+match[0].length;}
+  const shift=displayShift();if(!shift)return line;const expression=/([A-G](?:#|b)?(?:m7b5|mMaj7|maj7|m(?:aj)?7?|dim7?|aug|sus[24]?|add\d*|M|7|6|9|5|4|2)?(?:\/[A-G](?:#|b)?)?)(?=[^a-z]|$)/g;let result='',position=0,match;
+  while((match=expression.exec(line))!==null){result+=line.slice(position,match.index);if(result.length>match.index){const spaces=result.match(/ *$/)?.[0].length||0;const remove=Math.min(result.length-match.index,Math.max(0,spaces-1));if(remove)result=result.slice(0,-remove);}else if(result.length<match.index)result+=' '.repeat(match.index-result.length);result+=transposeChordName(match[0],shift,preferFlats);position=match.index+match[0].length;}
   return result+line.slice(position);
 }
 function parsePianoChord(symbol){
@@ -310,8 +310,9 @@ function openSong(song, category, trackType='introduccion') {
   state.selectedSongChord=null;document.querySelectorAll('#keyboard .key.chord-selected').forEach(key=>key.classList.remove('chord-selected'));
   state.category = category;
   state.transpose = 0;
-  state.originalTonic = tonicName(song.tono || 'C');
   const savedMelody = trackFor(category, song.id,trackType) || {};
+  state.songTonic = parseTonic(song.tono);
+  state.originalTonic = parseTonic(savedMelody.tono) || state.songTonic || 'C';
   state.notes = (savedMelody.notas || []).map(note => ({ ...note }));
   state.chords = (savedMelody.acordes || []).map(chord => ({ ...chord }));
   state.voiceMix={principal:true,segunda:false,tercera:false,acordes:true};
@@ -319,12 +320,11 @@ function openSong(song, category, trackType='introduccion') {
   $('songTitle').textContent = song.title || 'Alabanza';
   $('songMeta').textContent = `${category === 'jubilo' ? 'Júbilo' : 'Adoración'}${song.compositor ? ` · ${song.compositor}` : ''}`;
   updateTransposeUI();
-  $('chordList').innerHTML = chordNames(song).map(chord => `<span class="chord">${escapeHTML(chord)}</span>`).join('') || '<span class="hint">No se detectaron acordes</span>';
   const trackLabel=trackType==='voz'?'Voz principal':'Introducción';
   $('playerLabel').textContent = `${trackLabel}${savedMelody.notas?.length?' · Guardada':''}`;
   $('status').textContent = savedMelody.notas?.length ? (trackType==='voz'?'Voz principal guardada. Activa las voces que quieras escuchar.':'Introducción guardada. Pulsa reproducir.') : `Todavía no hay ${trackType==='voz'?'voz principal':'introducción'} grabada. Toca el piano o graba si tienes acceso de Admin.`;
   $('voiceMixer').classList.toggle('hidden',trackType!=='voz');renderVoiceMixer();
-  const presets=chordNames(song);$('chordPreset').innerHTML='<option value="">Elegir acorde escrito en la canción…</option>'+presets.map(chord=>`<option value="${escapeHTML(chord)}">${escapeHTML(chord)}</option>`).join('');
+  renderChordPresets();
   renderRecorded();
   updateAdminControls();
   transitionScreen('player',['homeView','songView','createView','theoryView','player']);
@@ -346,6 +346,7 @@ function startKeyboardAtC4() {
   $('deleteBtn').classList.toggle('hidden',!state.admin||!state.song||!hasTrack(state.song.category,state.song.song.id,state.melodyType));
   $('adminBtn').textContent = state.admin ? '🔓 Admin activo' : '🔑 Admin';
   $('adminBtn').classList.toggle('active', state.admin);
+  syncTrackKeyUI();
 }
 function chordDisplayName(chord) {
   const root = state.notation === 'latino' ? (NOTE_ROOT_LATINO[chord.root?.[0]] || chord.root) + (chord.root?.slice(1) || '') : chord.root;
@@ -415,7 +416,7 @@ function chooseChordTarget(index) {
   $('chordRoot').value = chord?.root || NOTE_NAMES[note?.midi % 12] || 'C';
   $('chordQuality').value = chord?.quality || 'major';
   $('chordInversion').value = String(chord?.inversion || 0);
-  $('chordOctave').value = String(chord?.octave ?? 36);
+  { const octaveValue = String(chord?.octave ?? 36); if (![...$('chordOctave').options].some(option => option.value === octaveValue)) $('chordOctave').add(new Option('C' + (Number(octaveValue) / 12 - 1), octaveValue)); $('chordOctave').value = octaveValue; }
   $('bassInstrument').value = chord?.instrument || state.bassInstrument;
   $('chordArpeggio').checked = !!chord?.arpeggio;
   syncChordEditorMode();
@@ -462,11 +463,62 @@ const CHROMATIC_SHARPS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const FLAT_TO_SHARP = { Db:'C#', Eb:'D#', Gb:'F#', Ab:'G#', Bb:'A#' };
 const SHARP_TO_FLAT = { 'C#':'Db', 'D#':'Eb', 'F#':'Gb', 'G#':'Ab', 'A#':'Bb' };
 const CHROMATIC_FLATS = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
-function tonicName(value) {
-  const m = String(value || 'C').trim().match(/^([A-G](?:#|b)?)(m?)/i);
-  if (!m) return 'C';
-  const root = m[1][0].toUpperCase() + m[1].slice(1);
-  return (FLAT_TO_SHARP[root] || root) + (m[2] || '');
+const LATIN_TO_LETTER = { do:'C', re:'D', mi:'E', fa:'F', sol:'G', la:'A', si:'B' };
+const LETTER_PC = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
+// Entiende: A, Am, A menor, Bb, F#m, La, Sol, Do#, Mib, Sim, La menor, Amaj7 (mayor)…
+// Devuelve null si el texto no trae un tono reconocible.
+function parseTonic(value) {
+  const text = String(value || '').trim().replace(/♯/g, '#').replace(/♭/g, 'b');
+  const m = text.match(/^(do|re|mi|fa|sol|la|si|[a-g])\s*([#b]?)(.*)$/i);
+  if (!m) return null;
+  const word = m[1].toLowerCase();
+  const letter = LATIN_TO_LETTER[word] || word.toUpperCase();
+  if (!(letter in LETTER_PC)) return null;
+  const pc = (LETTER_PC[letter] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) + 12) % 12;
+  const minor = /^\s*(m(?!aj)|[Mm]in|[Mm]enor)/.test(m[3]);
+  return CHROMATIC_SHARPS[pc] + (minor ? 'm' : '');
+}
+function tonicName(value) { return parseTonic(value) || 'C'; }
+function tonicPc(tonic) { return CHROMATIC_SHARPS.indexOf(String(tonic || '').replace(/m$/, '')); }
+// Diferencia entre el tono de la pista y el tono escrito en la canción (para letra y acordes).
+function lyricsBaseShift() {
+  if (!state.songTonic) return 0;
+  const track = tonicPc(state.originalTonic), written = tonicPc(state.songTonic);
+  return track < 0 || written < 0 ? 0 : ((track - written) % 12 + 12) % 12;
+}
+function displayShift() { return lyricsBaseShift() + (Number(state.transpose) || 0); }
+function syncTrackKeyUI() {
+  if (!$('trackRoot') || !$('trackMode')) return;
+  $('trackRoot').value = state.originalTonic.replace(/m$/, '');
+  $('trackMode').value = state.originalTonic.endsWith('m') ? 'minor' : 'major';
+  const locked = !state.admin || !state.song;
+  $('trackRoot').disabled = locked; $('trackMode').disabled = locked;
+}
+function changeTrackTonic() {
+  if (!state.admin || !state.song) { syncTrackKeyUI(); return; }
+  if (state.transpose) {
+    // El tono de la pista se elige con el transporte en "Tono original": primero se restaura.
+    transposeMelody(-state.transpose);
+    if (state.transpose) { syncTrackKeyUI(); return; }
+  }
+  state.originalTonic = $('trackRoot').value + ($('trackMode').value === 'minor' ? 'm' : '');
+  state.melodyDirty = true;
+  renderChordPresets(); updateTransposeUI(); renderRecorded();
+  $('status').textContent = 'Tono de la pista cambiado. Pulsa “Guardar melodía” para guardarlo en Firebase.';
+  toast('Tono de la pista: ' + $('trackRoot').selectedOptions[0].textContent.split(' · ')[0] + ($('trackMode').value === 'minor' ? ' menor' : ' mayor'));
+}
+function renderChordPresets() {
+  if (!state.song || !$('chordPreset')) return;
+  const flat = /b/.test(String(state.song.song.tono || '')), shift = lyricsBaseShift();
+  const presets = chordNames(state.song.song).map(chord => transposeChordName(chord, shift, flat));
+  $('chordPreset').innerHTML = '<option value="">Elegir acorde escrito en la canción…</option>' + presets.map(chord => `<option value="${escapeHTML(chord)}">${escapeHTML(chord)}</option>`).join('');
+}
+// Al guardar, el transporte queda "cocinado" en los acordes para que coincidan con las notas guardadas.
+function bakeChordTranspose(chord, semitones) {
+  const index = NOTE_NAMES.indexOf(chord.root), octave = Number(chord.octave) || 36;
+  if (index < 0 || !semitones) return { root: String(chord.root), octave };
+  const total = index + semitones;
+  return { root: NOTE_NAMES[((total % 12) + 12) % 12], octave: octave + 12 * Math.floor(total / 12) };
 }
 function transposedTonic() {
   const minor = state.originalTonic.endsWith('m');
@@ -482,7 +534,8 @@ function updateTransposeUI() {
   $('songKey').textContent = `Tono: ${shown}`;
   $('transposeValue').textContent = state.transpose === 0 ? 'Tono original' : `${shown} · ${state.transpose > 0 ? '+' : ''}${state.transpose} st`;
   const flatSpelling = /b/.test(String(state.song.song.tono || ''));
-  $('chordList').innerHTML = chordNames(state.song.song).map(chord => `<span class="chord">${escapeHTML(transposeChordName(chord, state.transpose, flatSpelling))}</span>`).join('') || '<span class="hint">No se detectaron acordes</span>';
+  $('chordList').innerHTML = chordNames(state.song.song).map(chord => `<span class="chord">${escapeHTML(transposeChordName(chord, displayShift(), flatSpelling))}</span>`).join('') || '<span class="hint">No se detectaron acordes</span>';
+  syncTrackKeyUI();
   renderSongLyrics();
   $('transposeDown').disabled = state.notes.length > 0 && Math.min(...state.notes.map(note => Number(note.midi))) <= 48;
   $('transposeUp').disabled = state.notes.length > 0 && Math.max(...state.notes.map(note => Number(note.midi))) >= 83;
@@ -861,7 +914,8 @@ async function saveMelody() {
   const payload = {
     songId: song.id,
     updatedAt: new Date().toISOString(),
-    acordes: state.chords.map(chord => ({ noteIndex:Number(chord.noteIndex), root:String(chord.root), quality:String(chord.quality), inversion:Number(chord.inversion)||0, octave:Number(chord.octave)||36, duration:Number(chord.duration)||2, arpeggio:!!chord.arpeggio, instrument:chord.instrument||state.bassInstrument })),
+    tono: transposedTonic(),
+    acordes: state.chords.map(chord => { const baked = chord.noTranspose ? { root:String(chord.root), octave:Number(chord.octave)||36 } : bakeChordTranspose(chord, state.transpose); return { noteIndex:Number(chord.noteIndex), root:baked.root, quality:String(chord.quality), inversion:Number(chord.inversion)||0, octave:baked.octave, duration:Number(chord.duration)||2, arpeggio:!!chord.arpeggio, instrument:chord.instrument||state.bassInstrument }; }),
     notas: state.notes.map((note, index, all) => {
       const next = all[index + 1];
       return { midi: Number(note.midi), note: canonicalNoteName(Number(note.midi)), start: Number(Number(note.start || 0).toFixed(3)), duration: Number((next ? Math.max(0.12, next.start - note.start) : Math.max(0.35, note.duration || 0.35)).toFixed(3)) };
@@ -875,6 +929,9 @@ async function saveMelody() {
     state.melodies[category][String(song.id)] = storedRecord;
     try { localStorage.setItem('yhwh_melodias_cache', JSON.stringify(state.melodies)); } catch (_) {}
     state.melodyDirty=false;
+    // Lo guardado ya está en el tono transportado: ese pasa a ser el tono de la pista.
+    state.originalTonic = payload.tono; state.transpose = 0; state.chords = payload.acordes.map(chord => ({ ...chord }));
+    renderChordPresets(); updateTransposeUI(); renderRecorded();
     $('playerLabel').textContent=`${state.melodyType==='voz'?'Voz principal':'Introducción'} · Guardada`;
     renderLists();
     toast('Melodía guardada y sincronizada.');
@@ -1039,6 +1096,7 @@ function bindInterface() {
   $('transposeDown').onclick = () => transposeMelody(-1);
   $('transposeUp').onclick = () => transposeMelody(1);
   $('transposeReset').onclick = () => transposeMelody(-state.transpose);
+  $('trackRoot').onchange = changeTrackTonic; $('trackMode').onchange = changeTrackTonic;
   $('recordBtn').onclick = toggleRecord;
   $('saveBtn').onclick = saveMelody;
   $('undoBtn').onclick = () => {
@@ -1126,7 +1184,8 @@ function initializeFirebase() {
         const syncedMelody=trackFor(state.song.category,state.song.song.id,state.melodyType)||{};
         state.notes = (syncedMelody.notas||[]).map(note => ({ ...note }));
         state.chords = (syncedMelody.acordes||[]).map(chord => ({ ...chord }));
-        renderRecorded(); $('playerLabel').textContent = `${state.melodyType==='voz'?'Voz principal':'Introducción'}${syncedMelody.notas?.length?' · Guardada':''}`; updateAdminControls();
+        state.originalTonic = parseTonic(syncedMelody.tono) || state.songTonic || 'C'; state.transpose = 0;
+        renderChordPresets(); updateTransposeUI(); renderRecorded(); $('playerLabel').textContent = `${state.melodyType==='voz'?'Voz principal':'Introducción'}${syncedMelody.notas?.length?' · Guardada':''}`; updateAdminControls();
       }
     }, () => {
       $('connection').textContent = '📴 Sin conexión con Firebase'; $('connection').className = 'connection offline';
