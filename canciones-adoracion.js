@@ -127,10 +127,16 @@ var SONGS =
     "title": "SÓLO DÉJENME ADORARLE",
     "compositor": "Grupo Peniel",
     "tono": "G",
-    "youtube": "https://www.youtube.com/embed/HZqJKS-7rFE",
     "album": "Déjenme Adorarle - 2010",
     "content": "[INTRO]: MELODÍA \n                                   | G | Gsus4 | G | Gsus4 | G |\n        [VERSO 1]:\n                         C     D                              G          Gsus4\nSé que falta melodía, yo sé que falta entonación,\n                                C               D                 G       Gsus4\nYo sé que falta el talento, pero yo no me detengo,\n                                    C       D                                  G       Gsus4\nYo sé que falta la elocuencia, también la fama del autor,\n                             C             D                             G    Gsus4\nPero yo no me detengo, déjenme adorar a mi Señor…\n        [CORO]: \n                                 D                                    C                                       \nX2 Solo déjenme adorarle, solo déjenme entonarle,\n                              G    Gsus4\nEsta canción de amor.\n                                  D                                                          C                                       \nEs que estoy agradecido, por lo que Cristo ha hecho conmigo\n                            G    Gsus4\nDesde que me rescató. X2\n                            C                D                       G     Gsus4\nSolo déjenme adorarle, por favor, asi lo hago yo.\n        [VERSO 2]: \n                                      C         D                                        G      \nNo toco bien este instrumento,      tampoco soy un gran cantor,\n                                           C                   D                                 G       \nPero en las fibras de mi cuerpo, saben que hay verdadera adoración,\n                                  C            D                                    G       \nLa multitud de pensamientos,       querían turbar mi corazón,\n                               C                      D                                      G    \nPero fueron tus palabras, que alegraron lo profundo de mi alma.\n         [CORO]: X2  ",
-    "id": 9
+    "id": 9,
+    "youtube": "https://www.youtube.com/embed/HZqJKS-7rFE",
+    "versiculos": [
+      {
+        "texto": "Salmo 94:19:\n\"En la multitud de mis pensamientos dentro de mí, tus consolaciones alegraban mi alma.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 11,
@@ -630,10 +636,16 @@ var SONGS =
     "title": "YO QUIERO MÁS DE TI",
     "compositor": "Jaime Murrel",
     "tono": "B",
-    "youtube": "https://www.youtube.com/embed/qHRy-3eef8k",
     "album": "Quiero alabar - 1996",
     "content": "[INTRO]: MELODÍA \n                                | E | F#m | A | B | E | F#m | E |\n        [VERSO 1]:\n        B                       E/B – F#/B                                 B         F#\nX2   Yo quiero más de ti,               y habitar en tu presencia,\n    G#m     Eb                      B   Fm\nMenguar para que crezcas tú,\n                    E - C#m          F#\nY cada día seré,      más como tú.   X2\n        [CORO]:\n               B                    E                      D#m - G#m\nX2   Quebranta mi corazón, quebranta mi vi - da,\n                       C#m-F#    B – A – B\nTe entrego mi voluntad a ti,\n                     E       F#                        D#m     G#m\nTodo lo que soy, Señor, todo cuanto tengo es tuyo,\n                   C#m        F#                       B - E -B\nYo quiero menguar, para que crezcas Tú.   X2\n         [VERSO 1]  X2         |         [CORO]   X2 ",
-    "id": 55
+    "id": 55,
+    "youtube": "https://www.youtube.com/embed/qHRy-3eef8k",
+    "versiculos": [
+      {
+        "texto": "Gálatas 2:20:\n\"Con Cristo estoy juntamente crucificado, y ya no vivo yo, mas vive Cristo en mí; y lo que ahora vivo en la carne, lo vivo en la fe del Hijo de Dios, el cual me amó y se entregó a sí mismo por mí.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 2,
@@ -761,7 +773,6 @@ var SONGS =
     "content": "[INTRO]: \n                                 | A | E | Bm7 | F#m7 | E |\n        [VERSO 1]:\n A                                                        F#m7\nX2   Sentado en su trono, rodeado de luz,\nD                       Bm7                  Esus4\nA la diestra del Padre, gobierna Je - sús,\n A                                               F#m7\nCon ojos de fuego, con rostro de sol,\n      D                                Bm7    Esus4\nCuando abre su boca, es true - no su voz.   X2 \n        [CORO]: \n            A - E          Bm7                             F#m     Esus4     E\nX3   Poderoso (Poderoso), en majestad y reino, poderoso,\n    A - E           Bm7                             F#m        Esus4      E\nPoderoso (Poderoso) en potestad e imperio, poderoso.   X3\n        [VERSO 2]:\nA                                        F#m7\nUn gran arcoíris corona su ser,\nD             Bm7         Esus4\nÉl es el cordero que pudo vencer,\nA                                      F#m7\nÉl es el primero, Él es el postrer,\nD                Bm7            Esus4\nY arrojan coronas delante de Él.\n         [CORO]  X3     ",
     "id": 65.1
   },
-
   {
     "num": 39,
     "title": "COMO LA BRISA",
@@ -777,7 +788,6 @@ var SONGS =
       }
     ]
   },
-  
   {
     "num": 1,
     "title": "ALGO ESTÁ CAYENDO AQUÍ",
@@ -994,17 +1004,29 @@ var SONGS =
     "tono": "D",
     "album": "Más de ti - 2006",
     "content": "[INTRO]:\n                                          | D | Em | A | D |\n        [VERSO 1]:\n  D                                     Em7       A                         D         Bm7\nX2   Quiero estar en tu presencia,     y poderte contemplar,\n       A                 Em7    A                   D      Bm7\nNecesito estar contigo,    necesito adorar   X2\n        [CORO]: \n                           G                 F#m        Bm7\nX2   Dame de beber, de tu manantial,\n           D   Em   A               D   Em\nDame de beber, necesito más…   X2\n        [PUENTE]:\n            G    F#m-Bm      Em-F#    Bm\nX4   Quiero más,           Quiero     más\nA-G                   D   G                       Bm\nMas de tu Espíritu,     Más de tu presencia\n Em-D    G   A     D\nQuiero más    de ti... X4\n        [PUENTE]:\n                       Bm7                    D                     G\nX5   Yo quiero más, yo quiero más, yo quiero más,\n                                                D\nY más y más y más de ti mi Dios.  X5\n        [CORO]  X2 ",
-    "id": 84
+    "id": 84,
+    "versiculos": [
+      {
+        "texto": "Salmo 63:1:\n\"Dios, Dios mío eres tú; De madrugada te buscaré; Mi alma tiene sed de ti, mi carne te anhela, En tierra seca y árida donde no hay aguas...\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 4,
     "title": "VENIMOS ANTE TI",
     "compositor": "Marcos Barrientos",
     "tono": "E",
-    "youtube": "https://www.youtube.com/embed/U8wJUktYcX4",
     "album": "No puedo parar de alabarte - 2006",
     "content": "[INTRO]:\n                                           | E | B | A | B |\n        [VERSO 1]: \nB    E                                           B                      A              E    B\nVenimos ante ti, Señor, para adorarte, para exaltarte, mi Rey,\n       E                                      B                       A     B         E    E7\nVenimos ante ti, Señor, a tributarte, toda la gloria,     mi Dios.\n        [CORO]: \n           A                    B                    E\nX2   Mejor es tu presencia que la vida,\n              A              B                   E\nEs un deleite contemplar tu hermosura,\n                A      B         G#m      C#m\nEstar rodeado de tu santidad y amor,\n          F#m     B         E     A - E\nTu presencia es lo mejor.   X2\n        [VERSO 1]:      |        [CORO]: X2",
-    "id": 85
+    "id": 85,
+    "youtube": "https://www.youtube.com/embed/U8wJUktYcX4",
+    "versiculos": [
+      {
+        "texto": "Salmo 63:3:\n\"Porque mejor es tu misericordia que la vida; Mis labios te alabarán.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 5,
@@ -1259,7 +1281,13 @@ var SONGS =
     "content": "[INTRO]:  MELODÍA \n                                        | C | Bb | Gsus4 | C |\n\n                                            \n        [VERSO 1]:\n             Csus2               F              Csus2\nCuando lloras por las veces que intentaste,\n   C                             Dm7              Gsus4\nTratas de olvidar las lágrimas, que lloraste,\n            F                     C           Am7                   F\nSolo tienes pena y tristeza, el futuro incierto espera,\n                C      F       G        C\nPuedes tener paz en la tormenta.\n        [VERSO 2]: \n                 C                   F                     C\nMuchas veces yo me siento igual que tú,\n                     Dm7 Gsus4       G7\nMi corazón anhela al -go real,\n        F                 E7            Am          F\nEl Señor viene a mí y me ayuda a seguir,\n        C          G7                 C\nEn paz en medio de la tormenta.\n        [CORO]:\n                C       F               C                          \nPuedes tener paz en la tormenta, fe y esperanza \n             Am                G\nCuando no puedas seguir,\n                      F                      E7            Am                       F\nAún con tu mundo hecho pedazos, el Señor guiará tus pasos,\n        C         G7                   C\nEn paz en medio de la tormenta.\n[VERSO 1]:     |        [CORO]       \n  [VERSO 2]:       |        [CORO]: X2 ",
     "id": 111,
     "version": "Renán Carías",
-    "youtube": "https://www.youtube.com/embed/qwtF7jacIZ8"
+    "youtube": "https://www.youtube.com/embed/qwtF7jacIZ8",
+    "versiculos": [
+      {
+        "texto": "Juan 16:33:\n\"Estas cosas os he hablado para que en mí tengáis paz. En el mundo tendréis aflicción; pero confiad, yo he vencido al mundo.\"\n\nSalmo 46:1:\n\"Dios es nuestro amparo y fortaleza, Nuestro pronto auxilio en las tribulaciones.\"\n\nIsaías 41:10:\n\"No temas, porque yo estoy contigo; no desmayes, porque yo soy tu Dios que te esfuerzo; siempre te ayudaré, siempre te sustentaré con la diestra de mi justicia.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 2,
@@ -2197,6 +2225,5 @@ var SONGS =
     "album": "Proyecto JES - 1995",
     "content": "[INTRO]:\n                                          | A | D | E | D | A |\n        [VERSO 1]: \n      A                                                   D                         A\nX2     El Espíritu del Señor está sobre ti, te ha ungido para darnos Buenas nuevas,\n        E                   C# F#m\nA proclamarnos libertad, y darnos vida,\n        D                            A\nA liberar de la opresión, a proclamar el tiempo del Señor,\n        E                 D A\nTú eres digno, Jesús de adoración...    X2\n        [CORO]:\n        A       D                             A\nX2   A liberar de la opresión, a proclamar el tiempo del Señor,\n        E      D          A\nTú eres digno, Jesús de adoración...   X2\n[VERSO 1]: X2       |         [CORO]: X2 ",
     "id": 205
-  },
-  
+  }
 ];
