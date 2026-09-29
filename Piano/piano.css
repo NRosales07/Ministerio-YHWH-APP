@@ -656,3 +656,228 @@ body.home-active .home-branding p{color:#e0946a}
 
 .suggested-voice-notes{display:block;min-height:10px;color:#c9c4d8;font-size:8px;line-height:1.15;white-space:nowrap}
 
+
+/* Ajustes finales para controles y editor en móvil apaisado. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .mobile-player-controls{
+    left:8px;right:8px;bottom:0;width:auto;max-width:560px;margin-inline:auto;
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;
+    gap:5px;min-height:0;padding:6px 7px calc(6px + env(safe-area-inset-bottom));
+    background:#111119fa;border:1px solid #ffffff24;border-bottom:0;border-radius:14px 14px 0 0;
+    box-shadow:0 -5px 16px #0009;z-index:20
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button{
+    width:100%;min-width:0;max-width:none;min-height:38px;height:38px;padding:3px 2px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    border:1px solid #5b5677;border-radius:9px;background:linear-gradient(180deg,#35324f,#25233a);
+    color:#eeedfe;font-size:15px;line-height:1;box-shadow:0 2px 5px #0004
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:8px;line-height:1;white-space:nowrap}
+  body:has(#player:not(.hidden)) .mobile-player-controls button.hidden{display:none!important}
+  body:has(#player:not(.hidden)) .player{padding-bottom:56px}
+  body:has(#player:not(.hidden)) #chordEditor{position:relative;z-index:1;isolation:isolate;overflow:visible;margin:8px 3px 12px;padding:9px 10px;background:#1c1c3f!important}
+  body:has(#player:not(.hidden)) #chordEditor:not(.hidden){min-height:0}
+  body:has(#player:not(.hidden)) #chordEditor .chord-editor-help{margin:3px 0 7px;font-size:10px;line-height:1.3}
+  body:has(#player:not(.hidden)) #chordEditor .chord-editor-fields{gap:5px}
+  body:has(#player:not(.hidden)) #chordEditor .chord-editor-fields>label{min-width:0;font-size:9px}
+  body:has(#player:not(.hidden)) #chordEditor .chord-editor-fields select{min-width:0;min-height:32px;padding:3px 5px;font-size:10px!important}
+}
+
+/* La barra de acciones permanece anclada al viewport al girar o desplazar la página. */
+@media(max-width:900px){
+  body:has(#player:not(.hidden)) main,
+  body:has(#player:not(.hidden)) #player{transform:none!important;filter:none!important;perspective:none!important}
+  body:has(#player:not(.hidden)) .mobile-player-controls{
+    position:fixed!important;left:50%!important;right:auto!important;bottom:0!important;top:auto!important;
+    width:min(calc(100vw - 16px),560px)!important;max-width:none!important;margin:0!important;
+    transform:translateX(-50%)!important;z-index:100!important
+  }
+}
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .mobile-player-controls{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:5px 7px calc(5px + env(safe-area-inset-bottom))}
+  body:has(#player:not(.hidden)) .mobile-player-controls button{height:36px;min-height:36px;padding:2px;font-size:14px}
+}
+
+/* En móvil, las acciones siguen al piano en el flujo y nunca cubren el contenido. */
+@media(max-width:900px){
+  body:has(#player:not(.hidden)) .mobile-player-controls{
+    position:static!important;inset:auto!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;
+    transform:none!important;width:100%!important;max-width:560px!important;margin:8px auto 10px!important;
+    order:initial;z-index:auto!important
+  }
+  body:has(#player:not(.hidden)) .player{padding-bottom:0!important}
+}
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .mobile-player-controls{
+    display:flex!important;flex-wrap:nowrap;justify-content:center;gap:5px;padding:5px 7px!important;
+    min-height:0;border:1px solid #ffffff24;border-radius:12px;background:#111119fa;
+    box-shadow:0 3px 12px #0006
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button{
+    flex:1 1 0;width:auto!important;min-width:0!important;max-width:none!important;
+    height:36px;min-height:36px;padding:2px 1px;font-size:14px
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:clamp(7px,1vw,9px)}
+}
+
+/* Distribuye los ajustes junto al zoom del teclado y deja las acciones ancladas abajo. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .piano-panel .keyboard-navigation{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 8px;margin:3px auto 4px}
+  body:has(#player:not(.hidden)) .piano-panel .mobile-quick-settings{
+    position:static;inset:auto;transform:none;display:flex;flex:1 1 100%;flex-wrap:nowrap;justify-content:center;align-items:center;
+    gap:6px;width:100%;min-height:29px;margin:0;padding:3px 5px;background:#171720ed;border:1px solid #ffffff16;border-radius:8px
+  }
+  body:has(#player:not(.hidden)) .piano-panel .quick-setting{display:flex;align-items:center;gap:3px;min-width:0;font-size:8px;white-space:nowrap}
+  body:has(#player:not(.hidden)) .piano-panel .quick-setting label{font-size:8px}
+  body:has(#player:not(.hidden)) .piano-panel .quick-setting select{width:auto;min-width:0;max-width:clamp(70px,12vw,100px);min-height:23px;padding:1px 4px;font-size:9px}
+  body:has(#player:not(.hidden)) .piano-panel .quick-tempo{display:flex;flex:0 1 110px;min-width:85px;align-items:center;gap:3px;padding:0;border:0;background:transparent}
+  body:has(#player:not(.hidden)) .piano-panel .quick-tempo label{font-size:8px}
+  body:has(#player:not(.hidden)) .piano-panel .quick-tempo input{width:100%;min-width:35px;height:16px}
+  body:has(#player:not(.hidden)) .piano-panel .transpose-controls{display:flex;flex:0 0 auto;position:static;inset:auto;transform:none;width:auto;min-height:0;margin:0!important;padding:0!important;gap:3px;border:0;background:transparent}
+  body:has(#player:not(.hidden)) .piano-panel .transpose-controls button{min-height:23px;padding:1px 5px;font-size:9px}
+  body:has(#player:not(.hidden)) .piano-panel .transpose-controls span{min-width:65px;font-size:8px}
+  body:has(#player:not(.hidden)) .mobile-player-controls{
+    position:fixed!important;left:50%!important;right:auto!important;bottom:0!important;top:auto!important;transform:translateX(-50%)!important;
+    display:flex!important;flex-wrap:nowrap;justify-content:center;gap:4px;width:calc(100vw - 12px)!important;max-width:900px!important;
+    margin:0!important;padding:4px max(6px,env(safe-area-inset-left)) calc(4px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right))!important;
+    min-height:0;background:#111119fa;border:1px solid #ffffff24;border-bottom:0;border-radius:11px 11px 0 0;box-shadow:0 -4px 13px #0008;z-index:100!important
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button{
+    flex:1 1 0;width:auto!important;min-width:0!important;max-width:none!important;height:34px;min-height:34px;padding:2px 1px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:14px
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:clamp(7px,1vw,9px);line-height:1;white-space:nowrap}
+  body:has(#player:not(.hidden)) main{padding-bottom:calc(48px + env(safe-area-inset-bottom))!important}
+}
+
+/* En apaisado, mostrar el bloque compacto de ajustes antes del teclado. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .piano-panel .keyboard-navigation{order:0!important;flex:0 0 auto}
+  body:has(#player:not(.hidden)) .piano-panel .mobile-quick-settings{order:0!important;flex:0 0 auto}
+  body:has(#player:not(.hidden)) .piano-panel .piano-container{order:1!important}
+}
+
+/* El indicador de nota queda debajo del teclado al desplazarse en horizontal. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .piano-panel #currentNote{
+    order:2!important;display:block!important;flex:0 0 auto;min-height:22px;margin:3px 0 5px;
+    padding:3px 8px;border:1px solid #ffffff18;border-radius:7px;background:#171720;color:#f1d783;
+    font-size:13px;line-height:1.2;text-align:center
+  }
+}
+
+/* Mantener visible la nota actual en ambas orientaciones móviles. */
+@media(max-width:900px){
+  body:has(#player:not(.hidden)) .piano-panel #currentNote{
+    display:block!important;visibility:visible!important;opacity:1!important;flex:0 0 auto;
+    min-height:22px;margin:3px 0 5px;color:#f1d783;font-size:14px;line-height:1.2;text-align:center
+  }
+}
+@media(max-width:900px) and (orientation:portrait){
+  body:has(#player:not(.hidden)) .piano-panel #currentNote{order:5!important}
+}
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .piano-panel #currentNote{order:2!important}
+}
+
+/* El indicador está fuera del panel flexible para que siempre siga al teclado. */
+@media(max-width:900px){
+  body:has(#player:not(.hidden)) #currentNote{
+    position:relative;display:block!important;visibility:visible!important;opacity:1!important;z-index:2;
+    min-height:24px;margin:4px 6px 8px;padding:3px 8px;border:1px solid #ffffff18;border-radius:7px;
+    background:#171720;color:#f1d783;font-size:14px;line-height:1.2;text-align:center
+  }
+}
+
+/* Separar el indicador del borde inferior del teclado para que se lea claramente debajo. */
+@media(max-width:900px){
+  body:has(#player:not(.hidden)) #currentNote{clear:both;position:static!important;transform:none!important;margin:12px 6px 12px!important;min-height:28px;padding:5px 8px!important}
+}
+
+/* En vertical, mantener las acciones visibles en la parte inferior de la pantalla. */
+@media(max-width:900px) and (orientation:portrait){
+  body:has(#player:not(.hidden)) .mobile-player-controls{
+    position:fixed!important;left:max(8px,env(safe-area-inset-left))!important;right:max(8px,env(safe-area-inset-right))!important;
+    bottom:0!important;top:auto!important;transform:none!important;width:auto!important;max-width:520px!important;margin-inline:auto!important;
+    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom))!important;
+    border:1px solid #ffffff20;border-bottom:0;border-radius:15px 15px 0 0;background:linear-gradient(180deg,#211f30f7,#111119fa);
+    box-shadow:0 -5px 20px #0009;z-index:100!important
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button{
+    width:100%!important;max-width:none!important;min-width:0!important;min-height:44px;padding:4px 2px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:17px
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:9px;line-height:1.05;white-space:normal;text-align:center}
+  body:has(#player:not(.hidden)) main{padding-bottom:calc(84px + env(safe-area-inset-bottom))!important}
+  body:has(#player:not(.hidden)):has(.mobile-player-controls .admin-only:not(.hidden)) main{padding-bottom:calc(150px + env(safe-area-inset-bottom))!important}
+}
+
+/* En vertical, insertar los controles en el flujo justo después de la nota actual. */
+@media(max-width:900px) and (orientation:portrait){
+  body:has(#player:not(.hidden)) #player{display:flex!important;flex-direction:column;align-items:stretch;overflow:visible!important}
+  body:has(#player:not(.hidden)) #player>.player-top{order:0}
+  body:has(#player:not(.hidden)) #player>.piano-panel{order:1}
+  body:has(#player:not(.hidden)) #player>#currentNote{order:2!important;position:static!important;transform:none!important;margin:12px 6px 8px!important}
+  body:has(#player:not(.hidden)) #player>.mobile-player-controls{
+    position:static!important;inset:auto!important;transform:none!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;
+    order:3!important;width:100%!important;max-width:none!important;margin:4px 0 12px!important;display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px!important;border:1px solid #ffffff20;border-radius:12px;
+    background:linear-gradient(180deg,#211f30f7,#111119fa);box-shadow:0 3px 12px #0006;z-index:auto!important
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button{width:100%!important;max-width:none!important;min-width:0!important;min-height:44px;padding:4px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:17px}
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:9px;line-height:1.05;white-space:normal;text-align:center}
+  body:has(#player:not(.hidden)) #player>#recordedNotes{order:4}
+  body:has(#player:not(.hidden)) #player>#chordEditor{order:5}
+  body:has(#player:not(.hidden)) #player>#mobileSongDetails{order:6}
+  body:has(#player:not(.hidden)) main{padding-bottom:12px!important}
+}
+
+/* En horizontal, las líneas de acordes y de letra comparten exactamente la misma escala. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .mobile-song-details .lyrics-viewer .lc,
+  body:has(#player:not(.hidden)) .mobile-song-details .lyrics-viewer .ll,
+  body:has(#player:not(.hidden)) .mobile-song-details .lyrics-viewer .lyrics-chord{
+    font-size:inherit!important;line-height:inherit!important
+  }
+}
+
+/* En horizontal, nota y controles siguen el flujo del contenido como en vertical. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) #player{display:flex!important;flex-direction:column;align-items:stretch;overflow:visible!important}
+  body:has(#player:not(.hidden)) #player>.player-top{order:0}
+  body:has(#player:not(.hidden)) #player>.piano-panel{order:1}
+  body:has(#player:not(.hidden)) #player>#currentNote{order:2!important;position:static!important;transform:none!important;margin:12px 6px 8px!important}
+  body:has(#player:not(.hidden)) #player>.mobile-player-controls{
+    position:static!important;inset:auto!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;transform:none!important;
+    order:3!important;display:flex!important;flex:0 0 auto;flex-wrap:nowrap;justify-content:center;gap:4px;
+    width:100%!important;max-width:none!important;margin:4px 0 12px!important;padding:5px 7px!important;
+    min-height:0;border:1px solid #ffffff24;border-radius:12px;background:#111119fa;box-shadow:0 3px 12px #0006;z-index:auto!important
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button{
+    flex:1 1 0;width:auto!important;min-width:0!important;max-width:none!important;height:36px;min-height:36px;padding:2px 1px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:14px
+  }
+  body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:clamp(7px,1vw,9px);line-height:1;white-space:nowrap}
+  body:has(#player:not(.hidden)) #player>#recordedNotes{order:4}
+  body:has(#player:not(.hidden)) #player>#chordEditor{order:5}
+  body:has(#player:not(.hidden)) #player>#mobileSongDetails{order:6}
+  body:has(#player:not(.hidden)) main{padding-bottom:12px!important}
+}
+
+/* Mantener el teclado horizontal a su altura real y eliminar el área negra vacía. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) .piano-panel{height:auto!important;min-height:0!important;max-height:none!important;flex:0 0 auto!important}
+  body:has(#player:not(.hidden)) .piano-panel .piano-container{
+    order:1!important;display:flex!important;flex:0 0 clamp(150px,43dvh,205px)!important;
+    width:100%;height:clamp(150px,43dvh,205px)!important;min-height:150px!important;max-height:205px;padding:0!important;overflow:hidden
+  }
+  body:has(#player:not(.hidden)) .piano-panel #keyboardScroll{display:block;width:100%;height:100%!important;min-height:0;overflow-x:auto;overflow-y:hidden}
+  body:has(#player:not(.hidden)) .piano-panel #keyboard{height:100%!important;min-height:100%!important;align-items:stretch}
+  body:has(#player:not(.hidden)) .piano-panel #keyboard .keys{height:100%!important}
+}
+
+/* Evita que los nombres de las teclas entren en selección de texto al tocarlas o deslizarlas. */
+.piano-panel #keyboardScroll,.piano-panel #keyboard,.piano-panel #keyboard *{
+  -webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important
+}
+.piano-panel #keyboard .note-label{pointer-events:none}

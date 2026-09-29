@@ -534,6 +534,8 @@ function renderKeyboard() {
   $('keyboard').innerHTML = html;
   if (scroll) scroll.scrollLeft = oldScrollLeft;
   const keys = $('keyboard');
+  keys.onselectstart = event => event.preventDefault();
+  keys.ondragstart = event => event.preventDefault();
   const playAtPoint = (pointerId, x, y) => {
     const element = document.elementFromPoint(x, y)?.closest('.key');
     if (!element || !keys.contains(element) || state.activePointers.get(pointerId)?.element === element) return;
