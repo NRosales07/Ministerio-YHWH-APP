@@ -666,6 +666,26 @@ var SONGS =
     "id": 58
   },
   {
+    "num": 9,
+    "title": "SENTADO EN SU TRONO",
+    "compositor": "Jesús A. Romero",
+    "tono": "E",
+    "youtube": "https://www.youtube.com/embed/nlCvLmgjnO8",
+    "album": "Unidos por la Cruz - 1996",
+    "content": "[INTRO]: \n                                 | A | E | Bm7 | F#m7 | E |\n        [VERSO 1]:\n A                                                        F#m7\nX2   Sentado en su trono, rodeado de luz,\nD                       Bm7                  Esus4\nA la diestra del Padre, gobierna Je - sús,\n A                                               F#m7\nCon ojos de fuego, con rostro de sol,\n      D                                Bm7    Esus4\nCuando abre su boca, es true - no su voz.   X2 \n        [CORO]: \n            A - E          Bm7                             F#m     Esus4     E\nX3   Poderoso (Poderoso), en majestad y reino, poderoso,\n    A - E           Bm7                             F#m        Esus4      E\nPoderoso (Poderoso) en potestad e imperio, poderoso.   X3\n        [VERSO 2]:\nA                                        F#m7\nUn gran arcoíris corona su ser,\nD             Bm7         Esus4\nÉl es el cordero que pudo vencer,\nA                                      F#m7\nÉl es el primero, Él es el postrer,\nD                Bm7            Esus4\nY arrojan coronas delante de Él.\n         [CORO]  X3     ",
+    "id": 65
+  },
+  {
+    "num": 5,
+    "title": "YO ME RINDO A ÉL",
+    "compositor": "Jesús Adrián Romero",
+    "tono": "F#",
+    "youtube": "https://www.youtube.com/embed/T4_Nlv6TnQw",
+    "album": "Por la cruz - 1996",
+    "content": "[INTRO]:\n                               | G | D | Em | F | C | D | G |\n        [VERSO 1]: \n  F#                C#                             G#m      C#   F#\nTodo a Cristo yo me entrego, con el fin de serle fiel,\n   F#                  C#       F#           G#m      C#     F#\nPara siempre quiero amarle, y agradarle solo a él.\n        [CORO]:\n        F#                G#m     C#                  F#    C#\nX2   Yo me rindo a él,       yo me rindo a él,\n   F#                            G#m        C#             F#\nTodo a Cristo, yo me entrego, quiero serle fiel.   X2\n        [VERSO 1]:         |       [CORO]  X2",
+    "id": 62
+  },
+  {
     "num": 2,
     "title": "TAL COMO SOY",
     "compositor": "Jesús Adrián Romero",
@@ -694,16 +714,6 @@ var SONGS =
     "album": "Te daré lo mejor - 2004",
     "content": "[INTRO]: MELODÍA\n                                          | E | C#m | A | B |\n        [VERSO 1]:\nB                    E                       C#m              \nAunque mis ojos no te puedan ver, \n                   A                            E      B\nTe puedo sentir sé que estas aquí.\n                         E                       C#m \nAunque mis manos no pueden tocar, \n                   A                            E    B\nTu rostro Señor sé que estas aquí.\n        [CORO]: \n       C#m                  A                          E                    B\nMi corazón puede sentir, tu presencia tú estas aquí, tu estas aquí.\n            C#m  A                  E                    B                   Bsus4 - B\nPuedo sentir tu majestad, tú estas aquí, tú estas aquí.\n        C#m                 A                           E                    B\nMi corazón puede mirar tu hermosura, tú estas aquí, tú estas aquí.\n            C#m   A                   E                    B                  Bsus4 - B\nPuedo sentir tu gran amor, tú estas aquí, tú estas aquí.\n       \n    [VERSO 1]:       |        [CORO]:         \n C#m                B\nTu estas aquí, tú estas aquí.",
     "id": 61
-  },
-  {
-    "num": 5,
-    "title": "YO ME RINDO A ÉL",
-    "compositor": "Jesús Adrián Romero",
-    "tono": "F#",
-    "youtube": "https://www.youtube.com/embed/T4_Nlv6TnQw",
-    "album": "Por la cruz - 1996",
-    "content": "[INTRO]:\n                               | G | D | Em | F | C | D | G |\n        [VERSO 1]: \n  F#                C#                             G#m      C#   F#\nTodo a Cristo yo me entrego, con el fin de serle fiel,\n   F#                  C#       F#           G#m      C#     F#\nPara siempre quiero amarle, y agradarle solo a él.\n        [CORO]:\n        F#                G#m     C#                  F#    C#\nX2   Yo me rindo a él,       yo me rindo a él,\n   F#                            G#m        C#             F#\nTodo a Cristo, yo me entrego, quiero serle fiel.   X2\n        [VERSO 1]:         |       [CORO]  X2",
-    "id": 62
   },
   {
     "num": 6,
@@ -742,16 +752,6 @@ var SONGS =
     "id": 64
   },
   {
-    "num": 9,
-    "title": "SENTADO EN SU TRONO",
-    "compositor": "Jesús A. Romero",
-    "tono": "E",
-    "youtube": "https://www.youtube.com/embed/nlCvLmgjnO8",
-    "album": "Unidos por la Cruz - 1996",
-    "content": "[INTRO]: \n                                 | A | E | Bm7 | F#m7 | E |\n        [VERSO 1]:\n A                                                        F#m7\nX2   Sentado en su trono, rodeado de luz,\nD                       Bm7                  Esus4\nA la diestra del Padre, gobierna Je - sús,\n A                                               F#m7\nCon ojos de fuego, con rostro de sol,\n      D                                Bm7    Esus4\nCuando abre su boca, es true - no su voz.   X2 \n        [CORO]: \n            A - E          Bm7                             F#m     Esus4     E\nX3   Poderoso (Poderoso), en majestad y reino, poderoso,\n    A - E           Bm7                             F#m        Esus4      E\nPoderoso (Poderoso) en potestad e imperio, poderoso.   X3\n        [VERSO 2]:\nA                                        F#m7\nUn gran arcoíris corona su ser,\nD             Bm7         Esus4\nÉl es el cordero que pudo vencer,\nA                                      F#m7\nÉl es el primero, Él es el postrer,\nD                Bm7            Esus4\nY arrojan coronas delante de Él.\n         [CORO]  X3     ",
-    "id": 65
-  },
-  {
     "num": 10,
     "title": "SI HUBIERA ESTADO ALLÍ",
     "compositor": "Jesús A. Romero",
@@ -761,6 +761,23 @@ var SONGS =
     "content": "[INTRO]: \n                                 | A | E | Bm7 | F#m7 | E |\n        [VERSO 1]:\n A                                                        F#m7\nX2   Sentado en su trono, rodeado de luz,\nD                       Bm7                  Esus4\nA la diestra del Padre, gobierna Je - sús,\n A                                               F#m7\nCon ojos de fuego, con rostro de sol,\n      D                                Bm7    Esus4\nCuando abre su boca, es true - no su voz.   X2 \n        [CORO]: \n            A - E          Bm7                             F#m     Esus4     E\nX3   Poderoso (Poderoso), en majestad y reino, poderoso,\n    A - E           Bm7                             F#m        Esus4      E\nPoderoso (Poderoso) en potestad e imperio, poderoso.   X3\n        [VERSO 2]:\nA                                        F#m7\nUn gran arcoíris corona su ser,\nD             Bm7         Esus4\nÉl es el cordero que pudo vencer,\nA                                      F#m7\nÉl es el primero, Él es el postrer,\nD                Bm7            Esus4\nY arrojan coronas delante de Él.\n         [CORO]  X3     ",
     "id": 65.1
   },
+
+  {
+    "num": 39,
+    "title": "COMO LA BRISA",
+    "compositor": "Jesús A. Romero",
+    "tono": "A",
+    "album": "Ayer te vi... Fue más claro que la luna - 1996",
+    "content": "[INTRO]:   MELODIA\n                         | F#m | A7 | Bm7 | D | F#m | A7 | E |\n[VERSO 1]:\nF#m                                 D                                          Bm7\nAbro el corazón y las ventanas, cuando empieza la mañana\n                                E\nPor si quieres hoy venir...\nF#m                                        D                                         Bm7\nEres como el viento que no avisa, cuando sopla y trae la brisa\n                              E   -   Bm7\nVen y sopla sobre mí...\n\n[PRE-CORO]:\n                             A      D                 A                      E  - Bm7\nY mi corazón vuelve a latir, y se renueva si estás aquí\n                        A         D                       A                      E \nY mi corazón vela por ti, porque te espera, vuelve a venir...\n\n[CORO]:\n      A                                  Em7                             D\nEspíritu de Dios, ven a mi vida, como lluvia que tardó\n                       A-Bm7     Asus2-E      \nY al desierto vida dio, \n        A                                     Em7                            Bm7\nDesciende sobre mí como la brisa, que destile sobre mí, \n                           A    D\nTu poder en mí haz fluir...\n\n\n\n\nMELODIA\n\n[VERSO 1]:    |    [PRE-CORO]:   |   [CORO]: X2\n",
+    "id": 208,
+    "versiculos": [
+      {
+        "texto": "Oseas 6:3:\n\"Y conoceremos, y proseguiremos en conocer a Jehová; como el alba está dispuesta su salida, y vendrá a nosotros como la lluvia, como la lluvia tardía y temprana a la tierra.\"",
+        "cita": ""
+      }
+    ]
+  },
+  
   {
     "num": 1,
     "title": "ALGO ESTÁ CAYENDO AQUÍ",
@@ -2180,5 +2197,6 @@ var SONGS =
     "album": "Proyecto JES - 1995",
     "content": "[INTRO]:\n                                          | A | D | E | D | A |\n        [VERSO 1]: \n      A                                                   D                         A\nX2     El Espíritu del Señor está sobre ti, te ha ungido para darnos Buenas nuevas,\n        E                   C# F#m\nA proclamarnos libertad, y darnos vida,\n        D                            A\nA liberar de la opresión, a proclamar el tiempo del Señor,\n        E                 D A\nTú eres digno, Jesús de adoración...    X2\n        [CORO]:\n        A       D                             A\nX2   A liberar de la opresión, a proclamar el tiempo del Señor,\n        E      D          A\nTú eres digno, Jesús de adoración...   X2\n[VERSO 1]: X2       |         [CORO]: X2 ",
     "id": 205
-  }
+  },
+  
 ];
