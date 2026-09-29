@@ -305,6 +305,7 @@ function closeTrackChooser(){state.pendingSong=null;$('trackModal').classList.ad
 function openSong(song, category, trackType='introduccion') {
   if(state.melodyDirty&&!confirmDiscardUnsavedMelody())return;
   state.song = { song, category };
+  primeAudioForInstrument(state.instrument);
   state.melodyType=trackType;
   state.melodyDirty=false;
   state.selectedSongChord=null;document.querySelectorAll('#keyboard .key.chord-selected').forEach(key=>key.classList.remove('chord-selected'));
@@ -716,6 +717,18 @@ async function getInstrumentSample(midi, instrument = state.instrument) {
   }
   return { buffer: state.instrumentBuffers.get(key), sampleMidi: actualSampleMidi, release: spec.release };
 }
+function primeAudioForInstrument(instrument=state.instrument){
+  // Carga muestras antes del primer toque; el piano Grand usa solo 17 archivos
+  // pequeños para cubrir todo el teclado. Otros instrumentos calientan la zona central.
+  getAudioContext();
+  const midis=instrument==='grand-piano'
+    ? [60,64,67,62,65,69,72,...Array.from({length:17},(_,i)=>60+i).filter(midi=>![60,64,67,62,65,69,72].includes(midi))]
+    : instrument==='trumpet-real' ? [60,41,45,48,51,55,58,62,65,69,72]
+    : [60,64,67,62,65,69,72,59,61,63,66,68];
+  let next=0;
+  const worker=async()=>{while(next<midis.length){const midi=midis[next++];try{if(instrument==='grand-piano')await getSample(midi);else await getInstrumentSample(midi,instrument);}catch(error){console.warn('No se pudo preparar una muestra de audio:',error);}}};
+  void Promise.all([worker(),worker()]);
+}
 async function playChord(chord) {
   if (!state.playing && !chord.preview) return;
   try {
@@ -1070,6 +1083,7 @@ function bindInterface() {
     state.instrument = ['steinway-grand','trumpet-real'].includes(event.target.value) ? event.target.value : 'grand-piano';
     $('trumpetIntensitySetting').classList.toggle('hidden', state.instrument !== 'trumpet-real');
     try { localStorage.setItem('yhwh_piano_instrument', state.instrument); } catch (_) {}
+    primeAudioForInstrument(state.instrument);
     $('status').textContent = `Instrumento seleccionado: ${{'steinway-grand':'Steinway de cola','trumpet-real':'Trompeta real','grand-piano':'Grand Piano'}[state.instrument]}.`;
   };
   const sustainButton = $('sustainBtn');

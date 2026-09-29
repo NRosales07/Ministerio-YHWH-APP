@@ -887,3 +887,25 @@ body.home-active .home-branding p{color:#e0946a}
   -webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important
 }
 .piano-panel #keyboard .note-label{pointer-events:none}
+
+/* Ajustes del reproductor en vertical: evitar etiquetas partidas y dar ancho al tono. */
+@media(max-width:900px) and (orientation:portrait){
+  body:has(#player:not(.hidden)) .piano-panel .mobile-quick-settings{
+    grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:5px;padding:7px
+  }
+  body:has(#player:not(.hidden)) .piano-panel .quick-setting{white-space:nowrap}
+  body:has(#player:not(.hidden)) .piano-panel .quick-setting label{flex:0 0 auto;white-space:nowrap;font-size:10px}
+  body:has(#player:not(.hidden)) .piano-panel .quick-track-key{grid-column:1/-1;display:flex;justify-content:space-between;gap:8px}
+  body:has(#player:not(.hidden)) .piano-panel .quick-track-key>div{flex:1;min-width:0}
+  body:has(#player:not(.hidden)) .piano-panel .quick-track-key select{flex:1;width:0;max-width:none;min-width:0}
+}
+
+/* En el piano horizontal, conserva Admin visible aunque el encabezado normal se oculte. */
+@media(max-width:900px) and (orientation:landscape){
+  body:has(#player:not(.hidden)) header{
+    display:flex!important;position:fixed!important;top:max(3px,env(safe-area-inset-top))!important;right:max(7px,env(safe-area-inset-right))!important;left:auto!important;
+    z-index:1000!important;width:auto!important;height:auto!important;min-height:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;pointer-events:none
+  }
+  body:has(#player:not(.hidden)) header #homeBtn{display:none!important}
+  body:has(#player:not(.hidden)) header #adminBtn{display:block!important;pointer-events:auto;min-height:29px;padding:4px 10px;font-size:11px;white-space:nowrap}
+}
