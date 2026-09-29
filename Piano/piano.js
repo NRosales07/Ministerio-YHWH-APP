@@ -349,7 +349,8 @@ function startKeyboardAtC4() {
   syncTrackKeyUI();
 }
 function chordDisplayName(chord) {
-  const root = state.notation === 'latino' ? (NOTE_ROOT_LATINO[chord.root?.[0]] || chord.root) + (chord.root?.slice(1) || '') : chord.root;
+  const shownRoot=transposeChordName(String(chord.root||'C'),Number(state.transpose)||0,false);
+  const root = state.notation === 'latino' ? (NOTE_ROOT_LATINO[shownRoot?.[0]] || shownRoot) + (shownRoot?.slice(1) || '') : shownRoot;
   if(chord.arpeggio)return `${root} 1–5–8`;
   const quality = { major:'', minor:'m', '7':'7', maj7:'maj7', m7:'m7', mMaj7:'mMaj7', '6':'6', add9:'add9', '5':'5', sus2:'sus2', sus4:'sus4', dim:'dim', dim7:'dim7', m7b5:'m7♭5', aug:'aum' }[chord.quality] || '';
   return `${root}${quality}`;
@@ -360,7 +361,10 @@ function renderRecorded() {
     const chord = state.chords.find(item => Number(item.noteIndex) === index);
     const label = chord ? `<span class="note-chord-label">${escapeHTML(chordDisplayName(chord))}</span>` : '<span class="note-chord-label empty" aria-hidden="true"></span>';
     const suggested=voiceParts?`<span class="suggested-voice-notes">2ª ${voiceParts.segunda[index]?noteName(voiceParts.segunda[index].midi):'—'} · 3ª ${voiceParts.tercera[index]?noteName(voiceParts.tercera[index].midi):'—'}</span>`:'';
-    return `<div class="melody-note-item${state.chordTarget === index ? ' selected' : ''}" data-note-index="${index}">${label}${suggested}<button class="note-chip" type="button" data-note-index="${index}" title="${voiceParts?`Principal ${noteName(note.midi)}; segunda ${noteName(voiceParts.segunda[index]?.midi??note.midi)}; tercera ${noteName(voiceParts.tercera[index]?.midi??note.midi)}`:''}" ${state.admin ? '' : 'disabled'}>${escapeHTML(noteName(note.midi))}</button></div>`;
+    const item=`<div class="melody-note-item${state.chordTarget === index ? ' selected' : ''}" data-note-index="${index}">${label}${suggested}<button class="note-chip" type="button" data-note-index="${index}" title="${voiceParts?`Principal ${noteName(note.midi)}; segunda ${noteName(voiceParts.segunda[index]?.midi??note.midi)}; tercera ${noteName(voiceParts.tercera[index]?.midi??note.midi)}`:''}" ${state.admin ? '' : 'disabled'}>${escapeHTML(noteName(note.midi))}</button></div>`;
+    const gapTarget=index+0.5,gapChord=state.chords.find(item=>Number(item.noteIndex)===gapTarget);
+    const gap=index<state.notes.length-1?`<button type="button" class="chord-gap-target${state.chordTarget===gapTarget?' selected':''}" data-chord-target="${gapTarget}" ${state.admin?'':'disabled'} aria-label="Colocar acorde entre las notas ${index+1} y ${index+2}">${gapChord?`<span>${escapeHTML(chordDisplayName(gapChord))}</span>`:'+'}</button>`:'';
+    return item+gap;
   }).join('');
 }
 function renderVoiceMixer(){
@@ -401,18 +405,25 @@ function notesForCurrentMix(){
   return selected.sort((a,b)=>Number(a.start)-Number(b.start));
 }
 function chordSpanForPlayback(chord){
-  const index=Number(chord.noteIndex),anchor=state.notes[index];
-  if(!anchor||state.melodyType!=='voz')return Number(chord.duration)||2;
-  const next=state.chords.filter(item=>Number(item.noteIndex)>index).sort((a,b)=>Number(a.noteIndex)-Number(b.noteIndex))[0];
-  const nextNote=next&&state.notes[Number(next.noteIndex)];
-  return nextNote?Math.max(.25,Number(nextNote.start)-Number(anchor.start)):Number(chord.duration)||2;
+  const start=chordStartTime(chord);
+  if(start===null||state.melodyType!=='voz')return Number(chord.duration)||2;
+  const next=state.chords.filter(item=>chordStartTime(item)>start).sort((a,b)=>chordStartTime(a)-chordStartTime(b))[0];
+  const nextStart=next&&chordStartTime(next);
+  return nextStart!==null&&nextStart!==undefined?Math.max(.25,nextStart-start):Number(chord.duration)||2;
+}
+function chordStartTime(chord){
+  if(Number.isFinite(Number(chord.start)))return Math.max(0,Number(chord.start));
+  const index=Number(chord.noteIndex);if(!Number.isFinite(index)||!state.notes.length)return null;
+  const left=Math.floor(index),right=Math.ceil(index),a=state.notes[left],b=state.notes[right];
+  if(!a)return null;if(left===right||!b)return Math.max(0,Number(a.start)||0);
+  const fraction=index-left;return Math.max(0,(Number(a.start)||0)+((Number(b.start)||0)-(Number(a.start)||0))*fraction);
 }
 function chooseChordTarget(index) {
   if (!state.admin) return;
   state.chordTarget = index;
-  const note = state.notes[index];
+  const note = state.notes[Math.floor(index)];
   const chord = state.chords.find(item => Number(item.noteIndex) === index);
-  $('chordTarget').textContent = note ? `Este acorde empieza en ${noteName(note.midi)} · nota ${index + 1}` : 'Selecciona la primera nota del tramo.';
+  $('chordTarget').textContent = note ? (Number.isInteger(index)?`Este acorde empieza en ${noteName(note.midi)} · nota ${index + 1}`:`Este acorde empieza entre las notas ${Math.floor(index)+1} y ${Math.ceil(index)+1}.`) : 'Selecciona la primera nota del tramo.';
   $('chordRoot').value = chord?.root || NOTE_NAMES[note?.midi % 12] || 'C';
   $('chordQuality').value = chord?.quality || 'major';
   $('chordInversion').value = String(chord?.inversion || 0);
@@ -424,15 +435,16 @@ function chooseChordTarget(index) {
   $('chordPreset').value=chord?chordSymbol(chord):'';
   $('removeChordBtn').classList.toggle('hidden', !chord);
   document.querySelectorAll('.melody-note-item').forEach((item, i) => item.classList.toggle('selected', i === index));
+  document.querySelectorAll('.chord-gap-target').forEach(item=>item.classList.toggle('selected',Number(item.dataset.chordTarget)===index));
 }
 function saveSelectedChord() {
-  if (!state.admin || state.chordTarget === null || !state.notes[state.chordTarget]) { toast('Primero elige una nota de la lista.'); return; }
-  const chord = { noteIndex: state.chordTarget, root: $('chordRoot').value, quality: $('chordQuality').value, inversion: Number($('chordInversion').value), octave: Number($('chordOctave').value), duration: Number($('chordDuration').value), arpeggio:$('chordArpeggio').checked, instrument:$('bassInstrument').value };
+  if (!state.admin || state.chordTarget === null || !state.notes[Math.floor(state.chordTarget)]) { toast('Primero elige una nota o un espacio entre notas.'); return; }
+  const chord = { noteIndex: state.chordTarget, start: chordStartTime({noteIndex:state.chordTarget}), root: $('chordRoot').value, quality: $('chordQuality').value, inversion: Number($('chordInversion').value), octave: Number($('chordOctave').value), duration: Number($('chordDuration').value), arpeggio:$('chordArpeggio').checked, instrument:$('bassInstrument').value };
   const existing = state.chords.findIndex(item => Number(item.noteIndex) === state.chordTarget);
   if (existing >= 0) state.chords[existing] = chord; else state.chords.push(chord);
   state.melodyDirty=true;
   renderRecorded(); chooseChordTarget(chord.noteIndex);
-  $('status').textContent = `Acorde ${chordDisplayName(chord)} asignado a ${noteName(state.notes[chord.noteIndex].midi)}. Pulsa “Guardar melodía” para subir todos los cambios a Firebase.`;
+  $('status').textContent = `Acorde ${chordDisplayName(chord)} asignado ${Number.isInteger(chord.noteIndex)?`a ${noteName(state.notes[chord.noteIndex].midi)}`:'entre dos notas'}. Pulsa “Guardar melodía” para subir todos los cambios a Firebase.`;
 }
 function chordSymbol(chord){const suffix={major:'',minor:'m','7':'7',maj7:'maj7',m7:'m7',mMaj7:'mMaj7','6':'6',add9:'add9','5':'5',dim:'dim',dim7:'dim7',m7b5:'m7b5',aug:'aug',sus2:'sus2',sus4:'sus4'}[chord.quality]||'';return `${chord.root||''}${suffix}`;}
 function applyChordPreset(symbol){
@@ -887,13 +899,13 @@ async function playMelody() {
   });
   const playbackChords = (state.melodyType !== 'voz' || state.voiceMix.acordes) ? state.chords : [];
   playbackChords.forEach(chord => {
-    const anchorNote = state.notes[Number(chord.noteIndex)];
-    if (!anchorNote) return;
-    playChord({...chord,duration:chordSpanForPlayback(chord),tempo:state.tempo,startAt:playbackStart+Math.max(0,Number(anchorNote.start)||0)/state.tempo});
+    const start=chordStartTime(chord);
+    if (start===null) return;
+    playChord({...chord,duration:chordSpanForPlayback(chord),tempo:state.tempo,startAt:playbackStart+start/state.tempo});
   });
   const noteRelease = state.instrument === 'trumpet-real' ? 0.25 : state.instrument === 'steinway-grand' ? 0.7 : (state.sustain ? 0.9 : 0.32);
   const noteEnd = Math.max(...playbackNotes.map(note => ((Number(note.start) || 0) + (Number(note.duration) || 0.35) * (state.sustain ? 2.4 : 1)) / state.tempo + noteRelease));
-  const chordEnd = playbackChords.reduce((end, chord) => { const note=state.notes[Number(chord.noteIndex)]; const instrument=chord.instrument||state.bassInstrument; const release=instrument==='trumpet-real'?0.25:instrument==='steinway-grand'?0.7:(state.sustain?0.9:0.32); return note ? Math.max(end, ((Number(note.start)||0)+chordSpanForPlayback(chord)+(chord.arpeggio?0.4:0))/state.tempo+release) : end; }, 0);
+  const chordEnd = playbackChords.reduce((end, chord) => { const start=chordStartTime(chord); const instrument=chord.instrument||state.bassInstrument; const release=instrument==='trumpet-real'?0.25:instrument==='steinway-grand'?0.7:(state.sustain?0.9:0.32); return start!==null ? Math.max(end, (start+chordSpanForPlayback(chord)+(chord.arpeggio?0.4:0))/state.tempo+release) : end; }, 0);
   const end = Math.max(noteEnd, chordEnd);
   state.playTimers.push(setTimeout(() => { state.playing = false; $('tempoControl').disabled=false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = 'Melodía terminada.'; }, end * 1000 + 500));
 }
@@ -915,7 +927,7 @@ async function saveMelody() {
     songId: song.id,
     updatedAt: new Date().toISOString(),
     tono: transposedTonic(),
-    acordes: state.chords.map(chord => { const baked = chord.noTranspose ? { root:String(chord.root), octave:Number(chord.octave)||36 } : bakeChordTranspose(chord, state.transpose); return { noteIndex:Number(chord.noteIndex), root:baked.root, quality:String(chord.quality), inversion:Number(chord.inversion)||0, octave:baked.octave, duration:Number(chord.duration)||2, arpeggio:!!chord.arpeggio, instrument:chord.instrument||state.bassInstrument }; }),
+    acordes: state.chords.map(chord => { const baked = chord.noTranspose ? { root:String(chord.root), octave:Number(chord.octave)||36 } : bakeChordTranspose(chord, state.transpose); return { noteIndex:Number(chord.noteIndex), start:Number(chordStartTime(chord)?.toFixed(3)||0), root:baked.root, quality:String(chord.quality), inversion:Number(chord.inversion)||0, octave:baked.octave, duration:Number(chord.duration)||2, arpeggio:!!chord.arpeggio, instrument:chord.instrument||state.bassInstrument }; }),
     notas: state.notes.map((note, index, all) => {
       const next = all[index + 1];
       return { midi: Number(note.midi), note: canonicalNoteName(Number(note.midi)), start: Number(Number(note.start || 0).toFixed(3)), duration: Number((next ? Math.max(0.12, next.start - note.start) : Math.max(0.35, note.duration || 0.35)).toFixed(3)) };
@@ -1072,12 +1084,12 @@ function bindInterface() {
       $('status').textContent = state.sustain ? 'Sustain activado: las notas duran más y se desvanecen suavemente.' : 'Sustain desactivado: desvanecimiento suave al soltar cada nota.';
     };
   }
-  $('recordedNotes').onclick = event => { const chip=event.target.closest('[data-note-index]'); if(chip) chooseChordTarget(Number(chip.dataset.noteIndex)); };
+  $('recordedNotes').onclick = event => { const gap=event.target.closest('[data-chord-target]');if(gap){chooseChordTarget(Number(gap.dataset.chordTarget));return;}const chip=event.target.closest('[data-note-index]'); if(chip) chooseChordTarget(Number(chip.dataset.noteIndex)); };
   $('recordedNotes').onkeydown = event => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
-    const chip=event.target.closest('[data-note-index]');
+    const chip=event.target.closest('[data-note-index],[data-chord-target]');
     if (!chip) return;
-    event.preventDefault(); chooseChordTarget(Number(chip.dataset.noteIndex));
+    event.preventDefault(); chooseChordTarget(Number(chip.dataset.chordTarget??chip.dataset.noteIndex));
   };
   $('applyChordBtn').onclick = saveSelectedChord;
   $('chordPreset').onchange=event=>applyChordPreset(event.target.value);
