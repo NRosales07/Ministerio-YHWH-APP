@@ -101,7 +101,7 @@ function setView(view) {
   if(!$('player').classList.contains('hidden')&&!confirmDiscardUnsavedMelody())return;
   state.view = view;
   document.body.classList.toggle('home-active',view==='home');
-  stopPlayback();
+  stopPlayback({suspendAudio:true});
   stopTheorySequence();
   const target={home:'homeView',adoracion:'songView',jubilo:'songView',crear:'createView',teoria:'theoryView'}[view]||'homeView';
   transitionScreen(target,['homeView','songView','createView','theoryView','player']);
@@ -259,9 +259,9 @@ async function playTheoryScale(){
   const scale=THEORY_SCALES[state.theoryScale]||THEORY_SCALES.major;stopTheorySequence();
   const notes=scale.semitones.map(semi=>60+NOTE_NAMES.indexOf(state.theoryChord.root)+semi);
   try{
-    getAudioContext();
-    if(state.instrument==='grand-piano')await Promise.all(notes.map(midi=>getSample(midi)));
-    else await Promise.all(notes.map(midi=>getInstrumentSample(midi)));
+    const context=getAudioContext(),resumePromise=resumeAudioContext(context);
+    if(state.instrument==='grand-piano')await Promise.all([...notes.map(midi=>getSample(midi)),resumePromise]);
+    else await Promise.all([...notes.map(midi=>getInstrumentSample(midi)),resumePromise]);
     notes.forEach((midi,index)=>{const timer=setTimeout(()=>{const wasRecording=state.recording;state.recording=false;playNote(midi,null,.3);state.recording=wasRecording;},index*260);theorySequenceTimers.push(timer);});
   }catch(error){$('theoryScaleFormula').textContent='No se pudieron cargar las muestras de sonido.';console.error(error);}
 }
@@ -667,8 +667,11 @@ function initializeSplash() {
 let audioContext = null;
 function getAudioContext() {
   if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioContext.state === 'suspended') audioContext.resume();
   return audioContext;
+}
+function resumeAudioContext(context=getAudioContext()){
+  if(context.state==='running')return Promise.resolve();
+  return context.resume();
 }
 async function getSample(midi) {
   const sampleMidi = Math.max(60, Math.min(76, midi));
@@ -720,7 +723,7 @@ async function getInstrumentSample(midi, instrument = state.instrument) {
 function primeAudioForInstrument(instrument=state.instrument){
   // Carga muestras antes del primer toque; el piano Grand usa solo 17 archivos
   // pequeños para cubrir todo el teclado. Otros instrumentos calientan la zona central.
-  getAudioContext();
+  void resumeAudioContext(getAudioContext()).catch(()=>{});
   const midis=instrument==='grand-piano'
     ? [60,64,67,62,65,69,72,...Array.from({length:17},(_,i)=>60+i).filter(midi=>![60,64,67,62,65,69,72].includes(midi))]
     : instrument==='trumpet-real' ? [60,41,45,48,51,55,58,62,65,69,72]
@@ -733,15 +736,16 @@ async function playChord(chord) {
   if (!state.playing && !chord.preview) return;
   try {
     const context = getAudioContext();
+    const resumePromise=resumeAudioContext(context);
     const chordInstrument = chord.instrument || state.bassInstrument || 'grand-piano';
-    const entries = await Promise.all(chordMidiNotes(chord).map(async midi => {
+    const entries = await Promise.all([resumePromise,...chordMidiNotes(chord).map(async midi => {
       if (chordInstrument === 'grand-piano') {
         const sampleMidi = Math.max(60, Math.min(76, midi));
         return { midi, sampleMidi, buffer: await getSample(midi) };
       }
       const sample = await getInstrumentSample(midi, chordInstrument);
       return { midi, sampleMidi: sample.sampleMidi, buffer: sample.buffer };
-    }));
+    })]).then(([, ...loaded])=>loaded);
     if (!state.playing && !chord.preview) return;
     const when = Number(chord.startAt) || context.currentTime + 0.015;
     for (let index = 0; index < entries.length; index++) {
@@ -783,14 +787,17 @@ async function playNote(midi, element, duration = 0.4) {
   }
   try {
     const context = getAudioContext();
+    // Llama resume antes del primer await para conservar el gesto táctil en iOS.
+    const resumePromise=resumeAudioContext(context);
     const source = context.createBufferSource();
     const gain = context.createGain();
     if (state.instrument === 'grand-piano') {
       const sampleMidi = Math.max(60, Math.min(76, midi));
-      source.buffer = await getSample(midi);
+      const [buffer]=await Promise.all([getSample(midi),resumePromise]);
+      source.buffer = buffer;
       source.playbackRate.value = 2 ** ((midi - sampleMidi) / 12);
     } else {
-      const sample = await getInstrumentSample(midi);
+      const [sample]=await Promise.all([getInstrumentSample(midi),resumePromise]);
       source.buffer = sample.buffer;
       source.playbackRate.value = 2 ** ((midi - sample.sampleMidi) / 12);
       duration = Math.max(duration, sample.release);
@@ -827,14 +834,14 @@ async function playNote(midi, element, duration = 0.4) {
     console.error(error);
   }
 }
-function stopPlayback() {
+function stopPlayback({suspendAudio=false}={}) {
   state.playing = false;
   state.playTimers.forEach(clearTimeout);
   state.playTimers = [];
   document.querySelectorAll('.piano-panel .key.playing').forEach(key=>key.classList.remove('playing'));
   state.activePlaybackSources.forEach(source=>{try{source.stop()}catch(_){}});
   state.activePlaybackSources=[];
-  if (audioContext?.state === 'running') audioContext.suspend();
+  if (suspendAudio && audioContext?.state === 'running') audioContext.suspend().catch(()=>{});
   if($('tempoControl'))$('tempoControl').disabled=false;
   setPlayerControl('playMelody','▶','Reproducir');
 }
@@ -844,6 +851,8 @@ function setPlayerControl(id,icon,label){
   button.setAttribute('aria-label',label);
 }
 async function prepareMelodyAudio(notesToPrepare=state.notes) {
+  const context=getAudioContext();
+  const resumePromise=resumeAudioContext(context);
   const noteMidis = [...new Set(notesToPrepare.map(note => Number(note.midi)).filter(Number.isFinite))];
   const entries=await Promise.all(noteMidis.map(async midi=>{
     if(state.instrument==='grand-piano'){const sampleMidi=Math.max(60,Math.min(76,midi));return [midi,{buffer:await getSample(midi),sampleMidi,release:.4}];}
@@ -854,9 +863,7 @@ async function prepareMelodyAudio(notesToPrepare=state.notes) {
     const instrument = chord.instrument || state.bassInstrument || 'grand-piano';
     chordMidiNotes(chord).forEach(midi => loads.push(instrument === 'grand-piano' ? getSample(midi) : getInstrumentSample(midi, instrument)));
   });
-  await Promise.all(loads);
-  const context = getAudioContext();
-  if (context.state !== 'running') await context.resume();
+  await Promise.all([...loads,resumePromise]);
   return new Map(entries);
 }
 function schedulePlaybackNote(midi,element,duration,when,prepared){

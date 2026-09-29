@@ -1,4 +1,4 @@
-const CACHE='yhwh-piano-v49';
+const CACHE='yhwh-piano-v50';
 const AUDIO_CACHE='yhwh-piano-audio-v1';
 const FILES=['./','./index.html','./piano.css','./piano.js','./manifest.json','./offline-audio.json','./icon.svg','./icon-512.png','./apple-touch-icon.png','./audio/040.wav','./audio/041.wav','./audio/042.wav','./audio/043.wav','./audio/044.wav','./audio/045.wav','./audio/046.wav','./audio/047.wav','./audio/048.wav','./audio/049.wav','./audio/050.wav','./audio/051.wav','./audio/052.wav','./audio/053.wav','./audio/054.wav','./audio/055.wav','./audio/056.wav','../canciones-adoracion.js','../canciones-jubilo.js'];
 let audioDownloadInProgress=false;
@@ -37,6 +37,17 @@ self.addEventListener('message',event=>{
 self.addEventListener('fetch',event=>{
   const request=event.request,url=new URL(request.url);
   if(request.method!=='GET'||url.origin!==location.origin)return;
+  const audioPath=new URL('./audio/',self.registration.scope).pathname;
+  if(url.pathname.startsWith(audioPath)){
+    event.respondWith((async()=>{
+      const cached=await caches.match(request);
+      if(cached)return cached;
+      const response=await fetch(request);
+      if(response.ok){const cache=await caches.open(AUDIO_CACHE);await cache.put(request,response.clone());}
+      return response;
+    })());
+    return;
+  }
   event.respondWith(fetch(request).then(response=>{
     if(response.ok)caches.open(CACHE).then(cache=>cache.put(request,response.clone()));
     return response;
