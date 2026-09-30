@@ -656,9 +656,12 @@ body.home-active .home-branding p{color:#e0946a}
 .voice-switch input:checked+i:after{transform:translateX(13px);background:#171520}
 .voice-switch input:focus-visible+i{outline:2px solid #8bc7ff;outline-offset:2px}
 .voice-mixer>small{flex-basis:100%;color:#c9c4d8;font-size:.69rem;line-height:1.4}
+.voice-direction{display:flex;align-items:center;gap:7px;min-height:37px;padding:5px 9px;border:1px solid #c9a84c44;border-radius:10px;background:#12122a;color:#eeeafa;font-size:.72rem;font-weight:700}
+.voice-direction select{min-height:30px;max-width:150px;padding:4px 7px;border:1px solid #514b70;border-radius:7px;background:#1b1b33;color:#f1edf9;font:inherit}
+.voice-direction select:focus-visible{outline:2px solid #8bc7ff;outline-offset:2px}
 .chord-editor-help{margin:4px 0 10px;color:#c9c4d8;font-size:.76rem;line-height:1.45}
 .chord-editor-fields>label:first-child{grid-column:1/-1}
-@media(max-width:700px){.track-modal-card{padding:19px}.voice-mixer{gap:5px;padding:7px}.voice-switch{flex:1 1 auto;justify-content:space-between;min-width:130px}.voice-mixer>small{font-size:.66rem}}
+@media(max-width:700px){.track-modal-card{padding:19px}.voice-mixer{gap:5px;padding:7px}.voice-switch{flex:1 1 auto;justify-content:space-between;min-width:130px}.voice-direction{flex:1 1 100%;justify-content:space-between}.voice-direction select{max-width:none;min-width:45%}.voice-mixer>small{font-size:.66rem}}
 
 .suggested-voice-notes{display:block;min-height:10px;color:#c9c4d8;font-size:8px;line-height:1.15;white-space:nowrap}
 
