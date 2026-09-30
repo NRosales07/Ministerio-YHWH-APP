@@ -885,9 +885,13 @@ body.home-active .home-branding p{color:#e0946a}
   body:has(#player:not(.hidden)) .piano-panel #keyboard .keys{height:100%!important}
 }
 
-/* Evita que los nombres de las teclas entren en selección de texto al tocarlas o deslizarlas. */
-.piano-panel #keyboardScroll,.piano-panel #keyboard,.piano-panel #keyboard *{
-  -webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important
+/* Evita que los toques y deslizamientos seleccionen texto de la interfaz en iPhone/iPad. */
+body,body *{
+  -webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none
+}
+/* Conserva la edición normal de campos y la selección intencional de letras/acordes. */
+input,textarea,[contenteditable="true"],.song-content,.song-content *{
+  -webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default
 }
 .piano-panel #keyboard .note-label{pointer-events:none}
 
