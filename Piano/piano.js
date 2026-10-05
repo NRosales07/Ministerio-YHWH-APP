@@ -15,6 +15,14 @@ const state = {
 let screenTransitionTimer = null;
 let theorySequenceTimers = [];
 let offlineAudioDownloadRunning = false;
+let metronomeOn = false;
+let metronomeTimer = null;
+let metronomeNextBeat = 0;
+let metronomeBeatIndex = 0;
+let metronomeVisualTimers = [];
+let metronomeTaps = [];
+let metronomeBpm = Math.min(240, Math.max(40, Number(localStorage.getItem('yhwh_piano_metronome_bpm')) || 100));
+let metronomeMeter = ['2', '3', '4', '6'].includes(localStorage.getItem('yhwh_piano_metronome_meter')) ? Number(localStorage.getItem('yhwh_piano_metronome_meter')) : 4;
 
 function readMelodyCache() {
   try { return JSON.parse(localStorage.getItem('yhwh_melodias_cache') || '{}') || {}; }
@@ -99,6 +107,7 @@ function confirmDiscardUnsavedMelody(){
 }
 function setView(view) {
   if(!$('player').classList.contains('hidden')&&!confirmDiscardUnsavedMelody())return;
+  stopMetronome();
   state.view = view;
   document.body.classList.toggle('home-active',view==='home');
   stopPlayback({suspendAudio:true});
@@ -255,6 +264,68 @@ function renderTheoryIntervals(){
 }
 function selectTheoryInterval(semitone){state.theoryInterval=Number(semitone);state.theoryPianoMode='interval';renderTheoryIntervals();}
 function stopTheorySequence(){theorySequenceTimers.forEach(clearTimeout);theorySequenceTimers=[];}
+function syncMetronomeUI(){
+  const bpm=$('metronomeBpm'),meter=$('metronomeMeter'),value=$('metronomeBpmValue');
+  if(bpm)bpm.value=String(metronomeBpm);
+  if(meter)meter.value=String(metronomeMeter);
+  if(value)value.textContent=`${metronomeBpm} BPM`;
+  document.querySelectorAll('#metronomeBeats i').forEach((beat,index)=>{beat.style.display=index<metronomeMeter?'block':'none';beat.classList.remove('active');});
+}
+function setMetronomeBpm(value,save=false){
+  metronomeBpm=Math.min(240,Math.max(40,Math.round(Number(value)||100)));
+  syncMetronomeUI();
+  if(save)try{localStorage.setItem('yhwh_piano_metronome_bpm',String(metronomeBpm));}catch(_){}
+  if(metronomeOn){metronomeBeatIndex=0;metronomeNextBeat=getAudioContext().currentTime+.025;}
+}
+function setMetronomeMeter(value){
+  metronomeMeter=[2,3,4,6].includes(Number(value))?Number(value):4;
+  metronomeBeatIndex=0;syncMetronomeUI();
+  try{localStorage.setItem('yhwh_piano_metronome_meter',String(metronomeMeter));}catch(_){}
+}
+function scheduleMetronomeBeat(context,time,beatIndex){
+  const oscillator=context.createOscillator(),gain=context.createGain();
+  oscillator.type='sine';oscillator.frequency.setValueAtTime(beatIndex===0?1760:1175,time);
+  gain.gain.setValueAtTime(.0001,time);gain.gain.exponentialRampToValueAtTime(beatIndex===0?.16:.105,time+.002);gain.gain.exponentialRampToValueAtTime(.0001,time+.055);
+  oscillator.connect(gain);gain.connect(context.destination);oscillator.start(time);oscillator.stop(time+.06);
+  const visualTimer=setTimeout(()=>{
+    metronomeVisualTimers=metronomeVisualTimers.filter(timer=>timer!==visualTimer);
+    if(!metronomeOn)return;
+    document.querySelectorAll('#metronomeBeats i').forEach((beat,index)=>beat.classList.toggle('active',index===beatIndex));
+  },Math.max(0,(time-context.currentTime)*1000));
+  metronomeVisualTimers.push(visualTimer);
+}
+function runMetronomeScheduler(){
+  if(!metronomeOn)return;
+  const context=getAudioContext(),step=60/metronomeBpm;
+  while(metronomeNextBeat<context.currentTime+.12){
+    scheduleMetronomeBeat(context,metronomeNextBeat,metronomeBeatIndex);
+    metronomeNextBeat+=step;metronomeBeatIndex=(metronomeBeatIndex+1)%metronomeMeter;
+  }
+}
+function startMetronome(){
+  if(metronomeOn)return;
+  const context=getAudioContext();metronomeOn=true;metronomeBeatIndex=0;
+  $('metronomeToggle').setAttribute('aria-pressed','true');$('metronomeToggle').setAttribute('aria-label','Detener metrónomo');$('metronomeToggle').textContent='■ Detener';
+  resumeAudioContext(context).then(()=>{
+    if(!metronomeOn)return;
+    metronomeNextBeat=context.currentTime+.05;runMetronomeScheduler();metronomeTimer=setInterval(runMetronomeScheduler,25);
+  }).catch(()=>{stopMetronome();toast('No se pudo iniciar el metrónomo. Vuelve a tocar el botón.');});
+}
+function stopMetronome(){
+  metronomeOn=false;if(metronomeTimer){clearInterval(metronomeTimer);metronomeTimer=null;}
+  metronomeVisualTimers.forEach(clearTimeout);metronomeVisualTimers=[];
+  document.querySelectorAll('#metronomeBeats i').forEach(beat=>beat.classList.remove('active'));
+  const button=$('metronomeToggle');if(button){button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','Iniciar metrónomo');button.textContent='▶ Pulso';}
+}
+function toggleMetronome(){metronomeOn?stopMetronome():startMetronome();}
+function tapMetronomeTempo(){
+  const now=performance.now(),last=metronomeTaps[metronomeTaps.length-1];
+  if(last&&now-last>2200)metronomeTaps=[];
+  metronomeTaps.push(now);metronomeTaps=metronomeTaps.slice(-5);
+  if(metronomeTaps.length<2)return;
+  const gaps=metronomeTaps.slice(1).map((tap,index)=>tap-metronomeTaps[index]);
+  setMetronomeBpm(60000/(gaps.reduce((sum,gap)=>sum+gap,0)/gaps.length),true);
+}
 async function playTheoryScale(){
   const scale=THEORY_SCALES[state.theoryScale]||THEORY_SCALES.major;stopTheorySequence();
   const notes=scale.semitones.map(semi=>60+NOTE_NAMES.indexOf(state.theoryChord.root)+semi);
@@ -642,7 +713,6 @@ function initializeSplash() {
   const splash = $('splashScreen');
   const enter = $('btnEntrarSplash');
   if (!splash || !enter) return;
-  const startedAt = Date.now();
   let autoCloseTimer = null;
   const hide = () => {
     if (splash.dataset.hidden) return;
@@ -651,20 +721,15 @@ function initializeSplash() {
     splash.classList.add('splash-hide');
     setTimeout(() => splash.remove(), 650);
   };
-  const showEnter = () => {
+  const reveal = () => {
     if (!document.body.contains(splash) || splash.dataset.ready) return;
     splash.dataset.ready = '1';
-    setTimeout(() => {
-      if (!document.body.contains(splash)) return;
-      $('splashLoader').style.display = 'none';
-      enter.classList.add('show');
-      autoCloseTimer = setTimeout(hide, 4000);
-    }, Math.max(0, 1800 - (Date.now() - startedAt)));
+    $('splashLoader').style.display = 'none';
+    enter.classList.add('show');
+    autoCloseTimer = setTimeout(hide, 950);
   };
   enter.addEventListener('click', hide);
-  if (document.readyState === 'complete') showEnter();
-  else window.addEventListener('load', showEnter, { once: true });
-  setTimeout(showEnter, 9000);
+  setTimeout(reveal, 350);
 }
 let audioContext = null;
 function getAudioContext() {
@@ -1066,6 +1131,13 @@ function bindInterface() {
     $('tempoValue').textContent = `${Math.round(state.tempo*100)}%`;
     try { localStorage.setItem('yhwh_piano_tempo',String(state.tempo)); } catch (_) {}
   };
+  syncMetronomeUI();
+  $('metronomeBpm').oninput = event => setMetronomeBpm(event.target.value);
+  $('metronomeBpm').onchange = event => setMetronomeBpm(event.target.value,true);
+  $('metronomeMeter').onchange = event => setMetronomeMeter(event.target.value);
+  $('metronomeToggle').onclick = toggleMetronome;
+  $('tapTempo').onclick = tapMetronomeTempo;
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMetronome();});
   if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', event => {
     if (event.data?.type === 'AUDIO_CACHE_STARTED') $('offlineStatus').textContent = 'Descargando sonidos para usar sin conexión…';
     if (event.data?.type === 'AUDIO_CACHE_PROGRESS') $('offlineStatus').textContent = `Descargando sonidos para usar sin conexión… ${event.data.done}/${event.data.total}`;

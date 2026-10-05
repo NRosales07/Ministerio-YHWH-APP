@@ -1,0 +1,395 @@
+/* Piano YHWH · estudio móvil y de escritorio */
+:root {
+  --bg: #0b0d12;
+  --panel: #131821;
+  --panel2: #202734;
+  --line: #2c3542;
+  --text: #f3f1eb;
+  --muted: #a8b0bc;
+  --gold: #d9ae62;
+  --gold2: #f0d08c;
+  --studio-ink: #0b0d12;
+  --studio-card: rgba(20, 25, 34, .92);
+  --studio-line: rgba(233, 205, 143, .16);
+}
+
+html { min-height: 100%; background: var(--bg); }
+body {
+  min-height: 100dvh;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 50% -25%, rgba(116, 102, 76, .16), transparent 45%),
+    radial-gradient(ellipse at 100% 55%, rgba(52, 72, 97, .09), transparent 40%),
+    var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font-family: inherit; }
+button, select, input[type="range"] { touch-action: manipulation; }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--gold2);
+  outline-offset: 3px;
+}
+
+header {
+  height: calc(66px + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) max(20px, calc((100vw - 1240px) / 2)) 0;
+  background: rgba(11, 13, 18, .88);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  box-shadow: 0 8px 30px rgba(0,0,0,.13);
+}
+.brand-home { min-height: 48px; gap: 12px; }
+.brand-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--studio-line);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #2c2a25, #191b20);
+  color: var(--gold2);
+  font-size: 23px;
+}
+.brand-home b { font-size: .82rem; letter-spacing: .19em; }
+.brand-home small { margin-top: 3px; color: #a8a397; font-size: .59rem; letter-spacing: .13em; }
+.admin, .soft, .gold, .tab, .theory-tab {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition: border-color .18s, background .18s, transform .18s;
+}
+.admin, .soft, .tab, .theory-tab { background: #171d26; }
+.admin { padding: 9px 14px; }
+.admin.active { color: #19150e; background: var(--gold2); }
+.gold { color: #19150e; background: linear-gradient(135deg, var(--gold), var(--gold2)); }
+.soft:hover, .admin:hover, .tab:hover, .theory-tab:hover { border-color: #ab925e; }
+main { max-width: 1240px; padding: 24px 20px 48px; }
+.connection { min-height: 22px; font-size: .73rem; letter-spacing: .02em; }
+
+/* Portada */
+.home-view {
+  min-height: min(720px, calc(100dvh - 145px));
+  margin: 8px 0 0;
+  padding: clamp(32px, 7vh, 78px) 28px;
+  border: 1px solid rgba(230, 204, 149, .12);
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(25,29,37,.96), rgba(15,19,26,.98) 60%, rgba(24,25,29,.96));
+  box-shadow: 0 32px 80px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.035);
+}
+.home-view:before {
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(217,174,98,.12), transparent 42%),
+              radial-gradient(ellipse at 0% 100%, rgba(71,92,111,.1), transparent 34%);
+  animation: none;
+}
+.home-view:after { display: none; }
+.home-content { width: min(100%, 820px); }
+.home-branding { margin-bottom: 34px; }
+.home-note {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 17px;
+  border: 1px solid rgba(239,208,140,.28);
+  border-radius: 19px;
+  background: linear-gradient(145deg, #28261f, #171a1f);
+  color: var(--gold2);
+  font-size: 30px;
+  box-shadow: 0 12px 35px rgba(217,174,98,.1);
+}
+.home-branding h1 {
+  color: #f2e8d2;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 5.2vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -.035em;
+  line-height: 1.12;
+}
+.home-branding p { margin-top: 10px; color: #b8b2a7; font: 500 .9rem/1.4 -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+.home-divider { width: 54px; margin: 21px auto 18px; opacity: .8; }
+.home-prompt { color: #aeb5bf; font-size: .83rem; letter-spacing: .08em; text-transform: uppercase; }
+.home-menu-grid { gap: 13px; }
+.home-menu-card {
+  position: relative;
+  min-height: 138px;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 22px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 17px;
+  background: linear-gradient(145deg, rgba(34,41,51,.96), rgba(22,27,35,.97));
+  box-shadow: 0 10px 26px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.035);
+  text-align: left;
+}
+.home-menu-card:after {
+  position: absolute;
+  right: 18px;
+  bottom: 17px;
+  content: "↗";
+  color: rgba(240,208,140,.66);
+  font-size: 16px;
+  opacity: .7;
+}
+.home-menu-card:hover { transform: translateY(-2px); border-color: rgba(240,208,140,.5); background: linear-gradient(145deg, #29313c, #1a2028); box-shadow: 0 16px 34px rgba(0,0,0,.25); }
+.home-menu-card:active { transform: scale(.985); }
+.home-card-icon { width: 36px; height: 36px; margin-bottom: 2px; border-radius: 11px; background: rgba(240,208,140,.09); font-size: 20px; }
+.home-menu-card b { color: #f1e7d3; font-size: 1rem; }
+.home-menu-card small { color: #a9b0ba; font-size: .79rem; }
+.offline-download { margin-top: 23px; }
+.offline-download p { color: #939da9; font-size: .74rem; line-height: 1.5; }
+.install-help { margin: 14px auto 0; color: #aeb4bc; font-size: .78rem; }
+.install-help summary { display: inline-block; padding: 8px 11px; border: 1px solid rgba(255,255,255,.08); border-radius: 99px; cursor: pointer; }
+.install-help p { max-width: 440px; margin: 9px auto 0; line-height: 1.55; }
+
+/* Listas y vistas de contenido */
+.view, .theory-header, .theory-panel { color: var(--text); }
+.home-back { min-height: 42px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 12px; background: #171d26; }
+.toolbar { margin: 18px 0 12px; }
+.toolbar h1, .theory-header h1 { color: #f0e7d4; font-family: Georgia, "Times New Roman", serif; font-size: 1.85rem; font-weight: 500; letter-spacing: -.025em; }
+.toolbar input, .modal input, .theory-root-picker select, .theory-mode-picker select, .quick-setting select, .voice-direction select, .chord-editor select {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background-color: #121720;
+  color: var(--text);
+}
+.hint, .theory-header p, .theory-intro { color: #aab2bd; line-height: 1.55; }
+.song-list { gap: 11px; }
+.song-card {
+  min-height: 76px;
+  padding: 16px 17px;
+  border: 1px solid rgba(255,255,255,.075);
+  border-radius: 15px;
+  background: linear-gradient(145deg, #181e27, #131820);
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  transition: border-color .18s, transform .18s, background .18s;
+}
+.song-card:hover { transform: translateY(-1px); border-color: rgba(240,208,140,.42); background: #1c232d; }
+.song-card b { color: #f1eee8; font-size: .95rem; }
+.song-card small { color: #a6aeba; line-height: 1.4; }
+.badge { border: 1px solid rgba(129,187,151,.19); background: rgba(47,92,68,.21); color: #a9d7b7; }
+.empty { border: 1px solid rgba(255,255,255,.07); border-radius: 16px; background: #151b23; line-height: 1.55; }
+
+/* Instrumento */
+.player { margin-top: 12px; }
+.player-top { min-height: 54px; margin-bottom: 12px; }
+.player-top h1 { color: #f1e9d9; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; font-weight: 500; }
+.player-top p { color: #a7afba; font-size: .82rem; }
+.piano-panel {
+  padding: 18px;
+  border: 1px solid rgba(230,204,149,.13);
+  border-radius: 20px;
+  background: linear-gradient(155deg, #171d26, #11161e 72%);
+  box-shadow: 0 17px 42px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.025);
+}
+.piano-panel .piano-heading { min-height: 28px; color: #b4bbc4; font-size: .83rem; letter-spacing: .07em; text-transform: uppercase; }
+.piano-panel .piano-heading>span { color: var(--gold2); font-size: .8rem; }
+.piano-panel .status { padding: 9px 12px; border: 1px solid rgba(255,255,255,.06); border-radius: 10px; background: rgba(255,255,255,.025); color: #aeb6c0; }
+.piano-panel .piano-container {
+  height: clamp(245px, 35vw, 360px);
+  padding: 25px 13px 13px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 15px;
+  background: linear-gradient(180deg, #101318, #080a0e);
+  box-shadow: inset 0 10px 28px rgba(0,0,0,.32);
+}
+.piano-panel #keyboardScroll { border-radius: 8px; scrollbar-color: #555044 #111318; -webkit-overflow-scrolling: touch; }
+.piano-panel #keyboard { --keyboard-key-width: 52px; }
+.piano-panel #keyboard .keys {
+  width: calc(var(--keyboard-key-width, 52px) * var(--keyboard-zoom, 1));
+  flex-basis: calc(var(--keyboard-key-width, 52px) * var(--keyboard-zoom, 1));
+}
+.piano-panel .white {
+  border: 1px solid #c9c8c0;
+  border-radius: 0 0 5px 5px;
+  background: linear-gradient(100deg, #fffefa, #e8e6df);
+  box-shadow: 0 3px 4px rgba(0,0,0,.28);
+}
+.piano-panel .black {
+  right: -34%;
+  width: 68%;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(100deg, #393a3e, #090b0e 72%);
+  box-shadow: 0 5px 8px rgba(0,0,0,.48), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.piano-panel .key.playing { border-color: #dcb864; background: linear-gradient(#f7db9d, #d4a84e); box-shadow: 0 0 17px rgba(217,174,98,.46); }
+.piano-panel .black.playing { background: linear-gradient(#c39b50, #514021); }
+.piano-panel .white.chord-selected { background: linear-gradient(#fff5dc,#e5c47d)!important; }
+.piano-panel .black.chord-selected { background: linear-gradient(#9c8149,#46381e)!important; }
+.piano-panel .note { color: var(--gold2); }
+.keyboard-navigation { display: flex; justify-content: space-between; gap: 10px; margin: 10px 2px 0; }
+.keyboard-octave-controls, .keyboard-zoom-controls { gap: 7px; }
+.keyboard-navigation button { min-height: 38px; padding: 7px 11px; }
+.keyboard-octave-controls span { color: #c9c1ae; font-size: .78rem; }
+.mobile-quick-settings {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  align-items: stretch;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 11px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  background: rgba(10,13,18,.52);
+}
+.quick-setting { min-width: 0; padding: 9px 10px; border: 1px solid rgba(255,255,255,.055); border-radius: 11px; background: #141a22; }
+.quick-setting label { color: #aeb5bf; font-size: .72rem; font-weight: 650; letter-spacing: .015em; }
+.quick-setting select { width: 100%; margin-top: 5px; padding: 7px 9px; font-size: .81rem; }
+.quick-setting input[type="range"] { width: 100%; min-height: 24px; accent-color: var(--gold); }
+.quick-tempo { display: flex; flex-direction: column; gap: 6px; }
+.quick-tempo label { display: flex; justify-content: space-between; }
+.quick-tempo output { color: var(--gold2); font-variant-numeric: tabular-nums; }
+.quick-track-key > div { min-width: 0; }
+.quick-track-key select { min-width: 0; }
+.transpose-controls { min-width: 0; margin: 0; padding: 7px; gap: 6px; border: 1px solid rgba(255,255,255,.055); border-radius: 11px; background: #141a22; }
+.transpose-controls button { min-height: 39px; padding: 7px 10px; }
+.transpose-controls span { min-width: 100px; color: var(--gold2); font-size: .78rem; }
+.quick-metronome { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 12px; grid-column: 1 / -1; flex: 1 1 100%; }
+.metronome-top { display: flex; align-items: center; gap: 8px; }
+.metronome-readout { display: flex; flex-direction: column; gap: 2px; min-width: 75px; }
+.metronome-readout b { color: #ede8dc; font-size: .78rem; }
+.metronome-readout output { color: var(--gold2); font-size: .75rem; font-variant-numeric: tabular-nums; }
+.metronome-top button { min-height: 38px; padding: 7px 11px; font-size: .76rem; white-space: nowrap; }
+#tapTempo { margin-left: auto; }
+#metronomeToggle { min-width: 94px; }
+#metronomeBpm { grid-column: 1 / -1; width: 100%; }
+.metronome-options { display: flex; align-items: center; gap: 6px; }
+.metronome-options label { color: #aeb5bf; font-size: .68rem; white-space: nowrap; }
+.metronome-options select { width: 71px; min-height: 36px; margin: 0; padding: 5px 7px; font-size: .75rem; }
+.metronome-beats { display: flex; grid-column: 1 / -1; gap: 6px; min-height: 9px; }
+.metronome-beats i { width: 8px; height: 8px; border-radius: 50%; background: #434b55; transition: background .09s, box-shadow .09s, transform .09s; }
+.metronome-beats i.active { transform: scale(1.18); background: var(--gold2); box-shadow: 0 0 10px rgba(240,208,140,.65); }
+.mobile-player-controls {
+  gap: 7px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  background: #121720;
+}
+.mobile-player-controls button {
+  min-height: 48px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 11px;
+  background: #1d2530;
+  color: #ebe9e3;
+  transition: transform .12s, border-color .12s, background .12s;
+}
+.mobile-player-controls button:active { transform: scale(.97); }
+.mobile-player-controls button.gold { border-color: transparent; background: linear-gradient(135deg,var(--gold),var(--gold2))!important; color: #17140e!important; }
+.mobile-player-controls button small { color: inherit; font-size: .65rem; }
+.mobile-player-controls #sustainBtn.active { border-color: var(--gold2); background: #3a3120!important; color: var(--gold2); }
+.mobile-song-details, .chord-preview { border: 1px solid rgba(255,255,255,.08); border-radius: 14px; background: #151b23; }
+.mobile-song-details > summary { padding: 13px 15px; color: #e9dfca; }
+.mobile-song-details .lyrics-viewer { padding: 7px 14px 15px; }
+.audio-credit { color: #818b97; font-size: .68rem; }
+
+/* Teoría, grabación y diálogos conservan el mismo lenguaje visual. */
+.theory-tabs { gap: 7px; }
+.theory-tab { min-height: 42px; padding: 9px 13px; color: #d5d7dc; }
+.theory-tab.active { border-color: rgba(240,208,140,.62); background: #373126; color: var(--gold2); }
+.theory-panel, .theory-preview, .theory-chord-card, .theory-key-card, .theory-interval-card {
+  border-color: rgba(255,255,255,.085);
+  border-radius: 15px;
+  background: linear-gradient(145deg, #171d26, #12171e);
+}
+.theory-panel h2, .theory-preview h3, .theory-chord-card b { color: var(--gold2); }
+.theory-mode-picker, .theory-root-picker { color: #b8bec7; }
+.theory-mode-picker select, .theory-root-picker select { margin-top: 5px; padding: 8px 10px; }
+.track-modal-card, .modal-card {
+  border: 1px solid rgba(240,208,140,.22);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #1d242d, #12171e);
+  box-shadow: 0 24px 80px rgba(0,0,0,.52);
+}
+.track-modal-card h2, .modal-card h2 { color: #f0dfbb; }
+.track-modal-card > p, .modal-card p { color: #adb5bf; line-height: 1.5; }
+.track-choice { min-height: 58px; border: 1px solid rgba(255,255,255,.09); border-radius: 13px; background: #1b232d; }
+.toast { bottom: max(20px, env(safe-area-inset-bottom)); border-color: rgba(240,208,140,.2); background: #202833; box-shadow: 0 8px 28px rgba(0,0,0,.3); }
+
+@media (max-width: 760px) {
+  header { height: calc(60px + env(safe-area-inset-top)); padding-right: max(13px, env(safe-area-inset-right)); padding-left: max(13px, env(safe-area-inset-left)); }
+  main { padding: 14px max(12px, env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+  .home-view { min-height: calc(100dvh - 110px - env(safe-area-inset-top)); margin: 2px 0 0; padding: 30px 17px 24px; border-radius: 21px; }
+  .home-content { width: min(100%, 520px); }
+  .home-branding { margin-bottom: 24px; }
+  .home-note { width: 52px; height: 52px; margin-bottom: 13px; border-radius: 16px; font-size: 27px; }
+  .home-branding h1 { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+  .home-branding p { font-size: .72rem; letter-spacing: .12em; }
+  .home-menu-grid { gap: 9px; }
+  .home-menu-card { min-height: 118px; padding: 15px; border-radius: 14px; }
+  .home-menu-card:after { right: 12px; bottom: 11px; }
+  .home-card-icon { width: 32px; height: 32px; font-size: 18px; }
+  .home-menu-card b { font-size: .92rem; }
+  .home-menu-card small { max-width: calc(100% - 5px); font-size: .7rem; }
+  .offline-download { margin-top: 15px; }
+  .toolbar { gap: 9px; }
+  .toolbar h1, .theory-header h1 { font-size: 1.6rem; }
+  .song-list { gap: 8px; }
+  .song-card { min-height: 68px; padding: 13px; }
+  .player-top { gap: 10px; }
+  .player-top h1 { font-size: 1.23rem; }
+  .piano-panel { padding: 12px; border-radius: 16px; }
+  .piano-panel .piano-container { height: clamp(218px, 59vw, 286px); padding: 18px 6px 10px; border-radius: 12px; }
+  .piano-panel #keyboard { --keyboard-key-width: clamp(38px, 10.8vw, 48px); }
+  .piano-panel .key span { font-size: clamp(8px, 2.15vw, 10px); }
+  .mobile-quick-settings { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; margin-top: 8px; padding: 7px; }
+  .quick-setting { padding: 7px; }
+  .quick-notation { grid-column: 1; grid-row: 1; }
+  .quick-instrument { grid-column: 2; grid-row: 1; }
+  .quick-tempo { grid-column: 1 / -1; grid-row: 2; }
+  .quick-track-key { grid-column: 1 / -1; grid-row: 3; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .quick-track-key > div { display: flex; flex: 1; gap: 5px!important; }
+  .quick-track-key select { flex: 1; width: 0; }
+  .mobile-quick-settings .transpose-controls { grid-column: 1 / -1; grid-row: 4; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 5px; padding: 6px; }
+  .transpose-controls button { min-height: 38px; padding: 6px 4px; font-size: .72rem; }
+  .transpose-controls span { grid-column: 1 / -1; grid-row: 1; min-width: 0; font-size: .74rem; }
+  .quick-metronome { grid-column: 1 / -1; grid-row: 5; gap: 4px 8px; padding: 8px; }
+  .metronome-top { gap: 5px; }
+  .metronome-readout { min-width: 68px; }
+  .metronome-top button { min-height: 36px; padding: 6px 8px; font-size: .7rem; }
+  #metronomeToggle { min-width: 80px; }
+  .metronome-options select { width: 65px; }
+  .keyboard-navigation { margin-top: 7px; }
+  .keyboard-navigation button { min-height: 38px; padding: 6px 8px; font-size: .75rem; }
+  .mobile-player-controls { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; padding: 7px; }
+  .mobile-player-controls button { min-height: 46px; padding: 4px 2px; font-size: 17px; }
+  .mobile-player-controls button small { font-size: .59rem; }
+  .mobile-song-details .lyrics-viewer { max-width: 100%; overflow-x: auto; }
+  .theory-panel { padding: 14px; }
+}
+
+@media (max-width: 380px) {
+  .home-menu-card { min-height: 109px; padding: 12px; }
+  .home-menu-card small { font-size: .66rem; }
+  .piano-panel { padding: 9px; }
+  .piano-panel .piano-container { height: 220px; }
+  .piano-panel #keyboard { --keyboard-key-width: 37px; }
+  .metronome-readout { min-width: 60px; }
+  .metronome-options label { display: none; }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  header { height: calc(48px + env(safe-area-inset-top)); }
+  main { padding-top: 8px; }
+  body:has(#player:not(.hidden)) main { height: auto; min-height: 0; padding-bottom: calc(18px + env(safe-area-inset-bottom)); overflow: visible; }
+  body:has(#player:not(.hidden)) #player { display: flex!important; flex-direction: column; overflow: visible!important; }
+  body:has(#player:not(.hidden)) #player > .piano-panel { order: 1; }
+  body:has(#player:not(.hidden)) .piano-panel .piano-container { height: clamp(160px, 46dvh, 230px); min-height: 160px; padding-top: 12px; }
+  body:has(#player:not(.hidden)) .piano-panel #keyboard { --keyboard-key-width: clamp(42px, 7.4vw, 67px); }
+  body:has(#player:not(.hidden)) .piano-panel .mobile-quick-settings { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 5px; padding: 6px; }
+  body:has(#player:not(.hidden)) .quick-notation { grid-column: 1; grid-row: 1; }
+  body:has(#player:not(.hidden)) .quick-instrument { grid-column: 2; grid-row: 1; }
+  body:has(#player:not(.hidden)) .quick-tempo { grid-column: 3; grid-row: 1; }
+  body:has(#player:not(.hidden)) .quick-track-key { grid-column: 4; grid-row: 1; }
+  body:has(#player:not(.hidden)) .mobile-quick-settings .transpose-controls { grid-column: 1 / 3; grid-row: 2; }
+  body:has(#player:not(.hidden)) .quick-metronome { grid-column: 3 / 5; grid-row: 2; }
+  body:has(#player:not(.hidden)) .piano-panel .quick-setting { padding: 5px; }
+  body:has(#player:not(.hidden)) .piano-panel .quick-setting select { min-height: 34px; padding: 5px; font-size: .72rem; }
+  body:has(#player:not(.hidden)) .quick-metronome { grid-template-columns: 1fr; gap: 2px; }
+  body:has(#player:not(.hidden)) .metronome-options { display: none; }
+  body:has(#player:not(.hidden)) .mobile-player-controls { order: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto!important; animation-duration: .01ms!important; animation-iteration-count: 1!important; transition-duration: .01ms!important; }
+}
