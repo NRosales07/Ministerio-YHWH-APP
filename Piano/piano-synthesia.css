@@ -124,7 +124,7 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 .mobile-player-controls #recordBtn { color: #17120a!important; background: #ffc838!important; }
 .mobile-player-controls #deleteBtn { background: #b93037!important; }
 .mobile-player-controls button.hidden { display: none!important; }
-.piano-panel { z-index: 10; flex: 0 0 calc(clamp(170px,29vh,255px) + env(safe-area-inset-bottom)); height: calc(clamp(170px,29vh,255px) + env(safe-area-inset-bottom)); min-height: 150px; margin: 0; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); overflow: hidden; border: 0; border-top: 4px solid #df3c42; border-radius: 0; background: #08090b; box-shadow: 0 -4px 11px #0006; }
+.piano-panel { z-index: 10; flex: 0 0 calc(clamp(170px,29vh,255px) + env(safe-area-inset-bottom)); height: calc(clamp(170px,29vh,255px) + env(safe-area-inset-bottom)); min-height: 150px; margin: 0; padding: 0 0 env(safe-area-inset-bottom) env(safe-area-inset-left); overflow: hidden; border: 0; border-top: 4px solid #df3c42; border-radius: 0; background: #08090b; box-shadow: 0 -4px 11px #0006; }
 .piano-panel { flex-basis: calc(clamp(170px,29dvh,255px) + env(safe-area-inset-bottom)); height: calc(clamp(170px,29dvh,255px) + env(safe-area-inset-bottom)); }
 .piano-panel #keyboardScroll { width: 100%; height: 100%; overflow: auto hidden; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x; }
 .piano-panel #keyboardScroll::-webkit-scrollbar { display: none; }
@@ -1232,3 +1232,11 @@ body:has(#keyTransposePopover:not(.hidden)) #player .note-canvas { overflow:visi
     line-height: 23px !important;
   }
 }
+
+
+/* Iconos SVG consistentes en iOS, Windows y otros sistemas. */
+.ui-icon { display: block; width: 18px; height: 18px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ui-icon-piano { width: 20px; height: 20px; stroke-width: 1.55; }
+.ui-icon-black-keys { fill: currentColor; stroke: none; }
+#player > .player-top .toolbar-actions .toolbar-icon .ui-icon { width: 19px; height: 19px; }
+#player .stage-tool-rail #instrumentToggle .ui-icon { width: 20px; height: 20px; }
