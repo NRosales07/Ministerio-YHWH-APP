@@ -1242,8 +1242,8 @@ body:has(#keyTransposePopover:not(.hidden)) #player .note-canvas { overflow:visi
 #player > .player-top .toolbar-actions .toolbar-icon .ui-icon { width: 19px; height: 19px; }
 #player .stage-tool-rail #instrumentToggle .ui-icon { width: 20px; height: 20px; }
 
-/* Teclado de borde a borde en iPhone horizontal: sin margen negro lateral por el safe-area. El inferior se conserva para que la barra de inicio no tape las etiquetas. */
-body.player-active #player .performance-layout > .piano-panel, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { padding-left: 0!important; padding-right: 0!important; }
+/* Teclado de borde a borde en iPhone horizontal: sin margen negro lateral por el safe-area. También el inferior: el teclado cubre hasta el borde (la barra de inicio puede tapar un poco las etiquetas). */
+body.player-active #player .performance-layout > .piano-panel, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { padding-left: 0!important; padding-right: 0!important; padding-bottom: 0!important; }
 
 /* Visor de duración como franja fina arriba del área de notas (superpuesto): las barras caen directo sobre el piano. */
 body.player-active #player .performance-layout > .player-timeline, body:has(#player:not(.hidden)) #player .performance-layout > .player-timeline { position: absolute!important; top: 5px!important; right: 0!important; bottom: auto!important; left: 0!important; z-index: 9!important; order: 0!important; flex: none!important; width: auto!important; height: 16px!important; min-height: 16px!important; background: linear-gradient(#17191c00)!important; pointer-events: none!important; }
@@ -1332,3 +1332,345 @@ body.player-active #player .performance-layout > .player-timeline, body:has(#pla
 .song-group-title small { padding: 1px 8px; border-radius: 999px; background: #d3e6ee; color: #40697b; font-size: .68rem; letter-spacing: 0; }
 .song-group-title::after { content: ""; flex: 1; height: 1px; background: #9fc0cd; }
 .song-list .empty { grid-column: 1 / -1; padding: 26px 18px; border: 1px dashed #94b6c4; border-radius: 12px; background: #ecf5f8; box-shadow: none; color: #5a7480; font-size: .85rem; line-height: 1.5; text-align: center; }
+
+/* ===== Pantalla principal: piel visual (solo colores, bordes, sombras y detalles; no cambia tamaños ni la maquetación) ===== */
+body.home-active #homeView, #homeView { border-radius: 14px!important; background: radial-gradient(120% 80% at 0% 0%, #e3f2f8 0, #e3f2f800 62%), linear-gradient(180deg, #c8e0ea, #b8d5e1)!important; box-shadow: inset 0 0 0 1px #ffffff85, 0 6px 18px #2c5a6d1f!important; }
+#homeView .home-actions-heading small, #homeView .home-eyebrow { color: #3f7186; }
+#homeView .home-actions-heading h2 { color: #1f3b48!important; font-weight: 650; }
+
+#homeView .home-action { position: relative; overflow: hidden; border-radius: 12px!important; box-shadow: inset 0 1px 0 #ffffff40, 0 3px 8px #1f4e602b; }
+#homeView .home-action::before { content: ""; position: absolute; inset: 0 0 50% 0; background: linear-gradient(180deg, #ffffff24, #ffffff00); pointer-events: none; }
+#homeView .home-action > * { position: relative; }
+#homeView .home-action.primary { border-color: #11851a; background: linear-gradient(180deg, #2bc133, #17a31e 55%, #128f18); }
+#homeView .home-action.secondary { border-color: #0e769f; background: linear-gradient(180deg, #2aa8dc, #1592c4 55%, #117fab); }
+#homeView .home-action:hover { filter: none; box-shadow: inset 0 1px 0 #ffffff50, 0 6px 14px #1f4e6040; }
+#homeView .home-action-icon { border-radius: 9px!important; background: linear-gradient(180deg, #ffffff3d, #ffffff17); box-shadow: inset 0 0 0 1px #ffffff30; }
+#homeView .home-action b { text-shadow: 0 1px 1px #00000030; }
+#homeView .home-action-arrow { transition: transform .15s; }
+#homeView .home-action:hover .home-action-arrow { transform: translateX(3px); }
+
+#homeView .home-welcome-card { border-radius: 14px!important; border-color: #a7c6d3; background: radial-gradient(90% 120% at 100% 0%, #ffffffb8, #ffffff00 58%), linear-gradient(160deg, #e6f3f8, #d1e5ed); box-shadow: inset 0 1px 0 #ffffffb8, 0 6px 16px #2c5a6d1f; }
+#homeView .home-welcome-card > * { position: relative; z-index: 1; }
+#homeView .home-welcome-card::after { content: ""; position: absolute; z-index: 0; right: 0; bottom: 0; left: 0; height: clamp(16px, 14%, 32px); background: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27126%27 height=%2740%27 viewBox=%270 0 126 40%27%3E%3Crect width=%27126%27 height=%2740%27 fill=%27%23f9fdfe%27/%3E%3Cpath d=%27M18 0V40M36 0V40M54 0V40M72 0V40M90 0V40M108 0V40M126 0V40%27 stroke=%27%23b4cbd5%27 stroke-width=%271%27 fill=%27none%27/%3E%3Crect x=%2712.5%27 y=%270%27 width=%2711%27 height=%2724%27 rx=%271.8%27 fill=%27%231f3b48%27/%3E%3Crect x=%2730.5%27 y=%270%27 width=%2711%27 height=%2724%27 rx=%271.8%27 fill=%27%231f3b48%27/%3E%3Crect x=%2766.5%27 y=%270%27 width=%2711%27 height=%2724%27 rx=%271.8%27 fill=%27%231f3b48%27/%3E%3Crect x=%2784.5%27 y=%270%27 width=%2711%27 height=%2724%27 rx=%271.8%27 fill=%27%231f3b48%27/%3E%3Crect x=%27102.5%27 y=%270%27 width=%2711%27 height=%2724%27 rx=%271.8%27 fill=%27%231f3b48%27/%3E%3C/svg%3E") repeat-x left bottom / auto 100%; opacity: .55; pointer-events: none; -webkit-mask-image: linear-gradient(180deg, transparent, #000 45%); mask-image: linear-gradient(180deg, transparent, #000 45%); }
+#homeView .home-brand-mark { border-radius: 12px!important; background: linear-gradient(145deg, #2aa8dc, #117fab); box-shadow: 0 4px 10px #1187b940, inset 0 1px 0 #ffffff55; }
+#homeView .home-welcome-card h1 { color: #1f3b48; }
+#homeView .home-shortcuts button { border-radius: 10px; border-color: #aac5d1; background: linear-gradient(180deg, #ffffff, #f1f7fa); box-shadow: 0 1px 3px #2c5a6d14; transition: border-color .15s, box-shadow .15s, transform .15s; }
+#homeView .home-shortcuts button:hover { border-color: #1187b9; box-shadow: 0 4px 10px #1187b926; transform: translateY(-1px); }
+#homeView .home-shortcuts button > span { border-radius: 8px; background: linear-gradient(145deg, #e3f3f9, #cfe8f2); }
+
+#homeView .home-info-card { border-radius: 12px!important; border-color: #adc8d4; background: linear-gradient(180deg, #fcfeff, #f0f6f9); box-shadow: 0 2px 6px #2c5a6d14; }
+#homeView .home-info-icon { background: linear-gradient(145deg, #daeff7, #c2e0ed); color: #0f7aa5; box-shadow: inset 0 0 0 1px #ffffffa8; }
+#homeView .home-info-card b { color: #28434f; }
+#homeView .home-info-card p { color: #627b86; }
+#homeView .home-status-dot { animation: homeDotPulse 2.6s ease-out infinite; }
+@keyframes homeDotPulse { 0% { box-shadow: 0 0 0 0 #5eb77a70; } 70%, 100% { box-shadow: 0 0 0 7px #5eb77a00; } }
+#homeView .install-help { color: #3c6577; }
+#homeView .install-help summary { border-radius: 99px; }
+
+@media (max-height: 340px) { #homeView .home-welcome-card::after { display: none; } }
+@media (prefers-reduced-motion: reduce) { #homeView .home-status-dot { animation: none; } #homeView .home-action, #homeView .home-action-arrow, #homeView .home-shortcuts button { transition: none; } }
+
+/* ===== Ventana "¿Qué pista quieres escuchar?" en modo claro ===== */
+.track-modal { background: rgba(34, 64, 79, .4); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.track-modal .track-modal-card { border: 1px solid #b2cad5; border-radius: 18px; background: linear-gradient(180deg, #fcfeff, #edf5f8); box-shadow: 0 22px 60px #1b3a4a45; }
+.track-modal .track-modal-card h2 { color: #243d49; }
+.track-modal .track-modal-card > p { color: #5a717b; }
+.track-modal .track-choice { border: 1px solid #b7cfda; border-radius: 13px; background: #fff; color: #243d49; box-shadow: 0 1px 3px #2c5a6d14; transition: border-color .15s, background .15s, box-shadow .15s; }
+.track-modal .track-choice span { color: #243d49; }
+.track-modal .track-choice small { color: #55788a; }
+.track-modal .track-choice:hover, .track-modal .track-choice:focus-visible { border-color: #1187b9; background: #f1f9fc; box-shadow: 0 0 0 3px #1187b91f; outline: none; }
+.track-modal .track-cancel { border: 1px solid #9fc0cf; background: transparent; color: #266985; box-shadow: none; }
+.track-modal .track-cancel:hover { background: #e4f1f6; }
+
+/* ===== MODO OSCURO (paleta YHWH) — generado ===== */
+html[data-theme="dark"] body{color:#e8e6f0 !important;background:#1c1c3f !important}
+html[data-theme="dark"] header{background:#2f2f5c !important;box-shadow:0 2px 8px #0000002d !important}
+html[data-theme="dark"] .brand-icon{background:#2f2f5c !important;box-shadow:inset 0 0 0 1px #00000027 !important}
+html[data-theme="dark"] .admin{background:#2f2f5c !important}
+html[data-theme="dark"] .admin.active{color:#e8c97a !important;background:#1b1b2e !important}
+html[data-theme="dark"] .connection{color:#aaa9c1 !important}
+html[data-theme="dark"] .home-view{background:#1c1c3f !important;box-shadow:inset 0 0 0 1px #00000066 !important}
+html[data-theme="dark"] .home-actions-heading small,html[data-theme="dark"] .home-eyebrow{color:#aaa9c1 !important}
+html[data-theme="dark"] .home-actions-heading h2{color:#e8e6f0 !important}
+html[data-theme="dark"] .home-action{border:1px solid #2a2a45 !important;box-shadow:0 2px 3px #00000021 !important}
+html[data-theme="dark"] .home-action.primary{border-color:#3d5a4a !important;background:#2b3d34 !important}
+html[data-theme="dark"] .home-action.secondary{border-color:#514777 !important;background:#2f2f5c !important}
+html[data-theme="dark"] .home-action:hover{box-shadow:0 4px 10px #00000034 !important}
+html[data-theme="dark"] .home-welcome-card{border:1px solid #2a2a45 !important;background:#1f1f38 !important}
+html[data-theme="dark"] .home-brand-mark{background:#2f2f5c !important;box-shadow:0 3px 8px #00000031 !important}
+html[data-theme="dark"] .home-welcome-card h1{color:#e8e6f0 !important}
+html[data-theme="dark"] .home-welcome-card>p{color:#aaa9c1 !important}
+html[data-theme="dark"] .home-shortcuts button{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .home-shortcuts button>span{background:#1f1f38 !important;color:#e8c97a !important}
+html[data-theme="dark"] .home-shortcuts small{color:#aaa9c1 !important}
+html[data-theme="dark"] .home-info-card{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#aaa9c1 !important}
+html[data-theme="dark"] .home-info-icon{background:#1f1f38 !important;color:#e8c97a !important}
+html[data-theme="dark"] .home-info-card p{color:#aaa9c1 !important}
+html[data-theme="dark"] .home-info-card>span:not(.home-status-dot){color:#aaa9c1 !important}
+html[data-theme="dark"] .home-status-dot{box-shadow:0 0 0 4px #00000021 !important}
+html[data-theme="dark"] .install-help{color:#aaa9c1 !important}
+html[data-theme="dark"] .home-back,html[data-theme="dark"] .soft,html[data-theme="dark"] .tab,html[data-theme="dark"] .theory-tab{border:1px solid #2a2a45 !important;background:#2f2f5c !important}
+html[data-theme="dark"] .toolbar h1,html[data-theme="dark"] .theory-header h1{color:#e8e6f0 !important}
+html[data-theme="dark"] .toolbar input,html[data-theme="dark"] .modal input,html[data-theme="dark"] .theory-root-picker select,html[data-theme="dark"] .theory-mode-picker select,html[data-theme="dark"] .quick-setting select,html[data-theme="dark"] .voice-direction select,html[data-theme="dark"] .chord-editor select{border:1px solid #2a2a45 !important;background-color:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .hint,html[data-theme="dark"] .theory-header p,html[data-theme="dark"] .theory-intro{color:#aaa9c1 !important}
+html[data-theme="dark"] .song-card,html[data-theme="dark"] .empty{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important;box-shadow:0 2px 4px #0000001b !important}
+html[data-theme="dark"] .song-card b{color:#e8e6f0 !important}
+html[data-theme="dark"] .song-card small{color:#aaa9c1 !important}
+html[data-theme="dark"] .badge{background:#1f1f38 !important;color:#9ce1b8 !important}
+html[data-theme="dark"] .theory-tab.active{border-color:#514777 !important;background:#2f2f5c !important}
+html[data-theme="dark"] .theory-panel,html[data-theme="dark"] .theory-preview,html[data-theme="dark"] .theory-chord-card,html[data-theme="dark"] .theory-interval-card{border-color:#2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .theory-panel h2,html[data-theme="dark"] .theory-preview h3,html[data-theme="dark"] .theory-chord-card b{color:#e8c97a !important}
+html[data-theme="dark"] .theory-intro,html[data-theme="dark"] .theory-header p{color:#aaa9c1 !important}
+html[data-theme="dark"] body:has(#player:not(.hidden)){background:#12121f !important}
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player{background:#12121f !important}
+html[data-theme="dark"] body.player-active{background:#12121f !important}
+html[data-theme="dark"] body.player-active #player{background:#12121f !important}
+html[data-theme="dark"] .player-top{background:#2f2f5c !important}
+html[data-theme="dark"] .toolbar-back{background:#2f2f5c !important}
+html[data-theme="dark"] .metronome-button[aria-pressed="true"]{background:#1c1c3f !important}
+html[data-theme="dark"] .notation-button{background:#1b1b2e !important;color:#e8c97a !important}
+html[data-theme="dark"] .performance-layout{background:#12121f !important}
+html[data-theme="dark"] .stage-tool-rail{background:#2f2f5c !important}
+html[data-theme="dark"] .mobile-player-controls #playMelody{background:#2f2f5c!important}
+html[data-theme="dark"] .mobile-player-controls #recordBtn{color:#e8e6f0!important}
+html[data-theme="dark"] .piano-panel{background:#12121f !important}
+html[data-theme="dark"] .stage-popover,html[data-theme="dark"] .player-sheet{color:#e8e6f0 !important;border:7px solid #514777 !important;background:#1c1c3f !important}
+html[data-theme="dark"] .stage-popover h2,html[data-theme="dark"] .player-sheet h2{color:#e8e6f0 !important}
+html[data-theme="dark"] .stage-popover p{color:#aaa9c1 !important}
+html[data-theme="dark"] .mini-popover .quick-setting label{color:#aaa9c1 !important}
+html[data-theme="dark"] .mini-popover .quick-setting select,html[data-theme="dark"] .mini-popover select{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .mini-popover input[type="color"]{border:1px solid #2a2a45 !important}
+html[data-theme="dark"] .range-presets button{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .range-presets button.active{border-color:#514777 !important;background:#1b1b2e !important;color:#e8c97a !important}
+html[data-theme="dark"] .range-custom-label{color:#aaa9c1 !important}
+html[data-theme="dark"] .lyrics-popover details>summary{color:#aaa9c1 !important}
+html[data-theme="dark"] .lyrics-popover .lyrics-viewer{background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .lyrics-popover .lc,html[data-theme="dark"] .lyrics-popover .ls{color:#e8c97a !important}
+html[data-theme="dark"] .lyrics-popover .ll{color:#e8e6f0 !important}
+html[data-theme="dark"] .notes-panel{border:1px solid #2a2a45 !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .notes-panel .note-chip{background:#1f1f38 !important;color:#e8c97a !important}
+html[data-theme="dark"] .sheet-heading small{color:#aaa9c1 !important}
+html[data-theme="dark"] .sheet-close{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#aaa9c1 !important}
+html[data-theme="dark"] .settings-switches{border:1px solid #2a2a45 !important;background:#1b1b2e !important}
+html[data-theme="dark"] .settings-switches label{border-bottom:1px solid #2a2a45 !important}
+html[data-theme="dark"] .settings-switches small{color:#aaa9c1 !important}
+html[data-theme="dark"] .settings-block{border-top:1px solid #2a2a45 !important}
+html[data-theme="dark"] .settings-block>h3{color:#aaa9c1 !important}
+html[data-theme="dark"] .settings-sheet .quick-setting,html[data-theme="dark"] .settings-sheet .transpose-controls{border:1px solid #2a2a45 !important;background:#1b1b2e !important}
+html[data-theme="dark"] .settings-sheet .quick-setting label{color:#aaa9c1 !important}
+html[data-theme="dark"] .settings-sheet .voice-mixer{border:1px solid #2a2a45 !important;background:#1b1b2e !important}
+html[data-theme="dark"] .audio-license{color:#aaa9c1 !important}
+html[data-theme="dark"] .audio-license .audio-credit{color:#aaa9c1 !important}
+html[data-theme="dark"] .chord-editor-title{color:#aaa9c1 !important}
+html[data-theme="dark"] .chord-editor-help{color:#aaa9c1 !important}
+html[data-theme="dark"] .chord-editor-fields label{color:#aaa9c1 !important}
+html[data-theme="dark"] .chord-editor-actions .gold{background:#2f2f5c!important}
+html[data-theme="dark"] .chord-editor-actions .soft{background:#1f1f38!important;color:#aaa9c1!important}
+@media (max-width: 900px){html[data-theme="dark"] body.player-active #player{background:#12121f!important}
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player{background:#12121f!important}
+html[data-theme="dark"] body.player-active #player > .player-top,html[data-theme="dark"] body:has(#player:not(.hidden)) #player > .player-top{background:#2f2f5c!important}
+html[data-theme="dark"] body.player-active #player .performance-layout > .piano-panel{background:#12121f!important}
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel{background:#12121f!important}
+html[data-theme="dark"] body.player-active #player .mobile-player-controls button,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .mobile-player-controls button{background:#14142a!important}
+html[data-theme="dark"] body.player-active #player .mobile-player-controls #playMelody,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .mobile-player-controls #playMelody{background:#2f2f5c!important}
+html[data-theme="dark"] body.player-active #player .mobile-player-controls #recordBtn,html[data-theme="dark"] body.player-active #player .mobile-player-controls #saveBtn,html[data-theme="dark"] body.player-active #player .mobile-player-controls #undoBtn,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .mobile-player-controls #recordBtn,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .mobile-player-controls #saveBtn,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .mobile-player-controls #undoBtn{background:#2f2f5c!important}
+html[data-theme="dark"] body.player-active #player .player-sheet{background:#1c1c3f!important;border:5px solid #514777!important;color:#e8e6f0!important}
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player .player-sheet{background:#1c1c3f!important;border:5px solid #514777!important;color:#e8e6f0!important}
+html[data-theme="dark"] body.player-active #player .settings-sheet .quick-setting,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .settings-sheet .quick-setting{border:1px solid #2a2a45!important;background:#1b1b2e!important;color:#aaa9c1!important}
+html[data-theme="dark"] body.player-active #player .settings-sheet .quick-setting label,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .settings-sheet .quick-setting label{color:#aaa9c1!important}
+html[data-theme="dark"] body.player-active #player .settings-sheet .quick-setting select,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .settings-sheet .quick-setting select{border:1px solid #2a2a45!important;background:#1b1b2e!important;color:#e8e6f0!important}
+html[data-theme="dark"] body.player-active #player .settings-sheet .transpose-controls,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .settings-sheet .transpose-controls{background:#1b1b2e!important}
+html[data-theme="dark"] body.player-active #player .settings-sheet .settings-switches,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .settings-sheet .settings-switches{background:#1b1b2e!important}
+html[data-theme="dark"] body.player-active #player .stage-popover,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .stage-popover{background:#1c1c3f!important;color:#e8e6f0!important}
+html[data-theme="dark"] body.player-active #player .mobile-player-controls .admin-only,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .mobile-player-controls .admin-only{background:#2f2f5c!important}}
+@media (max-width: 900px) and (orientation: landscape){html[data-theme="dark"] body.home-active > main{background:#1c1c3f!important}
+html[data-theme="dark"] body.home-active #homeView{background:#1c1c3f!important;box-shadow:inset 0 0 0 1px #00000066!important}
+html[data-theme="dark"] body.home-active #homeView .home-actions-heading h2{color:#e8e6f0!important}}
+@media (max-width: 900px) and (orientation: portrait){html[data-theme="dark"] body.home-active > main{background:#1c1c3f!important}
+html[data-theme="dark"] body.home-active #homeView{background:#1c1c3f!important;box-shadow:inset 0 0 0 1px #00000066!important}
+html[data-theme="dark"] body.home-active #homeView .home-actions-heading h2{color:#e8e6f0!important}}
+@media (max-width: 900px){html[data-theme="dark"] #songView > .home-back,html[data-theme="dark"] #createView > .home-back{border-color:#514777!important;background:#2f2f5c!important;box-shadow:0 2px 5px #0000002b!important}
+html[data-theme="dark"] #songView > .toolbar,html[data-theme="dark"] #createView > .toolbar{border-color:#2a2a45!important;background:#1f1f38!important;box-shadow:0 2px 5px #0000001b!important}
+html[data-theme="dark"] #songView .toolbar input,html[data-theme="dark"] #createView .toolbar input{border-color:#2a2a45!important;background:#1b1b2e!important;color:#e8e6f0!important}
+html[data-theme="dark"] #theoryView .theory-root-picker,html[data-theme="dark"] #theoryView .theory-mode-picker{border-color:#2a2a45!important;background:#1f1f38!important;color:#e8e6f0!important}
+html[data-theme="dark"] #theoryView .theory-root-picker select,html[data-theme="dark"] #theoryView .theory-mode-picker select{border-color:#2a2a45!important;background:#1b1b2e!important;color:#e8e6f0!important}
+html[data-theme="dark"] #theoryView .theory-chord-card,html[data-theme="dark"] #theoryView .theory-interval-card,html[data-theme="dark"] #theoryView .theory-circle-results button{border-color:#2a2a45!important;background:#1b1b2e!important;color:#e8e6f0!important;box-shadow:0 1px 3px #00000015!important}
+html[data-theme="dark"] #theoryView .theory-chord-card.selected,html[data-theme="dark"] #theoryView .theory-interval-card.selected{border-color:#514777!important;background:#1f1f38!important;color:#e8e6f0!important;box-shadow:inset 0 0 0 1px #0000003d!important}
+html[data-theme="dark"] #theoryView .theory-chord-card:hover:not(.selected),html[data-theme="dark"] #theoryView .theory-circle-results button:hover{border-color:#2a2a45!important;background:#1b1b2e!important}
+html[data-theme="dark"] #theoryView .theory-chord-card span{color:#aaa9c1!important}
+html[data-theme="dark"] #theoryView .theory-chord-card small,html[data-theme="dark"] #theoryView .theory-circle-results small{color:#aaa9c1!important}
+html[data-theme="dark"] #theoryView .theory-note{border-color:#2a2a45!important;background:#1f1f38!important;color:#e8c97a!important}
+html[data-theme="dark"] #theoryView .theory-circle-results b{color:#e8c97a!important}
+html[data-theme="dark"] #theoryView .circle-degree.active{border-color:#514777!important;background:#1f1f38!important;box-shadow:inset 0 0 0 1px #0000003d!important}
+html[data-theme="dark"] #theoryView .theory-formula{color:#e8c97a!important}
+html[data-theme="dark"] #theoryView .theory-preview .gold{border-color:#514777!important;background:#2f2f5c!important}}
+@media (max-width: 900px){html[data-theme="dark"] #theoryView:not(.hidden) .theory-tab.active{border-color:#514777!important;background:#2f2f5c!important;box-shadow:inset 0 -2px 0 #00000066, 0 2px 5px #0000003f!important}}
+html[data-theme="dark"] #player > .player-top .mobile-player-controls button{background:#2f2f5c!important}
+html[data-theme="dark"] #player > .player-top .mobile-player-controls #playMelody{background:#2f2f5c!important}
+html[data-theme="dark"] .player-timeline{background:#12121f !important}
+html[data-theme="dark"] .timeline-progress-fill{background:linear-gradient(90deg,#2f2f5c,#1c1c3f) !important}
+@media (max-width: 900px){html[data-theme="dark"] body.player-active #player > .player-top .mobile-player-controls button,html[data-theme="dark"] body:has(#player:not(.hidden)) #player > .player-top .mobile-player-controls button{background:#2f2f5c!important}}
+html[data-theme="dark"] #player > .player-top .mobile-player-controls button{background:#2f2f5c!important;box-shadow:inset 0 1px #0000001a!important}
+html[data-theme="dark"] #player > .player-top .mobile-player-controls #playMelody{background:#2f2f5c!important}
+html[data-theme="dark"] .player-edit-menu[open] > summary{background:#2f2f5c!important}
+html[data-theme="dark"] .player-edit-actions{background:#12121f!important}
+html[data-theme="dark"] .player-edit-actions button{background:#2f2f5c!important}
+html[data-theme="dark"] .stage-metronome-controls .metronome-button[aria-pressed="true"]{background:#1c1c3f!important}
+@media (max-width:900px){html[data-theme="dark"] body:has(#player:not(.hidden)) #player > .player-top > #backBtn{background:#2f2f5c!important}}
+@media (max-width: 900px){html[data-theme="dark"] body.player-active #player #notesPanel .notes-panel-head,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #notesPanel .notes-panel-head{background:#1b1b2e !important}}
+@media (max-width: 900px){html[data-theme="dark"] body.player-active #player .player-edit-actions #chordEditorToggle,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .player-edit-actions #chordEditorToggle{border-color:#2a2a45 !important;background:#1b1b2e !important;color:#e8c97a !important}
+html[data-theme="dark"] body.player-active #player .player-edit-actions #chordEditorToggle .edit-action-label,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .player-edit-actions #chordEditorToggle .edit-action-label{color:#e8c97a !important}}
+@media (max-width: 900px){html[data-theme="dark"] body.player-active #player .stage-tool-rail > #activeChordLabel,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .stage-tool-rail > #activeChordLabel{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#e8c97a !important}
+html[data-theme="dark"] body.player-active #player .player-edit-actions #chordEditorToggle,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .player-edit-actions #chordEditorToggle{background:#2f2f5c !important}
+html[data-theme="dark"] body.player-active #player #chordEditor,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] body.player-active #player #chordEditor .chord-editor-title,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-title{color:#e8c97a !important}
+html[data-theme="dark"] body.player-active #player #chordEditor p,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor p{color:#aaa9c1 !important}
+html[data-theme="dark"] body.player-active #player #chordEditor .chord-editor-fields > label,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-fields > label{color:#e8e6f0 !important}
+html[data-theme="dark"] body.player-active #player #chordEditor .chord-editor-fields select,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-fields select{border-color:#2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] body.player-active #player #chordEditor .arpeggio-toggle,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor .arpeggio-toggle{border-color:#2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] body.player-active #player #chordEditor .arpeggio-toggle b,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor .arpeggio-toggle b{color:#e8c97a !important}
+html[data-theme="dark"] body.player-active #player #chordEditor .arpeggio-toggle small,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor .arpeggio-toggle small{color:#aaa9c1 !important}
+html[data-theme="dark"] body.player-active #player #chordEditor .chord-editor-actions .gold,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-actions .gold{border-color:#514777 !important;background:#2f2f5c !important}
+html[data-theme="dark"] body.player-active #player #chordEditor .chord-editor-actions .soft,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-actions .soft{border-color:#2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}}
+html[data-theme="dark"] #player #currentNote:not(:empty){color:var(--melody-note-ink, #e8c97a) !important}
+html[data-theme="dark"] .active-chord-label{background:var(--bass-note-color, #1c1c3f) !important;color:var(--bass-note-ink, #e8e6f0) !important}
+html[data-theme="dark"] .note-chord-label{background:var(--bass-note-color, #1c1c3f) !important;color:var(--bass-note-ink, #e8e6f0) !important}
+@media (max-width: 900px){html[data-theme="dark"] body.player-active #player .stage-tool-rail .instrument-note-pair #currentNote,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .stage-tool-rail .instrument-note-pair #currentNote{color:var(--melody-note-ink, #e8c97a) !important}
+html[data-theme="dark"] body.player-active #player .stage-tool-rail > #activeChordLabel,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .stage-tool-rail > #activeChordLabel{background:var(--bass-note-color, #1c1c3f) !important;color:var(--bass-note-ink, #e8e6f0) !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel{border-color:#514777 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel #mobileSongDetails,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel #mobileSongDetails{background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel #mobileSongDetails > summary,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel #mobileSongDetails > summary{color:#e8c97a !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel #chordList .chord,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel #chordList .chord{border-color:#2a2a45 !important;background:#1b1b2e !important;color:#e8c97a !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel #chordList .hint,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel #chordList .hint{color:#aaa9c1 !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel .lyrics-viewer,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer{border-color:#2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel .lyrics-viewer .lc,html[data-theme="dark"] body.player-active #player #lyricsPanel .lyrics-viewer .ls,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .lc,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .ls{color:#e8c97a !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel .lyrics-viewer .ll,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .ll{color:#e8e6f0 !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel .lyrics-viewer .lm,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .lm{color:#aaa9c1 !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel .lyrics-viewer .lyrics-chord.selected,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .lyrics-chord.selected{background:#1f1f38 !important;color:#e8c97a !important;box-shadow:0 0 0 1px #00000066 !important}
+html[data-theme="dark"] body.player-active #player #notesPanel .note-chip,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #notesPanel .note-chip{color:var(--melody-note-ink, #e8c97a) !important}
+html[data-theme="dark"] body.player-active #player #recordedNotes .melody-note-item.selected,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #recordedNotes .melody-note-item.selected{background:#1b1b2e !important}
+html[data-theme="dark"] body.player-active #player #recordedNotes .chord-gap-target,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #recordedNotes .chord-gap-target{border-color:#2a2a45 !important;background:#1b1b2e !important;color:#e8c97a !important}
+html[data-theme="dark"] body.player-active #player #recordedNotes .chord-gap-target:has(span),html[data-theme="dark"] body:has(#player:not(.hidden)) #player #recordedNotes .chord-gap-target:has(span){background:var(--bass-note-color, #1c1c3f) !important;color:var(--bass-note-ink, #e8e6f0) !important}
+html[data-theme="dark"] body.player-active #player #recordedNotes .chord-gap-target.selected,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #recordedNotes .chord-gap-target.selected{border-color:#514777 !important;background:#1f1f38 !important;color:#e8c97a !important;box-shadow:0 0 0 1px #0000007a !important}
+html[data-theme="dark"] body.player-active #player #recordedNotes .chord-gap-target:has(span).selected,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #recordedNotes .chord-gap-target:has(span).selected{background:var(--bass-note-color, #1c1c3f) !important;color:var(--bass-note-ink, #e8e6f0) !important}
+html[data-theme="dark"] body.player-active #player #chordEditor .chord-editor-actions .gold,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-actions .gold{border-color:#514777 !important;background:#2f2f5c !important}}
+@media (max-width: 900px){html[data-theme="dark"] body.player-active #player .stage-popover,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .stage-popover,html[data-theme="dark"] body.player-active #player > .player-sheet,html[data-theme="dark"] body:has(#player:not(.hidden)) #player > .player-sheet,html[data-theme="dark"] body.player-active #player #notesPanel,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #notesPanel{background:#1b1b2e !important;background-color:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] body.player-active #player #lyricsPanel #mobileSongDetails,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel #mobileSongDetails,html[data-theme="dark"] body.player-active #player #lyricsPanel #chordList,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel #chordList,html[data-theme="dark"] body.player-active #player #lyricsPanel #lyrics,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #lyricsPanel #lyrics,html[data-theme="dark"] body.player-active #player #chordEditorPanel #chordEditor,html[data-theme="dark"] body:has(#player:not(.hidden)) #player #chordEditorPanel #chordEditor{background-color:#1b1b2e !important;color:#e8e6f0 !important}}
+html[data-theme="dark"] #player > .player-top .player-edit-menu[open] > summary{background:#2f2f5c!important}
+html[data-theme="dark"] #player #notesPanel #recordedNotes{background:#1f1f38!important;border:1px solid #2a2a45!important;color:#e8e6f0!important}
+html[data-theme="dark"] .notation-presets button small{color:#aaa9c1 !important}
+html[data-theme="dark"] .notation-presets button.active small{color:#e8c97a !important}
+html[data-theme="dark"] .instrument-option{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .instrument-option .instrument-icon{background:#1f1f38 !important;color:#e8c97a !important}
+html[data-theme="dark"] .instrument-option.active{border-color:#514777 !important;background:#1b1b2e !important;color:#e8c97a !important;box-shadow:inset 0 0 0 1px #00000066 !important}
+html[data-theme="dark"] .instrument-option.active .instrument-icon{background:#2f2f5c !important}
+html[data-theme="dark"] #songView > .toolbar,html[data-theme="dark"] #createView > .toolbar{border:1px solid #2a2a45!important;background:linear-gradient(180deg,#1b1b2e,#1f1f38)!important;box-shadow:0 2px 6px #0000001a!important}
+html[data-theme="dark"] .toolbar-badge{background:linear-gradient(135deg,#2f2f5c,#2f2f5c) !important;box-shadow:0 3px 8px #0000004c !important}
+html[data-theme="dark"] #songView[data-category="jubilo"] .toolbar-badge{box-shadow:0 3px 8px #0000004c !important}
+html[data-theme="dark"] #createView .toolbar-badge{background:linear-gradient(135deg,#2b3d34,#2b3d34) !important;box-shadow:0 3px 8px #0000004c !important}
+html[data-theme="dark"] .toolbar-text small{color:#aaa9c1 !important}
+html[data-theme="dark"] #songView .toolbar h1,html[data-theme="dark"] #createView .toolbar h1{color:#e8c97a !important}
+html[data-theme="dark"] #songView .toolbar #search,html[data-theme="dark"] #createView .toolbar #createSearch{border:1px solid #2a2a45!important;background-color:#1b1b2e!important}
+html[data-theme="dark"] #songView > .hint,html[data-theme="dark"] #createView > .hint{color:#aaa9c1 !important}
+html[data-theme="dark"] #songView > .hint::before,html[data-theme="dark"] #createView > .hint::before{background:#2f2f5c !important}
+html[data-theme="dark"] #songList .song-card,html[data-theme="dark"] #createList .song-card{border:1px solid #2a2a45 !important;background:#1b1b2e !important;box-shadow:0 1px 3px #00000018 !important}
+html[data-theme="dark"] #songList .song-card:hover,html[data-theme="dark"] #createList .song-card:hover{border-color:#514777 !important;background:#1b1b2e !important;box-shadow:0 5px 12px #0000002d !important}
+html[data-theme="dark"] #songList .song-card:active,html[data-theme="dark"] #createList .song-card:active{box-shadow:0 1px 3px #00000018 !important}
+html[data-theme="dark"] .song-key{background:#1f1f38 !important;color:#e8c97a !important}
+html[data-theme="dark"] .song-card[data-category="jubilo"] .song-key{background:#1f1f38 !important}
+html[data-theme="dark"] .song-info b{color:#e8e6f0 !important}
+html[data-theme="dark"] .song-info small{color:#aaa9c1 !important}
+html[data-theme="dark"] .song-chip.intro{background:#1f1f38 !important;color:#9ce1b8 !important}
+html[data-theme="dark"] .song-chip.voice{background:#1b1b2e !important;color:#e8c97a !important}
+html[data-theme="dark"] .song-chip.create{background:#2f2f5c !important}
+html[data-theme="dark"] .song-group-title{color:#e8c97a !important}
+html[data-theme="dark"] .song-group-title small{background:#1f1f38 !important;color:#aaa9c1 !important}
+html[data-theme="dark"] .song-group-title::after{background:#1c1c3f !important}
+html[data-theme="dark"] .song-list .empty{border:1px dashed #2a2a45 !important;background:#1b1b2e !important;color:#aaa9c1 !important}
+html[data-theme="dark"] body.home-active #homeView,html[data-theme="dark"] #homeView{background:radial-gradient(120% 80% at 0% 0%, #1b1b2e 0, #e3f2f800 62%), linear-gradient(180deg, #1c1c3f, #1c1c3f)!important;box-shadow:inset 0 0 0 1px #0000009f, 0 6px 18px #00000025!important}
+html[data-theme="dark"] #homeView .home-actions-heading small,html[data-theme="dark"] #homeView .home-eyebrow{color:#aaa9c1 !important}
+html[data-theme="dark"] #homeView .home-actions-heading h2{color:#e8e6f0!important}
+html[data-theme="dark"] #homeView .home-action{box-shadow:inset 0 1px 0 #0000004c, 0 3px 8px #00000033 !important}
+html[data-theme="dark"] #homeView .home-action.primary{border-color:#3d5a4a !important;background:linear-gradient(180deg, #2b3d34, #2b3d34 55%, #2b3d34) !important}
+html[data-theme="dark"] #homeView .home-action.secondary{border-color:#514777 !important;background:linear-gradient(180deg, #2f2f5c, #2f2f5c 55%, #2f2f5c) !important}
+html[data-theme="dark"] #homeView .home-action:hover{box-shadow:inset 0 1px 0 #00000060, 0 6px 14px #0000004c !important}
+html[data-theme="dark"] #homeView .home-action-icon{box-shadow:inset 0 0 0 1px #00000039 !important}
+html[data-theme="dark"] #homeView .home-welcome-card{border-color:#2a2a45 !important;background:radial-gradient(90% 120% at 100% 0%, #ffffffb8, #ffffff00 58%), linear-gradient(160deg, #1b1b2e, #1f1f38) !important;box-shadow:inset 0 1px 0 #000000dc, 0 6px 16px #00000025 !important}
+html[data-theme="dark"] #homeView .home-brand-mark{background:linear-gradient(145deg, #2f2f5c, #2f2f5c) !important;box-shadow:0 4px 10px #0000004c, inset 0 1px 0 #00000066 !important}
+html[data-theme="dark"] #homeView .home-welcome-card h1{color:#e8e6f0 !important}
+html[data-theme="dark"] #homeView .home-shortcuts button{border-color:#2a2a45 !important;background:linear-gradient(180deg, #1b1b2e, #1b1b2e) !important;box-shadow:0 1px 3px #00000018 !important}
+html[data-theme="dark"] #homeView .home-shortcuts button:hover{border-color:#514777 !important;box-shadow:0 4px 10px #0000002d !important}
+html[data-theme="dark"] #homeView .home-shortcuts button > span{background:linear-gradient(145deg, #1b1b2e, #1f1f38) !important}
+html[data-theme="dark"] #homeView .home-info-card{border-color:#2a2a45 !important;background:linear-gradient(180deg, #1b1b2e, #1b1b2e) !important;box-shadow:0 2px 6px #00000018 !important}
+html[data-theme="dark"] #homeView .home-info-icon{background:linear-gradient(145deg, #1f1f38, #1c1c3f) !important;color:#e8c97a !important;box-shadow:inset 0 0 0 1px #000000c9 !important}
+html[data-theme="dark"] #homeView .home-info-card b{color:#e8e6f0 !important}
+html[data-theme="dark"] #homeView .home-info-card p{color:#aaa9c1 !important}
+html[data-theme="dark"] #homeView .install-help{color:#aaa9c1 !important}
+html[data-theme="dark"] .track-modal .track-modal-card{border:1px solid #2a2a45 !important;background:linear-gradient(180deg, #1b1b2e, #1b1b2e) !important;box-shadow:0 22px 60px #00000052 !important}
+html[data-theme="dark"] .track-modal .track-modal-card h2{color:#e8e6f0 !important}
+html[data-theme="dark"] .track-modal .track-modal-card > p{color:#aaa9c1 !important}
+html[data-theme="dark"] .track-modal .track-choice{border:1px solid #2a2a45 !important;background:#1b1b2e !important;color:#e8e6f0 !important;box-shadow:0 1px 3px #00000018 !important}
+html[data-theme="dark"] .track-modal .track-choice span{color:#e8e6f0 !important}
+html[data-theme="dark"] .track-modal .track-choice small{color:#aaa9c1 !important}
+html[data-theme="dark"] .track-modal .track-choice:hover,html[data-theme="dark"] .track-modal .track-choice:focus-visible{border-color:#514777 !important;background:#1b1b2e !important;box-shadow:0 0 0 3px #00000025 !important}
+html[data-theme="dark"] .track-modal .track-cancel{border:1px solid #2a2a45 !important;color:#e8c97a !important}
+html[data-theme="dark"] .track-modal .track-cancel:hover{background:#1f1f38 !important}
+
+/* ===== Ajustes finos del modo oscuro (estilo YHWH) ===== */
+html[data-theme="dark"]{color-scheme:dark;--bg:#0d0d14;--panel:#1c1c3f;--panel2:#42426e;--line:#2a2a45;--text:#e8e6f0;--muted:#aaa9c1;--gold:#c9a84c;--gold2:#e8c97a}
+html[data-theme="dark"] body{background:#0f0f29 !important;background:radial-gradient(ellipse at 50% -20%,#1c1c3f 0,#0d0d14 55%) fixed,#0d0d14 !important;color:#e8e6f0 !important}
+html[data-theme="dark"] body.home-active > main{background:transparent !important}
+html[data-theme="dark"] header{background:#10101be8 !important;border-bottom:1px solid #ffffff12 !important;box-shadow:none !important;backdrop-filter:blur(12px)}
+html[data-theme="dark"] .brand-home,html[data-theme="dark"] .brand-home b{color:#e8e6f0 !important}
+html[data-theme="dark"] .brand-home small{color:#aaa9c1 !important}
+html[data-theme="dark"] .brand-icon{background:#1c1c3f !important;color:#e8c97a !important;border:1px solid #2a2a45 !important}
+html[data-theme="dark"] .admin{background:#42426e !important;border:1px solid #2a2a45 !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .admin:hover{border-color:#c9a84c !important}
+html[data-theme="dark"] .admin.active{background:#c9a84c !important;color:#171717 !important}
+html[data-theme="dark"] body.home-active #homeView,html[data-theme="dark"] #homeView,html[data-theme="dark"] .home-view{background:linear-gradient(150deg,#1b1b2e,#14141f) !important;border:1px solid #2a2a45 !important;box-shadow:none !important}
+html[data-theme="dark"] #homeView .home-welcome-card,html[data-theme="dark"] .home-welcome-card{background:linear-gradient(140deg,#1d1d33,#151522) !important;border-color:#2a2a45 !important;box-shadow:none !important}
+html[data-theme="dark"] #homeView .home-shortcuts button,html[data-theme="dark"] #homeView .home-info-card{background:linear-gradient(140deg,#1d1d33,#151522) !important;border-color:#2a2a45 !important;color:#e8e6f0 !important;box-shadow:none !important}
+html[data-theme="dark"] #homeView .home-shortcuts button>span,html[data-theme="dark"] #homeView .home-info-icon{background:#302b50 !important;color:#e8c97a !important;box-shadow:none !important}
+html[data-theme="dark"] #homeView .home-action{border-radius:13px !important;box-shadow:none !important}
+html[data-theme="dark"] #homeView .home-action.primary{background:linear-gradient(135deg,#c9a84c,#e8c97a) !important;border-color:transparent !important;color:#1c1c3f !important}
+html[data-theme="dark"] #homeView .home-action.primary small,html[data-theme="dark"] #homeView .home-action.primary b{color:#1c1c3f !important}
+html[data-theme="dark"] #homeView .home-action.primary .home-action-icon{background:#1c1c3f26 !important;color:#1c1c3f !important}
+html[data-theme="dark"] #homeView .home-action.secondary{background:#42426e !important;border-color:#2a2a45 !important}
+html[data-theme="dark"] #homeView .home-action.secondary:hover{border-color:#c9a84c !important}
+html[data-theme="dark"] #homeView .home-action.secondary small{color:#cfcde6 !important}
+html[data-theme="dark"] .song-card,html[data-theme="dark"] #songList .song-card,html[data-theme="dark"] #createList .song-card{background:linear-gradient(140deg,#1d1d33,#151522) !important;border:1px solid #2a2a45 !important;color:#e8e6f0 !important;box-shadow:none !important}
+html[data-theme="dark"] .song-card:hover,html[data-theme="dark"] #songList .song-card:hover,html[data-theme="dark"] #createList .song-card:hover{border-color:#c9a84c !important}
+html[data-theme="dark"] .song-key{background:#302b50 !important;color:#e8c97a !important}
+html[data-theme="dark"] .badge,html[data-theme="dark"] .song-chip.intro{background:#2b3d34 !important;color:#9ce1b8 !important}
+html[data-theme="dark"] .song-chip.voice{background:#302b50 !important;color:#b8b2ee !important}
+html[data-theme="dark"] .song-chip.create,html[data-theme="dark"] #songView > .hint::before,html[data-theme="dark"] #createView > .hint::before{background:linear-gradient(135deg,#c9a84c,#e8c97a) !important;color:#1c1c3f !important}
+html[data-theme="dark"] .toolbar-badge{background:linear-gradient(135deg,#c9a84c,#e8c97a) !important;color:#1c1c3f !important;box-shadow:none !important}
+html[data-theme="dark"] #songView[data-category="jubilo"] .toolbar-badge{background:linear-gradient(135deg,#f2a84a,#d97a1c) !important;color:#1c1c3f !important}
+html[data-theme="dark"] #songView > .toolbar,html[data-theme="dark"] #createView > .toolbar{background:linear-gradient(150deg,#1b1b2e,#14141f) !important;border:1px solid #2a2a45 !important;box-shadow:none !important}
+html[data-theme="dark"] .toolbar input,html[data-theme="dark"] .modal input,html[data-theme="dark"] #songView .toolbar #search,html[data-theme="dark"] #createView .toolbar #createSearch,html[data-theme="dark"] select,html[data-theme="dark"] .quick-setting select{background-color:#11111d !important;border:1px solid #2a2a45 !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .toolbar input:focus,html[data-theme="dark"] .modal input:focus{border-color:#c9a84c !important}
+html[data-theme="dark"] .home-back,html[data-theme="dark"] #songView > .home-back,html[data-theme="dark"] #createView > .home-back,html[data-theme="dark"] .soft,html[data-theme="dark"] .tab,html[data-theme="dark"] .theory-tab{background:#42426e !important;border:1px solid #2a2a45 !important;color:#e8e6f0 !important;box-shadow:none !important}
+html[data-theme="dark"] .soft:hover,html[data-theme="dark"] .tab:hover,html[data-theme="dark"] .theory-tab:hover,html[data-theme="dark"] .home-back:hover{border-color:#c9a84c !important}
+html[data-theme="dark"] .tab.active,html[data-theme="dark"] #theoryView:not(.hidden) .theory-tab.active{background:#42426e !important;border-color:#8176e0 !important;color:#e8c97a !important;box-shadow:none !important}
+html[data-theme="dark"] .gold,html[data-theme="dark"] #theoryView .theory-preview .gold{background:linear-gradient(135deg,#c9a84c,#e8c97a) !important;color:#1c1c3f !important;border-color:transparent !important;font-weight:750}
+html[data-theme="dark"] .theory-panel,html[data-theme="dark"] .theory-preview,html[data-theme="dark"] .theory-chord-card,html[data-theme="dark"] .theory-key-card,html[data-theme="dark"] .theory-interval-card,html[data-theme="dark"] #theoryView .theory-chord-card,html[data-theme="dark"] #theoryView .theory-key-card,html[data-theme="dark"] #theoryView .theory-interval-card{background:linear-gradient(150deg,#1b1b2e,#14141f) !important;border-color:#2a2a45 !important;color:#e8e6f0 !important}
+html[data-theme="dark"] #theoryView .theory-chord-card.selected,html[data-theme="dark"] #theoryView .theory-interval-card.selected,html[data-theme="dark"] #theoryView .circle-degree.active{background:#302b50 !important;border-color:#c9a84c !important;color:#e8c97a !important}
+html[data-theme="dark"] #theoryView .theory-note{background:#302b50 !important;border-color:#514777 !important;color:#e8c97a !important}
+html[data-theme="dark"] .modal,html[data-theme="dark"] .track-modal{background:#05050bdc}
+html[data-theme="dark"] .modal-card,html[data-theme="dark"] .track-modal .track-modal-card{background:#1b1b2e !important;border:1px solid #2a2a45 !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .track-modal .track-choice{background:#11111d !important;border-color:#2a2a45 !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .track-modal .track-choice:hover{border-color:#c9a84c !important;background:#1d1d33 !important}
+html[data-theme="dark"] .toast{background:#25253b !important;border:1px solid #2a2a45 !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .hint,html[data-theme="dark"] .muted{color:#aaa9c1 !important}
+/* Reproductor */
+html[data-theme="dark"] body.player-active #player,html[data-theme="dark"] body:has(#player:not(.hidden)) #player,html[data-theme="dark"] body.player-active,html[data-theme="dark"] body:has(#player:not(.hidden)){background:#0d0d14 !important}
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player > .player-top,html[data-theme="dark"] #player > .player-top{background:#10101b !important;border-bottom:1px solid #2a2a45 !important}
+html[data-theme="dark"] body.player-active #player .performance-layout > .piano-panel{border-top-color:#c9a84c !important;background:#08080d !important}
+html[data-theme="dark"] .player-sheet,html[data-theme="dark"] .stage-popover,html[data-theme="dark"] body.player-active #player .player-sheet,html[data-theme="dark"] body:has(#player:not(.hidden)) #player .player-sheet{border:1px solid #514777 !important;background:#1b1b2e !important;color:#e8e6f0 !important}
+html[data-theme="dark"] .settings-switches,html[data-theme="dark"] .settings-sheet .quick-setting,html[data-theme="dark"] .settings-sheet .transpose-controls,html[data-theme="dark"] .settings-sheet .voice-mixer{background:#14141f !important;border-color:#2a2a45 !important}
+
+/* Botón de tema */
+.theme-toggle{display:inline-grid;place-items:center;width:40px;height:40px;min-height:40px;padding:0;border:1px solid #ffffff39;border-radius:7px;background:#0d78a8;color:#fff;font-size:19px;line-height:1;cursor:pointer}
+html[data-theme="dark"] .theme-toggle{background:#42426e;border:1px solid #2a2a45;color:#e8c97a}
+html[data-theme="dark"] .theme-toggle:hover{border-color:#c9a84c}
+.header-actions{display:flex;align-items:center;gap:8px}
