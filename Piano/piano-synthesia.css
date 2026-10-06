@@ -375,7 +375,7 @@ body.player-active #player { position: relative; display: flex!important; flex: 
   body.player-active #player .performance-layout > .piano-panel #keyboard { --keyboard-key-width: clamp(32px,5.4vw,46px)!important; }
   body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel #keyboard { --keyboard-key-width: clamp(32px,5.4vw,46px)!important; }
   body.player-active #player .player-sheet, body:has(#player:not(.hidden)) #player .player-sheet { max-height: calc(100vh - 49px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important; max-height: calc(100dvh - 49px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important; }
-  body.home-active > main { display: flex!important; flex-direction: column!important; height: calc(100vh - 48px - env(safe-area-inset-top))!important; height: calc(100dvh - 48px - env(safe-area-inset-top))!important; max-height: none!important; min-height: 0!important; margin: 0!important; padding: 8px max(9px,env(safe-area-inset-right)) calc(8px + max(0px,calc(env(safe-area-inset-bottom) - 8px))) max(9px,env(safe-area-inset-left))!important; overflow: auto!important; background: #bdd7e2!important; }
+  body.home-active > main { display: flex!important; flex-direction: column!important; height: calc(100vh - 48px - env(safe-area-inset-top))!important; height: calc(100dvh - 48px - env(safe-area-inset-top))!important; max-height: none!important; min-height: 0!important; margin: 0!important; padding: 8px max(9px,env(safe-area-inset-right)) 8px max(9px,env(safe-area-inset-left))!important; overflow: auto!important; background: #bdd7e2!important; }
   body.home-active > main::before { display: none!important; }
   body.home-active #homeView { display: block!important; flex: 1 0 auto!important; min-height: 0!important; height: auto!important; margin: 0!important; padding: 10px!important; border: 0!important; border-radius: 6px!important; background: #c3dce6!important; box-shadow: inset 0 0 0 1px #ffffff55!important; }
   body.home-active #homeView .home-layout { grid-template-columns: minmax(235px,31vw) minmax(0,1fr)!important; gap: 10px!important; min-height: 0!important; }
@@ -399,11 +399,11 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 @media (max-width: 900px) {
   body:not(.player-active) { display: flex!important; flex-direction: column!important; width: 100%; height: 100vh; height: 100dvh; min-height: 0!important; overflow: hidden!important; }
   body:not(.player-active) > header { flex: 0 0 calc(48px + env(safe-area-inset-top))!important; height: calc(48px + env(safe-area-inset-top))!important; min-height: 0!important; padding-top: env(safe-area-inset-top)!important; }
-  body:not(.player-active) > main { display: flex!important; flex: 1 1 0%!important; flex-direction: column!important; width: 100%!important; height: 0!important; min-height: 0!important; max-height: none!important; margin: 0!important; padding: 5px max(8px,env(safe-area-inset-right)) calc(5px + max(0px,calc(env(safe-area-inset-bottom) - 8px))) max(8px,env(safe-area-inset-left))!important; overflow: hidden!important; }
+  body:not(.player-active) > main { display: flex!important; flex: 1 1 0%!important; flex-direction: column!important; width: 100%!important; height: 0!important; min-height: 0!important; max-height: none!important; margin: 0!important; padding: 5px max(8px,env(safe-area-inset-right)) 5px max(8px,env(safe-area-inset-left))!important; overflow: hidden!important; }
   body:not(.player-active) > main > #connection { flex: 0 0 18px!important; min-height: 18px!important; margin: 0!important; overflow: hidden; font-size: .66rem!important; line-height: 18px!important; white-space: nowrap; }
   body:not(.player-active) > main > #homeView, body:not(.player-active) > main > .view:not(.hidden) { flex: 1 1 0%!important; width: 100%!important; min-width: 0!important; min-height: 0!important; max-width: none!important; margin: 0!important; overflow: hidden!important; }
   body:not(.player-active) > main > #homeView { height: 0!important; padding: 7px!important; }
-  body:not(.player-active) > main > .view:not(.hidden) { display: flex!important; flex-direction: column!important; height: 0!important; padding: 5px 7px calc(5px + max(0px,calc(env(safe-area-inset-bottom) - 8px)))!important; }
+  body:not(.player-active) > main > .view:not(.hidden) { display: flex!important; flex-direction: column!important; height: 0!important; padding: 1px 1px 5px!important; }
 
   #homeView .home-layout { grid-template-columns: minmax(190px,.86fr) minmax(0,1.14fr)!important; gap: 8px!important; width: 100%!important; height: 100%!important; min-height: 0!important; max-width: none!important; margin: 0!important; }
   #homeView .home-actions { min-width: 0!important; min-height: 0!important; gap: 4px!important; padding: 0!important; }
@@ -453,7 +453,7 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 
 @media (max-width: 900px) and (max-height: 540px) {
   body:not(.player-active) > header { flex-basis: calc(44px + env(safe-area-inset-top))!important; height: calc(44px + env(safe-area-inset-top))!important; }
-  body:not(.player-active) > main { padding-top: 3px!important; padding-bottom: max(3px,max(0px,calc(env(safe-area-inset-bottom) - 8px)))!important; }
+  body:not(.player-active) > main { padding-top: 3px!important; padding-bottom: 3px!important; }
   body:not(.player-active) > main > #connection { flex-basis: 15px!important; min-height: 15px!important; line-height: 15px!important; font-size: .59rem!important; }
   body:not(.player-active) > main > #homeView { padding: 5px!important; }
   #homeView .home-actions { gap: 3px!important; }
