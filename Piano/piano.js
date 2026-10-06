@@ -25,6 +25,22 @@ let fallingNotesCanvasDirty = true;
 let fallingNotesResizeObserver = null;
 let fallingNotesVisibilityBound = false;
 let fallingNotesLastFrame = 0;
+// Reloj suave: en iPhone AudioContext.currentTime avanza a saltos; se interpola con performance.now().
+let playbackClockOffset = null, playbackClockLast = 0;
+function resetPlaybackClock(){playbackClockOffset=null;playbackClockLast=0;}
+function playbackNow(){
+  const context=audioContext;if(!context)return 0;
+  const perf=performance.now()/1000,audio=context.currentTime,sample=audio-perf;
+  // El desfase audio↔pantalla solo sube cuando el audio avanza (nunca va por delante del tiempo real) y baja muy despacio.
+  if(playbackClockOffset===null||sample>playbackClockOffset)playbackClockOffset=sample;
+  else playbackClockOffset+=(sample-playbackClockOffset)*.002;
+  const value=Math.max(playbackClockLast,audio,Math.min(perf+playbackClockOffset,audio+.15));
+  playbackClockLast=value;return value;
+}
+let keyBaseWidthCache = 0;
+let stageGridElement = null, stageLastKeyWidth = -1, stageLastScroll = -1;
+let pinchFlush = null;
+const timelineCache = { elapsed:'', duration:'', ratio:-1, percent:-1, empty:null };
 const FALLING_NOTES_MAX_LOOKAHEAD = 6;
 let fallingNotesLookahead = (()=>{try{const v=parseFloat(localStorage.getItem('yhwh_piano_lookahead'));return v>=0.8&&v<=6?v:2.1;}catch(_){return 2.1;}})();
 const FALLING_NOTES_FRAME_MS = 1000 / 60 - 3;
@@ -485,11 +501,15 @@ function formatPlaybackTime(seconds){
 function updatePlaybackTimeline(elapsed=0,total=timelineDuration){
   const duration=Math.max(0,Number(total)||0),current=Math.min(duration,Math.max(0,Number(elapsed)||0));
   timelineDuration=duration;
-  $('playbackElapsed').textContent=formatPlaybackTime(current);
-  $('playbackDuration').textContent=formatPlaybackTime(duration);
-  $('playbackProgressFill').style.width=`${duration?current/duration*100:0}%`;
-  $('playbackProgressTrack').setAttribute('aria-valuenow',String(duration?Math.round(current/duration*100):0));
-  $('playerTimeline').classList.toggle('is-empty',duration<=0);
+  const cache=timelineCache,elapsedText=formatPlaybackTime(current),durationText=formatPlaybackTime(duration);
+  if(elapsedText!==cache.elapsed){cache.elapsed=elapsedText;$('playbackElapsed').textContent=elapsedText;}
+  if(durationText!==cache.duration){cache.duration=durationText;$('playbackDuration').textContent=durationText;}
+  const ratio=duration?current/duration:0;
+  if(ratio!==cache.ratio&&(ratio===0||ratio===1||Math.abs(ratio-cache.ratio)>=.002)){cache.ratio=ratio;$('playbackProgressFill').style.transform=`scaleX(${ratio})`;}
+  const percent=Math.round(ratio*100);
+  if(percent!==cache.percent){cache.percent=percent;$('playbackProgressTrack').setAttribute('aria-valuenow',String(percent));}
+  const empty=duration<=0;
+  if(empty!==cache.empty){cache.empty=empty;$('playerTimeline').classList.toggle('is-empty',empty);}
 }
 function estimateTrackDuration(){
   const noteEnd=state.notes.reduce((end,note)=>Math.max(end,(Number(note.start)||0)+(Number(note.duration)||.35)),0);
@@ -502,11 +522,12 @@ function estimateTrackDuration(){
 function updateTrackTimeline(){ updatePlaybackTimeline(0,estimateTrackDuration()/state.tempo); }
 function startPlaybackTimeline(startAt,duration){
   if(timelineFrame)cancelAnimationFrame(timelineFrame);
+  resetPlaybackClock();
   timelineStartedAt=startAt;
   updatePlaybackTimeline(0,duration);
   const tick=()=>{
     if(!state.playing||!timelineStartedAt)return;
-    const elapsed=Math.max(0,(audioContext?.currentTime||timelineStartedAt)-timelineStartedAt);
+    const elapsed=Math.max(0,(playbackNow()||timelineStartedAt)-timelineStartedAt);
     updatePlaybackTimeline(elapsed,duration);
     if(elapsed<duration)timelineFrame=requestAnimationFrame(tick);else timelineFrame=0;
   };
@@ -526,8 +547,8 @@ function ensureFallingNotesObservers(){
     });
   }
   if(typeof ResizeObserver==='undefined'||fallingNotesResizeObserver)return;
-  fallingNotesResizeObserver=new ResizeObserver(()=>{fallingNotesCanvasDirty=true;fallingNotesGeometry=null;});
-  ['noteCanvas','fallingNotesCanvas','keyboardScroll','keyboard'].forEach(id=>{const element=$(id);if(element)fallingNotesResizeObserver.observe(element);});
+  fallingNotesResizeObserver=new ResizeObserver(()=>{fallingNotesCanvasDirty=true;fallingNotesGeometry=null;keyBaseWidthCache=0;});
+  ['noteCanvas','keyboardScroll'].forEach(id=>{const element=$(id);if(element)fallingNotesResizeObserver.observe(element);});
 }
 function resizeFallingNotesCanvas(){
   const canvas=$('fallingNotesCanvas'),stage=$('noteCanvas');
@@ -576,19 +597,18 @@ function makeFallingNotesEvents(playbackNotes,playbackChords){
   events.forEach(event=>{event.visualDuration=Math.min(event.duration,FALLING_NOTES_MAX_LOOKAHEAD*.85);});
   return events;
 }
-function rebuildFallingNotesGeometry(events){
+function rebuildFallingNotesGeometry(){
   const stage=$('noteCanvas'),scroll=$('keyboardScroll');
   if(!stage||!scroll)return null;
-  const stageRect=stage.getBoundingClientRect(),scrollRect=scroll.getBoundingClientRect(),positions=new Map();
-  events.forEach(event=>{
-    if(positions.has(event.midi))return;
-    const key=document.querySelector(`.piano-panel .key[data-midi="${event.midi}"]`);
-    if(!key)return;
+  const stageRect=stage.getBoundingClientRect(),scrollRect=scroll.getBoundingClientRect(),scrollLeft=scroll.scrollLeft,positions=new Map();
+  document.querySelectorAll('.piano-panel .key[data-midi]').forEach(key=>{
     const rect=key.getBoundingClientRect();
-    positions.set(event.midi,{center:rect.left-scrollRect.left+scroll.scrollLeft+rect.width/2,width:rect.width});
+    positions.set(Number(key.dataset.midi),{center:rect.left-scrollRect.left+scrollLeft+rect.width/2,width:rect.width});
   });
+  if(!positions.size)return null;
   const colors=getComputedStyle($('player')||stage);
-  return {left:scrollRect.left-stageRect.left,positions,melodyColor:colors.getPropertyValue('--melody-note-color').trim()||'#29b6e6',chordColor:colors.getPropertyValue('--bass-note-color').trim()||'#bb82ef'};
+  // zoom: el zoom con el que se midió; al hacer pinch las posiciones se escalan sin tocar el DOM.
+  return {left:scrollRect.left-stageRect.left,zoom:state.keyboardZoom,positions,melodyColor:colors.getPropertyValue('--melody-note-color').trim()||'#29b6e6',chordColor:colors.getPropertyValue('--bass-note-color').trim()||'#bb82ef'};
 }
 function clearFallingNotesCanvas(){
   const info=fallingNotesCanvasInfo;
@@ -605,13 +625,14 @@ function drawFallingNotesFrame(timestamp){
   if(document.hidden){fallingNotesFrame=0;return;}
   if(timestamp-fallingNotesLastFrame<FALLING_NOTES_FRAME_MS){fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);return;}
   fallingNotesLastFrame=timestamp;
+  if(pinchFlush)pinchFlush();
   if(fallingNotesCanvasDirty&&!resizeFallingNotesCanvas()){fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);return;}
   const run=fallingNotesRun,info=fallingNotesCanvasInfo,scroll=$('keyboardScroll');
   if(!info||!scroll){stopFallingNotes();return;}
-  if(!fallingNotesGeometry)fallingNotesGeometry=rebuildFallingNotesGeometry(run.events);
+  if(!fallingNotesGeometry)fallingNotesGeometry=rebuildFallingNotesGeometry();
   const geometry=fallingNotesGeometry;if(!geometry){stopFallingNotes();return;}
   const ctx=info.context,height=info.height,width=info.width,baseline=height-2,look=fallingNotesLookahead,pps=height/look;
-  const elapsed=Math.max(0,(audioContext?.currentTime||run.startAt)-run.startAt),scrollLeft=scroll.scrollLeft,fadeZone=Math.min(54,height*.2),hits=[];
+  const elapsed=Math.max(0,playbackNow()-run.startAt),scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom,fadeZone=Math.min(54,height*.2),hits=[];
   ctx.clearRect(0,0,width,height);
   const oldestStart=elapsed-run.maxVisibleDuration;let low=0,high=run.events.length;
   while(low<high){const mid=(low+high)>>1;if(run.events[mid].start<oldestStart)low=mid+1;else high=mid;}
@@ -619,18 +640,18 @@ function drawFallingNotesFrame(timestamp){
     const event=run.events[index];if(event.start>elapsed+look)break;
     if(elapsed>event.start+event.visualDuration)continue;
     const key=geometry.positions.get(event.midi);if(!key)continue;
-    const center=geometry.left+key.center-scrollLeft;
-    const barWidth=Math.max(3,Math.min(key.width-2,key.width*.72)),barHeight=Math.max(7,event.visualDuration*pps);
+    const keyWidth=key.width*zoomScale,center=geometry.left+key.center*zoomScale-scrollLeft;
+    const barWidth=Math.max(3,Math.min(keyWidth-2,keyWidth*.72)),barHeight=Math.max(7,event.visualDuration*pps);
     const front=baseline-(event.start-elapsed)*pps,bottom=Math.min(front,baseline),top=front-barHeight,x=center-barWidth/2,h=bottom-top;
     if(h<=0||x+barWidth<0||x>width||top>height||bottom<0)continue;
-    const chord=event.kind==='chord',live=elapsed>=event.start,fade=Math.min(1,front/fadeZone),r=Math.min(7,barWidth/2,h/2),color=chord?geometry.chordColor:geometry.melodyColor;
-    ctx.fillStyle=color;
-    ctx.globalAlpha=(live?.3:.16)*fade;fnRoundRect(ctx,x-3,top-3,barWidth+6,h+6,r+3);ctx.fill();
+    const chord=event.kind==='chord',live=elapsed>=event.start,fade=Math.min(1,front/fadeZone),r=Math.min(7,barWidth/2,h/2);
+    ctx.fillStyle=chord?geometry.chordColor:geometry.melodyColor;
+    ctx.globalAlpha=(live?.3:.16)*fade;ctx.fillRect(x-3,top-3,barWidth+6,h+6);
     ctx.globalAlpha=(chord?.72:.94)*fade;fnRoundRect(ctx,x,top,barWidth,h,r);ctx.fill();
     ctx.fillStyle='#fff';
-    ctx.globalAlpha=(live?.34:.2)*fade;fnRoundRect(ctx,x+barWidth*.14,top+3,Math.max(1.5,barWidth*.2),Math.max(0,h-6),r/2);ctx.fill();
+    if(barWidth>=6){ctx.globalAlpha=(live?.34:.2)*fade;ctx.fillRect(x+barWidth*.14,top+3,Math.max(1.5,barWidth*.2),Math.max(0,h-6));}
     ctx.globalAlpha=.9*fade;ctx.fillRect(x+r*.6,bottom-2,barWidth-r*1.2,2);
-    if(live&&elapsed-event.start<.5)hits.push({index,center,barWidth,color,t:(elapsed-event.start)/.5});
+    if(live&&elapsed-event.start<.5)hits.push({index,center,barWidth,color:chord?geometry.chordColor:geometry.melodyColor,t:(elapsed-event.start)/.5});
   }
   for(const k of hits){
     const life=1-k.t,w=k.barWidth*1.8,glow=ctx.createLinearGradient(0,baseline,0,baseline-46);
@@ -638,10 +659,12 @@ function drawFallingNotesFrame(timestamp){
     ctx.fillStyle=glow;ctx.globalAlpha=life*.7;ctx.fillRect(k.center-w/2,baseline-46,w,46);
     ctx.fillStyle='#fff';ctx.globalAlpha=life*.85;ctx.fillRect(k.center-w*.35,baseline-2.5,w*.7,2.5);
     if(run.calm)continue;
+    ctx.globalAlpha=life*.9;ctx.beginPath();
     for(let i=0;i<4;i++){
-      const px=k.center+(fnRand(k.index*7+i)-.5)*k.barWidth*1.5,py=baseline-(14+fnRand(k.index*13+i*3+1)*44)*k.t;
-      ctx.globalAlpha=life*.9;ctx.beginPath();ctx.arc(px,py,.7+1.6*life,0,6.283);ctx.fill();
+      const px=k.center+(fnRand(k.index*7+i)-.5)*k.barWidth*1.5,py=baseline-(14+fnRand(k.index*13+i*3+1)*44)*k.t,pr=.7+1.6*life;
+      ctx.moveTo(px+pr,py);ctx.arc(px,py,pr,0,6.283);
     }
+    ctx.fill();
   }
   ctx.globalAlpha=1;
   if(elapsed<=run.end+look)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
@@ -656,7 +679,7 @@ function startFallingNotes(playbackNotes,playbackChords,startAt,prebuiltEvents){
   const maxVisibleDuration=events.reduce((max,event)=>Math.max(max,event.visualDuration),0);
   const end=events.reduce((last,event)=>Math.max(last,event.start+event.visualDuration),0);
   fallingNotesRun={events,startAt,maxVisibleDuration,end,calm:!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)};
-  fallingNotesGeometry=rebuildFallingNotesGeometry(events);fallingNotesLastFrame=0;
+  resetPlaybackClock();fallingNotesGeometry=rebuildFallingNotesGeometry();fallingNotesLastFrame=0;
   if(!document.hidden)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
 }
 function showSongIntro(){
@@ -972,7 +995,7 @@ function renderKeyboard() {
     html += `<div class="keys"><button class="key white" data-midi="${midi}" aria-label="${whiteAria}"><span class="note-label${octaveClass}${whiteName?'':' label-empty'}">${whiteName}</span></button>${hasBlack&&midi+1<=high ? `<button class="key black" data-midi="${midi + 1}" aria-label="${blackAria}"><span class="note-label${blackName?'':' label-empty'}">${blackName}</span></button>` : ''}</div>`;
   }
   $('keyboard').innerHTML = html;
-  fallingNotesGeometry = null;
+  fallingNotesGeometry = null;keyBaseWidthCache = 0;stageLastKeyWidth = -1;
   if (scroll) scroll.scrollLeft = oldScrollLeft;
   const keys = $('keyboard');
   keys.onselectstart = event => event.preventDefault();
@@ -1027,10 +1050,14 @@ function updateActiveChordLabel(){
   $('activeChordLabel').textContent=`${rootName}${suffix}`;$('activeChordLabel').classList.remove('hidden');
 }
 function syncStageScroll(){
-  const scroll=$('keyboardScroll'),first=$('keyboard').querySelector('.keys');if(!scroll||!first)return;
-  const width=first.getBoundingClientRect().width;
-  $('noteCanvas').style.setProperty('--stage-key-width',`${width}px`);
-  $('noteCanvas').style.setProperty('--stage-scroll',`${scroll.scrollLeft}px`);
+  const scroll=$('keyboardScroll');if(!scroll)return;
+  if(!stageGridElement)stageGridElement=document.querySelector('#noteCanvas .canvas-grid');
+  const grid=stageGridElement;if(!grid)return;
+  const base=keyboardBaseKeyWidth();
+  const width=base?base*state.keyboardZoom:0;
+  if(width>0&&Math.abs(width-stageLastKeyWidth)>.01){grid.style.setProperty('--stage-key-width',`${width}px`);stageLastKeyWidth=width;}
+  const left=scroll.scrollLeft;
+  if(left!==stageLastScroll){grid.style.setProperty('--stage-scroll',`${left}px`);stageLastScroll=left;}
 }
 const INSTRUMENT_ICONS={
   'grand-piano':'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M8 13v6M12 13v6M16 13v6"/><path d="M6.5 5v8h3V5zM10.5 5v8h3V5zM14.5 5v8h3V5z" fill="currentColor" stroke="none"/></svg>',
@@ -1100,23 +1127,63 @@ function toggleNotesPanel(){
 function setFallingNotesLookahead(value){fallingNotesLookahead=Math.min(FALLING_NOTES_MAX_LOOKAHEAD,Math.max(.8,value));}
 function bindCanvasGestures(){
   const canvas=$('noteCanvas'),scroll=$('keyboardScroll');
+  if(!canvas||!scroll)return;
+  const IGNORE='button,input,select,textarea,summary,.stage-popover,.player-sheet,.notes-panel';
+  let frame=0,pending=null;
   const spread=()=>{const [a,b]=[...canvasPointers.values()];return{dx:Math.max(28,Math.abs(a.x-b.x)),dy:Math.max(28,Math.abs(a.y-b.y)),mid:(a.x+b.x)/2};};
+  // Un solo cambio por fotograma: primero zoom/scroll y luego dibujo, para que barras y teclas no se desfasen.
+  const apply=()=>{
+    frame=0;
+    const g=canvasGesture,p=pending;pending=null;
+    if(!g||!p||!g.axis)return;
+    if(g.axis==='x'){
+      setKeyboardZoom(g.zoom*p.dx/g.dx,{preserveCenter:false,persist:false,fast:true});
+      scroll.scrollLeft=g.anchor*(state.keyboardZoom/g.zoom)-(p.mid-g.left);
+      syncStageScroll();
+    }else setFallingNotesLookahead(g.look*g.dy/p.dy);
+  };
+  pinchFlush=()=>{if(pending)apply();};
   canvas.addEventListener('pointerdown',event=>{
-    if(event.target.closest('button,input,select,summary'))return;
-    canvas.setPointerCapture?.(event.pointerId);canvasPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
-    if(canvasPointers.size===2){const s=spread();canvasGesture={axis:s.dx>=s.dy?'x':'y',dx:s.dx,dy:s.dy,zoom:state.keyboardZoom,look:fallingNotesLookahead,anchor:scroll.scrollLeft+s.mid-scroll.getBoundingClientRect().left};}
+    if(event.target.closest(IGNORE)||canvasPointers.size>=2)return;
+    try{canvas.setPointerCapture?.(event.pointerId);}catch(_){}
+    canvasPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+    if(canvasPointers.size===2){
+      keyboardBaseKeyWidth();
+      const s=spread(),left=scroll.getBoundingClientRect().left;
+      canvasGesture={axis:null,dx:s.dx,dy:s.dy,zoom:state.keyboardZoom,look:fallingNotesLookahead,left,anchor:scroll.scrollLeft+s.mid-left};
+    }
   });
   canvas.addEventListener('pointermove',event=>{
     if(!canvasPointers.has(event.pointerId))return;
-    canvasPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});if(canvasPointers.size<2||!canvasGesture)return;
-    event.preventDefault();const s=spread(),g=canvasGesture;
-    if(g.axis==='x'){
-      setKeyboardZoom(g.zoom*s.dx/g.dx,{preserveCenter:false,persist:false});
-      scroll.scrollLeft=g.anchor*(state.keyboardZoom/g.zoom)-(s.mid-scroll.getBoundingClientRect().left);syncStageScroll();
-    }else setFallingNotesLookahead(g.look*g.dy/s.dy);
+    canvasPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+    const g=canvasGesture;if(canvasPointers.size<2||!g)return;
+    event.preventDefault();
+    const s=spread();
+    if(!g.axis){
+      // El eje se decide por lo que realmente se mueven los dedos, no por cómo se apoyaron.
+      const moveX=Math.abs(s.dx-g.dx),moveY=Math.abs(s.dy-g.dy);
+      if(Math.max(moveX,moveY)<10)return;
+      g.axis=moveX>=moveY?'x':'y';
+      g.dx=s.dx;g.dy=s.dy;g.zoom=state.keyboardZoom;g.look=fallingNotesLookahead;g.anchor=scroll.scrollLeft+s.mid-g.left;
+      return;
+    }
+    pending=s;if(!frame)frame=requestAnimationFrame(apply);
   });
-  const endGesture=event=>{canvasPointers.delete(event.pointerId);if(canvasPointers.size<2&&canvasGesture){canvasGesture=null;try{localStorage.setItem('yhwh_piano_keyboard_zoom',String(state.keyboardZoom));localStorage.setItem('yhwh_piano_lookahead',String(fallingNotesLookahead));}catch(_){}}};
+  const endGesture=event=>{
+    if(!canvasPointers.has(event.pointerId))return;
+    canvasPointers.delete(event.pointerId);
+    const g=canvasGesture;
+    if(canvasPointers.size<2&&g){
+      if(pending)apply();
+      if(frame){cancelAnimationFrame(frame);frame=0;}
+      canvasGesture=null;pending=null;
+      if(g.axis==='x')setKeyboardZoom(state.keyboardZoom,{preserveCenter:false});
+      fallingNotesGeometry=null;
+      try{localStorage.setItem('yhwh_piano_lookahead',String(fallingNotesLookahead));}catch(_){}
+    }
+  };
   canvas.addEventListener('pointerup',endGesture);canvas.addEventListener('pointercancel',endGesture);canvas.addEventListener('lostpointercapture',endGesture);
+  ['gesturestart','gesturechange','gestureend'].forEach(type=>canvas.addEventListener(type,event=>event.preventDefault()));
 }
 function initializeSplash() {
   const splash = $('splashScreen');
@@ -1598,7 +1665,7 @@ function bindInterface() {
   $('octaveUp').onclick = () => moveKeyboardOctave(1);
   $('keyboardZoomOut').onclick = () => setKeyboardZoom(state.keyboardZoom - 0.15);
   $('keyboardZoomIn').onclick = () => setKeyboardZoom(state.keyboardZoom + 0.15);
-  window.addEventListener('resize',syncStageScroll,{passive:true});
+  window.addEventListener('resize',()=>{keyBaseWidthCache=0;stageLastKeyWidth=-1;fallingNotesGeometry=null;syncStageScroll();},{passive:true});
   $('keyboardNotation').onchange = event => {
     state.notation = ['ninguno','octavas','americano','latino','movil','grados','simple'].includes(event.target.value)?event.target.value:'americano';
     try { localStorage.setItem('yhwh_piano_note_labels',state.notation);localStorage.setItem('yhwh_cifrado_latino', state.notation === 'latino' ? '1' : '0'); } catch (_) {}
@@ -1737,16 +1804,20 @@ function setKeyboardPreset(keyCount){
   if(keyCount===88){setKeyboardZoom(scroll.clientWidth/(first.getBoundingClientRect().width/state.keyboardZoom*52));}
   else {const whites=Math.ceil(keyCount*7/12),baseWidth=first.getBoundingClientRect().width/state.keyboardZoom;setKeyboardZoom(scroll.clientWidth/(baseWidth*whites));}
 }
-function keyboardBaseKeyWidth(){
+function keyboardBaseKeyWidth() {
+  if(keyBaseWidthCache>0)return keyBaseWidthCache;
   const first=$('keyboard').querySelector('.keys');
-  return first&&state.keyboardZoom?first.getBoundingClientRect().width/state.keyboardZoom:0;
+  const width=first&&state.keyboardZoom?first.getBoundingClientRect().width/state.keyboardZoom:0;
+  if(width>0)keyBaseWidthCache=width;
+  return width;
 }
-function setKeyboardZoom(nextZoom,{preserveCenter=true,persist=true}={}) {
+function setKeyboardZoom(nextZoom,{preserveCenter=true,persist=true,fast=false}={}) {
   const scroll=$('keyboardScroll'),previousZoom=state.keyboardZoom,base=keyboardBaseKeyWidth();
   const minZoom=base>0&&scroll&&scroll.clientWidth>0?Math.min(1,Math.max(.17,scroll.clientWidth/(base*52))):.17;
-  const oldCenter=scroll?scroll.scrollLeft+scroll.clientWidth/2:0;
+  const oldCenter=!fast&&scroll?scroll.scrollLeft+scroll.clientWidth/2:0;
   state.keyboardZoom = Math.min(1.8, Math.max(minZoom, Math.round(nextZoom * 1000) / 1000));
   $('keyboard').style.setProperty('--keyboard-zoom', state.keyboardZoom);
+  if(fast)return; // durante el pinch solo se aplica el zoom; la interfaz se actualiza al soltar
   const slider=$('keyboardZoomSlider');if(slider){slider.min=String(Math.floor(minZoom*100));slider.value=String(Math.round(state.keyboardZoom*100));}
   if($('keyboardZoomValue'))$('keyboardZoomValue').textContent=`${Math.round(state.keyboardZoom*100)}%`;
   const visibleCount=scroll&&base?scroll.clientWidth/(base*state.keyboardZoom)*12/7:0;
