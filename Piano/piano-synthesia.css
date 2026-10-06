@@ -1,0 +1,1234 @@
+/* Nueva estructura de Piano YHWH, inspirada en el flujo visual de la referencia. */
+:root {
+  --bg: #bdd7e2;
+  --panel: #f5f7f8;
+  --panel2: #d5e6ec;
+  --line: #a9c2cd;
+  --text: #243640;
+  --muted: #5e727c;
+  --gold: #1187b9;
+  --gold2: #41a5ce;
+  --pressed-key-color: #90dd4a;
+}
+body { min-height: 100vh; min-height: 100dvh; color: #2a3740; background: #bdd7e2; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+header { height: 58px; padding: 0 max(18px,calc((100vw - 1450px)/2)); background: #1187b9; border: 0; border-bottom: 1px solid #ffffff29; box-shadow: 0 2px 8px #07567726; }
+.brand-home { gap: 11px; color: white; }
+.brand-icon { width: 36px; height: 36px; border: 0; border-radius: 6px; background: #0d78a8; color: white; box-shadow: inset 0 0 0 1px #ffffff21; }
+.brand-home b { color: #fff; font-size: 1rem; letter-spacing: .04em; }
+.brand-home small { color: #d3ecf7; font-size: .59rem; }
+.admin { min-height: 40px; padding: 8px 14px; border: 1px solid #ffffff39; border-radius: 7px; background: #0d78a8; color: white; }
+.admin.active { color: #123644; background: #e7f5fa; }
+main { max-width: 1450px; padding: 19px 20px 28px; }
+.connection { min-height: 21px; color: #4d6974; font-size: .75rem; }
+button { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid #ffbf33; outline-offset: 2px; }
+
+/* Inicio con menú vertical y área de contenido, como la referencia. */
+.home-view { display: block; min-height: calc(100dvh - 108px); margin: 0; padding: 20px; overflow: visible; border: 0; border-radius: 7px; background: #c3dce6; box-shadow: inset 0 0 0 1px #ffffff55; }
+.home-view:before,.home-view:after { display: none; }
+.home-layout { display: grid; grid-template-columns: minmax(290px, 370px) minmax(0,1fr); gap: 22px; max-width: 1390px; min-height: 560px; margin: 0 auto; }
+.home-actions { display: flex; flex-direction: column; align-items: stretch; gap: 11px; padding: 2px; }
+.home-actions-heading { padding: 4px 4px 7px; }
+.home-actions-heading small,.home-eyebrow { color: #50717e; font-size: .7rem; font-weight: 750; letter-spacing: .1em; }
+.home-actions-heading h2 { margin: 6px 0 4px; color: #273f4b; font-size: 1.25rem; font-weight: 600; }
+.home-action { display: grid; grid-template-columns: 42px minmax(0,1fr) 18px; align-items: center; gap: 10px; min-height: 72px; padding: 10px 13px; border: 1px solid #91b5c4; border-radius: 5px; text-align: left; box-shadow: 0 2px 3px #416a7a1c; transition: transform .12s,filter .12s,box-shadow .12s; }
+.home-action.primary { border-color: #199d20; background: #16a91d; color: white; }
+.home-action.secondary { border-color: #1385b4; background: #178ebd; color: white; }
+.home-action:hover { filter: brightness(1.06); box-shadow: 0 4px 10px #315f702c; transform: translateY(-1px); }
+.home-action:active { transform: scale(.99); }
+.home-action-icon { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 5px; background: #ffffff20; color: white; font-size: 20px; }
+.home-action b,.home-action small { display: block; }
+.home-action b { font-size: .98rem; font-weight: 600; }
+.home-action small { margin-top: 3px; color: #e5f6fb; font-size: .75rem; }
+.home-action-arrow { justify-self: end; font-size: 1.6rem; line-height: 1; opacity: .85; }
+.home-dashboard { display: flex; flex-direction: column; gap: 13px; min-width: 0; }
+.home-welcome-card { position: relative; flex: 1; min-height: 310px; padding: clamp(25px,4vw,50px); overflow: hidden; border: 1px solid #99bbc8; border-radius: 6px; background: #d7e9ef; }
+.home-brand-mark { display: grid; width: 54px; height: 54px; place-items: center; margin-bottom: 18px; border-radius: 8px; background: #168bbb; color: white; font-size: 29px; box-shadow: 0 3px 8px #236a8429; }
+.home-welcome-card h1 { margin: 7px 0 8px; color: #243d49; font-family: Georgia,"Times New Roman",serif; font-size: clamp(1.8rem,3vw,2.7rem); font-weight: 500; }
+.home-welcome-card>p { max-width: 530px; margin: 0; color: #526a74; font-size: .97rem; line-height: 1.6; }
+.home-shortcuts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.home-shortcuts button { display: grid; grid-template-columns: 34px 1fr; align-items: center; column-gap: 9px; min-width: min(235px,100%); padding: 11px; border: 1px solid #b3c9d0; border-radius: 5px; background: #f7fafb; color: #324750; text-align: left; }
+.home-shortcuts button>span { grid-row: span 2; display: grid; width: 32px; height: 32px; place-items: center; border-radius: 4px; background: #e0f0f5; color: #1684af; font-size: 18px; }
+.home-shortcuts b { font-size: .81rem; }
+.home-shortcuts small { color: #73858c; font-size: .68rem; }
+.home-info-card { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; align-items: center; gap: 12px; min-height: 69px; padding: 11px 14px; border: 1px solid #b3cbd4; border-radius: 5px; background: #f3f7f8; color: #405861; }
+.home-info-icon { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 50%; background: #e3f1f5; color: #1187b9; font-size: 18px; }
+.home-info-card b { font-size: .82rem; }
+.home-info-card p { margin: 3px 0 0; color: #75868d; font-size: .72rem; line-height: 1.4; }
+.home-info-card>span:not(.home-status-dot) { color: #63808c; font-size: 1.4rem; }
+.home-status-dot { width: 10px; height: 10px; border-radius: 50%; background: #5eb77a; box-shadow: 0 0 0 4px #5eb77a1c; }
+.install-help { padding: 3px 2px; color: #49636d; font-size: .77rem; }
+.install-help summary { display: inline-block; cursor: pointer; }
+.install-help p { max-width: 550px; margin: 7px 0 0; line-height: 1.5; }
+
+/* Secciones de canciones y teoría siguen el mismo sistema azul claro. */
+.home-back,.soft,.tab,.theory-tab { border: 1px solid #99bac7; border-radius: 5px; background: #1789b7; color: white; }
+.toolbar h1,.theory-header h1 { color: #274552; font-family: Georgia,"Times New Roman",serif; font-weight: 500; }
+.toolbar input,.modal input,.theory-root-picker select,.theory-mode-picker select,.quick-setting select,.voice-direction select,.chord-editor select { border: 1px solid #9dbac5; border-radius: 5px; background-color: #f8fbfc; color: #30444d; }
+.hint,.theory-header p,.theory-intro { color: #59717b; }
+.song-card,.empty { border: 1px solid #a5c3ce; border-radius: 5px; background: #f4f8f9; color: #314a54; box-shadow: 0 2px 4px #385e6b17; }
+.song-card b { color: #294754; }
+.song-card small { color: #6c828a; }
+.badge { border-radius: 4px; background: #deeff3; color: #277753; }
+.theory-tabs { gap: 6px; }
+.theory-tab { min-height: 40px; padding: 8px 12px; }
+.theory-tab.active { border-color: #0879aa; background: #0f83b5; color: white; }
+.theory-panel,.theory-preview,.theory-chord-card,.theory-key-card,.theory-interval-card { border-color: #a3c3ce; border-radius: 6px; background: #f3f7f8; color: #344d57; }
+.theory-panel h2,.theory-preview h3,.theory-chord-card b { color: #167fa8; }
+.theory-intro,.theory-header p { color: #647b84; }
+
+/* Piano de pantalla completa: superficie negra, piano abajo y controles arriba. */
+body:has(#player:not(.hidden)) { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; background: #252629; }
+body:has(#player:not(.hidden)) > header { display: none; }
+body:has(#player:not(.hidden)) > main { display: flex; width: 100%; max-width: none; height: 100vh; height: 100dvh; min-height: 0; margin: 0; padding: 0; overflow: hidden; }
+body:has(#player:not(.hidden)) #connection { display: none; }
+body:has(#player:not(.hidden)) #player { position: relative; display: flex!important; flex: 1; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; min-height: 0; margin: 0; overflow: hidden; background: #252629; }
+body.player-active { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; background: #252629; }
+body.player-active > header { display: none; }
+body.player-active > main { display: flex; width: 100%; max-width: none; height: 100vh; height: 100dvh; min-height: 0; margin: 0; padding: 0; overflow: hidden; }
+body.player-active #connection { display: none; }
+body.player-active #player { position: relative; display: flex!important; flex: 1; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; min-height: 0; margin: 0; overflow: hidden; background: #252629; }
+.player-top { z-index: 20; display: flex; flex: 0 0 48px; align-items: center; gap: 8px; min-width: 0; height: 48px; margin: 0; padding: env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left)); background: #1086b8; color: white; box-shadow: 0 1px 3px #0004; }
+.toolbar-back { display: flex; flex: 0 0 auto; flex-direction: column; align-items: center; justify-content: center; min-width: 42px; height: 42px; padding: 0 5px; border: 0; border-radius: 5px; background: #0876a6; color: white; font-size: 26px; line-height: 20px; }
+.toolbar-back small { font-size: 8px; line-height: 10px; }
+.player-heading { min-width: 50px; max-width: 28vw; flex: 1 1 150px; overflow: hidden; }
+.player-heading h1 { overflow: hidden; margin: 0; color: white; font-family: inherit; font-size: .87rem; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.player-heading p { overflow: hidden; margin: 1px 0 0; color: #d5edf6; font-size: .61rem; text-overflow: ellipsis; white-space: nowrap; }
+.top-tempo { display: flex; flex: 0 0 auto; align-items: center; gap: 5px; height: 100%; padding: 0 7px; border-right: 1px solid #ffffff27; border-left: 1px solid #ffffff27; }
+.top-tempo button,.toolbar-icon { display: grid; width: 34px; height: 36px; place-items: center; border: 0; border-radius: 5px; background: transparent; color: white; font-size: 21px; }
+.top-tempo button { width: 27px; font-size: 25px; }
+.top-tempo output { min-width: 53px; color: white; font-size: .71rem; font-variant-numeric: tabular-nums; text-align: center; white-space: nowrap; }
+.toolbar-icon { flex: 0 0 35px; font-size: 21px; }
+.toolbar-icon:hover,.top-tempo button:hover { background: #ffffff1a; }
+.metronome-button { font-size: 23px; }
+.metronome-button[aria-pressed="true"] { background: #075c85; color: #e6ff8c; }
+.toolbar-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 2px; }
+.notation-button { border: 1px solid #ffffff48; border-radius: 4px; background: #f2f8fa; color: #0878a8; font-size: .85rem; font-weight: 750; }
+.performance-layout { display: flex; flex: 1; flex-direction: column; min-height: 0; background: #252629; }
+.note-canvas { --stage-key-width: 40px; position: relative; flex: 1 1 auto; min-height: 70px; overflow: hidden; background: linear-gradient(180deg,#292a2d,#242528); touch-action: pan-y; }
+.canvas-grid { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(to right, #ffffff12 1px,transparent 1px),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: var(--stage-key-width) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0; opacity: .85; }
+.canvas-readouts { position: absolute; z-index: 2; top: 15px; left: calc(64px + env(safe-area-inset-left)); right: calc(12px + env(safe-area-inset-right)); display: flex; align-items: center; gap: 11px; min-height: 32px; color: #edf2f4; font-size: .78rem; text-shadow: 0 1px 3px #000; }
+.canvas-readouts #playerLabel { color: #dbeaf0; font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
+.active-chord-label { padding: 4px 10px; border: 1px solid #ffffff21; border-radius: 4px; background: #101215c9; color: #e9f1f4; font-size: 1.06rem; font-weight: 700; }
+.canvas-readouts #activeKeyName { margin-left: auto; color: #b9c4ca; font-size: .75rem; }
+.stage-tool-rail { position: absolute; z-index: 8; top: 49px; left: env(safe-area-inset-left); display: flex; flex-direction: column; gap: 3px; width: 48px; padding: 6px 5px; border-radius: 0 5px 5px 0; background: #1188b9; box-shadow: 0 2px 7px #0004; }
+.stage-tool-rail button { display: grid; width: 38px; height: 38px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: white; font-size: 21px; }
+.stage-tool-rail button:hover,.stage-tool-rail button.active { background: #ffffff25; }
+#keyColorSwatch { display: block; width: 20px; height: 20px; border: 2px solid white; border-radius: 2px; background: var(--pressed-key-color); box-shadow: 0 1px 3px #0005; }
+.player-status { position: absolute; z-index: 3; bottom: 6px; left: calc(57px + env(safe-area-inset-left)); max-width: min(55vw,460px); margin: 0; padding: 4px 7px; border: 0; border-radius: 3px; background: #11131898; color: #d3dade; font-size: .65rem; line-height: 1.35; }
+.current-note { position: absolute; z-index: 3; top: 54px; left: 64px; margin: 0; color: #f4f7f7; font-size: 1.2rem; text-shadow: 0 1px 3px #000; }
+.mobile-player-controls { position: absolute; z-index: 6; right: calc(9px + env(safe-area-inset-right)); bottom: 8px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; width: min(270px,68vw); margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.mobile-player-controls button { display: flex; flex: 0 0 48px; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-width: 0; min-height: 43px; padding: 2px; border: 1px solid #ffffff31; border-radius: 5px; background: #111318b8; color: white; font-size: 17px; line-height: 1; }
+.mobile-player-controls button small { display: block; max-width: 46px; overflow: hidden; color: #e0e7e9; font-size: 7px; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+.mobile-player-controls #playMelody { color: #fff; background: #0786bb!important; }
+.mobile-player-controls #recordBtn { color: #17120a!important; background: #ffc838!important; }
+.mobile-player-controls #deleteBtn { background: #b93037!important; }
+.mobile-player-controls button.hidden { display: none!important; }
+.piano-panel { z-index: 10; flex: 0 0 calc(clamp(170px,29vh,255px) + env(safe-area-inset-bottom)); height: calc(clamp(170px,29vh,255px) + env(safe-area-inset-bottom)); min-height: 150px; margin: 0; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); overflow: hidden; border: 0; border-top: 4px solid #df3c42; border-radius: 0; background: #08090b; box-shadow: 0 -4px 11px #0006; }
+.piano-panel { flex-basis: calc(clamp(170px,29dvh,255px) + env(safe-area-inset-bottom)); height: calc(clamp(170px,29dvh,255px) + env(safe-area-inset-bottom)); }
+.piano-panel #keyboardScroll { width: 100%; height: 100%; overflow: auto hidden; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x; }
+.piano-panel #keyboardScroll::-webkit-scrollbar { display: none; }
+.piano-panel #keyboard { --keyboard-key-width: 40px; display: flex; width: max-content; min-width: 100%; height: 100%; padding: 0; }
+.piano-panel #keyboard .keys { width: calc(var(--keyboard-key-width,40px) * var(--keyboard-zoom,1)); flex: 0 0 calc(var(--keyboard-key-width,40px) * var(--keyboard-zoom,1)); height: 100%; }
+.piano-panel .key { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.piano-panel .white { border: 1px solid #c0c1c0; border-radius: 0 0 3px 3px; background: linear-gradient(90deg,#fffefa,#e8e7e1); box-shadow: inset 0 -2px 0 #cecfcc; }
+.piano-panel .black { right: -34%; width: 68%; height: 57%; border-radius: 0 0 3px 3px; background: linear-gradient(90deg,#393a3b,#050607 80%); box-shadow: 0 4px 5px #000a,inset 0 0 0 1px #ffffff13; }
+.piano-panel .key span { opacity: 1; color: #636a6c; font-size: 9px; }
+.piano-panel .black span { color: #edf0f0; font-size: 8px; }
+.piano-panel .key.playing { border-color: var(--pressed-key-color); background: var(--pressed-key-color); box-shadow: 0 0 13px var(--pressed-key-color); }
+.piano-panel .black.playing { background: var(--pressed-key-color); }
+.piano-panel .key .label-empty { display: none; }
+
+/* Menús ligeros sobre el área negra. */
+.stage-popover,.player-sheet { position: absolute; z-index: 30; color: #33434a; border: 7px solid #138bbd; border-radius: 7px; background: #c2dbe5; box-shadow: 0 10px 32px #0008; }
+.mini-popover { top: 50px; left: 55px; width: min(340px,calc(100vw - 66px)); padding: 13px; }
+.stage-popover h2,.player-sheet h2 { margin: 0 0 8px; color: #334f5a; font-size: 1rem; font-weight: 650; }
+.stage-popover p { margin: 5px 0 10px; color: #5d7077; font-size: .77rem; line-height: 1.4; }
+.mini-popover .quick-setting { padding: 7px; border: 0; border-radius: 4px; background: transparent; }
+.mini-popover .quick-setting label { color: #4e636c; }
+.mini-popover .quick-setting select,.mini-popover select { min-height: 40px; border: 1px solid #a6b7bc; border-radius: 4px; background: #f6f7f7; color: #35474f; }
+.mini-popover input[type="color"] { width: 80px; height: 50px; padding: 4px; border: 1px solid #9bb5bf; border-radius: 4px; background: white; }
+.range-popover { left: auto; right: 10px; width: min(410px,calc(100vw - 20px)); }
+.range-presets { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 5px; margin: 9px 0; }
+.range-presets button { min-height: 41px; border: 1px solid #a6bbc2; border-radius: 4px; background: #f5f7f8; color: #344951; text-align: left; }
+.range-presets button.active { border-color: #087fb0; background: #e6f3f7; color: #0878a8; font-weight: 700; }
+.range-custom-label { display: flex; justify-content: space-between; color: #526971; font-size: .75rem; }
+.range-popover input[type="range"] { width: 100%; accent-color: #138bbd; }
+.notation-popover { left: auto; right: 8px; width: min(360px,calc(100vw - 20px)); }
+.notation-popover .quick-setting { display: block; }
+.lyrics-popover { top: 15px; right: 12px; left: 62px; max-height: min(72dvh,540px); overflow: auto; border-width: 6px; }
+.lyrics-popover details { border: 0; border-radius: 0; background: transparent; }
+.lyrics-popover details>summary { padding: 3px 3px 9px; color: #3b5964; font-weight: 700; }
+.lyrics-popover .lyrics-viewer { max-width: none; max-height: 57dvh; overflow: auto; padding: 10px; border-radius: 3px; background: #f7f9fa; color: #283c43; font-size: .83rem; white-space: pre; }
+.lyrics-popover .lc,.lyrics-popover .ls { color: #137ea8; }
+.lyrics-popover .ll { color: #33464d; }
+.notes-panel { position: absolute; z-index: 14; right: 10px; bottom: 62px; width: min(520px,calc(100vw - 64px)); max-height: 38%; overflow: auto; padding: 8px 10px; border: 1px solid #d0d9dc; border-radius: 5px; background: #f4f7f8ee; color: #33474e; }
+.notes-panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: .76rem; }
+.notes-panel-head button { width: 28px; height: 28px; border: 0; background: transparent; font-size: 20px; }
+.notes-panel .note-chip { border: 0; background: #cbe7f0; color: #276279; }
+.player-sheet { top: 58px; right: max(9px,env(safe-area-inset-right)); width: min(420px,calc(100vw - 18px)); max-height: calc(100dvh - 75px - env(safe-area-inset-bottom)); overflow: auto; padding: 16px; }
+.sheet-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+.sheet-heading small { color: #63818a; font-size: .65rem; font-weight: 750; letter-spacing: .09em; }
+.sheet-heading h2 { margin: 2px 0 0; }
+.sheet-close { display: grid; width: 35px; height: 35px; place-items: center; border: 1px solid #a7bdc5; border-radius: 4px; background: #edf4f6; color: #3d5660; font-size: 23px; line-height: 1; }
+.settings-switches { display: flex; flex-direction: column; overflow: hidden; border: 1px solid #a7bdc5; border-radius: 5px; background: #f5f7f8; }
+.settings-switches label { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 48px; padding: 8px 10px; border-bottom: 1px solid #ced8dc; }
+.settings-switches label:last-child { border-bottom: 0; }
+.settings-switches b,.settings-switches small { display: block; }
+.settings-switches b { font-size: .8rem; }
+.settings-switches small { margin-top: 2px; color: #76878c; font-size: .66rem; }
+.settings-switches input { width: 38px; height: 23px; accent-color: #20bd39; }
+.settings-block { margin-top: 13px; padding-top: 11px; border-top: 1px solid #9dbcc8; }
+.settings-block>h3 { margin: 0 0 6px; color: #41606b; font-size: .78rem; }
+.settings-sheet .mobile-quick-settings { display: grid!important; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 5px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
+.settings-sheet .quick-setting,.settings-sheet .transpose-controls { min-width: 0; padding: 7px; border: 1px solid #b5c8ce; border-radius: 4px; background: #eef4f6; }
+.settings-sheet .quick-setting label { color: #4f6770; font-size: .69rem; }
+.settings-sheet .quick-setting select { width: 100%; min-height: 38px; padding: 6px 8px; font-size: .77rem; }
+.settings-sheet .quick-tempo { grid-column: 1/-1; }
+.settings-sheet .quick-metronome { grid-column: 1/-1; flex: none; }
+.settings-sheet .quick-metronome .metronome-top { grid-column: 1/-1; }
+.settings-sheet .quick-metronome #metronomeBpm { grid-column: 1/-1; }
+.settings-sheet .quick-track-key { grid-column: 1/-1; }
+.settings-sheet .quick-track-key>div { display: flex; gap: 5px!important; }
+.settings-sheet .quick-track-key select { flex: 1; width: 0; }
+.settings-sheet .transpose-controls { display: grid; grid-column: 1/-1; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 4px; }
+.settings-sheet .transpose-controls span { grid-column: 1/-1; }
+.settings-sheet .quick-instrument { display: none!important; }
+.settings-sheet .quick-notation { display: none!important; }
+.settings-sheet .voice-mixer { margin: 0; padding: 8px; border: 1px solid #b5c8ce; border-radius: 4px; background: #eef4f6; }
+.settings-sheet .voice-settings .voice-mixer.hidden { display: none!important; }
+.audio-license { margin-top: 12px; color: #60747c; font-size: .72rem; }
+.audio-license summary { cursor: pointer; }
+.audio-license .audio-credit { color: #687b82; font-size: .67rem; line-height: 1.6; }
+.chord-sheet { right: max(9px,env(safe-area-inset-right)); width: min(690px,calc(100vw - 18px)); }
+.chord-sheet #chordEditor { position: relative; display: block; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.chord-editor-title { display: flex; align-items: center; justify-content: space-between; padding-right: 1px; color: #3f5c66; }
+.chord-editor-help { color: #60747c; }
+.chord-editor-fields { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.chord-editor-fields label { color: #455e67; }
+.chord-editor-fields select { width: 100%; }
+.chord-editor-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.chord-editor-actions .gold { background: #168ab8!important; color: white!important; }
+.chord-editor-actions .soft { background: #e5f1f4!important; color: #3c5862!important; }
+.chord-editor .admin-only { display: block; }
+.chord-editor.hidden { display: none!important; }
+
+@media (max-width: 760px) {
+  header { height: 56px; padding-inline: max(10px,env(safe-area-inset-left)) max(10px,env(safe-area-inset-right)); }
+  main { padding: 11px max(10px,env(safe-area-inset-right)) calc(17px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)); }
+  .home-view { min-height: calc(100dvh - 91px - env(safe-area-inset-top)); padding: 11px; }
+  .home-layout { grid-template-columns: minmax(0,1fr); gap: 12px; min-height: 0; }
+  .home-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+  .home-actions-heading { grid-column: 1/-1; padding: 2px 2px 1px; }
+  .home-actions-heading h2 { margin: 3px 0; font-size: 1.03rem; }
+  .home-action { grid-template-columns: 31px minmax(0,1fr) 12px; gap: 6px; min-height: 62px; padding: 7px; }
+  .home-action-icon { width: 29px; height: 29px; font-size: 16px; }
+  .home-action b { font-size: .77rem; }
+  .home-action small { font-size: .61rem; }
+  .home-action-arrow { font-size: 1.2rem; }
+  .home-welcome-card { min-height: 205px; padding: 18px; }
+  .home-brand-mark { width: 38px; height: 38px; margin-bottom: 10px; font-size: 22px; }
+  .home-welcome-card h1 { font-size: 1.65rem; }
+  .home-welcome-card>p { font-size: .8rem; }
+  .home-shortcuts { gap: 6px; margin-top: 14px; }
+  .home-shortcuts button { min-width: min(175px,100%); flex: 1 1 145px; padding: 8px; }
+  .home-shortcuts button>span { width: 27px; height: 27px; }
+  .home-shortcuts b { font-size: .71rem; }
+  .home-shortcuts small { font-size: .61rem; }
+  .home-info-card { min-height: 58px; padding: 8px; }
+  .home-info-card p { font-size: .65rem; }
+  .player-top { flex-basis: calc(45px + env(safe-area-inset-top)); height: calc(45px + env(safe-area-inset-top)); gap: 4px; padding-top: env(safe-area-inset-top); }
+  .toolbar-back { min-width: 34px; height: 38px; font-size: 22px; }
+  .toolbar-back small { font-size: 7px; }
+  .player-heading { max-width: 23vw; }
+  .player-heading h1 { font-size: .72rem; }
+  .player-heading p { font-size: .54rem; }
+  .top-tempo { gap: 1px; padding-inline: 3px; }
+  .top-tempo button { width: 23px; height: 32px; font-size: 21px; }
+  .top-tempo output { min-width: 47px; font-size: .63rem; }
+  .toolbar-actions { gap: 0; }
+  .toolbar-icon { flex-basis: 31px; width: 31px; height: 34px; font-size: 19px; }
+  .notation-button { flex-basis: 30px; font-size: .72rem; }
+  .note-canvas { min-height: 80px; }
+  .canvas-readouts { top: 10px; left: calc(56px + env(safe-area-inset-left)); gap: 7px; }
+  .stage-tool-rail { top: 42px; width: 42px; padding: 5px 3px; }
+  .stage-tool-rail button { width: 36px; height: 38px; }
+  .current-note { top: 43px; left: 55px; font-size: 1rem; }
+  .player-status { left: calc(50px + env(safe-area-inset-left)); max-width: 44vw; font-size: .58rem; }
+  .mobile-player-controls { right: 5px; bottom: 5px; gap: 3px; width: min(205px,59vw); }
+  .mobile-player-controls button { flex-basis: 42px; min-height: 38px; }
+  .mobile-player-controls button small { max-width: 40px; font-size: 6px; }
+  .piano-panel { flex-basis: calc(clamp(165px,30vh,230px) + env(safe-area-inset-bottom)); height: calc(clamp(165px,30vh,230px) + env(safe-area-inset-bottom)); }
+  .piano-panel { flex-basis: calc(clamp(165px,30dvh,230px) + env(safe-area-inset-bottom)); height: calc(clamp(165px,30dvh,230px) + env(safe-area-inset-bottom)); }
+  body.player-active .player-top { flex-basis: calc(45px + env(safe-area-inset-top)); height: calc(45px + env(safe-area-inset-top)); }
+  body.player-active .player-sheet { top: calc(49px + env(safe-area-inset-top)); max-height: calc(100dvh - 57px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+  .piano-panel #keyboard { --keyboard-key-width: 37px; }
+  .piano-panel .key span { font-size: 8px; }
+  .piano-panel .black span { font-size: 7px; }
+  .stage-popover,.player-sheet { border-width: 5px; }
+  .mini-popover { top: 45px; left: 47px; }
+  .range-popover,.notation-popover { right: 5px; left: auto; }
+  .lyrics-popover { right: 5px; left: 48px; }
+  .player-sheet { top: calc(49px + env(safe-area-inset-top)); right: 5px; max-height: calc(100dvh - 57px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); padding: 12px; }
+  .chord-editor-fields { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .settings-sheet .quick-metronome { grid-template-columns: 1fr auto; }
+}
+
+@media (max-width: 390px) {
+  .home-actions { gap: 5px; }
+  .home-action { min-height: 58px; padding: 6px; }
+  .player-heading { max-width: 19vw; }
+  .top-tempo output { min-width: 42px; font-size: .58rem; }
+  .toolbar-icon { flex-basis: 28px; width: 28px; font-size: 17px; }
+  .notation-button { flex-basis: 29px; }
+  .piano-panel #keyboard { --keyboard-key-width: 34px; }
+}
+
+@media (max-width: 350px) and (orientation: portrait) {
+  .player-top { gap: 2px; }
+  .player-heading p { display: none; }
+  .player-heading { max-width: 15vw; }
+  .top-tempo { padding-inline: 1px; }
+  .top-tempo button { width: 19px; font-size: 18px; }
+  .top-tempo output { min-width: 38px; font-size: .54rem; }
+  .toolbar-icon { flex-basis: 26px; width: 26px; font-size: 16px; }
+  .notation-button { flex-basis: 27px; }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  body:has(#player:not(.hidden)) .player-top { flex-basis: calc(42px + env(safe-area-inset-top)); height: calc(42px + env(safe-area-inset-top)); }
+  body:has(#player:not(.hidden)) .piano-panel { flex-basis: calc(clamp(145px,37vh,200px) + env(safe-area-inset-bottom)); height: calc(clamp(145px,37vh,200px) + env(safe-area-inset-bottom)); }
+  body:has(#player:not(.hidden)) .piano-panel { flex-basis: calc(clamp(145px,37dvh,200px) + env(safe-area-inset-bottom)); height: calc(clamp(145px,37dvh,200px) + env(safe-area-inset-bottom)); }
+  body:has(#player:not(.hidden)) .piano-panel #keyboard { --keyboard-key-width: clamp(32px,5.9vw,54px); }
+  body:has(#player:not(.hidden)) .player-sheet { top: calc(48px + env(safe-area-inset-top)); max-height: calc(100dvh - 52px - env(safe-area-inset-top)); }
+  body.player-active .player-top { flex-basis: calc(42px + env(safe-area-inset-top)); height: calc(42px + env(safe-area-inset-top)); }
+  body.player-active .piano-panel { flex-basis: calc(clamp(145px,37vh,200px) + env(safe-area-inset-bottom)); height: calc(clamp(145px,37vh,200px) + env(safe-area-inset-bottom)); }
+  body.player-active .piano-panel { flex-basis: calc(clamp(145px,37dvh,200px) + env(safe-area-inset-bottom)); height: calc(clamp(145px,37dvh,200px) + env(safe-area-inset-bottom)); }
+  body.player-active .piano-panel #keyboard { --keyboard-key-width: clamp(32px,5.9vw,54px); }
+  body.player-active .player-sheet { top: calc(48px + env(safe-area-inset-top)); max-height: calc(100dvh - 52px - env(safe-area-inset-top)); }
+  .home-view { min-height: calc(100dvh - 80px); padding: 10px; }
+  .home-layout { grid-template-columns: minmax(235px,310px) minmax(0,1fr); gap: 10px; min-height: 0; }
+  .home-actions { gap: 5px; }
+  .home-action { min-height: 52px; }
+  .home-welcome-card { min-height: 210px; padding: 18px; }
+  .home-shortcuts { margin-top: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration: .01ms!important; transition-duration: .01ms!important; scroll-behavior: auto!important; }
+}
+
+/* Mobile layout: supersede the previous studio keyboard ordering and colors. */
+@media (max-width: 900px) {
+  body.player-active > header { display: none!important; }
+  body:has(#player:not(.hidden)) > header { display: none!important; }
+  body.player-active > main { display: flex!important; width: 100%; max-width: none!important; height: 100vh; height: 100dvh; min-height: 0!important; margin: 0!important; padding: 0!important; overflow: hidden!important; }
+  body:has(#player:not(.hidden)) > main { display: flex!important; width: 100%; max-width: none!important; height: 100vh; height: 100dvh; min-height: 0!important; margin: 0!important; padding: 0!important; overflow: hidden!important; }
+  body.player-active #connection, body:has(#player:not(.hidden)) #connection { display: none!important; }
+  body.player-active #player { position: relative!important; display: flex!important; flex: 1 1 0%!important; flex-direction: column!important; width: 100%!important; height: 100vh; height: 100dvh; min-height: 0!important; margin: 0!important; gap: 0!important; overflow: hidden!important; background: #252629!important; }
+  body:has(#player:not(.hidden)) #player { position: relative!important; display: flex!important; flex: 1 1 0%!important; flex-direction: column!important; width: 100%!important; height: 100vh; height: 100dvh; min-height: 0!important; margin: 0!important; gap: 0!important; overflow: hidden!important; background: #252629!important; }
+  body.player-active #player > .player-top, body:has(#player:not(.hidden)) #player > .player-top { position: relative!important; z-index: 25; display: flex!important; flex: 0 0 calc(45px + env(safe-area-inset-top))!important; height: calc(45px + env(safe-area-inset-top))!important; min-height: 0!important; align-items: center!important; margin: 0!important; padding: env(safe-area-inset-top) max(7px,env(safe-area-inset-right)) 0 max(7px,env(safe-area-inset-left))!important; overflow: hidden; background: #1187b9!important; }
+  body.player-active #player .performance-layout, body:has(#player:not(.hidden)) #player .performance-layout { position: relative!important; display: flex!important; flex: 1 1 0%!important; flex-direction: column!important; min-width: 0!important; min-height: 0!important; width: 100%!important; overflow: hidden!important; }
+  body.player-active #player .performance-layout > .note-canvas, body:has(#player:not(.hidden)) #player .performance-layout > .note-canvas { position: relative!important; order: 1!important; display: block!important; flex: 1 1 0%!important; width: 100%!important; min-height: 0!important; overflow: hidden!important; background: #252629!important; }
+  body.player-active #player .performance-layout > .piano-panel { position: relative!important; order: 2!important; display: block!important; flex: 0 0 calc(clamp(160px,31dvh,250px) + env(safe-area-inset-bottom))!important; width: 100%!important; height: calc(clamp(160px,31dvh,250px) + env(safe-area-inset-bottom))!important; min-height: 125px!important; margin: 0!important; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)!important; overflow: hidden!important; border: 0!important; border-top: 3px solid #df3c42!important; border-radius: 0!important; background: #08090b!important; }
+  body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { position: relative!important; order: 2!important; display: block!important; flex: 0 0 calc(clamp(160px,31dvh,250px) + env(safe-area-inset-bottom))!important; width: 100%!important; height: calc(clamp(160px,31dvh,250px) + env(safe-area-inset-bottom))!important; min-height: 125px!important; margin: 0!important; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)!important; overflow: hidden!important; border: 0!important; border-top: 3px solid #df3c42!important; border-radius: 0!important; background: #08090b!important; }
+  body.player-active #player .performance-layout > .piano-panel #keyboardScroll, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel #keyboardScroll { display: block!important; width: 100%!important; height: 100%!important; overflow-x: auto!important; overflow-y: hidden!important; touch-action: pan-x!important; }
+  body.player-active #player .performance-layout > .piano-panel #keyboard, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel #keyboard { display: flex!important; width: max-content!important; min-width: 100%!important; height: 100%!important; }
+  body.player-active #player .performance-layout > .piano-panel #keyboard .keys, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel #keyboard .keys { height: 100%!important; width: calc(var(--keyboard-key-width,37px) * var(--keyboard-zoom,1))!important; flex: 0 0 calc(var(--keyboard-key-width,37px) * var(--keyboard-zoom,1))!important; }
+  body.player-active #player .performance-layout > .piano-panel .white, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel .white { background: linear-gradient(90deg,#fffefa,#e8e7e1)!important; border-color: #c0c1c0!important; }
+  body.player-active #player .performance-layout > .piano-panel .black, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel .black { background: linear-gradient(90deg,#393a3b,#050607 80%)!important; }
+  body.player-active #player .mobile-player-controls { position: absolute!important; z-index: 12!important; right: calc(7px + env(safe-area-inset-right))!important; bottom: 6px!important; display: flex!important; flex: 0 0 auto!important; flex-wrap: nowrap!important; justify-content: flex-start!important; gap: 4px!important; width: min(390px,calc(100vw - 62px))!important; max-width: calc(100% - 58px)!important; min-height: 0!important; margin: 0!important; padding: 0 0 3px!important; overflow-x: auto!important; overflow-y: hidden!important; border: 0!important; background: transparent!important; box-shadow: none!important; }
+  body:has(#player:not(.hidden)) #player .mobile-player-controls { position: absolute!important; z-index: 12!important; right: calc(7px + env(safe-area-inset-right))!important; bottom: 6px!important; display: flex!important; flex: 0 0 auto!important; flex-wrap: nowrap!important; justify-content: flex-start!important; gap: 4px!important; width: min(390px,calc(100vw - 62px))!important; max-width: calc(100% - 58px)!important; min-height: 0!important; margin: 0!important; padding: 0 0 3px!important; overflow-x: auto!important; overflow-y: hidden!important; border: 0!important; background: transparent!important; box-shadow: none!important; }
+  body.player-active #player .mobile-player-controls button, body:has(#player:not(.hidden)) #player .mobile-player-controls button { display: flex!important; flex: 0 0 52px!important; min-width: 48px!important; min-height: 43px!important; flex-direction: column!important; align-items: center!important; justify-content: center!important; gap: 2px!important; padding: 3px!important; border: 1px solid #ffffff35!important; border-radius: 5px!important; background: #133444!important; color: #f5fbfd!important; font-size: 16px!important; }
+  body.player-active #player .mobile-player-controls button small, body:has(#player:not(.hidden)) #player .mobile-player-controls button small { display: block!important; max-width: 48px!important; overflow: hidden!important; color: #d9edf4!important; font-size: 7px!important; line-height: 1.1!important; text-overflow: ellipsis!important; white-space: nowrap!important; }
+  body.player-active #player .mobile-player-controls #playMelody, body:has(#player:not(.hidden)) #player .mobile-player-controls #playMelody { background: #1187b9!important; color: #fff!important; }
+  body.player-active #player .mobile-player-controls #recordBtn, body.player-active #player .mobile-player-controls #saveBtn, body.player-active #player .mobile-player-controls #undoBtn, body:has(#player:not(.hidden)) #player .mobile-player-controls #recordBtn, body:has(#player:not(.hidden)) #player .mobile-player-controls #saveBtn, body:has(#player:not(.hidden)) #player .mobile-player-controls #undoBtn { background: #087ba9!important; color: #fff!important; }
+  body.player-active #player .mobile-player-controls #deleteBtn, body:has(#player:not(.hidden)) #player .mobile-player-controls #deleteBtn { background: #a93139!important; }
+  body.player-active #player .player-status, body:has(#player:not(.hidden)) #player .player-status { bottom: 7px!important; left: calc(7px + env(safe-area-inset-left))!important; max-width: min(42vw,340px)!important; }
+  body.player-active #player .player-sheet { position: absolute!important; z-index: 40!important; top: calc(48px + env(safe-area-inset-top))!important; right: max(6px,env(safe-area-inset-right))!important; width: min(440px,calc(100vw - 12px))!important; max-height: calc(100vh - 54px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important; max-height: calc(100dvh - 54px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important; overflow-x: hidden!important; overflow-y: auto!important; overscroll-behavior: contain; padding: 11px!important; background: #c2dbe5!important; border: 5px solid #138bbd!important; color: #33434a!important; }
+  body:has(#player:not(.hidden)) #player .player-sheet { position: absolute!important; z-index: 40!important; top: calc(48px + env(safe-area-inset-top))!important; right: max(6px,env(safe-area-inset-right))!important; width: min(440px,calc(100vw - 12px))!important; max-height: calc(100vh - 54px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important; max-height: calc(100dvh - 54px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important; overflow-x: hidden!important; overflow-y: auto!important; overscroll-behavior: contain; padding: 11px!important; background: #c2dbe5!important; border: 5px solid #138bbd!important; color: #33434a!important; }
+  body.player-active #player .settings-sheet .mobile-quick-settings, body:has(#player:not(.hidden)) #player .settings-sheet .mobile-quick-settings { display: grid!important; grid-template-columns: repeat(2,minmax(0,1fr))!important; gap: 6px!important; width: 100%!important; min-width: 0!important; margin: 0!important; padding: 0!important; overflow: visible!important; background: transparent!important; }
+  body.player-active #player .settings-sheet .quick-setting, body:has(#player:not(.hidden)) #player .settings-sheet .quick-setting { display: block!important; grid-column: auto!important; grid-row: auto!important; min-width: 0!important; width: auto!important; padding: 7px!important; border: 1px solid #b5c8ce!important; border-radius: 4px!important; background: #eef4f6!important; color: #455e67!important; }
+  body.player-active #player .settings-sheet .quick-tempo, body.player-active #player .settings-sheet .quick-metronome, body.player-active #player .settings-sheet .quick-track-key, body.player-active #player .settings-sheet .transpose-controls, body:has(#player:not(.hidden)) #player .settings-sheet .quick-tempo, body:has(#player:not(.hidden)) #player .settings-sheet .quick-metronome, body:has(#player:not(.hidden)) #player .settings-sheet .quick-track-key, body:has(#player:not(.hidden)) #player .settings-sheet .transpose-controls { grid-column: 1/-1!important; grid-row: auto!important; }
+  body.player-active #player .settings-sheet .quick-instrument, body.player-active #player .settings-sheet .quick-notation, body:has(#player:not(.hidden)) #player .settings-sheet .quick-instrument, body:has(#player:not(.hidden)) #player .settings-sheet .quick-notation { display: none!important; }
+  body.player-active #player .settings-sheet .quick-setting label, body:has(#player:not(.hidden)) #player .settings-sheet .quick-setting label { color: #4f6770!important; }
+  body.player-active #player .settings-sheet .quick-setting select, body:has(#player:not(.hidden)) #player .settings-sheet .quick-setting select { display: block!important; width: 100%!important; min-width: 0!important; max-width: 100%!important; min-height: 36px!important; margin-top: 4px!important; padding: 5px 7px!important; border: 1px solid #9dbac5!important; border-radius: 4px!important; background: #f8fbfc!important; color: #30444d!important; font-size: .75rem!important; }
+  body.player-active #player .settings-sheet .quick-track-key > div, body:has(#player:not(.hidden)) #player .settings-sheet .quick-track-key > div { display: flex!important; width: 100%!important; min-width: 0!important; gap: 5px!important; }
+  body.player-active #player .settings-sheet .quick-track-key select, body:has(#player:not(.hidden)) #player .settings-sheet .quick-track-key select { flex: 1 1 0%!important; width: 0!important; }
+  body.player-active #player .settings-sheet .transpose-controls, body:has(#player:not(.hidden)) #player .settings-sheet .transpose-controls { display: grid!important; grid-template-columns: repeat(4,minmax(0,1fr))!important; gap: 4px!important; min-width: 0!important; padding: 7px!important; background: #eef4f6!important; }
+  body.player-active #player .settings-sheet .transpose-controls span, body:has(#player:not(.hidden)) #player .settings-sheet .transpose-controls span { grid-column: 1/-1!important; grid-row: auto!important; }
+  body.player-active #player .settings-sheet .quick-metronome .metronome-top, body:has(#player:not(.hidden)) #player .settings-sheet .quick-metronome .metronome-top { display: flex!important; flex-wrap: wrap!important; align-items: center!important; gap: 5px!important; min-width: 0!important; }
+  body.player-active #player .settings-sheet .quick-metronome input[type="range"], body:has(#player:not(.hidden)) #player .settings-sheet .quick-metronome input[type="range"] { display: block!important; width: 100%!important; max-width: 100%!important; }
+  body.player-active #player .settings-sheet .quick-metronome .metronome-options, body:has(#player:not(.hidden)) #player .settings-sheet .quick-metronome .metronome-options { display: flex!important; align-items: center!important; gap: 6px!important; }
+  body.player-active #player .settings-sheet .settings-switches, body:has(#player:not(.hidden)) #player .settings-sheet .settings-switches { background: #f5f7f8!important; }
+  body.player-active #player .settings-sheet input[type="checkbox"], body:has(#player:not(.hidden)) #player .settings-sheet input[type="checkbox"] { accent-color: #19a744!important; }
+  body.player-active #player .stage-popover, body:has(#player:not(.hidden)) #player .stage-popover { z-index: 40!important; max-height: calc(100% - 56px)!important; overflow-x: hidden!important; overflow-y: auto!important; background: #c2dbe5!important; color: #33434a!important; }
+  body.player-active #player .mobile-player-controls .admin-only, body:has(#player:not(.hidden)) #player .mobile-player-controls .admin-only { background: #087ba9!important; border-color: #ffffff35!important; color: white!important; }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  body.player-active #player > .player-top, body:has(#player:not(.hidden)) #player > .player-top { flex-basis: calc(42px + env(safe-area-inset-top))!important; height: calc(42px + env(safe-area-inset-top))!important; }
+  body.player-active #player .performance-layout > .piano-panel { flex-basis: calc(clamp(124px,36dvh,168px) + env(safe-area-inset-bottom))!important; height: calc(clamp(124px,36dvh,168px) + env(safe-area-inset-bottom))!important; }
+  body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { flex-basis: calc(clamp(124px,36dvh,168px) + env(safe-area-inset-bottom))!important; height: calc(clamp(124px,36dvh,168px) + env(safe-area-inset-bottom))!important; }
+  body.player-active #player .performance-layout > .piano-panel #keyboard { --keyboard-key-width: clamp(32px,5.4vw,46px)!important; }
+  body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel #keyboard { --keyboard-key-width: clamp(32px,5.4vw,46px)!important; }
+  body.player-active #player .player-sheet, body:has(#player:not(.hidden)) #player .player-sheet { max-height: calc(100vh - 49px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important; max-height: calc(100dvh - 49px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important; }
+  body.home-active > main { display: flex!important; flex-direction: column!important; height: calc(100vh - 48px - env(safe-area-inset-top))!important; height: calc(100dvh - 48px - env(safe-area-inset-top))!important; max-height: none!important; min-height: 0!important; margin: 0!important; padding: 8px max(9px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(9px,env(safe-area-inset-left))!important; overflow: auto!important; background: #bdd7e2!important; }
+  body.home-active > main::before { display: none!important; }
+  body.home-active #homeView { display: block!important; flex: 1 0 auto!important; min-height: 0!important; height: auto!important; margin: 0!important; padding: 10px!important; border: 0!important; border-radius: 6px!important; background: #c3dce6!important; box-shadow: inset 0 0 0 1px #ffffff55!important; }
+  body.home-active #homeView .home-layout { grid-template-columns: minmax(235px,31vw) minmax(0,1fr)!important; gap: 10px!important; min-height: 0!important; }
+  body.home-active #homeView .home-actions { gap: 5px!important; }
+  body.home-active #homeView .home-action { min-height: 49px!important; }
+  body.home-active #homeView .home-actions-heading h2 { color: #273f4b!important; font-size: 1rem!important; }
+  body.home-active #homeView .home-welcome-card { min-height: 185px!important; padding: 17px!important; }
+  body.home-active #homeView .home-info-card { min-height: 54px!important; padding: 8px!important; }
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  body.player-active #player .performance-layout > .piano-panel { flex-basis: calc(clamp(190px,31dvh,250px) + env(safe-area-inset-bottom))!important; height: calc(clamp(190px,31dvh,250px) + env(safe-area-inset-bottom))!important; }
+  body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { flex-basis: calc(clamp(190px,31dvh,250px) + env(safe-area-inset-bottom))!important; height: calc(clamp(190px,31dvh,250px) + env(safe-area-inset-bottom))!important; }
+  body.home-active > main { background: #bdd7e2!important; }
+  body.home-active > main::before { display: none!important; }
+  body.home-active #homeView { background: #c3dce6!important; box-shadow: inset 0 0 0 1px #ffffff55!important; }
+  body.home-active #homeView .home-actions-heading h2 { color: #273f4b!important; }
+}
+
+/* Keep mobile navigation inside the viewport; only long content areas scroll. */
+@media (max-width: 900px) {
+  body:not(.player-active) { display: flex!important; flex-direction: column!important; width: 100%; height: 100vh; height: 100dvh; min-height: 0!important; overflow: hidden!important; }
+  body:not(.player-active) > header { flex: 0 0 calc(48px + env(safe-area-inset-top))!important; height: calc(48px + env(safe-area-inset-top))!important; min-height: 0!important; padding-top: env(safe-area-inset-top)!important; }
+  body:not(.player-active) > main { display: flex!important; flex: 1 1 0%!important; flex-direction: column!important; width: 100%!important; height: 0!important; min-height: 0!important; max-height: none!important; margin: 0!important; padding: 5px max(8px,env(safe-area-inset-right)) calc(5px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important; overflow: hidden!important; }
+  body:not(.player-active) > main > #connection { flex: 0 0 18px!important; min-height: 18px!important; margin: 0!important; overflow: hidden; font-size: .66rem!important; line-height: 18px!important; white-space: nowrap; }
+  body:not(.player-active) > main > #homeView, body:not(.player-active) > main > .view:not(.hidden) { flex: 1 1 0%!important; width: 100%!important; min-width: 0!important; min-height: 0!important; max-width: none!important; margin: 0!important; overflow: hidden!important; }
+  body:not(.player-active) > main > #homeView { height: 0!important; padding: 7px!important; }
+  body:not(.player-active) > main > .view:not(.hidden) { display: flex!important; flex-direction: column!important; height: 0!important; padding: 5px 7px calc(5px + env(safe-area-inset-bottom))!important; }
+
+  #homeView .home-layout { grid-template-columns: minmax(190px,.86fr) minmax(0,1.14fr)!important; gap: 8px!important; width: 100%!important; height: 100%!important; min-height: 0!important; max-width: none!important; margin: 0!important; }
+  #homeView .home-actions { min-width: 0!important; min-height: 0!important; gap: 4px!important; padding: 0!important; }
+  #homeView .home-actions-heading { flex: 0 0 auto!important; padding: 0 3px 3px!important; }
+  #homeView .home-actions-heading small { font-size: .56rem!important; }
+  #homeView .home-actions-heading h2 { margin: 2px 0!important; font-size: .88rem!important; }
+  #homeView .home-action { flex: 1 1 0%!important; min-height: 0!important; padding: 3px 6px!important; grid-template-columns: 29px minmax(0,1fr) 10px!important; gap: 6px!important; border-radius: 5px!important; }
+  #homeView .home-action-icon { width: 27px!important; height: 27px!important; font-size: 16px!important; }
+  #homeView .home-action b { font-size: .75rem!important; line-height: 1.1!important; }
+  #homeView .home-action small { display: none!important; }
+  #homeView .home-action-arrow { font-size: 1.15rem!important; }
+  #homeView .home-dashboard { min-width: 0!important; min-height: 0!important; gap: 5px!important; }
+  #homeView .home-welcome-card { flex: 1 1 0%!important; min-width: 0!important; min-height: 0!important; padding: 10px!important; }
+  #homeView .home-brand-mark { width: 31px!important; height: 31px!important; margin-bottom: 5px!important; font-size: 19px!important; }
+  #homeView .home-eyebrow { font-size: .55rem!important; }
+  #homeView .home-welcome-card h1 { margin: 3px 0 4px!important; font-size: 1.12rem!important; }
+  #homeView .home-welcome-card > p { font-size: .7rem!important; line-height: 1.3!important; }
+  #homeView .home-shortcuts { display: none!important; }
+  #homeView .home-info-card { flex: 0 0 auto!important; min-height: 34px!important; padding: 4px 7px!important; grid-template-columns: 23px minmax(0,1fr) auto!important; gap: 6px!important; }
+  #homeView .home-info-icon { width: 21px!important; height: 21px!important; font-size: 13px!important; }
+  #homeView .home-info-card b { font-size: .68rem!important; }
+  #homeView .home-info-card p { margin: 1px 0 0!important; font-size: .56rem!important; line-height: 1.15!important; }
+  #homeView .home-info-card > span:not(.home-status-dot) { font-size: 1rem!important; }
+  #homeView .install-help { margin: 0!important; padding: 0 2px!important; font-size: .58rem!important; }
+
+  #songView, #createView { gap: 0!important; }
+  #songView > .home-back, #createView > .home-back { align-self: flex-start!important; flex: 0 0 31px!important; min-height: 31px!important; margin: 0 0 5px!important; padding: 4px 10px!important; }
+  #songView > .toolbar, #createView > .toolbar { display: grid!important; flex: 0 0 auto!important; grid-template-columns: minmax(0,1fr) minmax(190px,48%)!important; align-items: center!important; gap: 8px!important; margin: 0 0 5px!important; }
+  #songView .toolbar h1, #createView .toolbar h1 { min-width: 0!important; margin: 0!important; font-size: 1.18rem!important; line-height: 1.1!important; }
+  #songView .toolbar input, #createView .toolbar input { width: 100%!important; min-width: 0!important; min-height: 34px!important; height: 34px!important; padding: 5px 9px!important; font-size: .8rem!important; }
+  #songView > .hint, #createView > .hint { flex: 0 0 auto!important; margin: 0 0 6px!important; font-size: .68rem!important; line-height: 1.2!important; }
+  #songList, #createList { flex: 1 1 0%!important; min-height: 0!important; align-content: start!important; overflow-x: hidden!important; overflow-y: auto!important; overscroll-behavior: contain; padding: 1px 1px max(5px,env(safe-area-inset-bottom))!important; -webkit-overflow-scrolling: touch; }
+
+  #theoryView { gap: 4px!important; }
+  #theoryView .theory-header { display: grid!important; flex: 0 0 auto!important; grid-template-columns: auto minmax(0,1fr)!important; grid-template-rows: auto auto!important; align-items: center!important; column-gap: 9px!important; margin: 0!important; }
+  #theoryView .theory-header .home-back { grid-column: 1!important; grid-row: 1 / 3!important; min-height: 31px!important; margin: 0!important; padding: 4px 9px!important; }
+  #theoryView .theory-header h1 { grid-column: 2!important; grid-row: 1!important; margin: 0!important; font-size: 1.1rem!important; line-height: 1.1!important; }
+  #theoryView .theory-header p { grid-column: 2!important; grid-row: 2!important; margin: 2px 0 0!important; font-size: .65rem!important; line-height: 1.2!important; }
+  #theoryView .theory-root-picker { flex: 0 0 auto!important; width: 100%!important; min-height: 34px!important; justify-content: space-between!important; gap: 7px!important; margin: 0!important; padding: 4px 7px!important; font-size: .69rem!important; }
+  #theoryView .theory-root-picker select { min-height: 27px!important; padding: 3px 6px!important; font-size: .7rem!important; }
+  #theoryView .theory-tabs { display: grid!important; flex: 0 0 auto!important; grid-template-columns: repeat(6,minmax(0,1fr))!important; gap: 4px!important; min-width: 0!important; margin: 0!important; padding: 0!important; }
+  #theoryView .theory-tab { min-width: 0!important; min-height: 34px!important; padding: 3px 2px!important; font-size: .61rem!important; line-height: 1.05!important; white-space: normal!important; }
+  #theoryView .theory-panel:not(.hidden) { flex: 1 1 0%!important; min-height: 0!important; margin: 0!important; padding: 8px!important; overflow-x: hidden!important; overflow-y: auto!important; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  #theoryView .theory-panel > h2 { margin: 0 0 4px!important; font-size: .88rem!important; }
+  #theoryView .theory-intro { margin: 0 0 6px!important; font-size: .65rem!important; line-height: 1.25!important; }
+}
+
+@media (max-width: 900px) and (max-height: 540px) {
+  body:not(.player-active) > header { flex-basis: calc(44px + env(safe-area-inset-top))!important; height: calc(44px + env(safe-area-inset-top))!important; }
+  body:not(.player-active) > main { padding-top: 3px!important; padding-bottom: max(3px,env(safe-area-inset-bottom))!important; }
+  body:not(.player-active) > main > #connection { flex-basis: 15px!important; min-height: 15px!important; line-height: 15px!important; font-size: .59rem!important; }
+  body:not(.player-active) > main > #homeView { padding: 5px!important; }
+  #homeView .home-actions { gap: 3px!important; }
+  #homeView .home-actions-heading { padding-bottom: 1px!important; }
+  #homeView .home-actions-heading h2 { font-size: .78rem!important; }
+  #homeView .home-action { grid-template-columns: 25px minmax(0,1fr) 8px!important; gap: 4px!important; padding: 2px 4px!important; }
+  #homeView .home-action-icon { width: 23px!important; height: 23px!important; font-size: 14px!important; }
+  #homeView .home-action b { font-size: .68rem!important; }
+  #homeView .home-info-card { min-height: 32px!important; }
+  #homeView .install-help { font-size: .54rem!important; }
+  #songView > .home-back, #createView > .home-back { flex-basis: 27px!important; min-height: 27px!important; margin-bottom: 3px!important; padding-block: 2px!important; font-size: .75rem!important; }
+  #songView > .toolbar, #createView > .toolbar { margin-bottom: 3px!important; }
+  #songView .toolbar h1, #createView .toolbar h1 { font-size: 1.05rem!important; }
+  #songView > .hint, #createView > .hint { margin-bottom: 4px!important; font-size: .62rem!important; }
+  #theoryView { gap: 3px!important; }
+  #theoryView .theory-header h1 { font-size: 1rem!important; }
+  #theoryView .theory-root-picker { min-height: 30px!important; }
+  #theoryView .theory-root-picker select { min-height: 24px!important; }
+  #theoryView .theory-tab { min-height: 30px!important; font-size: .56rem!important; }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  body:not(.player-active) > header { flex-basis: calc(54px + env(safe-area-inset-top))!important; height: calc(54px + env(safe-area-inset-top))!important; }
+  body:not(.player-active) > main { padding: 6px max(7px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-left))!important; }
+  body:not(.player-active) > main > #homeView { padding: 8px!important; }
+  #homeView .home-layout { grid-template-columns: minmax(0,1fr)!important; grid-template-rows: auto minmax(0,1fr)!important; gap: 7px!important; }
+  #homeView .home-actions { display: grid!important; grid-template-columns: repeat(2,minmax(0,1fr))!important; grid-template-rows: auto repeat(3,minmax(48px,56px))!important; align-content: start!important; gap: 5px!important; }
+  #homeView .home-actions-heading { grid-column: 1 / -1!important; padding: 0 2px!important; }
+  #homeView .home-actions-heading h2 { font-size: .9rem!important; }
+  #homeView .home-action { min-height: 48px!important; }
+  #homeView .home-action small { display: block!important; font-size: .59rem!important; }
+  #homeView .home-dashboard { display: flex!important; flex-direction: column!important; gap: 5px!important; }
+  #homeView .home-welcome-card { display: grid!important; grid-template-columns: 36px minmax(0,1fr)!important; grid-template-rows: auto auto!important; align-content: center!important; column-gap: 9px!important; padding: 8px 10px!important; }
+  #homeView .home-brand-mark { grid-column: 1!important; grid-row: 1 / 3!important; width: 34px!important; height: 34px!important; margin: 0!important; }
+  #homeView .home-eyebrow { grid-column: 2!important; grid-row: 1!important; }
+  #homeView .home-welcome-card h1 { grid-column: 2!important; grid-row: 2!important; margin: 2px 0 0!important; font-size: 1rem!important; }
+  #homeView .home-welcome-card > p, #homeView .home-shortcuts { display: none!important; }
+  #songView > .toolbar, #createView > .toolbar { grid-template-columns: minmax(0,1fr) minmax(130px,48%)!important; }
+  #songView .toolbar h1, #createView .toolbar h1 { font-size: 1rem!important; }
+  #songView > .hint, #createView > .hint { font-size: .66rem!important; }
+  #theoryView .theory-tabs { grid-template-columns: repeat(3,minmax(0,1fr))!important; }
+}
+
+/* Mobile palette: remove the legacy purple surfaces from the light-blue UI. */
+@media (max-width: 900px) {
+  #songView > .home-back, #createView > .home-back { border-color: #0b78a3!important; background: #1187b9!important; color: #fff!important; box-shadow: 0 2px 5px #315f7024!important; }
+  #songView > .toolbar, #createView > .toolbar { border-color: #a3c3ce!important; background: #d7e9ef!important; box-shadow: 0 2px 5px #315f7017!important; }
+  #songView .toolbar input, #createView .toolbar input { border-color: #9dbac5!important; background: #f8fbfc!important; color: #30444d!important; }
+
+  #theoryView .theory-root-picker, #theoryView .theory-mode-picker { border-color: #a3c3ce!important; background: #e5f0f3!important; color: #344d57!important; box-shadow: none!important; }
+  #theoryView .theory-root-picker select, #theoryView .theory-mode-picker select { border-color: #9dbac5!important; background: #f8fbfc!important; color: #30444d!important; }
+  #theoryView .theory-chord-card, #theoryView .theory-key-card, #theoryView .theory-interval-card, #theoryView .theory-circle-results button { border-color: #a3c3ce!important; background: #fff!important; color: #344d57!important; box-shadow: 0 1px 3px #315f7012!important; }
+  #theoryView .theory-chord-card.selected, #theoryView .theory-interval-card.selected { border-color: #1187b9!important; background: #d7edf4!important; color: #294754!important; box-shadow: inset 0 0 0 1px #1187b933!important; }
+  #theoryView .theory-chord-card:hover:not(.selected), #theoryView .theory-key-card button:hover, #theoryView .theory-circle-results button:hover { border-color: #75b5ca!important; background: #eef7fa!important; }
+  #theoryView .theory-chord-card span { color: #506773!important; }
+  #theoryView .theory-chord-card small, #theoryView .theory-key-card button small, #theoryView .theory-circle-results small { color: #6c828a!important; }
+  #theoryView .theory-note { border-color: #a3c3ce!important; background: #dceff4!important; color: #167fa8!important; }
+  #theoryView .theory-key-card button { border-color: #b4cbd3!important; background: #f4f8f9!important; color: #344d57!important; }
+  #theoryView .theory-key-card button b, #theoryView .theory-circle-results b { color: #167fa8!important; }
+  #theoryView .theory-circle-node circle { fill: #e4f0f3!important; stroke: #9bbac5!important; }
+  #theoryView .theory-circle-node.minor circle { fill: #d4e8ee!important; }
+  #theoryView .theory-circle-node text { fill: #314a54!important; }
+  #theoryView .theory-circle-node.minor text { fill: #506773!important; }
+  #theoryView .theory-circle-node:hover circle, #theoryView .theory-circle-node.selected circle { fill: #1187b9!important; stroke: #08739c!important; }
+  #theoryView .theory-circle-node:hover text, #theoryView .theory-circle-node.selected text { fill: #fff!important; }
+  #theoryView .circle-degree[class*="degree-"] { --degree-color: #168bb8!important; }
+  #theoryView .circle-degree.active { border-color: #1187b9!important; background: #d7edf4!important; box-shadow: inset 0 0 0 1px #1187b933!important; }
+  #theoryView .circle-degree .degree-badge { color: #fff!important; }
+  #theoryView .theory-formula { color: #167fa8!important; }
+  #theoryView .theory-key.white.active { background: linear-gradient(#c6e5ef,#8ec9dd)!important; box-shadow: inset 0 0 0 2px #168bbb!important; }
+  #theoryView .theory-key.black.active { background: linear-gradient(#64b9d5,#147fa5)!important; box-shadow: 0 0 10px #438ea488!important; }
+  #theoryView .theory-key.white.octave span { color: #167fa8!important; }
+  #theoryView .theory-preview .gold { border-color: #1187b9!important; background: #1187b9!important; color: #fff!important; }
+}
+
+/* Use the full mobile canvas for Theory and place sync status in the header. */
+@media (max-width: 900px) {
+  body:not(.player-active) > main > #connection { position: fixed!important; z-index: 12!important; top: calc(env(safe-area-inset-top) + 27px)!important; left: 50%!important; width: min(220px,38vw)!important; height: 20px!important; min-height: 0!important; margin: 0!important; flex: none!important; overflow: hidden!important; transform: translate(-50%,-50%)!important; color: #f2fbff!important; font-size: .6rem!important; font-weight: 650!important; line-height: 20px!important; text-align: center!important; text-overflow: ellipsis!important; text-shadow: 0 1px 2px #064766a6; white-space: nowrap!important; pointer-events: none; }
+  #theoryView { width: calc(100% + 16px)!important; margin-right: -8px!important; margin-left: -8px!important; padding: 0!important; gap: 3px!important; }
+  #theoryView .theory-panel:not(.hidden) { width: 100%!important; margin: 0!important; border-radius: 5px!important; }
+}
+
+@media (max-width: 900px) and (max-height: 540px) {
+  body:not(.player-active) > main > #connection { top: calc(env(safe-area-inset-top) + 22px)!important; height: 16px!important; line-height: 16px!important; font-size: .56rem!important; }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  body:not(.player-active) > main > #connection { top: calc(env(safe-area-inset-top) + 27px)!important; height: 18px!important; line-height: 18px!important; font-size: .57rem!important; }
+}
+
+/* Keep the original Theory panels, with smaller musical details on phones. */
+@media (max-width: 900px) {
+  #theoryView:not(.hidden) .theory-tab { transition: background-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+  #theoryView:not(.hidden) .theory-tab::first-letter { font-size: .82em; }
+  #theoryView:not(.hidden) .theory-tab.active { border-color: #08739c!important; background: #087fac!important; color: #fff!important; box-shadow: inset 0 -2px 0 #b3e6f3, 0 2px 5px #14506935!important; }
+  #theoryView:not(.hidden) .theory-chord-card { min-height: 64px!important; gap: 3px!important; padding: 7px!important; }
+  #theoryView:not(.hidden) .theory-chord-card b { font-size: .8rem!important; }
+  #theoryView:not(.hidden) .theory-chord-card span { font-size: .64rem!important; }
+  #theoryView:not(.hidden) .theory-chord-card small { font-size: .58rem!important; }
+  #theoryView:not(.hidden) .theory-note { min-width: 30px!important; padding: 3px 6px!important; font-size: .78rem!important; }
+  #theoryView:not(.hidden) .theory-key-card { padding: 7px!important; }
+  #theoryView:not(.hidden) .theory-key-card h3 { margin-bottom: 5px!important; font-size: .78rem!important; }
+  #theoryView:not(.hidden) .theory-key-card button { gap: 2px!important; padding: 4px 2px!important; }
+  #theoryView:not(.hidden) .theory-key-card button b { font-size: 9px!important; }
+  #theoryView:not(.hidden) .theory-key-card button small { font-size: 8px!important; }
+  #theoryView:not(.hidden) .theory-interval-card { min-height: 46px!important; gap: 2px!important; padding: 4px 3px!important; }
+  #theoryView:not(.hidden) .theory-interval-card b { font-size: 9px!important; }
+  #theoryView:not(.hidden) .theory-interval-card small { font-size: 8px!important; }
+  #theoryView:not(.hidden) #theoryCircle svg { max-width: 245px!important; margin-inline: auto!important; }
+}
+
+@media (max-width: 900px) and (max-height: 540px) and (orientation: landscape) {
+  #theoryView:not(.hidden) .theory-preview { padding: 8px!important; }
+  #theoryView:not(.hidden) .theory-preview h3 { font-size: .88rem!important; }
+  #theoryView:not(.hidden) .theory-piano-keys { height: 125px!important; }
+  #theoryView:not(.hidden) .theory-key.black { width: 16px!important; }
+  #theoryView:not(.hidden) .theory-key.white span { font-size: 8px!important; }
+}
+
+/* Piano playback: keep transport in the header, with a compact timeline above the keys. */
+#player { --bass-note-color: #bb82ef; --melody-note-color: var(--pressed-key-color); }
+#player > .player-top { gap: 5px; }
+#player > .player-top .player-heading { display: none!important; }
+#player > .player-top .mobile-player-controls { position: static!important; inset: auto!important; display: flex!important; flex: 1 1 150px!important; flex-wrap: nowrap!important; justify-content: flex-start!important; gap: 3px!important; width: auto!important; min-width: 32px!important; max-width: none!important; min-height: 0!important; margin: 0!important; padding: 0!important; overflow-x: auto!important; overflow-y: hidden!important; border: 0!important; background: transparent!important; box-shadow: none!important; scrollbar-width: none; }
+#player > .player-top .mobile-player-controls::-webkit-scrollbar { display: none; }
+#player > .player-top .mobile-player-controls button { position: relative!important; inset: auto!important; display: flex!important; flex: 0 0 32px!important; width: 32px!important; min-width: 32px!important; height: 34px!important; min-height: 34px!important; flex-direction: column!important; align-items: center!important; justify-content: center!important; gap: 0!important; padding: 0!important; border: 1px solid #ffffff28!important; border-radius: 5px!important; background: #0d78a8!important; color: #fff!important; font-size: 17px!important; line-height: 1!important; }
+#player > .player-top .mobile-player-controls button.hidden,.player-top > .stage-tool-rail button.hidden { display: none!important; }
+#player > .player-top .mobile-player-controls button small { display: none!important; }
+#player > .player-top .mobile-player-controls #playMelody { background: #075f88!important; color: white!important; }
+#player > .player-top .mobile-player-controls #recordBtn.active { background: #b47c13!important; color: white!important; }
+#player > .player-top .mobile-player-controls #deleteBtn { background: #98313b!important; }
+#player > .player-top .mobile-player-controls button:active { transform: scale(.94); }
+.player-top > .stage-tool-rail { position: static!important; inset: auto!important; display: flex!important; flex: 0 0 auto!important; flex-direction: row!important; align-items: center!important; gap: 1px!important; width: auto!important; margin: 0!important; padding: 0!important; border: 0!important; border-radius: 0!important; background: transparent!important; box-shadow: none!important; }
+.player-top > .stage-tool-rail button { display: grid!important; flex: 0 0 30px!important; width: 30px!important; height: 32px!important; place-items: center!important; padding: 0!important; border: 0!important; border-radius: 4px!important; background: transparent!important; color: white!important; font-size: 18px!important; }
+.player-top > .stage-tool-rail button:hover,.player-top > .stage-tool-rail button.active { background: #ffffff1d!important; }
+.player-top > .stage-tool-rail #keyColorSwatch { width: 17px!important; height: 17px!important; }
+.song-intro-overlay { position: absolute; z-index: 6; inset: 0; display: grid; align-content: center; justify-items: center; padding: 20px; background: #1187b9; color: #fff; text-align: center; opacity: 0; visibility: hidden; pointer-events: none; }
+.song-intro-overlay { z-index: 18; background: transparent; }
+.song-intro-overlay::before { content: ""; position: absolute; top: 50%; right: 0; left: 0; height: clamp(82px,42%,170px); transform: translateY(-50%); border-top: 4px solid #26bff2; border-bottom: 4px solid #26bff2; background: #1187b9; box-shadow: 0 0 24px #007bab66; }
+.song-intro-overlay > * { position: relative; z-index: 1; }
+.song-intro-overlay small { margin-bottom: 9px; color: #d3eef8; font-size: .7rem; font-weight: 750; letter-spacing: .18em; }
+.song-intro-overlay h1 { max-width: min(88vw,900px); margin: 0; color: #fff; font-size: clamp(1.55rem,5vw,3.7rem); font-weight: 650; line-height: 1.12; text-wrap: balance; text-shadow: 0 3px 12px #00456675; }
+.song-intro-overlay p { margin: 9px 0 0; color: #e1f2f8; font-size: clamp(.77rem,2vw,1.1rem); }
+.note-canvas.song-intro-active .song-intro-overlay { visibility: visible; animation: song-title-intro 2.8s ease both; }
+@keyframes song-title-intro { 0% { opacity: 0; transform: scale(.97); filter: blur(4px); } 12% { opacity: 1; transform: scale(1); filter: blur(0); } 72% { opacity: 1; transform: scale(1); filter: blur(0); } 100% { opacity: 0; transform: translateY(-10px) scale(1.015); filter: blur(2px); visibility: hidden; } }
+.player-timeline { position: relative; z-index: 5; order: 2; display: grid; flex: 0 0 25px; grid-template-columns: 38px minmax(0,1fr) 38px; align-items: center; gap: 8px; width: 100%; height: 25px; min-width: 0; padding: 0 max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left)); background: #1e2022; color: #d3dade; }
+.player-timeline.is-empty { visibility: hidden; }
+.timeline-time { color: #e0e5e7; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.timeline-time:last-child { text-align: right; }
+.timeline-track { height: 4px; overflow: hidden; border-radius: 99px; background: #555a5d; box-shadow: inset 0 1px 2px #0008; }
+.timeline-progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#16a8e5,#74d8ff); transition: width .08s linear; }
+.piano-panel .key.bass-playing { border-color: #9e5dd1!important; background: var(--bass-note-color)!important; box-shadow: 0 0 12px #b679ecaa!important; }
+.piano-panel .black.bass-playing { background: #8851b5!important; }
+.note-canvas .falling-note { background: var(--melody-note-color,var(--pressed-key-color)); }
+.note-canvas .falling-note.bass-note { border-color: #9e5dd1; background: var(--bass-note-color); }
+.active-chord-label { border-color: #bb82ef!important; background: #342044d9!important; color: #ead5ff!important; }
+
+@media (max-width: 900px) {
+  body.player-active #player > .player-top, body:has(#player:not(.hidden)) #player > .player-top { gap: 3px!important; overflow: hidden!important; }
+  body.player-active #player > .player-top .toolbar-icon, body:has(#player:not(.hidden)) #player > .player-top .toolbar-icon { flex-basis: 25px!important; width: 25px!important; height: 30px!important; font-size: 16px!important; }
+  body.player-active #player > .player-top .notation-button, body:has(#player:not(.hidden)) #player > .player-top .notation-button { flex-basis: 27px!important; width: 27px!important; font-size: .65rem!important; }
+  body.player-active #player > .player-top .top-tempo, body:has(#player:not(.hidden)) #player > .player-top .top-tempo { gap: 0!important; padding-inline: 1px!important; }
+  body.player-active #player > .player-top .top-tempo button, body:has(#player:not(.hidden)) #player > .player-top .top-tempo button { width: 19px!important; height: 29px!important; font-size: 20px!important; }
+  body.player-active #player > .player-top .top-tempo output, body:has(#player:not(.hidden)) #player > .player-top .top-tempo output { min-width: 39px!important; font-size: .56rem!important; }
+  body.player-active #player > .player-top .mobile-player-controls, body:has(#player:not(.hidden)) #player > .player-top .mobile-player-controls { position: static!important; inset: auto!important; right: auto!important; bottom: auto!important; display: flex!important; flex: 1 1 0%!important; flex-wrap: nowrap!important; justify-content: flex-start!important; gap: 2px!important; width: auto!important; min-width: 28px!important; max-width: none!important; min-height: 0!important; margin: 0!important; padding: 0!important; overflow-x: auto!important; overflow-y: hidden!important; border: 0!important; background: transparent!important; box-shadow: none!important; }
+  body.player-active #player > .player-top .mobile-player-controls button, body:has(#player:not(.hidden)) #player > .player-top .mobile-player-controls button { position: static!important; inset: auto!important; display: flex!important; flex: 0 0 30px!important; width: 30px!important; min-width: 30px!important; height: 32px!important; min-height: 32px!important; padding: 0!important; border: 1px solid #ffffff28!important; border-radius: 4px!important; background: #0d78a8!important; color: #fff!important; font-size: 16px!important; }
+  body.player-active #player > .player-top .mobile-player-controls button.hidden, body:has(#player:not(.hidden)) #player > .player-top .mobile-player-controls button.hidden, body.player-active #player > .player-top > .stage-tool-rail button.hidden, body:has(#player:not(.hidden)) #player > .player-top > .stage-tool-rail button.hidden { display: none!important; }
+  body.player-active #player > .player-top .mobile-player-controls button small, body:has(#player:not(.hidden)) #player > .player-top .mobile-player-controls button small { display: none!important; }
+  body.player-active #player > .player-top > .stage-tool-rail, body:has(#player:not(.hidden)) #player > .player-top > .stage-tool-rail { position: static!important; inset: auto!important; display: flex!important; flex: 0 0 auto!important; flex-direction: row!important; gap: 0!important; width: auto!important; margin: 0!important; padding: 0!important; border: 0!important; border-radius: 0!important; background: transparent!important; box-shadow: none!important; }
+  body.player-active #player > .player-top > .stage-tool-rail button, body:has(#player:not(.hidden)) #player > .player-top > .stage-tool-rail button { display: grid!important; flex: 0 0 24px!important; width: 24px!important; height: 29px!important; padding: 0!important; border: 0!important; background: transparent!important; font-size: 15px!important; }
+  body.player-active #player > .player-top > .stage-tool-rail #keyColorSwatch, body:has(#player:not(.hidden)) #player > .player-top > .stage-tool-rail #keyColorSwatch { width: 14px!important; height: 14px!important; }
+  body.player-active #player .performance-layout > .note-canvas, body:has(#player:not(.hidden)) #player .performance-layout > .note-canvas { order: 1!important; }
+  body.player-active #player .performance-layout > .player-timeline, body:has(#player:not(.hidden)) #player .performance-layout > .player-timeline { order: 2!important; display: grid!important; flex: 0 0 25px!important; width: 100%!important; height: 25px!important; min-height: 25px!important; margin: 0!important; padding: 0 max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left))!important; visibility: visible; }
+  body.player-active #player .performance-layout > .player-timeline.is-empty, body:has(#player:not(.hidden)) #player .performance-layout > .player-timeline.is-empty { visibility: hidden!important; }
+  body.player-active #player .performance-layout > .piano-panel, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { order: 3!important; }
+  body.player-active #player .song-intro-overlay h1, body:has(#player:not(.hidden)) #player .song-intro-overlay h1 { font-size: clamp(1.35rem,5vw,2.8rem)!important; }
+}
+
+@media (max-width: 900px) and (max-height: 540px) and (orientation: landscape) {
+  body.player-active #player > .player-top, body:has(#player:not(.hidden)) #player > .player-top { gap: 3px!important; }
+  body.player-active #player > .player-top .toolbar-back, body:has(#player:not(.hidden)) #player > .player-top .toolbar-back { min-width: 34px!important; width: 34px!important; height: 34px!important; }
+  body.player-active #player > .player-top .top-tempo, body:has(#player:not(.hidden)) #player > .player-top .top-tempo { gap: 0!important; padding-inline: 2px!important; }
+  body.player-active #player > .player-top .top-tempo button, body:has(#player:not(.hidden)) #player > .player-top .top-tempo button { width: 21px!important; height: 30px!important; }
+  body.player-active #player > .player-top .top-tempo output, body:has(#player:not(.hidden)) #player > .player-top .top-tempo output { min-width: 43px!important; font-size: .6rem!important; }
+  body.player-active #player > .player-top .toolbar-icon, body:has(#player:not(.hidden)) #player > .player-top .toolbar-icon { flex-basis: 30px!important; width: 30px!important; height: 32px!important; }
+  body.player-active #player > .player-top .mobile-player-controls button, body:has(#player:not(.hidden)) #player > .player-top .mobile-player-controls button { flex-basis: 30px!important; width: 30px!important; min-width: 30px!important; height: 32px!important; min-height: 32px!important; }
+  body.player-active #player .performance-layout > .player-timeline, body:has(#player:not(.hidden)) #player .performance-layout > .player-timeline { flex-basis: 22px!important; height: 22px!important; min-height: 22px!important; }
+  body.player-active #player .performance-layout > .piano-panel, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { flex-basis: calc(clamp(124px,36dvh,168px) + env(safe-area-inset-bottom))!important; height: calc(clamp(124px,36dvh,168px) + env(safe-area-inset-bottom))!important; }
+}
+
+/* Barra del reproductor: transporte claro y herramientas separadas. */
+#player > .player-top { display:flex!important; align-items:center!important; justify-content:space-between!important; gap:clamp(4px,1vw,10px)!important; overflow:visible!important; padding-right:max(8px,env(safe-area-inset-right))!important; padding-left:max(8px,env(safe-area-inset-left))!important; }
+#player > .player-top > * { min-width:0!important; }
+#player > .player-top > #backBtn { flex:0 0 38px!important; width:38px!important; min-width:38px!important; }
+#player > .player-top .player-playback-group { display:flex!important; flex:1 1 auto!important; min-width:0!important; justify-content:center!important; align-items:center!important; gap:0!important; }
+#player > .player-top .mobile-player-controls { position:static!important; display:flex!important; flex:0 1 auto!important; flex-wrap:nowrap!important; align-items:center!important; justify-content:center!important; gap:4px!important; width:auto!important; min-width:0!important; max-width:none!important; margin:0!important; padding:0!important; overflow:visible!important; border:0!important; background:transparent!important; box-shadow:none!important; }
+#player > .player-top .mobile-player-controls button { position:static!important; display:grid!important; flex:0 0 34px!important; place-items:center!important; width:34px!important; min-width:34px!important; height:34px!important; min-height:34px!important; padding:0!important; border:1px solid #ffffff35!important; border-radius:8px!important; background:#0879a9!important; color:#fff!important; font-size:17px!important; line-height:1!important; box-shadow:inset 0 1px #ffffff16!important; }
+#player > .player-top .mobile-player-controls #playMelody { background:#075f88!important; }
+#player > .player-top .mobile-player-controls button small { display:none!important; }
+#player > .player-top .player-tool-group { position:relative!important; display:flex!important; flex:0 0 auto!important; align-items:center!important; justify-content:flex-end!important; gap:5px!important; }
+#player > .player-top .toolbar-actions { display:flex!important; flex:0 0 auto!important; align-items:center!important; gap:2px!important; }
+#player > .player-top .toolbar-actions .toolbar-icon { display:grid!important; flex:0 0 32px!important; place-items:center!important; width:32px!important; height:34px!important; padding:0!important; border:1px solid #ffffff20!important; border-radius:8px!important; background:transparent!important; color:#fff!important; }
+#player > .player-top .toolbar-actions .notation-button { font-size:.67rem!important; font-weight:700!important; }
+.player-edit-menu { position:relative!important; flex:0 0 auto!important; }
+.player-edit-menu > summary { display:grid!important; place-items:center!important; width:32px!important; height:34px!important; border:1px solid #ffffff20!important; border-radius:8px!important; color:#fff!important; background:#ffffff0b!important; cursor:pointer!important; font-size:19px!important; line-height:1!important; list-style:none!important; }
+.player-edit-menu > summary::-webkit-details-marker { display:none!important; }
+.player-edit-menu[open] > summary { background:#075f88!important; }
+.player-edit-actions { position:absolute!important; z-index:40!important; top:calc(100% + 8px)!important; right:0!important; display:grid!important; grid-template-columns:repeat(4,36px)!important; align-items:center!important; justify-content:center!important; gap:6px!important; min-width:180px!important; padding:9px!important; border:1px solid #ffffff25!important; border-radius:10px!important; background:#14191f!important; box-shadow:0 8px 28px #0009!important; }
+.player-edit-actions strong { grid-column:1/-1!important; padding:0 2px 3px!important; color:#dce8ee!important; font-size:.72rem!important; font-weight:650!important; }
+.player-edit-actions button { display:grid!important; place-items:center!important; width:36px!important; min-width:36px!important; height:36px!important; padding:0!important; border:1px solid #ffffff20!important; border-radius:7px!important; background:#0879a9!important; color:#fff!important; font-size:17px!important; }
+.player-edit-actions #recordBtn.active { background:#b47c13!important; }
+.player-edit-actions #deleteBtn { background:#98313b!important; }
+
+/* El instrumento, el metrónomo y el tono quedan dentro del área negra del piano. */
+#player .performance-layout > .note-canvas .canvas-readouts { position:absolute!important; z-index:20!important; top:8px!important; right:max(8px,env(safe-area-inset-right))!important; left:max(8px,env(safe-area-inset-left))!important; display:block!important; width:auto!important; height:40px!important; min-height:40px!important; margin:0!important; padding:0!important; border:0!important; border-radius:0!important; background:transparent!important; box-shadow:none!important; box-sizing:border-box!important; pointer-events:none!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > #playerLabel { display:none!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail { position:absolute!important; z-index:12!important; top:0!important; right:auto!important; bottom:auto!important; left:0!important; display:flex!important; flex-direction:column!important; align-items:center!important; gap:3px!important; width:36px!important; margin:0!important; padding:3px!important; border:1px solid #ffffff24!important; border-radius:9px!important; background:#101215d9!important; box-shadow:0 3px 10px #0007!important; pointer-events:auto!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button { display:grid!important; flex:0 0 29px!important; place-items:center!important; width:29px!important; height:29px!important; min-height:29px!important; padding:0!important; border:1px solid #ffffff21!important; border-radius:6px!important; background:#0876a637!important; color:#fff!important; font-size:16px!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button:hover,#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button.active { background:#ffffff25!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button.hidden { display:none!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail #keyColorSwatch { width:15px!important; height:15px!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-metronome-controls { position:absolute!important; z-index:11!important; top:0!important; right:auto!important; bottom:auto!important; left:50%!important; transform:translateX(-50%)!important; display:flex!important; align-items:center!important; justify-content:center!important; gap:3px!important; width:max-content!important; max-width:calc(100% - 116px)!important; margin:0!important; padding:3px 5px!important; border:1px solid #ffffff25!important; border-radius:9px!important; background:#101215e8!important; box-shadow:0 3px 10px #0007!important; pointer-events:auto!important; }
+.stage-metronome-controls .top-tempo { display:flex!important; flex:0 0 auto!important; align-items:center!important; gap:2px!important; height:31px!important; padding:0 2px!important; border:0!important; border-radius:6px!important; background:#ffffff0c!important; }
+.stage-metronome-controls .top-tempo button { display:grid!important; flex:0 0 22px!important; place-items:center!important; width:22px!important; min-width:22px!important; height:27px!important; padding:0!important; border-radius:5px!important; font-size:19px!important; }
+.stage-metronome-controls .top-tempo output { min-width:52px!important; color:#fff!important; font-size:.65rem!important; font-variant-numeric:tabular-nums; text-align:center; white-space:nowrap; }
+.stage-metronome-controls .metronome-button { display:grid!important; flex:0 0 30px!important; place-items:center!important; width:30px!important; min-width:30px!important; max-width:30px!important; height:29px!important; padding:0!important; border:1px solid #ffffff35!important; border-radius:6px!important; background:#0876a637!important; font-size:17px!important; }
+.stage-metronome-controls .metronome-button[aria-pressed="true"] { background:#075c85!important; color:#e6ff8c!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName { position:absolute!important; z-index:12!important; top:0!important; right:0!important; bottom:auto!important; left:auto!important; display:inline-flex!important; align-items:center!important; justify-content:center!important; min-width:68px!important; height:37px!important; margin:0!important; padding:0 9px!important; border:1px solid #ffffff35!important; border-radius:8px!important; background:#101215e8!important; color:#f1f4f5!important; font-size:.68rem!important; font-weight:650!important; white-space:nowrap!important; cursor:pointer!important; pointer-events:auto!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName:hover,#player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName:focus-visible { background:#0876a6!important; outline:2px solid #78d8ff; outline-offset:1px; }
+#player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName:empty { display:none!important; }
+#player .performance-layout > .note-canvas .canvas-readouts > #activeChordLabel { position:absolute!important; z-index:5!important; top:44px!important; right:auto!important; bottom:auto!important; left:50%!important; transform:translateX(-50%)!important; pointer-events:none!important; }
+.key-transpose-popover { z-index:30!important; top:52px!important; right:max(8px,env(safe-area-inset-right))!important; left:auto!important; width:min(260px,calc(100vw - 24px))!important; padding:13px!important; }
+.key-transpose-popover h2 { margin:0 0 4px!important; color:#334f5a!important; font-size:.95rem!important; }
+.key-transpose-popover p { margin:0 0 9px!important; color:#5d7077!important; font-size:.72rem!important; }
+.key-transpose-popover label { display:block; margin-bottom:4px; color:#526971; font-size:.72rem; }
+.key-transpose-popover select { width:100%; min-height:38px; margin-bottom:8px; padding:6px 9px; }
+.key-transpose-popover #transposeToOriginal { width:100%; min-height:36px; }
+@media (max-width:600px) {
+  #player > .player-top { gap:4px!important; }
+  #player > .player-top > #backBtn { flex-basis:35px!important; width:35px!important; min-width:35px!important; }
+  #player > .player-top .mobile-player-controls { gap:3px!important; }
+  #player > .player-top .mobile-player-controls button { flex-basis:31px!important; width:31px!important; min-width:31px!important; height:32px!important; min-height:32px!important; border-radius:7px!important; }
+  #player > .player-top .player-tool-group { gap:3px!important; }
+  #player > .player-top .toolbar-actions { gap:1px!important; }
+  #player > .player-top .toolbar-actions .toolbar-icon,#player > .player-top .player-edit-menu > summary { flex-basis:29px!important; width:29px!important; height:31px!important; border-radius:7px!important; }
+  #player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail { width:35px!important; gap:3px!important; padding:3px!important; }
+  #player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button { flex-basis:28px!important; width:28px!important; height:28px!important; min-height:28px!important; }
+  #player .performance-layout > .note-canvas .canvas-readouts > .stage-metronome-controls { max-width:calc(100% - 112px)!important; gap:2px!important; padding:2px 4px!important; }
+  .stage-metronome-controls .top-tempo { gap:1px!important; padding-inline:1px!important; }
+  .stage-metronome-controls .top-tempo button { flex-basis:20px!important; width:20px!important; min-width:20px!important; }
+  .stage-metronome-controls .top-tempo output { min-width:48px!important; font-size:.61rem!important; }
+  .stage-metronome-controls .metronome-button { flex-basis:28px!important; width:28px!important; min-width:28px!important; max-width:28px!important; }
+  #player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName { min-width:62px!important; height:34px!important; padding-inline:6px!important; font-size:.62rem!important; }
+  .key-transpose-popover { top:48px!important; }
+}
+@media (max-width:390px) {
+  #player > .player-top { gap:2px!important; }
+  #player > .player-top > #backBtn { flex-basis:31px!important; width:31px!important; min-width:31px!important; height:31px!important; }
+  #player > .player-top .mobile-player-controls { gap:2px!important; }
+  #player > .player-top .mobile-player-controls button { flex-basis:28px!important; width:28px!important; min-width:28px!important; height:29px!important; min-height:29px!important; }
+  #player > .player-top .player-tool-group { gap:1px!important; }
+  #player > .player-top .toolbar-actions .toolbar-icon,#player > .player-top .player-edit-menu > summary { flex-basis:27px!important; width:27px!important; height:29px!important; }
+  #player > .player-top .toolbar-actions .notation-button { font-size:.59rem!important; }
+}
+@media (max-width:900px) and (max-height:540px) and (orientation:landscape) {
+  #player > .player-top .mobile-player-controls button { flex-basis:30px!important; width:30px!important; min-width:30px!important; height:30px!important; min-height:30px!important; }
+  #player .performance-layout > .player-timeline { flex-basis:22px!important; height:22px!important; min-height:22px!important; }
+  #player .performance-layout > .piano-panel { flex-basis:calc(clamp(124px,36dvh,168px) + env(safe-area-inset-bottom))!important; height:calc(clamp(124px,36dvh,168px) + env(safe-area-inset-bottom))!important; }
+  .song-intro-overlay::before { height:clamp(64px,30%,82px)!important; }
+  .song-intro-overlay small { margin-bottom:5px!important; font-size:.58rem!important; letter-spacing:.12em!important; }
+  .song-intro-overlay h1 { max-width:90vw!important; font-size:clamp(1.05rem,3.2vw,1.65rem)!important; line-height:1.08!important; }
+  .song-intro-overlay p { margin-top:5px!important; font-size:clamp(.64rem,1.65vw,.8rem)!important; }
+  .lyrics-popover details > summary { font-size:.67rem!important; }
+  .lyrics-popover .lyrics-viewer { font-size:.66rem!important; line-height:1.35!important; }
+}
+@media (max-width:900px) {
+  .lyrics-popover details > summary { font-size:.7rem!important; }
+  .lyrics-popover .lyrics-viewer { font-size:.69rem!important; line-height:1.4!important; }
+}
+body:has(#keyTransposePopover:not(.hidden)) #player .note-canvas { overflow:visible!important; z-index:30!important; }/* En móvil se conserva la composición de PC: volver, reproducción y herramientas. */
+@media (max-width:900px) {
+  body:has(#player:not(.hidden)) #player > .player-top {
+    position:relative!important; inset:auto!important; top:auto!important; right:auto!important; bottom:auto!important; left:auto!important; transform:none!important;
+    display:flex!important; width:100%!important; max-width:none!important; align-items:center!important; justify-content:space-between!important;
+    overflow:visible!important; text-align:initial!important;
+  }
+  body:has(#player:not(.hidden)) #player > .player-top > .player-playback-group {
+    position:static!important; inset:auto!important; transform:none!important; display:flex!important; visibility:visible!important; opacity:1!important;
+    flex:1 1 0%!important; min-width:0!important; width:auto!important; max-width:none!important; align-items:center!important; justify-content:center!important; text-align:initial!important;
+  }
+  body:has(#player:not(.hidden)) #player > .player-top > .player-tool-group {
+    position:static!important; inset:auto!important; transform:none!important; display:flex!important; visibility:visible!important; opacity:1!important;
+    flex:0 0 auto!important; min-width:0!important; width:auto!important; max-width:none!important; align-items:center!important; justify-content:flex-end!important; text-align:initial!important;
+  }
+  body:has(#player:not(.hidden)) #player > .player-top .mobile-player-controls {
+    position:static!important; inset:auto!important; transform:none!important; display:flex!important; visibility:visible!important; opacity:1!important;
+    flex:0 0 auto!important; align-items:center!important; justify-content:center!important; gap:3px!important; width:auto!important; min-width:0!important; max-width:none!important;
+    margin:0!important; padding:0!important; overflow:visible!important; border:0!important; background:transparent!important; box-shadow:none!important;
+  }
+  body:has(#player:not(.hidden)) #player > .player-top .mobile-player-controls button { display:grid!important; }
+  body:has(#player:not(.hidden)) #player > .player-top > #backBtn {
+    position:static!important; inset:auto!important; transform:none!important; flex:0 0 35px!important; width:35px!important; min-width:35px!important;
+    height:34px!important; min-height:34px!important; padding:0 4px!important; border:0!important; border-radius:6px!important;
+    background:#0876a6!important; color:#fff!important; box-shadow:none!important; font-size:22px!important; line-height:19px!important;
+  }
+  body:has(#player:not(.hidden)) #player > .player-top > #backBtn small { font-size:7px!important; line-height:9px!important; }
+  body:has(#player:not(.hidden)) #player > .player-top .player-edit-menu[open] > .player-edit-actions {
+    position:absolute!important; z-index:60!important; top:calc(100% + 8px)!important; right:0!important; left:auto!important; transform:none!important;
+    display:grid!important; visibility:visible!important; opacity:1!important;
+  }
+}
+/* Paneles móviles: tarjetas completas en pantalla con desplazamiento propio. */
+@media (max-width: 900px) {
+  body.player-active #player .stage-popover,
+  body:has(#player:not(.hidden)) #player .stage-popover,
+  body.player-active #player > .player-sheet,
+  body:has(#player:not(.hidden)) #player > .player-sheet,
+  body.player-active #player #notesPanel,
+  body:has(#player:not(.hidden)) #player #notesPanel {
+    position: fixed !important;
+    z-index: 70 !important;
+    top: calc(48px + env(safe-area-inset-top) + 8px) !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: min(560px, calc(100vw - 16px)) !important;
+    max-width: calc(100vw - 16px) !important;
+    max-height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.player-active #player > .settings-sheet,
+  body:has(#player:not(.hidden)) #player > .settings-sheet { width: min(560px, calc(100vw - 16px)) !important; }
+  body.player-active #player > .chord-sheet,
+  body:has(#player:not(.hidden)) #player > .chord-sheet { width: min(690px, calc(100vw - 16px)) !important; }
+  body.player-active #player .lyrics-popover,
+  body:has(#player:not(.hidden)) #player .lyrics-popover { width: min(690px, calc(100vw - 16px)) !important; }
+  body.player-active #player .notes-panel,
+  body:has(#player:not(.hidden)) #player .notes-panel { width: min(560px, calc(100vw - 16px)) !important; max-height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important; }
+
+  body.player-active #player .lyrics-popover .lyrics-viewer,
+  body:has(#player:not(.hidden)) #player .lyrics-popover .lyrics-viewer {
+    max-width: 100% !important;
+    max-height: min(55dvh, 520px) !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  body.player-active #player .chord-editor-fields > label,
+  body:has(#player:not(.hidden)) #player .chord-editor-fields > label { min-width: 0 !important; }
+  body.player-active #player .chord-editor-fields select,
+  body:has(#player:not(.hidden)) #player .chord-editor-fields select { width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
+
+  body.player-active #player .player-edit-actions,
+  body:has(#player:not(.hidden)) #player .player-edit-actions {
+    grid-template-columns: repeat(5, 36px) !important;
+    width: max-content !important;
+    max-width: calc(100vw - 16px) !important;
+    box-sizing: border-box !important;
+  }
+}@media (max-width: 900px) {
+  body.player-active #player #notesPanel .notes-panel-head,
+  body:has(#player:not(.hidden)) #player #notesPanel .notes-panel-head {
+    position: sticky !important;
+    top: -8px !important;
+    z-index: 1 !important;
+    padding-top: 4px !important;
+    background: #f4f7f8 !important;
+  }
+  body.player-active #player #notesPanel .recorded,
+  body:has(#player:not(.hidden)) #player #notesPanel .recorded {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    gap: 5px !important;
+  }
+}
+/* El control de bajo debe distinguirse del resto de iconos de edición. */
+.player-edit-actions { grid-template-columns: 36px 74px repeat(3,36px) !important; }
+.player-edit-actions #chordEditorToggle {
+  display: flex !important;
+  width: 74px !important;
+  min-width: 74px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  padding: 0 5px !important;
+  font-size: 15px !important;
+}
+.player-edit-actions #chordEditorToggle .edit-action-label {
+  color: #fff !important;
+  font-size: .68rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+}
+@media (max-width: 900px) {
+  body.player-active #player .player-edit-actions,
+  body:has(#player:not(.hidden)) #player .player-edit-actions { grid-template-columns: 36px 74px repeat(3,36px) !important; }
+  body.player-active #player .player-edit-actions #chordEditorToggle,
+  body:has(#player:not(.hidden)) #player .player-edit-actions #chordEditorToggle { width: 74px !important; min-width: 74px !important; }
+}
+/* Indicador de nota junto al instrumento; botón de bajo en acabado claro. */
+@media (max-width: 900px) {
+  body.player-active #player .stage-tool-rail .instrument-note-pair,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail .instrument-note-pair {
+    display: flex !important;
+    width: max-content !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  body.player-active #player .stage-tool-rail #currentNote,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail #currentNote {
+    position: static !important;
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    min-width: 39px !important;
+    max-width: 82px !important;
+    min-height: 29px !important;
+    margin: 0 !important;
+    padding: 0 7px !important;
+    transform: none !important;
+    border: 1px solid #ffffff35 !important;
+    border-radius: 6px !important;
+    background: #101215e8 !important;
+    color: #fff !important;
+    font-size: .68rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    text-shadow: none !important;
+  }
+  body.player-active #player .stage-tool-rail #currentNote:empty,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail #currentNote:empty { display: none !important; }
+  body.player-active #player .player-edit-actions #chordEditorToggle,
+  body:has(#player:not(.hidden)) #player .player-edit-actions #chordEditorToggle {
+    border-color: #ffffff !important;
+    background: #f4f9fc !important;
+    color: #0878a8 !important;
+  }
+  body.player-active #player .player-edit-actions #chordEditorToggle .edit-action-label,
+  body:has(#player:not(.hidden)) #player .player-edit-actions #chordEditorToggle .edit-action-label { color: #0878a8 !important; }
+}
+/* Ubicaciones estables: la nota acompaña al piano y el acorde va debajo. */
+@media (max-width: 900px) {
+  body.player-active #player .stage-tool-rail .instrument-note-pair,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail .instrument-note-pair {
+    position: relative !important;
+    align-self: flex-start !important;
+    flex: 0 0 29px !important;
+    width: 29px !important;
+    height: 29px !important;
+    overflow: visible !important;
+  }
+  body.player-active #player .stage-tool-rail .instrument-note-pair #instrumentToggle,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail .instrument-note-pair #instrumentToggle {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 29px !important;
+    min-width: 29px !important;
+    height: 29px !important;
+    margin: 0 !important;
+  }
+  body.player-active #player .stage-tool-rail .instrument-note-pair #currentNote,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail .instrument-note-pair #currentNote {
+    position: absolute !important;
+    top: 0 !important;
+    left: 33px !important;
+    width: max-content !important;
+    min-width: 39px !important;
+    max-width: 82px !important;
+    height: 29px !important;
+    min-height: 29px !important;
+    margin: 0 !important;
+    padding: 0 7px !important;
+    border: 1px solid #ffffff35 !important;
+    border-radius: 6px !important;
+    background: #101215e8 !important;
+    color: #fff !important;
+    font-size: .68rem !important;
+    font-weight: 700 !important;
+    line-height: 27px !important;
+    text-align: center !important;
+    text-shadow: none !important;
+    transform: none !important;
+  }
+  body.player-active #player .stage-tool-rail .instrument-note-pair #currentNote:empty,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail .instrument-note-pair #currentNote:empty { display: none !important; }
+  body.player-active #player .stage-tool-rail > #activeChordLabel,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail > #activeChordLabel {
+    position: static !important;
+    align-self: flex-start !important;
+    margin: 0 0 0 33px !important;
+    padding: 3px 7px !important;
+    border: 1px solid #78bed5 !important;
+    border-radius: 6px !important;
+    background: #f4f9fc !important;
+    color: #145b77 !important;
+    font-size: .68rem !important;
+    font-weight: 750 !important;
+    line-height: 1.1 !important;
+    text-shadow: none !important;
+    transform: none !important;
+    pointer-events: none !important;
+  }
+  body.player-active #player .player-edit-actions #chordEditorToggle,
+  body:has(#player:not(.hidden)) #player .player-edit-actions #chordEditorToggle {
+    border-color: #ffffff35 !important;
+    background: #0879a9 !important;
+    color: #fff !important;
+  }
+  body.player-active #player .player-edit-actions #chordEditorToggle .edit-action-label,
+  body:has(#player:not(.hidden)) #player .player-edit-actions #chordEditorToggle .edit-action-label { color: #fff !important; }
+
+  body.player-active #player #chordEditor,
+  body:has(#player:not(.hidden)) #player #chordEditor {
+    margin: 0 !important;
+    padding: 11px !important;
+    border: 1px solid #bfd4dc !important;
+    border-radius: 8px !important;
+    background: #f4f9fc !important;
+    color: #33434a !important;
+    box-shadow: none !important;
+  }
+  body.player-active #player #chordEditor .chord-editor-title,
+  body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-title { color: #284f5e !important; }
+  body.player-active #player #chordEditor p,
+  body:has(#player:not(.hidden)) #player #chordEditor p { color: #526871 !important; }
+  body.player-active #player #chordEditor .chord-editor-fields > label,
+  body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-fields > label { color: #344f58 !important; }
+  body.player-active #player #chordEditor .chord-editor-fields select,
+  body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-fields select {
+    border-color: #a8c0c8 !important;
+    background: #fff !important;
+    color: #253a40 !important;
+    color-scheme: light;
+  }
+  body.player-active #player #chordEditor .arpeggio-toggle,
+  body:has(#player:not(.hidden)) #player #chordEditor .arpeggio-toggle {
+    border-color: #bfd4dc !important;
+    background: #eaf3f6 !important;
+    color: #344f58 !important;
+  }
+  body.player-active #player #chordEditor .arpeggio-toggle b,
+  body:has(#player:not(.hidden)) #player #chordEditor .arpeggio-toggle b { color: #1d6480 !important; }
+  body.player-active #player #chordEditor .arpeggio-toggle small,
+  body:has(#player:not(.hidden)) #player #chordEditor .arpeggio-toggle small { color: #526871 !important; }
+  body.player-active #player #chordEditor .chord-editor-actions .gold,
+  body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-actions .gold { border-color: #1187b9 !important; background: #1187b9 !important; color: #fff !important; }
+  body.player-active #player #chordEditor .chord-editor-actions .soft,
+  body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-actions .soft { border-color: #a8c0c8 !important; background: #fff !important; color: #31525e !important; }
+}
+
+/* Colores semánticos de lectura: melodía en el color elegido y bajo en violeta. */
+#player { --bass-note-ink: #251632; }
+#player #currentNote:not(:empty) {
+  border-color: var(--melody-note-color, var(--pressed-key-color)) !important;
+  background: var(--melody-note-color, var(--pressed-key-color)) !important;
+  color: var(--melody-note-ink, #17323b) !important;
+  text-shadow: none !important;
+}
+.active-chord-label {
+  border-color: #9e5dd1 !important;
+  background: var(--bass-note-color, #bb82ef) !important;
+  color: var(--bass-note-ink, #251632) !important;
+  text-shadow: none !important;
+}
+.note-chord-label {
+  display: inline-block;
+  min-height: 14px;
+  padding: 0 4px;
+  border: 1px solid #9e5dd1;
+  border-radius: 5px;
+  background: var(--bass-note-color, #bb82ef);
+  color: var(--bass-note-ink, #251632) !important;
+  line-height: 12px;
+  text-shadow: none !important;
+}
+.note-chord-label.empty { visibility: hidden; }
+
+@media (max-width: 900px) {
+  body.player-active #player .stage-tool-rail > #activeChordLabel,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail > #activeChordLabel {
+    position: absolute !important;
+    top: 36px !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 36px !important;
+    align-self: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+    z-index: 13 !important;
+  }
+
+  body.player-active #player .stage-tool-rail .instrument-note-pair #currentNote,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail .instrument-note-pair #currentNote {
+    border-color: var(--melody-note-color, var(--pressed-key-color)) !important;
+    background: var(--melody-note-color, var(--pressed-key-color)) !important;
+    color: var(--melody-note-ink, #17323b) !important;
+    box-shadow: 0 0 7px #0003 !important;
+  }
+  body.player-active #player .stage-tool-rail > #activeChordLabel,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail > #activeChordLabel {
+    border-color: #9e5dd1 !important;
+    background: var(--bass-note-color, #bb82ef) !important;
+    color: var(--bass-note-ink, #251632) !important;
+    box-shadow: 0 0 7px #0003 !important;
+  }
+
+  /* Visor de letra y acordes: superficie clara y acentos azules. */
+  body.player-active #player #lyricsPanel,
+  body:has(#player:not(.hidden)) #player #lyricsPanel {
+    border-color: #138bbd !important;
+    background: #f3f8fa !important;
+    color: #33434a !important;
+  }
+  body.player-active #player #lyricsPanel #mobileSongDetails,
+  body:has(#player:not(.hidden)) #player #lyricsPanel #mobileSongDetails {
+    border: 0 !important;
+    border-radius: 5px !important;
+    background: #f3f8fa !important;
+    color: #33434a !important;
+    box-shadow: none !important;
+  }
+  body.player-active #player #lyricsPanel #mobileSongDetails > summary,
+  body:has(#player:not(.hidden)) #player #lyricsPanel #mobileSongDetails > summary {
+    color: #176b8a !important;
+  }
+  body.player-active #player #lyricsPanel #chordList .chord,
+  body:has(#player:not(.hidden)) #player #lyricsPanel #chordList .chord {
+    border-color: #8cb9c8 !important;
+    background: #e5f2f6 !important;
+    color: #176b8a !important;
+  }
+  body.player-active #player #lyricsPanel #chordList .hint,
+  body:has(#player:not(.hidden)) #player #lyricsPanel #chordList .hint { color: #526871 !important; }
+  body.player-active #player #lyricsPanel .lyrics-viewer,
+  body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer {
+    border-color: #c6d8de !important;
+    background: #fff !important;
+    color: #34464d !important;
+  }
+  body.player-active #player #lyricsPanel .lyrics-viewer .lc,
+  body.player-active #player #lyricsPanel .lyrics-viewer .ls,
+  body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .lc,
+  body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .ls { color: #147da4 !important; }
+  body.player-active #player #lyricsPanel .lyrics-viewer .ll,
+  body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .ll { color: #34464d !important; }
+  body.player-active #player #lyricsPanel .lyrics-viewer .lm,
+  body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .lm { color: #60747b !important; }
+  body.player-active #player #lyricsPanel .lyrics-viewer .lyrics-chord.selected,
+  body:has(#player:not(.hidden)) #player #lyricsPanel .lyrics-viewer .lyrics-chord.selected {
+    border-radius: 3px !important;
+    background: #d9edf4 !important;
+    color: #075f82 !important;
+    box-shadow: 0 0 0 1px #79b6ca !important;
+  }
+
+  /* Editor de acordes: selección de nota verde y selección/acorde de bajo violeta. */
+  body.player-active #player #notesPanel .note-chip,
+  body:has(#player:not(.hidden)) #player #notesPanel .note-chip {
+    border: 1px solid var(--melody-note-color, var(--pressed-key-color)) !important;
+    background: var(--melody-note-color, var(--pressed-key-color)) !important;
+    color: var(--melody-note-ink, #17323b) !important;
+  }
+  body.player-active #player #recordedNotes .melody-note-item.selected,
+  body:has(#player:not(.hidden)) #player #recordedNotes .melody-note-item.selected {
+    background: #e5f2f6 !important;
+    background: color-mix(in srgb, var(--melody-note-color, var(--pressed-key-color)) 22%, white) !important;
+    box-shadow: 0 0 0 1px var(--melody-note-color, var(--pressed-key-color)) !important;
+  }
+  body.player-active #player #recordedNotes .chord-gap-target,
+  body:has(#player:not(.hidden)) #player #recordedNotes .chord-gap-target {
+    border-color: #91b7c3 !important;
+    background: #f1f7f9 !important;
+    color: #176b8a !important;
+  }
+  body.player-active #player #recordedNotes .chord-gap-target:has(span),
+  body:has(#player:not(.hidden)) #player #recordedNotes .chord-gap-target:has(span) {
+    border-color: #9e5dd1 !important;
+    background: var(--bass-note-color, #bb82ef) !important;
+    color: var(--bass-note-ink, #251632) !important;
+  }
+  body.player-active #player #recordedNotes .chord-gap-target.selected,
+  body:has(#player:not(.hidden)) #player #recordedNotes .chord-gap-target.selected {
+    border-color: #087da9 !important;
+    background: #dceff5 !important;
+    color: #155c75 !important;
+    box-shadow: 0 0 0 1px #087da966 !important;
+  }
+  body.player-active #player #recordedNotes .chord-gap-target:has(span).selected,
+  body:has(#player:not(.hidden)) #player #recordedNotes .chord-gap-target:has(span).selected {
+    border-color: #8544b5 !important;
+    background: var(--bass-note-color, #bb82ef) !important;
+    color: var(--bass-note-ink, #251632) !important;
+  }
+  body.player-active #player #chordEditor .arpeggio-toggle input,
+  body:has(#player:not(.hidden)) #player #chordEditor .arpeggio-toggle input { accent-color: #138bbd !important; }
+  body.player-active #player #chordEditor .chord-editor-actions .gold,
+  body:has(#player:not(.hidden)) #player #chordEditor .chord-editor-actions .gold {
+    border-color: #1187b9 !important;
+    background: #1187b9 !important;
+    color: #fff !important;
+  }
+
+  /* Controles de octava y zoom con el mismo acabado claro del panel. */
+  body.player-active #player #keyboardRangeMenu,
+  body:has(#player:not(.hidden)) #player #keyboardRangeMenu { color-scheme: light; }
+  body.player-active #player #keyboardRangeMenu h2,
+  body:has(#player:not(.hidden)) #player #keyboardRangeMenu h2 { color: #284f5e !important; }
+  body.player-active #player #keyboardRangeMenu p,
+  body:has(#player:not(.hidden)) #player #keyboardRangeMenu p,
+  body.player-active #player #keyboardRangeMenu .range-custom-label,
+  body:has(#player:not(.hidden)) #player #keyboardRangeMenu .range-custom-label { color: #526871 !important; }
+  body.player-active #player #keyboardRangeMenu #keyboardNavigation button,
+  body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardNavigation button {
+    border-color: #a8c0c8 !important;
+    background: #fff !important;
+    color: #31525e !important;
+    box-shadow: none !important;
+  }
+  body.player-active #player #keyboardRangeMenu #keyboardNavigation button:hover,
+  body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardNavigation button:hover,
+  body.player-active #player #keyboardRangeMenu #keyboardNavigation button:focus-visible,
+  body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardNavigation button:focus-visible {
+    border-color: #138bbd !important;
+    background: #e6f3f7 !important;
+    color: #0878a8 !important;
+  }
+  body.player-active #player #keyboardRangeMenu #keyboardOctaveLabel,
+  body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardOctaveLabel { color: #176b8a !important; }
+  body.player-active #player #keyboardRangeMenu #keyboardZoomSlider,
+  body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardZoomSlider { accent-color: #138bbd !important; }
+}
+
+/* Asegurar que la tarjeta completa de cada menú conserve superficie clara. */
+@media (max-width: 900px) {
+  body.player-active #player .stage-popover,
+  body:has(#player:not(.hidden)) #player .stage-popover,
+  body.player-active #player > .player-sheet,
+  body:has(#player:not(.hidden)) #player > .player-sheet,
+  body.player-active #player #notesPanel,
+  body:has(#player:not(.hidden)) #player #notesPanel {
+    background: #f3f8fa !important;
+    background-color: #f3f8fa !important;
+    background-image: none !important;
+    color: #33434a !important;
+  }
+  body.player-active #player #lyricsPanel #mobileSongDetails,
+  body:has(#player:not(.hidden)) #player #lyricsPanel #mobileSongDetails,
+  body.player-active #player #lyricsPanel #chordList,
+  body:has(#player:not(.hidden)) #player #lyricsPanel #chordList,
+  body.player-active #player #lyricsPanel #lyrics,
+  body:has(#player:not(.hidden)) #player #lyricsPanel #lyrics,
+  body.player-active #player #chordEditorPanel #chordEditor,
+  body:has(#player:not(.hidden)) #player #chordEditorPanel #chordEditor {
+    background-color: #f3f8fa !important;
+    background-image: none !important;
+    color: #33434a !important;
+  }
+  body.player-active #player .stage-tool-rail .instrument-note-pair #currentNote,
+  body:has(#player:not(.hidden)) #player .stage-tool-rail .instrument-note-pair #currentNote {
+    top: 2px !important;
+    min-width: 36px !important;
+    height: 25px !important;
+    min-height: 25px !important;
+    padding-inline: 6px !important;
+    border-radius: 7px !important;
+    font-size: .64rem !important;
+    line-height: 23px !important;
+  }
+}
