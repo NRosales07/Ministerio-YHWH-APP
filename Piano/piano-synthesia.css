@@ -1240,3 +1240,6 @@ body:has(#keyTransposePopover:not(.hidden)) #player .note-canvas { overflow:visi
 .ui-icon-black-keys { fill: currentColor; stroke: none; }
 #player > .player-top .toolbar-actions .toolbar-icon .ui-icon { width: 19px; height: 19px; }
 #player .stage-tool-rail #instrumentToggle .ui-icon { width: 20px; height: 20px; }
+
+/* Teclado de borde a borde en iPhone horizontal: sin margen negro lateral por el safe-area. El inferior se conserva para que la barra de inicio no tape las etiquetas. */
+body.player-active #player .performance-layout > .piano-panel, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { padding-left: 0!important; padding-right: 0!important; }
