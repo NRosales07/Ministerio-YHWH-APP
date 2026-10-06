@@ -582,7 +582,7 @@ function makeFallingNotesEvents(playbackNotes,playbackChords){
   const chordStarts=playbackChords.map(chord=>chordStartTime(chord)).filter(value=>value!==null).map(value=>value/state.tempo).sort((a,b)=>a-b);
   playbackNotes.forEach(note=>{
     const midi=Number(note.midi),start=Math.max(0,Number(note.start)||0)/state.tempo;
-    const held=(Number(note.duration)||.32)*(state.sustain?2.4:1)/state.tempo;
+    const held=noteHoldSeconds(note)/state.tempo;
     if(Number.isFinite(midi)&&midi>=21&&midi<=108)events.push({midi,start,duration:Math.max(.06,held),kind:'melody'});
   });
   playbackChords.forEach(chord=>{
@@ -632,7 +632,7 @@ function drawFallingNotesFrame(timestamp){
   if(!fallingNotesGeometry)fallingNotesGeometry=rebuildFallingNotesGeometry();
   const geometry=fallingNotesGeometry;if(!geometry){stopFallingNotes();return;}
   const ctx=info.context,height=info.height,width=info.width,baseline=height-2,look=fallingNotesLookahead,pps=height/look;
-  const elapsed=Math.max(0,playbackNow()-run.startAt),scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom,fadeZone=Math.min(54,height*.2),hits=[];
+  const elapsed=Math.max(0,playbackNow()-run.startAt),scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom,hits=[];
   ctx.clearRect(0,0,width,height);
   const oldestStart=elapsed-run.maxVisibleDuration;let low=0,high=run.events.length;
   while(low<high){const mid=(low+high)>>1;if(run.events[mid].start<oldestStart)low=mid+1;else high=mid;}
@@ -644,9 +644,8 @@ function drawFallingNotesFrame(timestamp){
     const barWidth=Math.max(3,Math.min(keyWidth-2,keyWidth*.72)),barHeight=Math.max(7,event.visualDuration*pps);
     const front=baseline-(event.start-elapsed)*pps,bottom=Math.min(front,baseline),top=front-barHeight,x=center-barWidth/2,h=bottom-top;
     if(h<=0||x+barWidth<0||x>width||top>height||bottom<0)continue;
-    const chord=event.kind==='chord',live=elapsed>=event.start,fade=Math.min(1,front/fadeZone),r=Math.min(7,barWidth/2,h/2);
+    const chord=event.kind==='chord',live=elapsed>=event.start,fade=1,r=Math.min(7,barWidth/2,h/2);
     ctx.fillStyle=chord?geometry.chordColor:geometry.melodyColor;
-    ctx.globalAlpha=(live?.3:.16)*fade;ctx.fillRect(x-3,top-3,barWidth+6,h+6);
     ctx.globalAlpha=(chord?.72:.94)*fade;fnRoundRect(ctx,x,top,barWidth,h,r);ctx.fill();
     ctx.fillStyle='#fff';
     if(barWidth>=6){ctx.globalAlpha=(live?.34:.2)*fade;ctx.fillRect(x+barWidth*.14,top+3,Math.max(1.5,barWidth*.2),Math.max(0,h-6));}
@@ -785,12 +784,32 @@ function generatedVoiceParts(){
   });
   return {segunda:second,tercera:third};
 }
+// Igual que en el Bajo: cuando aparece otra nota de la misma voz, la anterior se quita.
+function cutAtNextNote(list){
+  const sorted=list.map(note=>({...note})).sort((a,b)=>(Number(a.start)||0)-(Number(b.start)||0));
+  sorted.forEach((note,index)=>{
+    const start=Number(note.start)||0;
+    const next=sorted.slice(index+1).find(item=>(Number(item.start)||0)>start+.001);
+    if(next)note.cutAt=Math.max(.06,(Number(next.start)||0)-start-.04);
+  });
+  return sorted;
+}
+function noteHoldSeconds(note){
+  // Trompeta: solo el toque, sin alargar con sustain. Los demás respetan el sustain.
+  const base=(Number(note.duration)||.32)*(state.instrument==='trumpet-real'?1:(state.sustain?2.4:1));
+  const limit=Number(note.cutAt);
+  return Number.isFinite(limit)?Math.max(.06,Math.min(base,limit)):base;
+}
+function noteWasCut(note){
+  const limit=Number(note.cutAt);
+  return Number.isFinite(limit)&&limit<(Number(note.duration)||.32)*(state.instrument==='trumpet-real'?1:(state.sustain?2.4:1));
+}
 function notesForCurrentMix(){
-  if(state.melodyType!=='voz')return state.notes;
+  if(state.melodyType!=='voz')return cutAtNextNote(state.notes);
   const parts=generatedVoiceParts(),selected=[];
-  if(state.voiceMix.principal)selected.push(...state.notes);
-  if(state.voiceMix.segunda)selected.push(...parts.segunda.filter(Boolean));
-  if(state.voiceMix.tercera)selected.push(...parts.tercera.filter(Boolean));
+  if(state.voiceMix.principal)selected.push(...cutAtNextNote(state.notes));
+  if(state.voiceMix.segunda)selected.push(...cutAtNextNote(parts.segunda.filter(Boolean)));
+  if(state.voiceMix.tercera)selected.push(...cutAtNextNote(parts.tercera.filter(Boolean)));
   return selected.sort((a,b)=>Number(a.start)-Number(b.start));
 }
 function chordSpanForPlayback(chord){
@@ -1008,7 +1027,8 @@ function renderKeyboard() {
     const active = { element, stopNote:null };
     state.activePointers.set(pointerId, active);
     updateActiveChordLabel();
-    playNote(Number(element.dataset.midi), element, Infinity).then(stopNote => {
+    const asTouch = state.recording && state.instrument === 'trumpet-real';
+    playNote(Number(element.dataset.midi), element, asTouch ? .35 : Infinity).then(stopNote => {
       if (state.activePointers.get(pointerId) === active) active.stopNote = stopNote;
       else stopNote?.();
     });
@@ -1391,8 +1411,9 @@ async function playNote(midi, element, duration = 0.4) {
     console.error(error);
   }
 }
+function setStagePlaying(on){document.body.classList.toggle('melody-playing',!!on);}
 function stopPlayback({suspendAudio=false}={}) {
-  state.playing = false;
+  state.playing = false;setStagePlaying(false);
   stopFallingNotes();
   state.playTimers.forEach(clearTimeout);
   state.playTimers = [];
@@ -1426,13 +1447,14 @@ async function prepareMelodyAudio(notesToPrepare=state.notes) {
   await Promise.all([...loads,resumePromise]);
   return new Map(entries);
 }
-function schedulePlaybackNote(midi,element,duration,when,prepared){
+function schedulePlaybackNote(midi,element,duration,when,prepared,cut){
   const context=getAudioContext(),entry=prepared.get(midi);
   if(!entry)return;
   const source=context.createBufferSource(),gain=context.createGain();
   source.buffer=entry.buffer;source.playbackRate.value=2**((midi-entry.sampleMidi)/12);
-  const noteDuration=Math.max(.08,duration/state.tempo*(state.sustain?2.4:1));
-  const release=state.instrument==='trumpet-real'?.25:state.instrument==='steinway-grand'?.7:(state.sustain?.9:.32);
+  const noteDuration=Math.max(.06,duration/state.tempo);
+  const baseRelease=state.instrument==='trumpet-real'?.25:state.instrument==='steinway-grand'?.7:(state.sustain?.9:.32);
+  const release=cut?Math.min(baseRelease,.06):baseRelease;
   const stopAt=when+noteDuration;
   gain.gain.setValueAtTime(.0001,when);gain.gain.linearRampToValueAtTime(.88,when+.018);
   gain.gain.setValueAtTime(.88,stopAt);gain.gain.linearRampToValueAtTime(.0001,stopAt+release);
@@ -1450,13 +1472,13 @@ async function playMelody() {
   stopPlayback();
   state.selectedSongChord=null;
   document.querySelectorAll('#keyboard .key.chord-selected,#lyrics .lyrics-chord.selected').forEach(element=>element.classList.remove('chord-selected','selected'));
-  state.playing = true;
+  state.playing = true;setStagePlaying(true);closePlayerPopovers();
   setPlayerControl('playMelody','⏸','Reproduciendo');
   $('status').textContent = 'Preparando sonido…';
   try {
     var prepared=await prepareMelodyAudio(playbackNotes);
   } catch (error) {
-    state.playing = false;
+    state.playing = false;setStagePlaying(false);
     stopFallingNotes();
     resetPlaybackTimeline();
     setPlayerControl('playMelody','▶','Reproducir');
@@ -1481,7 +1503,7 @@ async function playMelody() {
   }
   playbackNotes.forEach(note => {
     const midi=Number(note.midi),key=document.querySelector(`.key[data-midi="${midi}"]`);
-    schedulePlaybackNote(midi,key,Number(note.duration)||.32,playbackStart+Math.max(0,Number(note.start)||0)/state.tempo,prepared);
+    schedulePlaybackNote(midi,key,noteHoldSeconds(note),playbackStart+Math.max(0,Number(note.start)||0)/state.tempo,prepared,noteWasCut(note));
   });
   const playbackChords = (state.melodyType !== 'voz' || state.voiceMix.acordes) ? state.chords : [];
   const fallingEvents=makeFallingNotesEvents(playbackNotes,playbackChords),chordLights=new Map();
@@ -1492,12 +1514,12 @@ async function playMelody() {
     playChord({...chord,duration:chordSpanForPlayback(chord),tempo:state.tempo,startAt:playbackStart+start/state.tempo,lightDurations:chordLights.get(chord)});
   });
   const noteRelease = state.instrument === 'trumpet-real' ? 0.25 : state.instrument === 'steinway-grand' ? 0.7 : (state.sustain ? 0.9 : 0.32);
-  const noteEnd = Math.max(...playbackNotes.map(note => ((Number(note.start) || 0) + (Number(note.duration) || 0.35) * (state.sustain ? 2.4 : 1)) / state.tempo + noteRelease));
+  const noteEnd = Math.max(...playbackNotes.map(note => ((Number(note.start) || 0) + noteHoldSeconds(note)) / state.tempo + (noteWasCut(note) ? Math.min(noteRelease, .06) : noteRelease)));
   const chordEnd = playbackChords.reduce((end, chord) => { const start=chordStartTime(chord); const instrument=chord.instrument||state.bassInstrument; const release=instrument==='trumpet-real'?0.25:instrument==='steinway-grand'?0.7:(state.sustain?0.9:0.32); return start!==null ? Math.max(end, (start+chordSpanForPlayback(chord)+(chord.arpeggio?0.4:0))/state.tempo+release) : end; }, 0);
   const end = Math.max(noteEnd, chordEnd);
   startPlaybackTimeline(playbackStart,end);
   startFallingNotes(playbackNotes,playbackChords,playbackStart,fallingEvents);
-  state.playTimers.push(setTimeout(() => { state.playing = false; stopFallingNotes(); if(timelineFrame)cancelAnimationFrame(timelineFrame);timelineFrame=0;timelineStartedAt=0;updatePlaybackTimeline(end,end);$('tempoControl').disabled=false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = 'Melodía terminada.'; }, end * 1000 + 500));
+  state.playTimers.push(setTimeout(() => { state.playing = false; setStagePlaying(false); stopFallingNotes(); if(timelineFrame)cancelAnimationFrame(timelineFrame);timelineFrame=0;timelineStartedAt=0;updatePlaybackTimeline(end,end);$('tempoControl').disabled=false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = 'Melodía terminada.'; }, end * 1000 + 500));
 }
 function toggleRecord() {
   if (!state.admin) { toast('Solo Admin puede grabar.'); return; }
