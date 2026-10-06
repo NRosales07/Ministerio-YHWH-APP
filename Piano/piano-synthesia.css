@@ -107,6 +107,7 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 .performance-layout { display: flex; flex: 1; flex-direction: column; min-height: 0; background: #252629; }
 .note-canvas { --stage-key-width: 40px; position: relative; flex: 1 1 auto; min-height: 70px; overflow: hidden; background: linear-gradient(180deg,#292a2d,#242528); touch-action: pan-y; }
 .canvas-grid { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(to right, #ffffff12 1px,transparent 1px),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: var(--stage-key-width) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0; opacity: .85; }
+.falling-notes-canvas { position: absolute; z-index: 1; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
 .canvas-readouts { position: absolute; z-index: 2; top: 15px; left: calc(64px + env(safe-area-inset-left)); right: calc(12px + env(safe-area-inset-right)); display: flex; align-items: center; gap: 11px; min-height: 32px; color: #edf2f4; font-size: .78rem; text-shadow: 0 1px 3px #000; }
 .canvas-readouts #playerLabel { color: #dbeaf0; font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
 .active-chord-label { padding: 4px 10px; border: 1px solid #ffffff21; border-radius: 4px; background: #101215c9; color: #e9f1f4; font-size: 1.06rem; font-weight: 700; }
@@ -335,8 +336,8 @@ body.player-active #player { position: relative; display: flex!important; flex: 
   body.player-active #player .performance-layout > .piano-panel #keyboardScroll, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel #keyboardScroll { display: block!important; width: 100%!important; height: 100%!important; overflow-x: auto!important; overflow-y: hidden!important; touch-action: pan-x!important; }
   body.player-active #player .performance-layout > .piano-panel #keyboard, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel #keyboard { display: flex!important; width: max-content!important; min-width: 100%!important; height: 100%!important; }
   body.player-active #player .performance-layout > .piano-panel #keyboard .keys, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel #keyboard .keys { height: 100%!important; width: calc(var(--keyboard-key-width,37px) * var(--keyboard-zoom,1))!important; flex: 0 0 calc(var(--keyboard-key-width,37px) * var(--keyboard-zoom,1))!important; }
-  body.player-active #player .performance-layout > .piano-panel .white, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel .white { background: linear-gradient(90deg,#fffefa,#e8e7e1)!important; border-color: #c0c1c0!important; }
-  body.player-active #player .performance-layout > .piano-panel .black, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel .black { background: linear-gradient(90deg,#393a3b,#050607 80%)!important; }
+  body.player-active #player .performance-layout > .piano-panel .white:not(.playing):not(.bass-playing), body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel .white:not(.playing):not(.bass-playing) { background: linear-gradient(90deg,#fffefa,#e8e7e1)!important; border-color: #c0c1c0!important; }
+  body.player-active #player .performance-layout > .piano-panel .black:not(.playing):not(.bass-playing), body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel .black:not(.playing):not(.bass-playing) { background: linear-gradient(90deg,#393a3b,#050607 80%)!important; }
   body.player-active #player .mobile-player-controls { position: absolute!important; z-index: 12!important; right: calc(7px + env(safe-area-inset-right))!important; bottom: 6px!important; display: flex!important; flex: 0 0 auto!important; flex-wrap: nowrap!important; justify-content: flex-start!important; gap: 4px!important; width: min(390px,calc(100vw - 62px))!important; max-width: calc(100% - 58px)!important; min-height: 0!important; margin: 0!important; padding: 0 0 3px!important; overflow-x: auto!important; overflow-y: hidden!important; border: 0!important; background: transparent!important; box-shadow: none!important; }
   body:has(#player:not(.hidden)) #player .mobile-player-controls { position: absolute!important; z-index: 12!important; right: calc(7px + env(safe-area-inset-right))!important; bottom: 6px!important; display: flex!important; flex: 0 0 auto!important; flex-wrap: nowrap!important; justify-content: flex-start!important; gap: 4px!important; width: min(390px,calc(100vw - 62px))!important; max-width: calc(100% - 58px)!important; min-height: 0!important; margin: 0!important; padding: 0 0 3px!important; overflow-x: auto!important; overflow-y: hidden!important; border: 0!important; background: transparent!important; box-shadow: none!important; }
   body.player-active #player .mobile-player-controls button, body:has(#player:not(.hidden)) #player .mobile-player-controls button { display: flex!important; flex: 0 0 52px!important; min-width: 48px!important; min-height: 43px!important; flex-direction: column!important; align-items: center!important; justify-content: center!important; gap: 2px!important; padding: 3px!important; border: 1px solid #ffffff35!important; border-radius: 5px!important; background: #133444!important; color: #f5fbfd!important; font-size: 16px!important; }
@@ -1243,3 +1244,91 @@ body:has(#keyTransposePopover:not(.hidden)) #player .note-canvas { overflow:visi
 
 /* Teclado de borde a borde en iPhone horizontal: sin margen negro lateral por el safe-area. El inferior se conserva para que la barra de inicio no tape las etiquetas. */
 body.player-active #player .performance-layout > .piano-panel, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { padding-left: 0!important; padding-right: 0!important; }
+
+/* Visor de duración como franja fina arriba del área de notas (superpuesto): las barras caen directo sobre el piano. */
+body.player-active #player .performance-layout > .player-timeline, body:has(#player:not(.hidden)) #player .performance-layout > .player-timeline { position: absolute!important; top: 5px!important; right: 0!important; bottom: auto!important; left: 0!important; z-index: 9!important; order: 0!important; flex: none!important; width: auto!important; height: 16px!important; min-height: 16px!important; background: linear-gradient(#17191c00)!important; pointer-events: none!important; }
+#player .performance-layout > .note-canvas .canvas-readouts { top: 24px!important; }
+
+/* Tempo junto a los botones de reproducción (arriba) y lápiz de edición con el mismo estilo que el resto. */
+#player > .player-top .player-playback-group .stage-metronome-controls { position: static!important; transform: none!important; display: flex!important; flex: 0 0 auto!important; align-items: center!important; gap: 3px!important; width: auto!important; max-width: none!important; margin: 0 0 0 8px!important; padding: 0!important; border: 0!important; background: transparent!important; box-shadow: none!important; }
+#player > .player-top .player-edit-menu.admin-only { background: transparent!important; border-color: transparent!important; box-shadow: none!important; }
+#player > .player-top .player-edit-menu > summary { background: transparent!important; border-color: #ffffff20!important; }
+#player > .player-top .player-edit-menu[open] > summary { background: #075f88!important; }
+
+/* Más separación entre los botones de reproducción y el tempo, con una línea divisoria fina. */
+#player > .player-top .player-playback-group .stage-metronome-controls { margin-left: 14px!important; padding-left: 14px!important; border-left: 1px solid #ffffff38!important; }
+
+/* Orden en la barra: botones de reproducción primero y el tempo después (piano.css le daba order:2 a los botones). */
+#player > .player-top .player-playback-group > .mobile-player-controls { order: 0!important; }
+#player > .player-top .player-playback-group > .stage-metronome-controls { order: 1!important; }
+
+/* Teclas encendidas: mismo pintado en móvil y en PC. Melodía = color elegido; bajo = violeta. */
+#player .piano-panel .key.playing { border-color: var(--pressed-key-color)!important; background: var(--pressed-key-color)!important; box-shadow: 0 0 13px var(--pressed-key-color)!important; }
+#player .piano-panel .key.bass-playing { border-color: #9e5dd1!important; background: var(--bass-note-color,#bb82ef)!important; box-shadow: 0 0 12px #b679ecaa!important; }
+#player .piano-panel .black.bass-playing { background: #8851b5!important; }
+
+/* Fondos claros: notas grabadas y navegación de octava/zoom. */
+#player #notesPanel #recordedNotes { background: #e2edf1!important; border: 1px solid #c6d8de!important; box-shadow: none!important; color: #33474e!important; }
+#player #keyboardRangeMenu #keyboardNavigation { background: #e2edf1!important; border: 1px solid #c6d8de!important; box-shadow: none!important; }
+#player #keyboardRangeMenu #keyboardNavigation button { border: 1px solid #a8c0c8!important; background: #fff!important; color: #31525e!important; box-shadow: none!important; }
+#player #keyboardRangeMenu #keyboardOctaveLabel { color: #176b8a!important; }
+
+/* Etiquetas: botones como los del zoom en lugar del desplegable oscuro. */
+#notationMenu .quick-notation { display: none!important; }
+.notation-presets { margin-bottom: 2px; }
+.notation-presets button { padding: 6px 10px; line-height: 1.25; cursor: pointer; }
+.notation-presets button small { display: block; margin-top: 2px; color: #5d7077; font-size: .7rem; font-weight: 400; }
+.notation-presets button.active small { color: #0878a8; }
+
+/* Menús de instrumento y color: compactos (sin estirarse) y claros. */
+#instrumentMenu, #colorMenu { width: fit-content; max-width: calc(100vw - 16px); }
+#instrumentMenu { min-width: 270px; }
+#colorMenu { min-width: 230px; }
+@media (max-width: 900px) {
+  body.player-active #player #instrumentMenu, body:has(#player:not(.hidden)) #player #instrumentMenu,
+  body.player-active #player #colorMenu, body:has(#player:not(.hidden)) #player #colorMenu { width: fit-content!important; max-width: calc(100vw - 16px)!important; }
+  body.player-active #player #instrumentMenu, body:has(#player:not(.hidden)) #player #instrumentMenu { min-width: min(280px,calc(100vw - 16px))!important; }
+  body.player-active #player #colorMenu, body:has(#player:not(.hidden)) #player #colorMenu { min-width: min(230px,calc(100vw - 16px))!important; }
+}
+#instrumentMenu .quick-instrument { display: none!important; }
+.instrument-options { display: grid; gap: 6px; margin-top: 8px; }
+.instrument-option { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 6px 14px 6px 7px; border: 1px solid #a6bbc2; border-radius: 6px; background: #f5f7f8; color: #344951; font-size: .95rem; text-align: left; cursor: pointer; }
+.instrument-option .instrument-icon { display: grid; place-items: center; flex: 0 0 40px; width: 40px; height: 40px; border-radius: 6px; background: #dcebf0; color: #1d6480; }
+.instrument-option svg { display: block; width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.instrument-option.active { border-color: #087fb0; background: #e6f3f7; color: #0878a8; font-weight: 700; box-shadow: inset 0 0 0 1px #087fb0; }
+.instrument-option.active .instrument-icon { background: #138bbd; color: #fff; }
+
+/* ===== Listas de alabanzas: Adoración, Júbilo y Crear melodía ===== */
+#songView > .toolbar, #createView > .toolbar { border: 1px solid #a9c9d5!important; border-radius: 12px!important; background: linear-gradient(180deg,#f4fafc,#e2eff4)!important; box-shadow: 0 2px 6px #315f7016!important; }
+.toolbar-title { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.toolbar-badge { display: grid; flex: 0 0 38px; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg,#1a97c9,#0f78a6); color: #fff; font-size: 1.2rem; line-height: 1; box-shadow: 0 3px 8px #0f78a640; }
+#songView[data-category="jubilo"] .toolbar-badge { background: linear-gradient(135deg,#f2a84a,#d97a1c); box-shadow: 0 3px 8px #d97a1c40; }
+#createView .toolbar-badge { background: linear-gradient(135deg,#34b27e,#1f8c5c); box-shadow: 0 3px 8px #1f8c5c40; }
+.toolbar-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.toolbar-text small { color: #5a7783; font-size: .72rem; font-weight: 600; line-height: 1.1; }
+#songView .toolbar h1, #createView .toolbar h1 { color: #1f4152; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; font-weight: 750; letter-spacing: -.01em; }
+#songView .toolbar #search, #createView .toolbar #createSearch { padding-left: 34px!important; border: 1px solid #9dbac5!important; border-radius: 999px!important; background-color: #fff!important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f8796' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='m16 16 4.5 4.5'/%3E%3C/svg%3E")!important; background-repeat: no-repeat!important; background-position: 11px 50%!important; background-size: 16px!important; }
+#songView > .hint, #createView > .hint { display: flex; align-items: center; gap: 7px; color: #4f6b77; }
+#songView > .hint::before, #createView > .hint::before { content: "i"; display: grid; flex: 0 0 auto; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: #1187b9; color: #fff; font: italic 700 10px/1 Georgia,serif; }
+
+#songList, #createList { scrollbar-width: thin; scrollbar-color: #86aebd transparent; }
+#songList .song-card, #createList .song-card { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px; padding: 8px 10px; border: 1px solid #b6cfda; border-radius: 12px; background: #fff; box-shadow: 0 1px 3px #315f7014; text-align: left; transition: border-color .15s, box-shadow .15s, transform .15s, background .15s; }
+#songList .song-card:hover, #createList .song-card:hover { border-color: #1187b9; background: #f7fcfe; box-shadow: 0 5px 12px #1187b926; transform: translateY(-1px); }
+#songList .song-card:active, #createList .song-card:active { transform: none; box-shadow: 0 1px 3px #315f7014; }
+.song-key { display: grid; flex: 0 0 36px; place-items: center; min-width: 36px; height: 36px; padding: 0 4px; border-radius: 9px; background: #e1f1f7; color: #0e6f99; font-size: .8rem; font-weight: 800; line-height: 1; }
+.song-card[data-category="jubilo"] .song-key { background: #fdeedb; color: #b4600c; }
+.song-info { display: flex; flex: 1 1 auto; flex-direction: column; gap: 2px; min-width: 0; }
+.song-info b { display: -webkit-box; overflow: hidden; color: #23424f; font-size: .9rem; line-height: 1.2; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; }
+.song-info small { margin: 0; overflow: hidden; color: #6a8590; font-size: .72rem; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+.song-info small:empty { display: none; }
+.song-chips { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; gap: 3px; }
+.song-chip { display: inline-flex; align-items: center; gap: 4px; height: 18px; padding: 0 7px 0 5px; border-radius: 999px; font-size: .64rem; font-weight: 700; line-height: 1; white-space: nowrap; }
+.song-chip svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.song-chip.intro { background: #e1f3e8; color: #23744f; }
+.song-chip.voice { background: #e4ebfa; color: #3a58a8; }
+.song-chip.create { padding: 0 9px; background: #1187b9; color: #fff; }
+.song-group-title { display: flex; grid-column: 1 / -1; align-items: center; gap: 8px; margin: 8px 2px 0; color: #2a5164; font-size: .8rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.song-group-title:first-child { margin-top: 2px; }
+.song-group-title small { padding: 1px 8px; border-radius: 999px; background: #d3e6ee; color: #40697b; font-size: .68rem; letter-spacing: 0; }
+.song-group-title::after { content: ""; flex: 1; height: 1px; background: #9fc0cd; }
+.song-list .empty { grid-column: 1 / -1; padding: 26px 18px; border: 1px dashed #94b6c4; border-radius: 12px; background: #ecf5f8; box-shadow: none; color: #5a7480; font-size: .85rem; line-height: 1.5; text-align: center; }
