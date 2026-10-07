@@ -42,6 +42,7 @@ let stageGridElement = null, stageLastKeyWidth = -1, stageLastScroll = -1;
 let pinchFlush = null;
 const timelineCache = { elapsed:'', duration:'', ratio:-1, percent:-1, empty:null };
 const FALLING_NOTES_MAX_LOOKAHEAD = 6;
+let fallingNotesStyle = (()=>{try{const v=localStorage.getItem('yhwh_piano_barstyle');return v==='melody'||v==='drops'||v==='off'?v:'bars';}catch(_){return 'bars';}})();
 let fallingNotesLookahead = (()=>{try{const v=parseFloat(localStorage.getItem('yhwh_piano_lookahead'));return v>=0.8&&v<=6?v:2.1;}catch(_){return 2.1;}})();
 const FALLING_NOTES_FRAME_MS = 1000 / 60 - 3;
 let theorySequenceTimers = [];
@@ -543,7 +544,7 @@ function ensureFallingNotesObservers(){
     fallingNotesVisibilityBound=true;
     document.addEventListener('visibilitychange',()=>{
       if(document.hidden){if(fallingNotesFrame)cancelAnimationFrame(fallingNotesFrame);fallingNotesFrame=0;return;}
-      if(state.playing&&fallingNotesRun&&!fallingNotesFrame)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+      if(state.playing&&fallingNotesRun&&!fallingNotesFrame&&fallingNotesStyle!=='off')fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
     });
   }
   if(typeof ResizeObserver==='undefined'||fallingNotesResizeObserver)return;
@@ -625,27 +626,10 @@ function fnGlow(ctx,color,baseline){
   if(!g){if(fnGlowCache.size>24)fnGlowCache.clear();g=ctx.createLinearGradient(0,baseline,0,baseline-46);g.addColorStop(0,color);g.addColorStop(1,'rgba(0,0,0,0)');fnGlowCache.set(key,g);}
   return g;
 }
-// Medidor de rendimiento: solo aparece si la URL lleva ?debug
-let fnDbg=null,fnDbgPrev=0,fnDbgFrames=0,fnDbgWorst=0,fnDbgSince=0;
-function fnDebugTick(t){
-  if(fnDbg===null){
-    fnDbg=false;
-    try{if(/[?&]debug\b/.test(location.search)){fnDbg=document.createElement('div');fnDbg.style.cssText='position:fixed;z-index:99999;top:calc(env(safe-area-inset-top) + 4px);right:6px;padding:3px 7px;border-radius:5px;background:#000c;color:#7dff7d;font:11px/1.3 monospace;pointer-events:none;white-space:pre';document.body.appendChild(fnDbg);}}catch(_){}
-  }
-  if(!fnDbg)return;
-  if(fnDbgPrev&&t-fnDbgPrev<500){const d=t-fnDbgPrev;fnDbgFrames++;if(d>fnDbgWorst)fnDbgWorst=d;}
-  fnDbgPrev=t;
-  if(!fnDbgSince)fnDbgSince=t;
-  if(t-fnDbgSince>=500){
-    fnDbg.textContent=Math.round(fnDbgFrames*1000/(t-fnDbgSince))+' fps\npeor: '+Math.round(fnDbgWorst)+' ms';
-    fnDbgFrames=0;fnDbgWorst=0;fnDbgSince=t;
-  }
-}
 function fnRand(n){const v=Math.sin(n*12.9898)*43758.5453;return v-Math.floor(v);}
 function drawFallingNotesFrame(timestamp){
   if(!state.playing||!fallingNotesRun){stopFallingNotes();return;}
   if(document.hidden){fallingNotesFrame=0;return;}
-  fnDebugTick(timestamp);
   fallingNotesLastFrame=timestamp;
   if(pinchFlush)pinchFlush();
   if(fallingNotesCanvasDirty&&!resizeFallingNotesCanvas()){fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);return;}
@@ -653,7 +637,7 @@ function drawFallingNotesFrame(timestamp){
   if(!info||!scroll){stopFallingNotes();return;}
   if(!fallingNotesGeometry)fallingNotesGeometry=rebuildFallingNotesGeometry();
   const geometry=fallingNotesGeometry;if(!geometry){stopFallingNotes();return;}
-  const ctx=info.context,height=info.height,width=info.width,baseline=height-2,look=fallingNotesLookahead,pps=height/look;
+  const ctx=info.context,height=info.height,width=info.width,baseline=height-2,look=fallingNotesLookahead,pps=height/look,style=fallingNotesStyle;
   const elapsed=Math.max(0,playbackNow()-run.startAt),scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom,hits=fnHits;hits.length=0;
   ctx.clearRect(0,0,width,height);
   const oldestStart=elapsed-run.maxVisibleDuration;let low=0,high=run.events.length;
@@ -661,9 +645,18 @@ function drawFallingNotesFrame(timestamp){
   for(let index=low;index<run.events.length;index++){
     const event=run.events[index];if(event.start>elapsed+look)break;
     if(elapsed>event.start+event.visualDuration)continue;
+    if(style==='melody'&&event.kind==='chord')continue;
     const key=geometry.positions.get(event.midi);if(!key)continue;
     const keyWidth=key.width*zoomScale,center=geometry.left+key.center*zoomScale-scrollLeft;
     const barWidth=Math.max(3,Math.min(keyWidth-2,keyWidth*.72)),barHeight=Math.max(7,event.visualDuration*pps);
+    if(style==='drops'){
+      if(elapsed>event.start+.05)continue;
+      const dw=Math.max(5,Math.min(barWidth,16)),dh=dw*1.4,dBottom=Math.min(baseline,baseline-(event.start-elapsed)*pps),isChord=event.kind==='chord';
+      if(dBottom<0||center<-dw||center>width+dw)continue;
+      ctx.fillStyle=isChord?geometry.chordColor:geometry.melodyColor;ctx.globalAlpha=isChord?.8:.95;
+      fnRoundRect(ctx,center-dw/2,dBottom-dh,dw,dh,dw/2);ctx.fill();
+      continue;
+    }
     const front=baseline-(event.start-elapsed)*pps,bottom=Math.min(front,baseline),top=front-barHeight,x=center-barWidth/2,h=bottom-top;
     if(h<=0||x+barWidth<0||x>width||top>height||bottom<0)continue;
     const chord=event.kind==='chord',live=elapsed>=event.start,fade=1,r=Math.min(7,barWidth/2,h/2);
@@ -700,7 +693,7 @@ function startFallingNotes(playbackNotes,playbackChords,startAt,prebuiltEvents){
   const end=events.reduce((last,event)=>Math.max(last,event.start+event.visualDuration),0);
   fallingNotesRun={events,startAt,maxVisibleDuration,end,calm:!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)};
   resetPlaybackClock();fallingNotesGeometry=rebuildFallingNotesGeometry();fallingNotesLastFrame=0;
-  if(!document.hidden)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+  if(!document.hidden&&fallingNotesStyle!=='off')fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
 }
 function showSongIntro(){
   const canvas=$('noteCanvas');if(!canvas||!state.song)return;
@@ -1164,6 +1157,31 @@ function toggleNotesPanel(){
   if(!state.showRecordedNotes||!state.notes.length){toast('Esta pista todavía no tiene notas grabadas.');return;}
   const panel=$('notesPanel'),open=panel.classList.contains('hidden');panel.dataset.open=open?'1':'';updateVisualOptions();
   if(open)$('recordedNotes').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const FALLING_STYLE_OPTIONS=[['bars','Barras completas','Melodía y bajos, con brillo'],['melody','Solo melodía','Barras sin los bajos'],['drops','Gotas','Puntos ligeros que caen'],['off','Sin barras','Solo se iluminan las teclas']];
+function syncFallingStyleButtons(){
+  document.querySelectorAll('[data-fall-style]').forEach(button=>{const on=button.dataset.fallStyle===fallingNotesStyle;button.classList.toggle('active',on);button.setAttribute('aria-pressed',on?'true':'false');});
+}
+function setFallingNotesStyle(value){
+  if(!FALLING_STYLE_OPTIONS.some(option=>option[0]===value))value='bars';
+  fallingNotesStyle=value;
+  try{localStorage.setItem('yhwh_piano_barstyle',value);}catch(_){}
+  if(value==='off'){
+    if(fallingNotesFrame)cancelAnimationFrame(fallingNotesFrame);
+    fallingNotesFrame=0;clearFallingNotesCanvas();
+  }else if(state.playing&&fallingNotesRun&&!fallingNotesFrame&&!document.hidden){
+    fallingNotesLastFrame=0;fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+  }
+  syncFallingStyleButtons();
+}
+function initFallingStyleSetting(){
+  const sheet=$('playerSettings');if(!sheet||$('fallingStyleBlock'))return;
+  const block=document.createElement('div');block.id='fallingStyleBlock';block.className='settings-block';
+  block.innerHTML='<h3>Notas que caen</h3><div class="range-presets" role="group" aria-label="Estilo de las notas que caen">'+FALLING_STYLE_OPTIONS.map(option=>`<button type="button" data-fall-style="${option[0]}"><span>${option[1]}</span><small style="display:block;margin-top:2px;font-size:.68rem;font-weight:400;opacity:.75">${option[2]}</small></button>`).join('')+'</div>';
+  const switches=sheet.querySelector('.settings-switches');
+  if(switches)switches.insertAdjacentElement('afterend',block);else sheet.appendChild(block);
+  block.addEventListener('click',event=>{const button=event.target.closest('[data-fall-style]');if(button)setFallingNotesStyle(button.dataset.fallStyle);});
+  syncFallingStyleButtons();
 }
 function setFallingNotesLookahead(value){fallingNotesLookahead=Math.min(FALLING_NOTES_MAX_LOOKAHEAD,Math.max(.8,value));}
 function bindCanvasGestures(){
@@ -1739,6 +1757,7 @@ function bindInterface() {
   });
   $('keyboardScroll').addEventListener('scroll',syncStageScroll,{passive:true});
   {const tempoBox=document.querySelector('.stage-metronome-controls'),playGroup=document.querySelector('.player-playback-group');if(tempoBox&&playGroup&&tempoBox.parentElement!==playGroup)playGroup.appendChild(tempoBox);}
+  initFallingStyleSetting();
   bindCanvasGestures();
   document.addEventListener('pointerdown',event=>{if(!event.target.closest('.stage-popover,.player-sheet,.toolbar-icon,.top-tempo,.stage-tool-rail'))closePlayerPopovers();});
   $('instrumentSelect').value = state.instrument;
