@@ -9,7 +9,7 @@ const state = {
   view: 'home', category: 'adoracion', song: null, melodyType:'introduccion', voiceMix:{principal:true,segunda:false,tercera:false,acordes:true}, voiceDirection:{segunda:localStorage.getItem('yhwh_voice_second_direction')==='up'?'up':'down',tercera:localStorage.getItem('yhwh_voice_third_direction')==='up'?'up':'down'}, pendingSong:null, pendingPurpose:'listen', admin: false, selectedSongChord:null, theoryChord: { root:'C', quality:'major' }, theoryCircleChord: null, theoryCircleIndex:0, theoryCircleMinor:false, theoryCircleChords:null, theoryScale:'major', theoryInterval:7, theoryPianoIntervals:null, theoryPianoMode:'chord',
   melodies: readMelodyCache(), melodyDirty:false, recording: false, recordStart: 0, notes: [], chords: [], chordTarget: null,
   buffers: new Map(), instrumentBuffers: new Map(), sampleLoads:new Map(), instrumentSampleLoads:new Map(), instrument: ['steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_instrument')) ? localStorage.getItem('yhwh_piano_instrument') : 'grand-piano', bassInstrument: ['grand-piano','steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_bass_instrument')) ? localStorage.getItem('yhwh_piano_bass_instrument') : 'grand-piano', trumpetIntensity: localStorage.getItem('yhwh_piano_trumpet_intensity') === 'soft' ? 'soft' : 'strong', sustain: localStorage.getItem('yhwh_piano_sustain') === '1', tempo:Math.min(1.5,Math.max(.5,Number(localStorage.getItem('yhwh_piano_tempo'))||1)), playing: false, playTimers: [], activePlaybackSources:[], activePointers: new Map(), keyboardOctaveMidi:60, keyboardZoom:Math.min(1.8,Math.max(0.17,Number(localStorage.getItem('yhwh_piano_keyboard_zoom'))||1)), transpose: 0, originalTonic: 'C', songTonic: null,
-  notation: ['ninguno','octavas','americano','latino','movil','grados','simple'].includes(localStorage.getItem('yhwh_piano_note_labels')) ? localStorage.getItem('yhwh_piano_note_labels') : (localStorage.getItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano'), showChordNames:localStorage.getItem('yhwh_piano_show_chords')!=='0', showRecordedNotes:localStorage.getItem('yhwh_piano_show_recorded')!=='0', keyColor:/^#[0-9a-f]{6}$/i.test(localStorage.getItem('yhwh_piano_key_color')||'')?localStorage.getItem('yhwh_piano_key_color'):'#90dd4a', lastMidi: null, db: null, auth: null,
+  notation: ['ninguno','octavas','americano','latino','movil','grados','simple'].includes(localStorage.getItem('yhwh_piano_note_labels')) ? localStorage.getItem('yhwh_piano_note_labels') : (localStorage.getItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano'), showChordNames:localStorage.getItem('yhwh_piano_show_chords')!=='0', showRecordedNotes:localStorage.getItem('yhwh_piano_show_recorded')!=='0', keyColor:/^#[0-9a-f]{6}$/i.test(localStorage.getItem('yhwh_piano_key_color')||'')?localStorage.getItem('yhwh_piano_key_color'):'#90dd4a', bassColor:/^#[0-9a-f]{6}$/i.test(localStorage.getItem('yhwh_piano_bass_color')||'')?localStorage.getItem('yhwh_piano_bass_color'):'#bb82ef', lastMidi: null, db: null, auth: null,
   ref: null, set: null, onValue: null, signIn: null, signOut: null, authListener: null
 };
 let screenTransitionTimer = null;
@@ -715,14 +715,16 @@ function drawFallingNotesFrameInner(timestamp){
   while(low<high){const mid=(low+high)>>1;if(run.events[mid].start<oldestStart)low=mid+1;else high=mid;}
   for(let index=low;index<run.events.length;index++){
     const event=run.events[index];if(event.start>elapsed+look)break;
-    if(elapsed>event.start+event.visualDuration)continue;
+    if(elapsed>event.start+event.visualDuration+(style==='drops'&&fxGlow ? .5 : 0))continue;
     if(style==='melody'&&event.kind==='chord')continue;
     const key=geometry.positions.get(event.midi);if(!key)continue;
     const keyWidth=key.width*zoomScale,center=geometry.left+key.center*zoomScale-scrollLeft;
     const barWidth=Math.max(3,Math.min(keyWidth-2,keyWidth*.72)),barHeight=Math.max(7,event.visualDuration*pps);
     if(style==='drops'){
-      if(elapsed>event.start+.05)continue;
       const dw=Math.max(5,Math.min(barWidth,16)),dh=dw*1.4,dBottom=Math.min(baseline,baseline-(event.start-elapsed)*pps),isChord=event.kind==='chord';
+      const age=elapsed-event.start;
+      if(fxGlow&&age>=0&&age<.5)hits.push({index,center,barWidth,color:isChord?geometry.chordColor:geometry.melodyColor,t:age/.5});
+      if(age>.05)continue;
       if(dBottom<0||center<-dw||center>width+dw)continue;
       ctx.fillStyle=isChord?geometry.chordColor:geometry.melodyColor;ctx.globalAlpha=isChord?.8:.95;
       fnRoundRect(ctx,center-dw/2,dBottom-dh,dw,dh,dw/2);ctx.fill();
@@ -820,12 +822,37 @@ function updateVisualOptions(){
   $('keyColorSwatch').style.background=state.keyColor;
   document.documentElement.style.setProperty('--pressed-key-color',state.keyColor);
   document.documentElement.style.setProperty('--melody-note-color',state.keyColor);
+  document.documentElement.style.setProperty('--bass-note-color',state.bassColor);
+  $('player')?.style.setProperty('--bass-note-color',state.bassColor);
+  const bassPicker=$('bassColorPicker');if(bassPicker)bassPicker.value=state.bassColor;
   const color=state.keyColor.match(/^#([0-9a-f]{6})$/i);
   const channels=color?color[1].match(/.{2}/g).map(value=>parseInt(value,16)/255):[0.565,0.867,0.29];
   const luminance=channels.map(value=>value<=0.04045?value/12.92:((value+0.055)/1.055)**2.4).reduce((sum,value,index)=>sum+value*[0.2126,0.7152,0.0722][index],0);
   document.documentElement.style.setProperty('--melody-note-ink',luminance>0.42?'#17323b':'#ffffff');
   $('showChordNames').checked=state.showChordNames;$('showRecordedNotes').checked=state.showRecordedNotes;
   $('notationToggle').textContent={ninguno:'∅',octavas:'8va',americano:'C',latino:'La',movil:'Do',grados:'1',simple:'C'}[state.notation]||'C';
+}
+function showManualNoteEffect(midi,key){
+  if(state.playing||fallingNotesStyle==='off'||!key)return;
+  if(!key.closest('.piano-panel'))key=document.querySelector(`.piano-panel .key[data-midi="${midi}"]`);
+  if(!key)return;
+  const stage=$('noteCanvas'),stageRect=stage?.getBoundingClientRect(),keyRect=key.getBoundingClientRect();if(!stageRect||!keyRect)return;
+  const effect=document.createElement('span');effect.className=`manual-note-effect ${fallingNotesStyle==='drops'?'is-drop':'is-bar'}`;
+  const isDrop=fallingNotesStyle==='drops';
+  effect.style.setProperty('--note-fx-color',midi<=48?state.bassColor:state.keyColor);
+  effect.style.left=`${keyRect.left-stageRect.left+keyRect.width/2}px`;
+  if(isDrop)for(let i=0;i<5;i++){const particle=document.createElement('i');particle.style.setProperty('--particle-x',`${(i-2)*6}px`);particle.style.setProperty('--particle-delay',`${i*35}ms`);effect.appendChild(particle);}
+  stage.appendChild(effect);
+  const started=performance.now(),maxRise=Math.max(60,stage.clientHeight-(isDrop?20:8)),speed=stage.clientHeight/Math.max(.8,fallingNotesLookahead);let frame=0,releasedAt=null,heldRise=0,atTop=false;
+  const grow=now=>{
+    const rise=releasedAt===null?Math.min(maxRise,(now-started)/1000*speed):heldRise;
+    const offset=releasedAt===null?0:Math.max(0,(now-releasedAt)/1000*speed),progress=Math.min(1,(rise+offset)/maxRise);
+    effect.style.setProperty('--manual-rise',`${rise}px`);effect.style.setProperty('--manual-offset',`${offset}px`);effect.style.opacity=String(Math.max(0,Math.min(1,(1-progress)/.18)));
+    if(rise+offset<maxRise)frame=requestAnimationFrame(grow);else{frame=0;atTop=true;effect.remove();}
+  };
+  frame=requestAnimationFrame(grow);
+  const finish=()=>{if(releasedAt!==null)return;releasedAt=performance.now();heldRise=Math.min(maxRise,(releasedAt-started)/1000*speed);effect.classList.add('is-released');if(atTop)effect.remove();else if(!frame)frame=requestAnimationFrame(grow);};
+  return finish;
 }
 function chordDisplayName(chord) {
   const shownRoot=transposeChordName(String(chord.root||'C'),Number(state.transpose)||0,false);
@@ -1237,7 +1264,7 @@ function toggleNotesPanel(){
   const panel=$('notesPanel'),open=panel.classList.contains('hidden');panel.dataset.open=open?'1':'';updateVisualOptions();
   if(open)$('recordedNotes').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-const FALLING_STYLE_OPTIONS=[['bars','Barras completas','Melodía y bajos, con brillo'],['melody','Solo melodía','Barras sin los bajos'],['drops','Gotas','Puntos ligeros que caen'],['off','Sin barras','Solo se iluminan las teclas']];
+const FALLING_STYLE_OPTIONS=[['bars','Barras completas','Melodía y bajos; al tocar suben desde la tecla'],['melody','Solo melodía','Sin bajos; al tocar suben desde la tecla'],['drops','Gotas','Al tocar suben gotas; en melodías siguen cayendo'],['off','Sin barras','Solo se iluminan las teclas']];
 function syncFallingStyleButtons(){
   document.querySelectorAll('[data-fall-style]').forEach(button=>{const on=button.dataset.fallStyle===fallingNotesStyle;button.classList.toggle('active',on);button.setAttribute('aria-pressed',on?'true':'false');});
 }
@@ -1513,11 +1540,14 @@ async function playNote(midi, element, duration = 0.4) {
     gain.gain.linearRampToValueAtTime(0.0001, stopAt + release);
     source.connect(gain); gain.connect(context.destination);
     source.start(attackAt);
+    const finishNoteEffect=showManualNoteEffect(midi,element||document.querySelector(`.piano-panel .key[data-midi="${midi}"]`));
     source.stop(stopAt + release + 0.02);
+    if(!held)setTimeout(()=>finishNoteEffect?.(),noteDuration);
     let released = false;
     const stopNote = () => {
       if (released) return;
       released = true;
+      finishNoteEffect?.();
       const releaseAt = context.currentTime;
       try {
         gain.gain.cancelScheduledValues(releaseAt);
@@ -1833,6 +1863,7 @@ function bindInterface() {
   $('closeNotes').onclick=()=>{$('notesPanel').dataset.open='';updateVisualOptions();};
   $('keyColorPicker').value=state.keyColor;
   $('keyColorPicker').oninput=event=>{state.keyColor=event.target.value;try{localStorage.setItem('yhwh_piano_key_color',state.keyColor);}catch(_){}updateVisualOptions();};
+  $('bassColorPicker').oninput=event=>{state.bassColor=event.target.value;try{localStorage.setItem('yhwh_piano_bass_color',state.bassColor);}catch(_){}updateVisualOptions();};
   $('showChordNames').onchange=event=>{state.showChordNames=event.target.checked;try{localStorage.setItem('yhwh_piano_show_chords',state.showChordNames?'1':'0');}catch(_){}if(!state.showChordNames)$('activeChordLabel').classList.add('hidden');else updateActiveChordLabel();updateVisualOptions();};
   {const glowSwitch=$('fxGlowSwitch'),lightSwitch=$('lightKeysSwitch'),colorSwitch=$('keyColorOnSwitch'),edgeSwitch=$('keyEdgeSwitch');
     const save=(key,on)=>{try{localStorage.setItem(key,on?'1':'0');}catch(_){}};

@@ -606,9 +606,15 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 .timeline-track { height: 4px; overflow: hidden; border-radius: 99px; background: #555a5d; box-shadow: inset 0 1px 2px #0008; }
 .timeline-progress-fill { width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#16a8e5,#74d8ff); transform: scaleX(0); transform-origin: left center; will-change: transform; }
 .piano-panel .key.bass-playing { border-color: #9e5dd1!important; background: var(--bass-note-color)!important; box-shadow: 0 0 5px #b679ecaa!important; }
-.piano-panel .black.bass-playing { background: #8851b5!important; }
+.piano-panel .black.bass-playing { background: var(--bass-note-color,#bb82ef)!important; }
 .note-canvas .falling-note { background: var(--melody-note-color,var(--pressed-key-color)); }
 .note-canvas .falling-note.bass-note { border-color: #9e5dd1; background: var(--bass-note-color); }
+.visual-color-setting { display:block; margin:8px 0 3px; font-size:.82rem; font-weight:650; }
+.manual-note-effect { position:absolute; z-index:4; display:block; width:clamp(8px,1.5vw,15px); height:var(--manual-rise,0px); bottom:calc(2px + var(--manual-offset,0px)); pointer-events:none; opacity:.96; background:linear-gradient(90deg,color-mix(in srgb,var(--note-fx-color) 82%,#fff),var(--note-fx-color) 36%,color-mix(in srgb,var(--note-fx-color) 76%,#000)); box-shadow:0 0 12px color-mix(in srgb,var(--note-fx-color) 65%,transparent); border:1px solid color-mix(in srgb,var(--note-fx-color) 72%,#fff); border-radius:7px 7px 2px 2px; transform:translateX(-50%); overflow:visible; }
+.manual-note-effect::after { content:""; position:absolute; left:-90%; right:-90%; bottom:-3px; height:30px; border-radius:50%; background:radial-gradient(ellipse,color-mix(in srgb,var(--note-fx-color) 85%,#fff) 0, color-mix(in srgb,var(--note-fx-color) 55%,transparent) 38%,transparent 75%); filter:blur(5px); }
+.manual-note-effect.is-drop { width:12px; height:17px; bottom:calc(2px + var(--manual-rise,0px) + var(--manual-offset,0px)); border:0; border-radius:60% 45% 55% 12%; transform:translateX(-50%) rotate(-45deg); background:radial-gradient(circle at 35% 30%,#fff 0 8%,color-mix(in srgb,var(--note-fx-color) 65%,#fff) 22%,var(--note-fx-color) 72%); box-shadow:0 0 14px 5px color-mix(in srgb,var(--note-fx-color) 65%,transparent); }
+.manual-note-effect.is-drop i { position:absolute; left:50%; bottom:5px; width:3px; height:3px; border-radius:50%; background:#fff; box-shadow:0 0 6px 2px var(--note-fx-color); animation:manual-drop-spark .62s ease-out var(--particle-delay,0ms) infinite; }
+@keyframes manual-drop-spark { 0% { opacity:1; transform:translate(calc(-50% + var(--particle-x,0px)),0) scale(1); } 100% { opacity:0; transform:translate(calc(-50% + var(--particle-x,0px)),-36px) scale(.2); } }
 .active-chord-label { border-color: #bb82ef!important; background: #342044d9!important; color: #ead5ff!important; }
 
 @media (max-width: 900px) {
@@ -1265,8 +1271,8 @@ body.player-active #player .performance-layout > .player-timeline, body:has(#pla
 
 /* Teclas encendidas: mismo pintado en móvil y en PC. Melodía = color elegido; bajo = violeta. */
 #player .piano-panel .key.playing { border-color: var(--pressed-key-color)!important; background: var(--pressed-key-color)!important; box-shadow: 0 0 5px var(--pressed-key-color)!important; }
-#player .piano-panel .key.bass-playing { border-color: #9e5dd1!important; background: var(--bass-note-color,#bb82ef)!important; box-shadow: 0 0 5px #b679ecaa!important; }
-#player .piano-panel .black.bass-playing { background: #8851b5!important; }
+#player .piano-panel .key.bass-playing { border-color: var(--bass-note-color,#bb82ef)!important; background: var(--bass-note-color,#bb82ef)!important; box-shadow: 0 0 5px color-mix(in srgb,var(--bass-note-color,#bb82ef) 70%,transparent)!important; }
+#player .piano-panel .black.bass-playing { background: var(--bass-note-color,#bb82ef)!important; }
 
 /* Fondos claros: notas grabadas y navegación de octava/zoom. */
 #player #notesPanel #recordedNotes { background: #e2edf1!important; border: 1px solid #c6d8de!important; box-shadow: none!important; color: #33474e!important; }
