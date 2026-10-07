@@ -1,4 +1,4 @@
-const CACHE='yhwh-piano-v91';
+const CACHE='yhwh-piano-v92';
 const AUDIO_CACHE='yhwh-piano-audio-v1';
 const FILES=['./','./index.html','./piano.css','./piano-studio.css','./piano-synthesia.css','./piano.js','./manifest.json','./offline-audio.json','./icon.svg','./icon-512.png','./apple-touch-icon.png','./audio/040.wav','./audio/041.wav','./audio/042.wav','./audio/043.wav','./audio/044.wav','./audio/045.wav','./audio/046.wav','./audio/047.wav','./audio/048.wav','./audio/049.wav','./audio/050.wav','./audio/051.wav','./audio/052.wav','./audio/053.wav','./audio/054.wav','./audio/055.wav','./audio/056.wav','../canciones-adoracion.js','../canciones-jubilo.js'];
 let audioDownloadInProgress=false;
