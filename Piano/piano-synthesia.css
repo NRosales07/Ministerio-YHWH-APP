@@ -1742,12 +1742,55 @@ html body.melody-playing #player #noteCanvas .canvas-readouts > .stage-tool-rail
   /* El bajo va justo debajo de la nota, alineado a su borde izquierdo (3px = padding del rail). */
   html body.melody-playing #player #noteCanvas .stage-tool-rail > #activeChordLabel { margin: 0 !important; left: 3px !important; top: 32px !important; }
 }
-/* ===== Rendimiento: línea de tiempo quitada y teclas sin color (opcional) ===== */
-#player { --stage-tl-h: 0px !important; }
-html body #player.player .performance-layout > #playerTimeline.player-timeline,
-body.player-active #player .performance-layout > .player-timeline,
-body:has(#player:not(.hidden)) #player .performance-layout > .player-timeline { display: none !important; }
+/* ===== Rendimiento: teclas sin color (opcional) ===== */
 html body.keys-no-color #player .piano-panel .key.playing,
 html body.keys-no-color #player .piano-panel .key.bass-playing { border-color: #b9bbba !important; background: #d9dcdb !important; box-shadow: none !important; transform: none !important; transition: none !important; }
 html body.keys-no-color #player .piano-panel .black.playing,
 html body.keys-no-color #player .piano-panel .black.bass-playing { border-color: #55585a !important; background: #4b4e50 !important; }
+
+/* ===== Destello ligero en el borde de la tecla (opción "Destello en el borde", independiente del relleno) =====
+   Sin relleno, sin degradado, sin blur, sin transform ni transition: solo borde + anillo interior de 3px. */
+html body.keys-edge #player .piano-panel .key.playing { --edge: var(--pressed-key-color, #90dd4a); }
+html body.keys-edge #player .piano-panel .key.bass-playing { --edge: var(--bass-note-color, #bb82ef); }
+html body.keys-edge.keys-no-color #player .piano-panel .key.playing,
+html body.keys-edge.keys-no-color #player .piano-panel .key.bass-playing { --edge: #8d908f; }
+html body.keys-edge #player .piano-panel .key.playing,
+html body.keys-edge #player .piano-panel .key.bass-playing {
+  border-color: var(--edge) !important; box-shadow: inset 0 0 0 3px var(--edge) !important;
+  transform: none !important; transition: none !important;
+}
+html body.keys-edge.keys-fill-off #player .piano-panel .white.playing,
+html body.keys-edge.keys-fill-off #player .piano-panel .white.bass-playing { background: linear-gradient(90deg,#fffefa,#e8e7e1) !important; }
+html body.keys-edge.keys-fill-off #player .piano-panel .black.playing,
+html body.keys-edge.keys-fill-off #player .piano-panel .black.bass-playing { background: linear-gradient(90deg,#393a3b,#050607 80%) !important; }
+
+/* ===== Botones de reproducción del móvil: estado "en uso" visible en fondo claro y oscuro =====
+   Reproduciendo, Sustain activo, Ver notas abierto y Grabando se marcan con fondo ámbar, texto oscuro,
+   anillo y un puntito. También hay respuesta inmediata al tocar (:active). */
+html body #player#player#player .mobile-player-controls button.is-on,
+html body #player#player#player .mobile-player-controls button#sustainBtn[aria-pressed="true"],
+html body #player#player#player .mobile-player-controls button#recordBtn.active,
+html body.melody-playing #player#player#player .mobile-player-controls button#playMelody {
+  position: relative !important;
+  background: linear-gradient(180deg, #ffd166, #f0a500) !important;
+  border-color: #b97800 !important; color: #2a1b00 !important;
+  outline: 2px solid #ffd166 !important; outline-offset: 1px !important;
+  box-shadow: inset 0 0 0 1px #fff8 !important;
+}
+html[data-theme="dark"] body #player#player#player .mobile-player-controls button.is-on,
+html[data-theme="dark"] body #player#player#player .mobile-player-controls button#sustainBtn[aria-pressed="true"],
+html[data-theme="dark"] body #player#player#player .mobile-player-controls button#recordBtn.active,
+html[data-theme="dark"] body.melody-playing #player#player#player .mobile-player-controls button#playMelody {
+  background: linear-gradient(180deg, #ffd166, #f0a500) !important; color: #2a1b00 !important;
+  border-color: #ffe39a !important; outline-color: #ffe39a !important;
+}
+html body #player .mobile-player-controls button.is-on::after,
+html body #player .mobile-player-controls button#sustainBtn[aria-pressed="true"]::after,
+html body #player .mobile-player-controls button#recordBtn.active::after,
+html body.melody-playing #player .mobile-player-controls button#playMelody::after {
+  content: ""; position: absolute; top: 4px; right: 5px; width: 7px; height: 7px; border-radius: 50%;
+  background: #2a1b00; box-shadow: 0 0 0 1.5px #fff9; pointer-events: none;
+}
+html body #player#player#player .mobile-player-controls button:active {
+  transform: scale(.94) !important; filter: brightness(1.18) !important; transition: none !important;
+}

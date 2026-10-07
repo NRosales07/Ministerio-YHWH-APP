@@ -50,10 +50,11 @@ let fallingNotesStyle = (()=>{try{const v=localStorage.getItem('yhwh_piano_barst
 let fallingNotesLookahead = (()=>{try{const v=parseFloat(localStorage.getItem('yhwh_piano_lookahead'));return v>=0.8&&v<=6?v:2.1;}catch(_){return 2.1;}})();
 const FALLING_NOTES_FRAME_MS = 1000 / 60 - 3;
 // Opciones de rendimiento (Ajustes). Por defecto todo queda como estaba; el usuario puede apagar cada efecto.
-const SHOW_PLAYER_TIMELINE = false; // la línea de tiempo (0:00 ——— 0:00) está quitada: no se pinta ni se actualiza
+const SHOW_PLAYER_TIMELINE = true; // línea de tiempo (0:00 ——— 0:00) visible; pon false para quitarla
 const perfOption=(key)=>{try{return localStorage.getItem(key)!=='0';}catch(_){return true;}};
 let fxGlow=perfOption('yhwh_piano_fx_glow');        // brillo y partículas al impacto de las barras
 let lightKeys=perfOption('yhwh_piano_light_keys');  // encender las teclas mientras suena la melodía
+let keyEdge=(()=>{try{return localStorage.getItem('yhwh_piano_key_edge')==='1';}catch(_){return false;}})(); // destello ligero solo en el borde de la tecla (apagado por defecto)
 let keyColorOn=perfOption('yhwh_piano_key_color_on'); // color en las teclas encendidas (apagado = gris neutro)
 let theorySequenceTimers = [];
 let offlineAudioDownloadRunning = false;
@@ -606,7 +607,7 @@ function lightKeyOff(key,classes){
   classes.forEach(cls=>{counts[cls]=Math.max(0,(counts[cls]||0)-1);if(!counts[cls])key.classList.remove(cls);});
 }
 function queueKeyLight(at,key,classes,ms){
-  if(!key||!lightKeys)return;
+  if(!key||!(lightKeys||keyEdge))return;
   queueVisualEvent(at,()=>{lightKeyOn(key,classes);visualQueue.offs.push({at:at+Math.max(0,ms)/1000,key,classes});});
 }
 function flushVisualQueue(now,finish){
@@ -815,6 +816,7 @@ function startKeyboardAtC4() {
 function updateVisualOptions(){
   $('activeChordLabel').classList.toggle('hidden',!state.showChordNames||!$('activeChordLabel').textContent);
   $('notesPanel').classList.toggle('hidden',!state.showRecordedNotes||!$('notesPanel').dataset.open);
+  $('showNotesBtn').classList.toggle('is-on',!!state.showRecordedNotes&&!!$('notesPanel').dataset.open);
   $('keyColorSwatch').style.background=state.keyColor;
   document.documentElement.style.setProperty('--pressed-key-color',state.keyColor);
   document.documentElement.style.setProperty('--melody-note-color',state.keyColor);
@@ -1832,12 +1834,13 @@ function bindInterface() {
   $('keyColorPicker').value=state.keyColor;
   $('keyColorPicker').oninput=event=>{state.keyColor=event.target.value;try{localStorage.setItem('yhwh_piano_key_color',state.keyColor);}catch(_){}updateVisualOptions();};
   $('showChordNames').onchange=event=>{state.showChordNames=event.target.checked;try{localStorage.setItem('yhwh_piano_show_chords',state.showChordNames?'1':'0');}catch(_){}if(!state.showChordNames)$('activeChordLabel').classList.add('hidden');else updateActiveChordLabel();updateVisualOptions();};
-  {const glowSwitch=$('fxGlowSwitch'),lightSwitch=$('lightKeysSwitch'),colorSwitch=$('keyColorOnSwitch');
+  {const glowSwitch=$('fxGlowSwitch'),lightSwitch=$('lightKeysSwitch'),colorSwitch=$('keyColorOnSwitch'),edgeSwitch=$('keyEdgeSwitch');
     const save=(key,on)=>{try{localStorage.setItem(key,on?'1':'0');}catch(_){}};
-    const applyKeyLook=()=>{document.body.classList.toggle('keys-no-color',!keyColorOn);if(colorSwitch)colorSwitch.disabled=!lightKeys;};
+    const applyKeyLook=()=>{document.body.classList.toggle('keys-no-color',!keyColorOn);document.body.classList.toggle('keys-edge',keyEdge);document.body.classList.toggle('keys-fill-off',!lightKeys);if(colorSwitch)colorSwitch.disabled=!(lightKeys||keyEdge);};
     if(glowSwitch){glowSwitch.checked=fxGlow;glowSwitch.onchange=event=>{fxGlow=event.target.checked;save('yhwh_piano_fx_glow',fxGlow);};}
     if(lightSwitch){lightSwitch.checked=lightKeys;lightSwitch.onchange=event=>{lightKeys=event.target.checked;save('yhwh_piano_light_keys',lightKeys);applyKeyLook();};}
     if(colorSwitch){colorSwitch.checked=keyColorOn;colorSwitch.onchange=event=>{keyColorOn=event.target.checked;save('yhwh_piano_key_color_on',keyColorOn);applyKeyLook();};}
+    if(edgeSwitch){edgeSwitch.checked=keyEdge;edgeSwitch.onchange=event=>{keyEdge=event.target.checked;save('yhwh_piano_key_edge',keyEdge);applyKeyLook();};}
     applyKeyLook();}
   $('showRecordedNotes').onchange=event=>{state.showRecordedNotes=event.target.checked;try{localStorage.setItem('yhwh_piano_show_recorded',state.showRecordedNotes?'1':'0');}catch(_){}if(!state.showRecordedNotes)$('notesPanel').dataset.open='';updateAdminControls();};
   $('keyboardZoomSlider').oninput=event=>setKeyboardZoom(Number(event.target.value)/100);
