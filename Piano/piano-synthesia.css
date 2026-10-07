@@ -1742,3 +1742,12 @@ html body.melody-playing #player #noteCanvas .canvas-readouts > .stage-tool-rail
   /* El bajo va justo debajo de la nota, alineado a su borde izquierdo (3px = padding del rail). */
   html body.melody-playing #player #noteCanvas .stage-tool-rail > #activeChordLabel { margin: 0 !important; left: 3px !important; top: 32px !important; }
 }
+/* ===== Rendimiento: línea de tiempo quitada y teclas sin color (opcional) ===== */
+#player { --stage-tl-h: 0px !important; }
+html body #player.player .performance-layout > #playerTimeline.player-timeline,
+body.player-active #player .performance-layout > .player-timeline,
+body:has(#player:not(.hidden)) #player .performance-layout > .player-timeline { display: none !important; }
+html body.keys-no-color #player .piano-panel .key.playing,
+html body.keys-no-color #player .piano-panel .key.bass-playing { border-color: #b9bbba !important; background: #d9dcdb !important; box-shadow: none !important; transform: none !important; transition: none !important; }
+html body.keys-no-color #player .piano-panel .black.playing,
+html body.keys-no-color #player .piano-panel .black.bass-playing { border-color: #55585a !important; background: #4b4e50 !important; }
