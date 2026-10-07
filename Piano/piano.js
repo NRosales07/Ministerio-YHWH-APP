@@ -535,7 +535,7 @@ function startPlaybackTimeline(startAt,duration){
     const now=playbackNow(frameTime)||timelineStartedAt,elapsed=Math.max(0,now-timelineStartedAt);
     const probeStart=perfProbe.on?performance.now():0;
     flushVisualQueue(now,false);
-    if(!perfProbe.off.has('timeline'))updatePlaybackTimeline(elapsed,duration);
+    updatePlaybackTimeline(elapsed,duration);
     if(probeStart){const d=performance.now()-probeStart;perfProbe.tickSum+=d;perfProbe.tickN++;if(d>perfProbe.tickMax)perfProbe.tickMax=d;}
     if(elapsed<duration)timelineFrame=requestAnimationFrame(tick);else{timelineFrame=0;flushVisualQueue(now,true);}
   };
@@ -599,7 +599,7 @@ function lightKeyOff(key,classes){
   classes.forEach(cls=>{counts[cls]=Math.max(0,(counts[cls]||0)-1);if(!counts[cls])key.classList.remove(cls);});
 }
 function queueKeyLight(at,key,classes,ms){
-  if(!key||perfProbe.off.has('lights'))return;
+  if(!key)return;
   queueVisualEvent(at,()=>{lightKeyOn(key,classes);visualQueue.offs.push({at:at+Math.max(0,ms)/1000,key,classes});});
 }
 function flushVisualQueue(now,finish){
@@ -658,41 +658,37 @@ function fnGlow(ctx,color,baseline){
   return g;
 }
 function fnRand(n){const v=Math.sin(n*12.9898)*43758.5453;return v-Math.floor(v);}
-// Medidor de rendimiento opcional: ?perf=1 en la URL, o mantener pulsada la línea de tiempo 0,7 s.
-// Solo para pruebas: con &off=lights,labels,timeline se apagan esas actualizaciones de pantalla para comparar.
-const perfProbe={on:false,el:null,loop:0,wasPlaying:false,last:0,since:0,frames:0,slow:0,worst:0,drawSum:0,drawMax:0,tickSum:0,tickMax:0,tickN:0,totalFrames:0,totalSlow:0,totalWorst:0,off:(()=>{try{return new Set((new URLSearchParams(location.search).get('off')||'').split(',').filter(Boolean));}catch(_){return new Set();}})()};
+// Medidor de rendimiento opcional: se activa con ?perf=1 en la URL o manteniendo pulsada la línea de tiempo 0,7 s.
+const perfProbe={on:false,el:null,last:0,since:0,frames:0,slow:0,worst:0,drawSum:0,drawMax:0,tickSum:0,tickMax:0,tickN:0,longTasks:0,observer:null};
 function perfProbeEnable(on){
-  const p=perfProbe;p.on=!!on;
-  if(!p.on){if(p.el)p.el.remove();p.el=null;if(p.loop)cancelAnimationFrame(p.loop);p.loop=0;return;}
-  if(!p.el){
+  perfProbe.on=!!on;
+  if(!perfProbe.on){if(perfProbe.el)perfProbe.el.remove();perfProbe.el=null;if(perfProbe.observer){try{perfProbe.observer.disconnect();}catch(_){}perfProbe.observer=null;}return;}
+  if(!perfProbe.el){
     const el=document.createElement('pre');
     el.style.cssText='position:fixed;left:4px;bottom:4px;z-index:99999;margin:0;padding:5px 7px;border-radius:6px;background:rgba(0,0,0,.78);color:#7cfc9a;font:10px/1.35 ui-monospace,monospace;pointer-events:none;white-space:pre';
-    el.textContent='medidor activo: toca ▶';document.body.appendChild(el);p.el=el;
+    el.textContent='medidor activo: toca ▶';document.body.appendChild(el);perfProbe.el=el;
   }
-  p.since=0;p.last=0;p.wasPlaying=false;
-  if(!p.loop)p.loop=requestAnimationFrame(perfProbeLoop);
+  perfProbe.since=0;perfProbe.last=0;
+  try{if(window.PerformanceObserver&&!perfProbe.observer){perfProbe.observer=new PerformanceObserver(list=>{perfProbe.longTasks+=list.getEntries().length;});perfProbe.observer.observe({entryTypes:['longtask']});}}catch(_){}
 }
-// Bucle propio del medidor: mide los frames aunque el estilo de barras esté en "off".
-function perfProbeLoop(ts){
+function perfProbeFrame(ts){
   const p=perfProbe;
-  if(!p.on){p.loop=0;return;}
-  p.loop=requestAnimationFrame(perfProbeLoop);
-  if(!state.playing||document.hidden){p.last=0;p.since=0;p.wasPlaying=false;return;}
-  if(!p.wasPlaying){p.wasPlaying=true;p.totalFrames=p.totalSlow=p.totalWorst=0;p.frames=p.slow=p.worst=0;p.drawSum=p.drawMax=p.tickSum=p.tickMax=p.tickN=0;p.since=0;p.last=0;}
-  if(p.last){const dt=ts-p.last;p.frames++;p.totalFrames++;if(dt>24){p.slow++;p.totalSlow++;}if(dt>p.worst)p.worst=dt;if(dt>p.totalWorst)p.totalWorst=dt;}
+  if(p.last){const dt=ts-p.last;p.frames++;if(dt>24)p.slow++;if(dt>p.worst)p.worst=dt;}
   p.last=ts;
-  if(!p.since){p.since=ts;return;}
-  if(ts-p.since<1000||!p.el)return;
-  const secs=(ts-p.since)/1000,frames=Math.max(1,p.frames),info=fallingNotesCanvasInfo,ctx=audioContext;
+}
+function perfProbeReport(now){
+  const p=perfProbe;
+  if(!p.since){p.since=now;return;}
+  if(now-p.since<1000||!p.el)return;
+  const secs=(now-p.since)/1000,frames=Math.max(1,p.frames),info=fallingNotesCanvasInfo,ctx=audioContext;
   p.el.textContent=[
-    `${Math.round(p.frames/secs)} fps · lentos (>24ms): ${p.slow} · peor: ${p.worst.toFixed(0)}ms`,
-    `acumulado: ${(100*p.totalSlow/Math.max(1,p.totalFrames)).toFixed(1)}% lentos de ${p.totalFrames} · peor: ${p.totalWorst.toFixed(0)}ms`,
-    `dibujo: ${p.drawMax?(p.drawSum/frames).toFixed(1)+'ms medio · '+p.drawMax.toFixed(1)+'ms máx':'apagado'}`,
-    `teclas+tiempo: ${(p.tickSum/Math.max(1,p.tickN)).toFixed(1)}ms medio · ${p.tickMax.toFixed(1)}ms máx`,
-    `fuentes de audio: ${state.activePlaybackSources.length} · estilo ${fallingNotesStyle} · canvas ${info?Math.round(info.width*info.dpr)+'x'+Math.round(info.height*info.dpr):'-'}`,
-    `latencia salida: ${ctx&&ctx.outputLatency?Math.round(ctx.outputLatency*1000)+'ms':'n/d'}${p.off.size?' · apagado: '+[...p.off].join(','):''}`
+    `${Math.round(p.frames/secs)} fps · frames lentos (>24ms): ${p.slow} · peor: ${p.worst.toFixed(0)}ms`,
+    `dibujo: ${(p.drawSum/frames).toFixed(1)}ms medio · ${p.drawMax.toFixed(1)}ms máx`,
+    `línea de tiempo+teclas: ${(p.tickSum/Math.max(1,p.tickN)).toFixed(1)}ms medio · ${p.tickMax.toFixed(1)}ms máx`,
+    `tareas largas (>50ms): ${p.longTasks} · fuentes de audio activas: ${state.activePlaybackSources.length}`,
+    `canvas ${info?Math.round(info.width*info.dpr)+'x'+Math.round(info.height*info.dpr):'-'} · dpr ${window.devicePixelRatio||1} · estilo ${fallingNotesStyle} · latencia salida ${ctx&&ctx.outputLatency?Math.round(ctx.outputLatency*1000)+'ms':'n/d'}`
   ].join('\n');
-  p.since=ts;p.frames=0;p.slow=0;p.worst=0;p.drawSum=0;p.drawMax=0;p.tickSum=0;p.tickMax=0;p.tickN=0;
+  p.since=now;p.frames=0;p.slow=0;p.worst=0;p.drawSum=0;p.drawMax=0;p.tickSum=0;p.tickMax=0;p.tickN=0;p.longTasks=0;
 }
 function drawFallingNotesFrameInner(timestamp){
   if(!state.playing||!fallingNotesRun){stopFallingNotes();return;}
@@ -752,9 +748,10 @@ function drawFallingNotesFrameInner(timestamp){
 }
 function drawFallingNotesFrame(timestamp){
   if(!perfProbe.on){drawFallingNotesFrameInner(timestamp);return;}
-  const t0=performance.now();
+  const t0=performance.now();perfProbeFrame(timestamp);
   drawFallingNotesFrameInner(timestamp);
   const dt=performance.now()-t0;perfProbe.drawSum+=dt;if(dt>perfProbe.drawMax)perfProbe.drawMax=dt;
+  perfProbeReport(t0);
 }
 function startFallingNotes(playbackNotes,playbackChords,startAt,prebuiltEvents){
   stopFallingNotes();perfProbe.last=0;
@@ -1426,7 +1423,7 @@ async function playChord(chord) {
     const when = Number(chord.startAt) || context.currentTime + 0.015;
     if (!chord.preview && state.showChordNames && chord.root) {
       const updateChordReadout = () => {
-        if (!state.playing || !state.showChordNames || perfProbe.off.has('labels')) return;
+        if (!state.playing || !state.showChordNames) return;
         $('activeChordLabel').textContent = chordDisplayName(chord);
         $('activeChordLabel').classList.remove('hidden');
       };
@@ -1578,7 +1575,6 @@ function schedulePlaybackNote(midi,element,duration,when,prepared,cut){
   source.connect(gain);gain.connect(context.destination);source.start(when);source.stop(stopAt+release+.02);
   state.activePlaybackSources.push(source);source.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==source);},{once:true});
   queueVisualEvent(when,()=>{
-    if(perfProbe.off.has('labels'))return;
     const readout=$('currentNote'),name=noteName(midi);
     if(readout.textContent!==name)readout.textContent=name;
     if(readout.style.opacity!=='1')readout.style.opacity='1';
