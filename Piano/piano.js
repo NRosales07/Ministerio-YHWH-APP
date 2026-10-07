@@ -33,8 +33,8 @@ function playbackNow(){
   const perf=performance.now()/1000,audio=context.currentTime,sample=audio-perf;
   // El desfase audio↔pantalla solo sube cuando el audio avanza (nunca va por delante del tiempo real) y baja muy despacio.
   if(playbackClockOffset===null||sample>playbackClockOffset)playbackClockOffset=sample;
-  else playbackClockOffset+=(sample-playbackClockOffset)*.002;
-  const value=Math.max(playbackClockLast,audio,Math.min(perf+playbackClockOffset,audio+.15));
+  else playbackClockOffset+=(sample-playbackClockOffset)*.01;
+  const value=Math.max(playbackClockLast,audio,Math.min(perf+playbackClockOffset,audio+.4));
   playbackClockLast=value;return value;
 }
 let keyBaseWidthCache = 0;
@@ -555,7 +555,7 @@ function resizeFallingNotesCanvas(){
   if(!canvas||!stage)return false;
   const rect=stage.getBoundingClientRect();
   if(rect.width<=0||rect.height<=0)return false;
-  const dpr=Math.min(2,Math.max(1,window.devicePixelRatio||1));
+  const dpr=Math.min(1.5,Math.max(1,window.devicePixelRatio||1));
   const pixelWidth=Math.max(1,Math.round(rect.width*dpr)),pixelHeight=Math.max(1,Math.round(rect.height*dpr));
   if(!fallingNotesCanvasInfo||canvas.width!==pixelWidth||canvas.height!==pixelHeight||fallingNotesCanvasInfo.dpr!==dpr){
     canvas.width=pixelWidth;canvas.height=pixelHeight;
@@ -619,11 +619,33 @@ function stopFallingNotes(){
   fallingNotesFrame=0;fallingNotesRun=null;fallingNotesLastFrame=0;clearFallingNotesCanvas();
 }
 function fnRoundRect(c,x,y,w,h,r){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h);}
+const fnHits=[],fnGlowCache=new Map();
+function fnGlow(ctx,color,baseline){
+  const key=color+'|'+baseline;let g=fnGlowCache.get(key);
+  if(!g){if(fnGlowCache.size>24)fnGlowCache.clear();g=ctx.createLinearGradient(0,baseline,0,baseline-46);g.addColorStop(0,color);g.addColorStop(1,'rgba(0,0,0,0)');fnGlowCache.set(key,g);}
+  return g;
+}
+// Medidor de rendimiento: solo aparece si la URL lleva ?debug
+let fnDbg=null,fnDbgPrev=0,fnDbgFrames=0,fnDbgWorst=0,fnDbgSince=0;
+function fnDebugTick(t){
+  if(fnDbg===null){
+    fnDbg=false;
+    try{if(/[?&]debug\b/.test(location.search)){fnDbg=document.createElement('div');fnDbg.style.cssText='position:fixed;z-index:99999;top:calc(env(safe-area-inset-top) + 4px);right:6px;padding:3px 7px;border-radius:5px;background:#000c;color:#7dff7d;font:11px/1.3 monospace;pointer-events:none;white-space:pre';document.body.appendChild(fnDbg);}}catch(_){}
+  }
+  if(!fnDbg)return;
+  if(fnDbgPrev&&t-fnDbgPrev<500){const d=t-fnDbgPrev;fnDbgFrames++;if(d>fnDbgWorst)fnDbgWorst=d;}
+  fnDbgPrev=t;
+  if(!fnDbgSince)fnDbgSince=t;
+  if(t-fnDbgSince>=500){
+    fnDbg.textContent=Math.round(fnDbgFrames*1000/(t-fnDbgSince))+' fps\npeor: '+Math.round(fnDbgWorst)+' ms';
+    fnDbgFrames=0;fnDbgWorst=0;fnDbgSince=t;
+  }
+}
 function fnRand(n){const v=Math.sin(n*12.9898)*43758.5453;return v-Math.floor(v);}
 function drawFallingNotesFrame(timestamp){
   if(!state.playing||!fallingNotesRun){stopFallingNotes();return;}
   if(document.hidden){fallingNotesFrame=0;return;}
-  if(timestamp-fallingNotesLastFrame<FALLING_NOTES_FRAME_MS){fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);return;}
+  fnDebugTick(timestamp);
   fallingNotesLastFrame=timestamp;
   if(pinchFlush)pinchFlush();
   if(fallingNotesCanvasDirty&&!resizeFallingNotesCanvas()){fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);return;}
@@ -632,7 +654,7 @@ function drawFallingNotesFrame(timestamp){
   if(!fallingNotesGeometry)fallingNotesGeometry=rebuildFallingNotesGeometry();
   const geometry=fallingNotesGeometry;if(!geometry){stopFallingNotes();return;}
   const ctx=info.context,height=info.height,width=info.width,baseline=height-2,look=fallingNotesLookahead,pps=height/look;
-  const elapsed=Math.max(0,playbackNow()-run.startAt),scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom,hits=[];
+  const elapsed=Math.max(0,playbackNow()-run.startAt),scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom,hits=fnHits;hits.length=0;
   ctx.clearRect(0,0,width,height);
   const oldestStart=elapsed-run.maxVisibleDuration;let low=0,high=run.events.length;
   while(low<high){const mid=(low+high)>>1;if(run.events[mid].start<oldestStart)low=mid+1;else high=mid;}
@@ -653,8 +675,7 @@ function drawFallingNotesFrame(timestamp){
     if(live&&elapsed-event.start<.5)hits.push({index,center,barWidth,color:chord?geometry.chordColor:geometry.melodyColor,t:(elapsed-event.start)/.5});
   }
   for(const k of hits){
-    const life=1-k.t,w=k.barWidth*1.8,glow=ctx.createLinearGradient(0,baseline,0,baseline-46);
-    glow.addColorStop(0,k.color);glow.addColorStop(1,'rgba(0,0,0,0)');
+    const life=1-k.t,w=k.barWidth*1.8,glow=fnGlow(ctx,k.color,baseline);
     ctx.fillStyle=glow;ctx.globalAlpha=life*.7;ctx.fillRect(k.center-w/2,baseline-46,w,46);
     ctx.fillStyle='#fff';ctx.globalAlpha=life*.85;ctx.fillRect(k.center-w*.35,baseline-2.5,w*.7,2.5);
     if(run.calm)continue;
