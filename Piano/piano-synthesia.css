@@ -1,3 +1,7 @@
+/* Keep the canvas behind screen transitions in the selected theme. */
+html { min-height: 100%; background-color: var(--bg); }
+body { background-color: var(--bg); }
+
 /* Nueva estructura de Piano YHWH, inspirada en el flujo visual de la referencia. */
 :root {
   --bg: #bdd7e2;
@@ -610,11 +614,14 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 .note-canvas .falling-note { background: var(--melody-note-color,var(--pressed-key-color)); }
 .note-canvas .falling-note.bass-note { border-color: #9e5dd1; background: var(--bass-note-color); }
 .visual-color-setting { display:block; margin:8px 0 3px; font-size:.82rem; font-weight:650; }
-.manual-note-effect { position:absolute; z-index:4; display:block; width:clamp(8px,1.5vw,15px); height:var(--manual-rise,0px); bottom:calc(2px + var(--manual-offset,0px)); pointer-events:none; opacity:.96; background:linear-gradient(90deg,color-mix(in srgb,var(--note-fx-color) 82%,#fff),var(--note-fx-color) 36%,color-mix(in srgb,var(--note-fx-color) 76%,#000)); box-shadow:0 0 12px color-mix(in srgb,var(--note-fx-color) 65%,transparent); border:1px solid color-mix(in srgb,var(--note-fx-color) 72%,#fff); border-radius:7px 7px 2px 2px; transform:translateX(-50%); overflow:visible; }
-.manual-note-effect::after { content:""; position:absolute; left:-90%; right:-90%; bottom:-3px; height:30px; border-radius:50%; background:radial-gradient(ellipse,color-mix(in srgb,var(--note-fx-color) 85%,#fff) 0, color-mix(in srgb,var(--note-fx-color) 55%,transparent) 38%,transparent 75%); filter:blur(5px); }
-.manual-note-effect.is-drop { width:12px; height:17px; bottom:calc(2px + var(--manual-rise,0px) + var(--manual-offset,0px)); border:0; border-radius:60% 45% 55% 12%; transform:translateX(-50%) rotate(-45deg); background:radial-gradient(circle at 35% 30%,#fff 0 8%,color-mix(in srgb,var(--note-fx-color) 65%,#fff) 22%,var(--note-fx-color) 72%); box-shadow:0 0 14px 5px color-mix(in srgb,var(--note-fx-color) 65%,transparent); }
-.manual-note-effect.is-drop i { position:absolute; left:50%; bottom:5px; width:3px; height:3px; border-radius:50%; background:#fff; box-shadow:0 0 6px 2px var(--note-fx-color); animation:manual-drop-spark .62s ease-out var(--particle-delay,0ms) infinite; }
-@keyframes manual-drop-spark { 0% { opacity:1; transform:translate(calc(-50% + var(--particle-x,0px)),0) scale(1); } 100% { opacity:0; transform:translate(calc(-50% + var(--particle-x,0px)),-36px) scale(.2); } }
+.manual-note-effect { position:absolute; z-index:4; display:block; width:3px; height:var(--manual-rise,0px); bottom:calc(2px + var(--manual-offset,0px)); pointer-events:none; opacity:.94; background:var(--note-fx-color); border:0; border-radius:7px 7px 2px 2px; transform:translateX(-50%); }
+.manual-note-effect.is-bar::before { content:""; position:absolute; top:3px; bottom:5px; left:15%; width:20%; background:#ffffff55; }
+.manual-note-effect.is-bar::after { content:""; position:absolute; top:0; left:15%; width:70%; height:2px; background:#ffffffbb; }
+.manual-note-effect.is-drop { height:10px; bottom:calc(2px + var(--manual-rise,0px) + var(--manual-offset,0px)); border-radius:999px; }
+.manual-note-impact { position:absolute; z-index:5; left:50%; bottom:0; width:5px; height:5px; pointer-events:none; border-radius:50%; background:#fff; box-shadow:0 0 10px 5px color-mix(in srgb,var(--note-fx-color) 75%,transparent),0 0 22px 9px color-mix(in srgb,var(--note-fx-color) 48%,transparent); transform:translateX(-50%); animation:manual-impact-flash .48s ease-out forwards; }
+.manual-note-impact i { position:absolute; left:50%; top:50%; width:3px; height:3px; border-radius:50%; background:#fff; box-shadow:0 0 5px 2px var(--note-fx-color); transform:rotate(var(--particle-angle)) translateY(-4px); animation:manual-impact-particle .48s ease-out forwards; }
+@keyframes manual-impact-flash { 0% { opacity:1; transform:translateX(-50%) scale(.65); } 35% { opacity:.9; transform:translateX(-50%) scale(1.45); } 100% { opacity:0; transform:translateX(-50%) scale(.25); } }
+@keyframes manual-impact-particle { 0% { opacity:1; transform:rotate(var(--particle-angle)) translateY(-4px); } 100% { opacity:0; transform:rotate(var(--particle-angle)) translateY(calc(-1 * var(--particle-distance))); } }
 .active-chord-label { border-color: #bb82ef!important; background: #342044d9!important; color: #ead5ff!important; }
 
 @media (max-width: 900px) {
@@ -1800,3 +1807,855 @@ html body.melody-playing #player .mobile-player-controls button#playMelody::afte
 html body #player#player#player .mobile-player-controls button:active {
   transform: scale(.94) !important; filter: brightness(1.18) !important; transition: none !important;
 }
+
+/* Selector de instrumentos por familias: navegación a la izquierda, instrumentos a la derecha. */
+#instrumentMenu { width:min(490px,calc(100vw - 66px)); min-width:360px; max-height:calc(100dvh - 90px); overflow:auto; }
+#instrumentMenu .instrument-browser { display:grid; grid-template-columns:112px minmax(0,1fr); gap:10px; min-width:0; }
+#instrumentMenu .instrument-categories { display:flex; flex-direction:column; align-items:stretch; border-right:1px solid #a6bbc2; }
+#instrumentMenu .instrument-category-tab { min-height:42px; padding:7px 9px; border:0; border-bottom:1px solid #a6bbc2; background:#edf2f4; color:#344951; font:inherit; text-align:left; cursor:pointer; }
+#instrumentMenu .instrument-category-tab[aria-selected="true"] { background:#1187b9; color:#fff; font-weight:700; }
+#instrumentMenu .instrument-category-panels { min-width:0; }
+#instrumentMenu .instrument-options { display:grid; gap:0; margin:0; overflow:hidden; border:1px solid #a6bbc2; border-radius:9px; background:#f5f7f8; }
+#instrumentMenu .instrument-option { min-height:60px; padding:6px 12px 6px 7px; border:0; border-bottom:1px solid #a6bbc2; border-radius:0; background:#f5f7f8; }
+#instrumentMenu .instrument-option:last-child { border-bottom:0; }
+#instrumentMenu .instrument-option.active { position:relative; box-shadow:inset 0 0 0 2px #087fb0; }
+#instrumentMenu .instrument-option.active::after { content:"✓"; margin-left:auto; color:#245f9c; font-size:1.1rem; font-weight:800; }
+#instrumentMenu .instrument-option.active .instrument-icon { background:#dcebf0; color:#1d6480; }
+html[data-theme="dark"] #instrumentMenu .instrument-category-tab { border-color:#2a2a45 !important; background:#11111d !important; color:#e8e6f0 !important; }
+html[data-theme="dark"] #instrumentMenu .instrument-category-tab[aria-selected="true"] { background:#2f2f5c !important; color:#e8c97a !important; }
+html[data-theme="dark"] #instrumentMenu .instrument-categories { border-color:#2a2a45 !important; }
+html[data-theme="dark"] #instrumentMenu .instrument-options { border-color:#2a2a45 !important; background:#11111d !important; }
+html[data-theme="dark"] #instrumentMenu .instrument-option { border-color:#2a2a45 !important; }
+html[data-theme="dark"] #instrumentMenu .instrument-option.active::after { color:#e8c97a !important; }
+@media (max-width:600px) {
+  body.player-active #player #instrumentMenu, body:has(#player:not(.hidden)) #player #instrumentMenu { width:calc(100vw - 58px) !important; max-width:calc(100vw - 58px) !important; min-width:0 !important; padding:9px !important; }
+  #instrumentMenu .instrument-browser { grid-template-columns:minmax(0,1fr); gap:7px; }
+  #instrumentMenu .instrument-categories { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-right:0; border-bottom:1px solid #a6bbc2; }
+  #instrumentMenu .instrument-category-tab { min-height:36px; text-align:center; border-bottom:0; }
+  #instrumentMenu .instrument-category-tab[aria-selected="true"] { box-shadow:inset 0 -3px #ffd166; }
+  #instrumentMenu .instrument-option { min-height:52px; }
+  #instrumentMenu .instrument-icon { flex-basis:34px !important; width:34px !important; height:34px !important; }
+}
+/* Selección de alabanza, vista previa y modos de reproducción */
+#songView{min-height:0}
+#songList .song-card-selectable{display:flex!important;align-items:stretch!important;gap:6px!important;padding:5px!important;}
+#songList .song-card-main{display:flex;flex:1;min-width:0;align-items:center;gap:10px;padding:4px 6px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+#songList .song-card-main:hover{background:transparent;transform:none;box-shadow:none}
+#songList .song-card-selectable.selected{border-color:#1187b9!important;box-shadow:0 0 0 2px #1187b92b!important;background:#eefaff!important}
+#songList .song-preview-btn{flex:0 0 42px;min-width:42px;border:1px solid #9dc6d5;border-radius:9px;background:#e9f6fa;color:#087eae;font-size:1.15rem;cursor:pointer;touch-action:manipulation}
+#songList .song-preview-btn:hover{background:#d4eff8}
+.song-selection{position:sticky;bottom:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid #a9c9d5;border-radius:12px;background:#e4f0f4;box-shadow:0 -5px 16px #315f7014}
+.song-selection #selectedSongLabel{overflow:hidden;color:#314a54;text-overflow:ellipsis;white-space:nowrap}
+.song-selection button{min-height:42px;padding:8px 20px}
+.mode-modal-card .track-choice{min-height:66px;text-align:left}
+.mode-modal-card .track-choice span,.mode-modal-card .track-choice small{display:block}
+.mode-modal-card .track-choice small{margin-top:3px;opacity:.8}
+#bassInstrumentQuick{width:100%;min-height:36px;padding:6px 8px;border:1px solid #a8bdc5;border-radius:8px;background:#fff;color:#233840}
+@media(max-width:700px){.song-selection{position:sticky;bottom:0;margin:4px 0 0;padding:8px;gap:8px}.song-selection button{flex:0 0 auto;min-height:40px;padding:7px 14px}.song-selection #selectedSongLabel{font-size:.82rem}#songList .song-card{min-height:54px!important}.mode-modal-card{max-height:calc(100dvh - 28px);overflow:auto}}
+html[data-theme="dark"] #songList .song-card-selectable.selected{background:#1a2940!important;border-color:#6c97dd!important;box-shadow:0 0 0 2px #6c97dd2b!important}
+html[data-theme="dark"] #songList .song-preview-btn{background:#202039;color:#e8c97a;border-color:#514777}
+html[data-theme="dark"] .song-selection{background:#17172a;border-color:#2a2a45;box-shadow:0 -5px 16px #0005}
+html[data-theme="dark"] .song-selection #selectedSongLabel{color:#e8e6f0}
+html[data-theme="dark"] #bassInstrumentQuick{background:#1b1b2e;color:#e8e6f0;border-color:#514777}
+#songList .song-preview-btn.is-playing{background:#1187b9!important;color:#fff!important}
+html[data-theme="dark"] #songList .song-preview-btn.is-playing{background:#514777!important;color:#fff!important}
+/* Lista de canciones: encabezado de controles y filas compactas como la referencia */
+#songView>.song-mobile-header{display:flex;flex:0 0 48px;align-items:center;gap:10px;min-width:0;padding:5px 8px;border:1px solid #a9c9d5;border-radius:10px;background:linear-gradient(180deg,#f4fafc,#e2eff4);box-shadow:0 2px 6px #315f7016}
+#songView>.song-mobile-header>.home-back{flex:0 0 auto;min-height:34px;margin:0;padding:5px 12px}
+.selected-audio-preview{display:flex;flex:1;align-items:center;gap:9px;min-width:0;height:38px}
+.selected-audio-preview>button{flex:0 0 38px;width:38px;height:34px;border:1px solid #0c78a5;border-radius:7px;background:#1187b9;color:white;font-size:1.05rem;cursor:pointer;touch-action:manipulation}
+.selected-audio-meta{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
+#selectedSongLabel{overflow:hidden;color:#294754;font-size:.82rem;font-weight:650;text-overflow:ellipsis;white-space:nowrap}
+.preview-track{display:block;overflow:hidden;width:100%;height:5px;border-radius:5px;background:#b8cbd1}
+.preview-track i{display:block;width:0;height:100%;border-radius:inherit;background:#1187b9}
+.selected-audio-preview.is-playing .preview-track i{animation:preview-progress var(--preview-duration,10s) linear forwards}
+.selected-audio-preview.is-playing>button{background:#075f83}
+@keyframes preview-progress{to{width:100%}}
+#songView>.toolbar{flex:0 0 auto}
+#songView>#helper{display:none!important}
+#songView #songList{flex:1 1 0;min-height:0;overflow-y:auto}
+#songList .song-card-selectable{min-height:44px!important;padding:2px 7px!important;border-radius:2px!important;box-shadow:none!important}
+#songList .song-card-main{gap:8px;padding:2px 3px}
+#songList .song-card-main .song-key{flex-basis:29px;min-width:29px;height:28px;border-radius:4px;font-size:.72rem}
+#songList .song-card-main .song-info{flex-direction:row;align-items:center;gap:8px}
+#songList .song-card-main .song-info b{display:block;flex:1;font-size:.81rem;line-height:1.15;white-space:nowrap;text-overflow:ellipsis}
+#songList .song-card-main .song-info small{font-size:.67rem}
+#songList .song-card-main .song-chips{flex-direction:row;gap:4px}
+#songList .song-card-main .song-chip{height:16px;font-size:.58rem}
+@media(max-width:900px){
+ #songView>.song-mobile-header{flex:0 0 42px;gap:7px;padding:3px 5px;border-radius:6px}
+ #songView>.song-mobile-header>.home-back{min-height:32px;padding:4px 10px;font-size:.78rem}
+ .selected-audio-preview{gap:6px;height:34px}
+ .selected-audio-preview>button{flex-basis:34px;width:34px;height:31px}
+ #selectedSongLabel{font-size:.74rem}
+ #songView>.toolbar{grid-template-columns:minmax(0,1fr) minmax(115px,38%)!important;gap:6px!important;margin:4px 0!important;padding:3px 6px!important}
+ #songView>.toolbar .toolbar-badge{display:none}
+ #songView .toolbar h1{font-size:.92rem!important}
+ #songView .toolbar small{font-size:.62rem}
+ #songView .toolbar input{min-height:29px!important;height:29px!important;font-size:.7rem!important}
+ #songList .song-card-selectable{min-height:37px!important}
+ #songList .song-card-main .song-key{flex-basis:25px;min-width:25px;height:24px;font-size:.65rem}
+ #songList .song-card-main .song-info b{font-size:.72rem}
+ #songList .song-card-main .song-info small{font-size:.6rem}
+ #songList .song-card-main .song-chip{height:14px;padding-inline:5px;font-size:.53rem}
+ #songView>.song-mobile-header>#continueSongBtn{min-height:32px;padding:4px 10px;font-size:.76rem}
+}
+@media(max-width:900px) and (orientation:landscape){
+ body:not(.player-active)>header{flex-basis:38px!important;height:38px!important}
+ body:not(.player-active)>main{padding-top:3px!important;padding-bottom:3px!important}
+ body:not(.player-active)>main>#connection{flex-basis:13px!important;min-height:13px!important;line-height:13px!important;font-size:.55rem!important}
+ #songView>.song-mobile-header{flex-basis:35px;padding:2px 4px}
+ #songView>.song-mobile-header>.home-back{min-height:27px;padding:2px 8px;font-size:.7rem}
+ .selected-audio-preview{height:29px}
+ .selected-audio-preview>button{flex-basis:29px;width:29px;height:27px;font-size:.85rem}
+ #selectedSongLabel{font-size:.68rem}
+ #songView>.toolbar{grid-template-columns:minmax(0,1fr) minmax(150px,30%)!important;margin:2px 0!important;padding:2px 5px!important}
+ #songView .toolbar h1{font-size:.8rem!important}
+ #songView .toolbar input{height:25px!important;min-height:25px!important}
+ #songList .song-card-selectable{min-height:31px!important;padding:1px 6px!important}
+ #songList .song-card-main .song-key{flex-basis:21px;min-width:21px;height:21px;font-size:.58rem}
+ #songList .song-card-main .song-info b{font-size:.66rem}
+ #songList .song-card-main .song-info small{font-size:.54rem}
+ #songList .song-card-main .song-chip{height:12px;font-size:.48rem}
+ #songView>.song-mobile-header>#continueSongBtn{min-height:27px;font-size:.67rem}
+}
+@media(max-width:900px) and (orientation:portrait){#songView>.song-mobile-header{flex-basis:42px}}
+html[data-theme="dark"] #songView>.song-mobile-header{border-color:#2a2a45;background:linear-gradient(150deg,#1b1b2e,#14141f);box-shadow:none}
+html[data-theme="dark"] #selectedSongLabel{color:#e8e6f0}
+html[data-theme="dark"] .preview-track{background:#353550}
+html[data-theme="dark"] .preview-track i{background:#c9a84c}
+/* Pantalla de canciones a pantalla completa: barra Synthesia + lista en una columna */
+body.song-list-active{display:flex!important;flex-direction:column!important;width:100%;height:100vh;height:100dvh;min-height:0!important;overflow:hidden!important;background:#303030!important;color:#252525!important}
+body.song-list-active>header,body.song-list-active>#connection,body.song-list-active>main>#connection{display:none!important}
+body.song-list-active>main{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;width:100%!important;height:100vh!important;height:100dvh!important;min-height:0!important;max-height:none!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#303030!important}
+body.song-list-active>#root,body.song-list-active>main>#songView{max-width:none!important}
+body.song-list-active>main>#songView{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important;border-radius:0!important;background:#303030!important;box-shadow:none!important}
+body.song-list-active #songView>.song-mobile-header{position:relative;z-index:3;display:flex!important;flex:0 0 46px!important;align-items:center;gap:0!important;width:100%!important;height:46px!important;min-height:46px!important;margin:0!important;padding:0 8px!important;border:0!important;border-radius:0!important;background:#1181b2!important;box-shadow:0 1px 3px #071d27a8!important}
+body.song-list-active #songView>.song-mobile-header>.home-back{display:block!important;flex:0 0 auto!important;min-height:32px!important;margin:0!important;padding:5px 12px!important;border:1px solid #ffffff3b!important;border-radius:4px!important;background:#0d74a3!important;color:#fff!important;font-size:.9rem!important;white-space:nowrap}
+body.song-list-active #songView .selected-audio-preview{display:flex!important;flex:1 1 auto!important;align-items:center;gap:9px!important;min-width:0!important;height:100%!important;margin:0 12px!important;padding:0 10px!important;border-right:1px solid #ffffff30;border-left:1px solid #ffffff30}
+body.song-list-active #songView .selected-audio-preview>button{flex:0 0 38px!important;width:38px!important;height:34px!important;border:0!important;border-radius:3px!important;background:transparent!important;color:#fff!important;font-size:1.15rem!important}
+body.song-list-active #songView .selected-audio-preview>button:hover{background:#ffffff20!important}
+body.song-list-active #songView .selected-audio-meta{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0;max-width:400px;margin:0 auto}
+body.song-list-active #songView #selectedSongLabel{display:block!important;overflow:hidden;color:#fff!important;font-size:.82rem!important;font-weight:600!important;text-align:center;text-overflow:ellipsis;white-space:nowrap}
+body.song-list-active #songView .preview-track{height:7px!important;background:#f1f4f5!important;border-radius:7px!important}
+body.song-list-active #songView .preview-track i{background:#1685b9!important}
+body.song-list-active #songView>.song-mobile-header>#continueSongBtn{display:block!important;flex:0 0 auto!important;min-height:31px!important;margin-left:auto!important;padding:4px 12px!important;border:1px solid #ffffff3b!important;border-radius:4px!important;background:#0d74a3!important;color:#fff!important;font-size:.86rem!important;font-weight:500!important}
+body.song-list-active #songView>.song-mobile-header>#continueSongBtn:disabled{opacity:.55}
+body.song-list-active #songView>.toolbar{display:flex!important;flex:0 0 52px!important;align-items:center!important;gap:8px!important;width:100%!important;min-height:52px!important;margin:0!important;padding:6px 9px!important;border:0!important;border-bottom:1px solid #a6a6a6!important;border-radius:0!important;background:#ededed!important;box-shadow:none!important}
+body.song-list-active #songView .toolbar-title{display:flex!important;flex:1 1 auto!important;align-items:center!important;min-width:0!important}
+body.song-list-active #songView .toolbar-badge{display:none!important}
+body.song-list-active #songView .toolbar-text{display:flex;align-items:baseline;gap:6px;min-width:0}
+body.song-list-active #songView .toolbar h1{margin:0!important;color:#303030!important;font-family:inherit!important;font-size:.96rem!important;font-weight:500!important;line-height:1.1!important}
+body.song-list-active #songView .toolbar small{color:#777!important;font-size:.68rem!important}
+body.song-list-active #songView .toolbar #search{flex:0 0 min(220px,24vw)!important;width:min(220px,24vw)!important;min-width:125px!important;height:36px!important;min-height:36px!important;margin-left:auto!important;padding:6px 10px 6px 31px!important;border:1px solid #c2c2c2!important;border-radius:7px!important;background-color:#fff!important;background-position:9px center!important;background-size:15px!important;color:#333!important;font-size:.8rem!important}
+body.song-list-active #songView>#helper{display:none!important}
+body.song-list-active #songView>#songList{display:block!important;flex:1 1 0!important;width:100%!important;min-height:0!important;margin:0!important;padding:0!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain!important;background:#dedede!important;scrollbar-width:thin!important;scrollbar-color:#8d8d8d #cecece!important}
+body.song-list-active #songList .song-card-selectable{display:flex!important;align-items:stretch!important;width:100%!important;min-height:39px!important;margin:0!important;padding:0!important;border:0!important;border-bottom:1px solid #9e9e9e!important;border-radius:0!important;background:#eee!important;box-shadow:none!important;transform:none!important}
+body.song-list-active #songList .song-card-selectable:nth-child(even){background:#e6e6e6!important}
+body.song-list-active #songList .song-card-selectable:hover{background:#d9edf4!important}
+body.song-list-active #songList .song-card-selectable.selected{background:#98d6ef!important;box-shadow:inset 0 0 0 1px #66b9d9!important}
+body.song-list-active #songList .song-card-main{display:flex!important;flex:1!important;align-items:center!important;gap:10px!important;width:100%!important;min-width:0!important;height:auto!important;margin:0!important;padding:2px 10px!important;border:0!important;border-radius:0!important;background:transparent!important;color:#333!important;text-align:left!important;box-shadow:none!important;transform:none!important}
+body.song-list-active #songList .song-key{display:grid!important;flex:0 0 31px!important;width:31px!important;min-width:31px!important;height:27px!important;padding:0!important;border-radius:3px!important;background:#d9e7eb!important;color:#425962!important;font-size:.72rem!important}
+body.song-list-active #songList .song-info{display:flex!important;flex:1!important;flex-direction:row!important;align-items:center!important;gap:10px!important;min-width:0!important}
+body.song-list-active #songList .song-info b{display:block!important;flex:0 1 auto!important;max-width:72%!important;overflow:hidden!important;color:#333!important;font-size:.84rem!important;font-weight:500!important;line-height:1.2!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+body.song-list-active #songList .song-info small{display:block!important;max-width:25%!important;color:#777!important;font-size:.68rem!important}
+body.song-list-active #songList .song-chips{display:flex!important;flex:0 0 auto!important;flex-direction:row!important;gap:4px!important;margin-left:auto!important}
+body.song-list-active #songList .song-chip{height:17px!important;padding:0 6px!important;border:1px solid #c5c5c5!important;border-radius:3px!important;background:#e8e8e8!important;color:#56636a!important;font-size:.58rem!important}
+body.song-list-active #songView>.song-list-footer{display:flex!important;flex:0 0 32px!important;align-items:center!important;justify-content:space-between!important;width:100%!important;padding:4px 12px!important;border-top:1px solid #9dbbc7!important;background:#b9d3dc!important;color:#526c75!important;font-size:.7rem!important}
+body.song-list-active .admin-home-entry{min-height:36px!important;max-width:180px!important;margin-top:8px!important;padding:6px 10px!important;border-color:#8eacb8!important;border-radius:5px!important;background:#1686b4!important;color:#fff!important;text-align:center!important}
+@media(max-width:900px){
+ body.song-list-active>main{padding:0!important}
+ body.song-list-active #songView>.song-mobile-header{flex-basis:42px!important;height:42px!important;min-height:42px!important;padding:0 max(5px,env(safe-area-inset-left))!important}
+ body.song-list-active #songView>.song-mobile-header>.home-back{min-height:29px!important;padding:4px 8px!important;font-size:.76rem!important}
+ body.song-list-active #songView .selected-audio-preview{gap:4px!important;margin:0 5px!important;padding:0 5px!important}
+ body.song-list-active #songView .selected-audio-preview>button{flex-basis:30px!important;width:30px!important;height:29px!important;font-size:1rem!important}
+ body.song-list-active #songView #selectedSongLabel{font-size:.7rem!important}
+ body.song-list-active #songView>.song-mobile-header>#continueSongBtn{min-height:28px!important;padding:3px 8px!important;font-size:.72rem!important}
+ body.song-list-active #songView>.toolbar{flex-basis:38px!important;min-height:38px!important;padding:3px 6px!important}
+ body.song-list-active #songView .toolbar h1{font-size:.78rem!important}
+ body.song-list-active #songView .toolbar small{font-size:.59rem!important}
+ body.song-list-active #songView .toolbar #search{flex-basis:min(190px,35vw)!important;width:min(190px,35vw)!important;min-width:96px!important;height:29px!important;min-height:29px!important;padding-left:28px!important;font-size:.68rem!important}
+ body.song-list-active #songList .song-card-selectable{min-height:34px!important}
+ body.song-list-active #songList .song-card-main{gap:6px!important;padding:1px 6px!important}
+ body.song-list-active #songList .song-key{flex-basis:24px!important;width:24px!important;min-width:24px!important;height:23px!important;font-size:.62rem!important}
+ body.song-list-active #songList .song-info{gap:6px!important}
+ body.song-list-active #songList .song-info b{font-size:.69rem!important}
+ body.song-list-active #songList .song-info small{font-size:.56rem!important}
+ body.song-list-active #songList .song-chip{height:14px!important;font-size:.51rem!important}
+ body.song-list-active #songView>.song-list-footer{flex-basis:25px!important;padding:2px 8px!important;font-size:.59rem!important}
+}
+@media(max-width:900px) and (orientation:landscape){
+ body.song-list-active #songView>.song-mobile-header{flex-basis:35px!important;height:35px!important;min-height:35px!important}
+ body.song-list-active #songView>.toolbar{flex-basis:32px!important;min-height:32px!important}
+ body.song-list-active #songView .toolbar #search{height:25px!important;min-height:25px!important}
+ body.song-list-active #songList .song-card-selectable{min-height:30px!important}
+ body.song-list-active #songView>.song-list-footer{flex-basis:22px!important}
+}
+html[data-theme="dark"] body.song-list-active{background:#303030!important}
+html[data-theme="dark"] body.song-list-active #songView>.toolbar{background:#ededed!important}
+html[data-theme="dark"] body.song-list-active #songView>#songList{background:#dedede!important}
+html[data-theme="dark"] body.song-list-active #songList .song-card-selectable,html[data-theme="dark"] body.song-list-active #songList .song-card-selectable:nth-child(even){background:#eee!important}
+html[data-theme="dark"] body.song-list-active #songList .song-card-main{color:#333!important}
+html[data-theme="dark"] body.song-list-active #songList .song-info b{color:#333!important}
+body.song-list-active .admin-home-entry{position:absolute!important;top:12px!important;right:12px!important;min-height:31px!important;margin:0!important;padding:5px 11px!important;border:1px solid #8eacb8!important;border-radius:5px!important;background:#1686b4!important;color:#fff!important;font-size:.77rem!important}
+html[data-theme="dark"] body.song-list-active #songList .song-card-selectable.selected{background:#98d6ef!important;box-shadow:inset 0 0 0 1px #66b9d9!important}
+html[data-theme="dark"] body.song-list-active #songList .song-card-main .song-info small{color:#777!important}
+@media(max-width:900px){body.song-list-active .admin-home-entry{top:7px!important;right:7px!important;min-height:26px!important;padding:3px 8px!important;font-size:.67rem!important}}
+/* Vista previa: botón en la misma línea que la barra y progreso de alto contraste */
+body.song-list-active #songView .selected-audio-preview{display:grid!important;grid-template-columns:32px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) 9px!important;column-gap:9px!important;align-items:stretch!important}
+body.song-list-active #songView .selected-audio-preview>button{grid-column:1!important;grid-row:2!important;align-self:center!important;justify-self:center!important;flex:none!important;width:28px!important;height:28px!important;padding:0!important;font-size:1rem!important;line-height:1!important}
+body.song-list-active #songView .selected-audio-meta{grid-column:2!important;grid-row:1 / 3!important;display:grid!important;grid-template-rows:minmax(0,1fr) 9px!important;align-items:center!important;gap:2px!important;height:100%!important;max-width:none!important}
+body.song-list-active #songView .preview-track{grid-row:2!important;height:8px!important;background:#f3f7f9!important;box-shadow:0 0 0 1px #073e5c!important}
+body.song-list-active #songView .preview-track i{background:#ffdf62!important;box-shadow:0 0 5px #ffdf62b8!important}
+body.song-list-active #songView .selected-audio-preview.is-playing>button{color:#ffdf62!important}
+@media(max-width:900px){body.song-list-active #songView .selected-audio-preview{grid-template-columns:27px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) 8px!important;column-gap:5px!important}body.song-list-active #songView .selected-audio-preview>button{width:24px!important;height:24px!important}body.song-list-active #songView .selected-audio-meta{grid-template-rows:minmax(0,1fr) 8px!important}body.song-list-active #songView .preview-track{height:7px!important}}
+@media(max-width:900px) and (orientation:landscape){body.song-list-active #songView .selected-audio-preview{grid-template-columns:25px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) 7px!important;column-gap:4px!important}body.song-list-active #songView .selected-audio-preview>button{width:22px!important;height:22px!important}body.song-list-active #songView .selected-audio-meta{grid-template-rows:minmax(0,1fr) 7px!important}body.song-list-active #songView .preview-track{height:6px!important}}
+html[data-theme="dark"] body.song-list-active #songView .preview-track{background:#f3f7f9!important}
+html[data-theme="dark"] body.song-list-active #songView .preview-track i{background:#ffdf62!important}
+body.song-list-active #songView>.toolbar .song-filters{display:flex!important;flex:1 1 auto!important;align-items:center!important;gap:3px!important;min-width:0!important;overflow-x:auto!important;scrollbar-width:none!important}
+body.song-list-active #songView>.toolbar .song-filters::-webkit-scrollbar{display:none}
+body.song-list-active #songView>.toolbar .song-filters button{flex:0 0 auto!important;min-height:30px!important;padding:4px 10px!important;border:1px solid #aebdc2!important;border-radius:4px!important;background:#e3e9eb!important;color:#3e4d52!important;font-size:.73rem!important;white-space:nowrap!important}
+body.song-list-active #songView>.toolbar .song-filters button.active{border-color:#1388b8!important;background:#c5e3ee!important;color:#075f83!important;box-shadow:inset 0 0 0 1px #1388b833!important}
+@media(max-width:900px){body.song-list-active #songView>.toolbar .song-filters{gap:2px!important}body.song-list-active #songView>.toolbar .song-filters button{min-height:26px!important;padding:3px 7px!important;font-size:.62rem!important}}
+@media(max-width:900px) and (orientation:landscape){body.song-list-active #songView>.toolbar .song-filters button{min-height:23px!important;padding:2px 6px!important;font-size:.57rem!important}}
+/* Fallback por visibilidad de sección: al entrar a canciones, escapar del marco centrado. */
+body:has(> main > #songView:not(.hidden)){display:flex!important;flex-direction:column!important;width:100%!important;height:100vh!important;height:100dvh!important;min-height:0!important;overflow:hidden!important;background:#303030!important}
+body:has(> main > #songView:not(.hidden))>header,body:has(> main > #songView:not(.hidden))>main>#connection{display:none!important}
+body:has(> main > #songView:not(.hidden))>main{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;width:100%!important;height:100vh!important;height:100dvh!important;min-height:0!important;max-height:none!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#303030!important}
+body:has(> main > #songView:not(.hidden))>main>#songView{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important;border-radius:0!important;background:#303030!important;box-shadow:none!important}
+body:has(> main > #songView:not(.hidden)) #songView>.song-mobile-header{height:44px!important;min-height:44px!important;flex-basis:44px!important;padding:0 8px!important;border-radius:0!important}
+body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview{display:grid!important;grid-template-columns:34px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) 9px!important;align-items:stretch!important;gap:0 9px!important;height:100%!important}
+body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview>button{grid-column:1!important;grid-row:1 / 3!important;align-self:center!important;justify-self:center!important;width:30px!important;height:30px!important;min-height:30px!important;margin:0!important;padding:0!important;transform:none!important;line-height:1!important}
+body:has(> main > #songView:not(.hidden)) #songView .selected-audio-meta{grid-column:2!important;grid-row:1 / 3!important;display:grid!important;grid-template-rows:minmax(0,1fr) 9px!important;align-self:stretch!important;gap:2px!important;height:100%!important;margin:0!important}
+body:has(> main > #songView:not(.hidden)) #songView .preview-track{grid-row:2!important;height:8px!important;background:#f4f8fa!important;box-shadow:0 0 0 1px #064365!important}
+body:has(> main > #songView:not(.hidden)) #songView .preview-track i{background:#ffdf62!important;box-shadow:0 0 5px #ffdf62b8!important}
+body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters{display:flex!important;flex:1 1 auto!important;min-width:0!important;overflow-x:auto!important}
+body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters button{flex:0 0 auto!important;min-height:30px!important;padding:4px 10px!important;border:1px solid #aebdc2!important;border-radius:4px!important;background:#e3e9eb!important;color:#3e4d52!important;font-size:.73rem!important;white-space:nowrap!important}
+body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters button.active{border-color:#1388b8!important;background:#c5e3ee!important;color:#075f83!important}
+body:has(> main > #songView:not(.hidden)) #songView>#songList{display:block!important;flex:1 1 0!important;width:100%!important;min-height:0!important;margin:0!important;padding:0!important;overflow-x:hidden!important;overflow-y:auto!important}
+body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable{display:flex!important;width:100%!important;min-height:39px!important;margin:0!important;padding:0!important;border:0!important;border-bottom:1px solid #9e9e9e!important;border-radius:0!important;background:#eee!important;box-shadow:none!important}
+@media(max-width:900px){
+ body:has(> main > #songView:not(.hidden)) #songView>.song-mobile-header{height:42px!important;min-height:42px!important;flex-basis:42px!important}
+ body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview{grid-template-columns:29px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) 8px!important;gap:0 5px!important}
+ body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview>button{width:25px!important;height:25px!important;min-height:25px!important}
+ body:has(> main > #songView:not(.hidden)) #songView .selected-audio-meta{grid-template-rows:minmax(0,1fr) 8px!important}
+ body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters button{min-height:26px!important;padding:3px 7px!important;font-size:.62rem!important}
+}
+@media(max-width:900px) and (orientation:landscape){body:has(> main > #songView:not(.hidden)) #songView>.song-mobile-header{height:42px!important;min-height:42px!important;flex-basis:42px!important}}
+/* Ajuste fino del reproductor del encabezado: compacto y alineado con su barra */
+body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview{position:relative!important;top:-4px!important;display:grid!important;flex:0 1 min(390px,calc(100vw - 190px))!important;grid-template-columns:23px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) 7px!important;gap:0 7px!important;width:min(390px,calc(100vw - 190px))!important;max-width:390px!important;height:34px!important;margin:0 auto!important;padding:0 8px!important;border:0!important}
+body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview>button{grid-column:1!important;grid-row:2!important;align-self:center!important;justify-self:center!important;width:16px!important;height:16px!important;min-height:16px!important;padding:0!important;border:0!important;background:transparent!important;color:#fff!important;font-size:.8rem!important;line-height:16px!important}
+body:has(> main > #songView:not(.hidden)) #songView .selected-audio-meta{grid-column:2!important;grid-row:1 / 3!important;grid-template-rows:minmax(0,1fr) 7px!important;gap:1px!important;height:100%!important;max-width:none!important}
+body:has(> main > #songView:not(.hidden)) #songView #selectedSongLabel{font-size:.67rem!important;line-height:1!important}
+body:has(> main > #songView:not(.hidden)) #songView .preview-track{grid-row:2!important;height:5px!important}
+@media(max-width:900px){body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview{flex-basis:min(330px,calc(100vw - 160px))!important;width:min(330px,calc(100vw - 160px))!important;grid-template-columns:21px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) 7px!important;height:31px!important;top:-3px!important;gap:0 5px!important;padding-inline:4px!important}body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview>button{width:15px!important;height:15px!important;min-height:15px!important;line-height:15px!important}body:has(> main > #songView:not(.hidden)) #songView .selected-audio-meta{grid-template-rows:minmax(0,1fr) 7px!important}body:has(> main > #songView:not(.hidden)) #songView #selectedSongLabel{font-size:.61rem!important}}
+/* Selección visible y acceso al modo oscuro desde la pantalla de canciones */
+body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable.selected{background:#91d5ef!important;box-shadow:inset 0 0 0 2px #59b2d4!important}
+body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable.selected .song-card-main{background:transparent!important}
+body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-theme-toggle{display:grid!important;flex:0 0 34px!important;width:34px!important;height:34px!important;min-height:34px!important;place-items:center!important;padding:0!important;border:1px solid #c1c1c1!important;border-radius:6px!important;background:#f8f8f8!important;color:#37474f!important;font-size:1rem!important;cursor:pointer!important}
+@media(max-width:900px){body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-theme-toggle{flex-basis:28px!important;width:28px!important;height:28px!important;min-height:28px!important;font-size:.8rem!important}}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar{background:#20212a!important;border-color:#3a3b46!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters button{border-color:#555665!important;background:#30313c!important;color:#e1e2ea!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters button.active{border-color:#58bce4!important;background:#17435a!important;color:#d7f3ff!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar #search{border-color:#555665!important;background-color:#292a34!important;color:#f1f1f5!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-theme-toggle{border-color:#555665!important;background:#30313c!important;color:#ffe28a!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>#songList{background:#202126!important;scrollbar-color:#62636c #292a30!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable,html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable:nth-child(even){border-color:#42434b!important;background:#292a30!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable:hover{background:#343943!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable.selected{background:#17445b!important;box-shadow:inset 0 0 0 2px #55b8df!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-main,html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-info b{color:#f0f0f3!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-info small{color:#b7b8c2!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-key{border:1px solid #494a56!important;background:#343540!important;color:#dcecf2!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-chip{border-color:#50515c!important;background:#353640!important;color:#d8d9e1!important}
+html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.song-list-footer{border-color:#42434b!important;background:#20212a!important;color:#c7c8d0!important}
+/* Catálogo de crear/editar: misma pantalla completa y misma lista vertical */
+body.create-list-active,body:has(> main > #createView:not(.hidden)){display:flex!important;flex-direction:column!important;width:100%!important;height:100vh!important;height:100dvh!important;min-height:0!important;overflow:hidden!important;background:#303030!important}
+body.create-list-active>header,body:has(> main > #createView:not(.hidden))>header,body.create-list-active>main>#connection,body:has(> main > #createView:not(.hidden))>main>#connection{display:none!important}
+body.create-list-active>main,body:has(> main > #createView:not(.hidden))>main{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;width:100%!important;height:100vh!important;height:100dvh!important;min-height:0!important;max-height:none!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#303030!important}
+body.create-list-active>main>#createView,body:has(> main > #createView:not(.hidden))>main>#createView{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important;border-radius:0!important;background:#303030!important;box-shadow:none!important}
+body.create-list-active #createView>.create-mobile-header,body:has(> main > #createView:not(.hidden)) #createView>.create-mobile-header{position:relative;z-index:3;display:flex!important;flex:0 0 44px!important;align-items:center!important;justify-content:space-between!important;width:100%!important;height:44px!important;min-height:44px!important;margin:0!important;padding:0 9px!important;border:0!important;border-radius:0!important;background:#1181b2!important;color:#fff!important;box-shadow:0 1px 3px #071d27a8!important}
+body.create-list-active #createView>.create-mobile-header>.home-back,body:has(> main > #createView:not(.hidden)) #createView>.create-mobile-header>.home-back{flex:0 0 auto!important;min-height:31px!important;margin:0!important;padding:4px 11px!important;border:1px solid #ffffff3b!important;border-radius:4px!important;background:#0d74a3!important;color:#fff!important;font-size:.82rem!important;white-space:nowrap}
+body.create-list-active #createView>.create-mobile-header h1,body:has(> main > #createView:not(.hidden)) #createView>.create-mobile-header h1{position:absolute;left:50%;max-width:65%;margin:0!important;overflow:hidden;color:#fff!important;font-family:inherit!important;font-size:.95rem!important;font-weight:600!important;text-overflow:ellipsis;transform:translateX(-50%);white-space:nowrap}
+body.create-list-active #createView>.create-mobile-header small,body:has(> main > #createView:not(.hidden)) #createView>.create-mobile-header small{margin-left:auto;color:#dceef5!important;font-size:.7rem!important;white-space:nowrap}
+body.create-list-active #createView>.toolbar,body:has(> main > #createView:not(.hidden)) #createView>.toolbar{display:flex!important;flex:0 0 44px!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;width:100%!important;min-height:44px!important;margin:0!important;padding:5px 9px!important;border:0!important;border-bottom:1px solid #aaa!important;border-radius:0!important;background:#ededed!important;box-shadow:none!important}
+body.create-list-active #createView .create-list-hint,body:has(> main > #createView:not(.hidden)) #createView .create-list-hint{color:#52646a!important;font-size:.74rem!important}
+body.create-list-active #createView #createSearch,body:has(> main > #createView:not(.hidden)) #createView #createSearch{flex:0 0 min(240px,30vw)!important;width:min(240px,30vw)!important;min-width:130px!important;height:32px!important;min-height:32px!important;margin-left:auto!important;padding:5px 10px 5px 31px!important;border:1px solid #c2c2c2!important;border-radius:7px!important;background-color:#fff!important;color:#333!important;font-size:.78rem!important}
+body.create-list-active #createView>.hint,body:has(> main > #createView:not(.hidden)) #createView>.hint{display:none!important}
+body.create-list-active #createView>#createList,body:has(> main > #createView:not(.hidden)) #createView>#createList{display:block!important;flex:1 1 0!important;width:100%!important;min-height:0!important;margin:0!important;padding:0!important;overflow-x:hidden!important;overflow-y:auto!important;background:#dedede!important;scrollbar-width:thin!important;scrollbar-color:#8d8d8d #cecece!important}
+body.create-list-active #createList .song-group-title,body:has(> main > #createView:not(.hidden)) #createList .song-group-title{display:flex!important;align-items:center!important;gap:7px!important;min-height:29px!important;margin:0!important;padding:4px 10px!important;border-bottom:1px solid #aaa!important;background:#d1d1d1!important;color:#414141!important;font-size:.68rem!important;letter-spacing:.04em!important}
+body.create-list-active #createList .song-group-title:after,body:has(> main > #createView:not(.hidden)) #createList .song-group-title:after{display:none!important}
+body.create-list-active #createList .song-group-title small,body:has(> main > #createView:not(.hidden)) #createList .song-group-title small{padding:1px 6px!important;background:#e5e5e5!important;color:#666!important;font-size:.62rem!important}
+body.create-list-active #createList .song-card,body:has(> main > #createView:not(.hidden)) #createList .song-card{display:flex!important;align-items:center!important;width:100%!important;min-height:39px!important;margin:0!important;padding:0!important;border:0!important;border-bottom:1px solid #9e9e9e!important;border-radius:0!important;background:#eee!important;box-shadow:none!important;color:#333!important;text-align:left!important;transform:none!important}
+body.create-list-active #createList .song-card:nth-of-type(even),body:has(> main > #createView:not(.hidden)) #createList .song-card:nth-of-type(even){background:#e6e6e6!important}
+body.create-list-active #createList .song-card:hover,body:has(> main > #createView:not(.hidden)) #createList .song-card:hover{background:#d9edf4!important}
+body.create-list-active #createList .song-card .song-key,body:has(> main > #createView:not(.hidden)) #createList .song-card .song-key{display:grid!important;flex:0 0 31px!important;width:31px!important;min-width:31px!important;height:27px!important;margin:0 10px!important;border-radius:3px!important;background:#d9e7eb!important;color:#425962!important;font-size:.72rem!important}
+body.create-list-active #createList .song-card .song-info,body:has(> main > #createView:not(.hidden)) #createList .song-card .song-info{display:flex!important;flex:1!important;flex-direction:row!important;align-items:center!important;gap:10px!important;min-width:0!important}
+body.create-list-active #createList .song-card .song-info b,body:has(> main > #createView:not(.hidden)) #createList .song-card .song-info b{display:block!important;max-width:72%!important;overflow:hidden!important;color:#333!important;font-size:.82rem!important;font-weight:500!important;white-space:nowrap!important;text-overflow:ellipsis!important}
+body.create-list-active #createList .song-card .song-info small,body:has(> main > #createView:not(.hidden)) #createList .song-card .song-info small{display:block!important;color:#777!important;font-size:.68rem!important}
+body.create-list-active #createList .song-chips,body:has(> main > #createView:not(.hidden)) #createList .song-chips{display:flex!important;flex-direction:row!important;gap:4px!important;margin:0 9px 0 auto!important}
+body.create-list-active #createList .song-chip,body:has(> main > #createView:not(.hidden)) #createList .song-chip{height:17px!important;padding:0 6px!important;border:1px solid #c5c5c5!important;border-radius:3px!important;background:#e8e8e8!important;color:#56636a!important;font-size:.58rem!important}
+body.create-list-active #createView>.create-list-footer,body:has(> main > #createView:not(.hidden)) #createView>.create-list-footer{display:flex!important;flex:0 0 29px!important;align-items:center!important;justify-content:space-between!important;padding:3px 11px!important;border-top:1px solid #9dbbc7!important;background:#b9d3dc!important;color:#526c75!important;font-size:.68rem!important}
+@media(max-width:900px){
+ body.create-list-active #createView>.create-mobile-header,body:has(> main > #createView:not(.hidden)) #createView>.create-mobile-header{flex-basis:40px!important;height:40px!important;min-height:40px!important;padding:0 6px!important}
+ body.create-list-active #createView>.create-mobile-header>.home-back,body:has(> main > #createView:not(.hidden)) #createView>.create-mobile-header>.home-back{min-height:28px!important;padding:3px 8px!important;font-size:.72rem!important}
+ body.create-list-active #createView>.create-mobile-header h1,body:has(> main > #createView:not(.hidden)) #createView>.create-mobile-header h1{font-size:.78rem!important}
+ body.create-list-active #createView>.create-mobile-header small,body:has(> main > #createView:not(.hidden)) #createView>.create-mobile-header small{font-size:.59rem!important}
+ body.create-list-active #createView>.toolbar,body:has(> main > #createView:not(.hidden)) #createView>.toolbar{flex-basis:36px!important;min-height:36px!important;padding:3px 6px!important}
+ body.create-list-active #createView .create-list-hint,body:has(> main > #createView:not(.hidden)) #createView .create-list-hint{font-size:.62rem!important}
+ body.create-list-active #createView #createSearch,body:has(> main > #createView:not(.hidden)) #createView #createSearch{flex-basis:min(190px,38vw)!important;width:min(190px,38vw)!important;min-width:100px!important;height:27px!important;min-height:27px!important;font-size:.66rem!important}
+ body.create-list-active #createList .song-card,body:has(> main > #createView:not(.hidden)) #createList .song-card{min-height:34px!important}
+ body.create-list-active #createList .song-card .song-key,body:has(> main > #createView:not(.hidden)) #createList .song-card .song-key{flex-basis:24px!important;width:24px!important;min-width:24px!important;height:23px!important;margin-inline:6px!important;font-size:.62rem!important}
+ body.create-list-active #createList .song-card .song-info,body:has(> main > #createView:not(.hidden)) #createList .song-card .song-info{gap:6px!important}
+ body.create-list-active #createList .song-card .song-info b,body:has(> main > #createView:not(.hidden)) #createList .song-card .song-info b{font-size:.69rem!important}
+ body.create-list-active #createList .song-card .song-info small,body:has(> main > #createView:not(.hidden)) #createList .song-card .song-info small{font-size:.56rem!important}
+ body.create-list-active #createList .song-chip,body:has(> main > #createView:not(.hidden)) #createList .song-chip{height:14px!important;font-size:.51rem!important}
+ body.create-list-active #createView>.create-list-footer,body:has(> main > #createView:not(.hidden)) #createView>.create-list-footer{flex-basis:24px!important;font-size:.58rem!important}
+}
+@media(max-width:900px) and (orientation:landscape){body.create-list-active #createView>.create-mobile-header,body:has(> main > #createView:not(.hidden)) #createView>.create-mobile-header{flex-basis:40px!important;height:40px!important;min-height:40px!important}}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createView>.toolbar{background:#20212a!important;border-color:#3a3b46!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createView .create-list-hint{color:#c7c8d0!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createView #createSearch{border-color:#555665!important;background-color:#292a34!important;color:#f1f1f5!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createView>#createList{background:#202126!important;scrollbar-color:#62636c #292a30!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createList .song-group-title{border-color:#42434b!important;background:#30313c!important;color:#ececf1!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createList .song-group-title small{background:#41424e!important;color:#d1d2db!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createList .song-card,html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createList .song-card:nth-of-type(even){border-color:#42434b!important;background:#292a30!important;color:#f0f0f3!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createList .song-card:hover{background:#343943!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createList .song-card .song-info b{color:#f0f0f3!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createList .song-card .song-info small{color:#b7b8c2!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createList .song-card .song-key{border:1px solid #494a56!important;background:#343540!important;color:#dcecf2!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createList .song-chip{border-color:#50515c!important;background:#353640!important;color:#d8d9e1!important}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createView>.create-list-footer{border-color:#42434b!important;background:#20212a!important;color:#c7c8d0!important}
+body.create-list-active #createView>.toolbar .create-theme-toggle,body:has(> main > #createView:not(.hidden)) #createView>.toolbar .create-theme-toggle{display:grid!important;flex:0 0 34px!important;width:34px!important;height:34px!important;min-height:34px!important;place-items:center!important;padding:0!important;border:1px solid #c1c1c1!important;border-radius:6px!important;background:#f8f8f8!important;color:#37474f!important;font-size:1rem!important;cursor:pointer!important}
+@media(max-width:900px){body.create-list-active #createView>.toolbar .create-theme-toggle,body:has(> main > #createView:not(.hidden)) #createView>.toolbar .create-theme-toggle{flex-basis:28px!important;width:28px!important;height:28px!important;min-height:28px!important;font-size:.8rem!important}}
+html[data-theme="dark"] body:has(> main > #createView:not(.hidden)) #createView>.toolbar .create-theme-toggle{border-color:#555665!important;background:#30313c!important;color:#ffe28a!important}
+
+/* Pantalla de modos basada en la composición Synthesia: cabecera, selector superior y panel inferior */
+.mode-screen{position:fixed!important;inset:0!important;z-index:1200!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important;padding:0!important;background:var(--panel)!important;color:var(--text)!important}
+.mode-screen.hidden{display:none!important}
+.mode-screen-panel{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;overflow:hidden;background:var(--panel);color:var(--text)}
+.mode-screen-header{position:relative;top:auto;z-index:2;flex:0 0 44px;height:44px;min-height:44px;display:grid;grid-template-columns:minmax(100px,1fr) minmax(0,2fr) minmax(100px,1fr);align-items:center;gap:8px;padding:3px 8px;background:var(--gold);color:#fff;box-shadow:none}
+.mode-screen-header>.soft{justify-self:start;min-height:31px;padding:4px 11px;border:1px solid #ffffff48;border-radius:5px;background:color-mix(in srgb,var(--gold) 82%,#000);color:#fff}
+.mode-screen-song{text-align:center;min-width:0}
+.mode-screen-song h1{margin:0;font-size:.95rem;line-height:1.1;color:inherit}
+.mode-screen-song p{margin:2px 0 0;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mode-screen-continue{justify-self:end;min-height:31px;padding:4px 13px;border:1px solid #ffffff55;border-radius:5px;background:color-mix(in srgb,var(--gold) 82%,#000);color:#fff;font:inherit;font-size:.84rem}
+.mode-screen-continue:hover,.mode-screen-header>.soft:hover{filter:brightness(1.12)}
+.mode-screen-upper{flex:0 0 auto;min-height:270px;width:min(1100px,100%);margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;align-items:center;padding:16px 12px 20px;background:var(--panel)}
+.mode-side-actions{display:flex;flex-direction:column;gap:7px}
+.mode-side-choice{min-height:84px;padding:12px 16px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);color:var(--text);text-align:left;font:inherit;cursor:pointer}
+.mode-side-choice b,.mode-side-choice small{display:block}
+.mode-side-choice b{font-size:.91rem;font-weight:500;line-height:1.35}
+.mode-side-choice small{margin-top:4px;color:var(--muted);font-size:.72rem}
+.mode-side-choice.active{outline:2px solid var(--gold);outline-offset:1px}
+.mode-side-choice:hover{filter:brightness(.97)}
+.mode-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end}
+.mode-choice-card{min-width:0;padding:0;border:0;border-radius:0;background:transparent;color:var(--text);text-align:center;font:inherit;cursor:pointer}
+.mode-card-heading{display:block;min-height:25px;font-family:Georgia,'Times New Roman',serif;font-size:1.05rem;line-height:1.2}
+.mode-choice-card>small{display:block;min-height:23px;color:var(--muted);font-size:.8rem}
+.mode-score-box{min-height:145px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);color:var(--muted);transition:border-color .15s,box-shadow .15s,filter .15s}
+.mode-score-box strong{font-size:1.35rem;font-weight:400;line-height:1}
+.mode-score-box>span{font-size:.83rem}
+.mode-choice-card.active .mode-score-box{outline:2px solid var(--gold);outline-offset:1px;filter:brightness(.98)}
+.mode-choice-card:hover .mode-score-box{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 18%,transparent)}
+.mode-section-title{flex:0 0 44px;display:grid;place-items:center;padding:4px 12px;background:var(--gold);color:#fff;text-align:center}
+.mode-section-title h2{margin:0;font-size:1.08rem;font-weight:500}
+.mode-detail-area{flex:1;min-height:0;display:grid;grid-template-columns:180px minmax(0,1fr);background:var(--bg)}
+.mode-detail-nav{display:flex;flex-direction:column;align-items:stretch;overflow:auto;border-right:1px solid var(--line);background:var(--panel)}
+.mode-detail-nav button{min-height:44px;padding:9px 10px;border:0;border-bottom:1px solid var(--line);background:var(--panel);color:var(--text);font:inherit;font-size:.84rem;text-align:left;cursor:pointer}
+.mode-detail-nav button.active{background:var(--gold);color:#fff}
+.mode-detail-content{min-width:0;overflow:auto;padding:clamp(16px,2vw,28px);background:var(--bg);color:var(--text)}
+.mode-detail-panel{max-width:1050px;line-height:1.55}
+.mode-detail-panel h3{margin:0 0 9px;font-size:1rem}
+.mode-detail-panel p{margin:0 0 13px}
+.mode-detail-panel ul{padding-left:21px}
+.mode-voice-directions{display:grid;grid-template-columns:repeat(2,minmax(180px,300px));gap:14px;margin-top:18px}
+.mode-voice-directions label{display:grid;gap:6px;font-size:.84rem}
+.mode-voice-directions select,.mode-setting-row select{min-height:36px;padding:6px 9px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--text);font:inherit;font-size:.82rem}
+.mode-instrument-settings{display:grid;grid-template-columns:repeat(2,minmax(250px,380px));gap:12px;margin-top:18px}
+.mode-setting-row{display:grid;grid-template-columns:62px minmax(0,1fr) 42px;align-items:center;gap:8px;padding:10px;border:1px solid var(--line);border-radius:5px;background:var(--panel)}
+.mode-setting-row label{font-size:.85rem;font-weight:600}
+.mode-setting-row input[type=color]{width:40px;height:36px;padding:3px;border:1px solid var(--line);border-radius:4px;background:var(--panel);cursor:pointer}
+.mode-settings-note{margin-top:14px!important;color:var(--muted)}
+html[data-theme="dark"] .mode-screen{background:#1c1c3f!important;color:#e8e6f0!important}
+html[data-theme="dark"] .mode-screen-panel,html[data-theme="dark"] .mode-screen-upper{background:#1c1c3f!important;color:#e8e6f0!important}
+html[data-theme="dark"] .mode-screen-header,html[data-theme="dark"] .mode-section-title{background:#2f2f5c!important;color:#e8e6f0!important}
+html[data-theme="dark"] .mode-screen-header>.soft,html[data-theme="dark"] .mode-screen-continue{background:#42426e!important;color:#e8c97a!important;border-color:#514777!important}
+html[data-theme="dark"] .mode-side-choice,html[data-theme="dark"] .mode-score-box,html[data-theme="dark"] .mode-detail-nav,html[data-theme="dark"] .mode-detail-nav button,html[data-theme="dark"] .mode-setting-row{background:#1b1b2e!important;color:#e8e6f0!important;border-color:#2a2a45!important}
+html[data-theme="dark"] .mode-side-choice small,html[data-theme="dark"] .mode-choice-card>small,html[data-theme="dark"] .mode-score-box{color:#aaa9c1!important}
+html[data-theme="dark"] .mode-detail-nav button.active{background:#42426e!important;color:#e8c97a!important}
+html[data-theme="dark"] .mode-detail-content{background:#1b1b2e!important;color:#e8e6f0!important}
+html[data-theme="dark"] .mode-voice-directions select,html[data-theme="dark"] .mode-setting-row select,html[data-theme="dark"] .mode-setting-row input[type=color]{background:#11111d!important;color:#e8e6f0!important;border-color:#514777!important}
+@media(max-width:760px){
+ .mode-screen-header{grid-template-columns:auto minmax(0,1fr) auto;gap:6px;padding-inline:6px}
+ .mode-screen-header>.soft{min-height:30px;padding:4px 8px;font-size:.75rem}
+ .mode-screen-song h1{font-size:.83rem}.mode-screen-song p{font-size:.72rem}
+ .mode-screen-continue{min-height:30px;padding:4px 8px;font-size:.75rem}
+ .mode-screen-upper{width:100%;min-height:unset;grid-template-columns:minmax(100px,24%) minmax(0,1fr);gap:8px;padding:10px 7px 12px}
+ .mode-side-actions{gap:6px}.mode-side-choice{min-height:72px;padding:8px}.mode-side-choice b{font-size:.76rem}.mode-side-choice small{font-size:.63rem}
+ .mode-cards{gap:7px}.mode-card-heading{min-height:31px;font-family:inherit;font-size:.72rem;font-weight:600}.mode-choice-card>small{min-height:30px;font-size:.62rem}.mode-score-box{min-height:96px}.mode-score-box strong{font-size:.93rem}.mode-score-box>span{font-size:.68rem}
+ .mode-section-title{flex-basis:37px}.mode-section-title h2{font-size:.94rem}
+ .mode-detail-area{grid-template-columns:132px minmax(0,1fr)}.mode-detail-nav button{min-height:39px;padding:7px;font-size:.72rem}.mode-detail-content{padding:12px;font-size:.8rem}
+ .mode-voice-directions,.mode-instrument-settings{grid-template-columns:minmax(0,1fr);gap:8px}.mode-setting-row{grid-template-columns:52px minmax(0,1fr) 36px;padding:7px;gap:6px}.mode-setting-row select,.mode-voice-directions select{min-height:32px;font-size:.72rem}.mode-setting-row input[type=color]{width:34px;height:32px}
+}
+@media(max-width:430px){.mode-screen-upper{grid-template-columns:92px minmax(0,1fr);gap:5px;padding-inline:4px}.mode-side-choice{padding:6px}.mode-side-choice b{font-size:.68rem}.mode-side-choice small{font-size:.56rem}.mode-cards{gap:4px}.mode-card-heading{font-size:.65rem}.mode-choice-card>small{font-size:.56rem}.mode-score-box{min-height:82px}.mode-score-box strong{font-size:.8rem}.mode-detail-area{grid-template-columns:105px minmax(0,1fr)}.mode-detail-nav button{font-size:.66rem;padding:6px}}
+
+/* Pantalla dedicada a instrumentos y colores, inspirada en el panel de ajustes */
+.instrument-screen-header{position:relative;top:auto;z-index:2;flex:0 0 44px;height:44px;min-height:44px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:3px 8px;background:var(--gold);color:#fff}
+.instrument-header-actions{display:flex;align-items:center;gap:8px}
+.instrument-header-actions .soft{min-height:31px;padding:4px 11px;border:1px solid #ffffff48;border-radius:5px;background:color-mix(in srgb,var(--gold) 82%,#000);color:#fff}
+.instrument-screen-header h1{margin:0;text-align:center;font-size:1.08rem;font-weight:500}
+.instrument-screen-main{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;gap:22px;padding:20px 14px}
+.instrument-config-grid{width:min(740px,100%);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.instrument-config-card{overflow:hidden;border:1px solid color-mix(in srgb,var(--gold) 72%,#000);border-radius:4px;background:var(--gold);color:#fff;box-shadow:0 2px 5px #0002}
+.instrument-config-top{min-height:68px;display:grid;grid-template-columns:44px minmax(0,1fr) 22px;align-items:center;gap:9px;padding:7px;border-bottom:1px solid #ffffff42}
+.instrument-card-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:5px;background:#ffffff20;font-size:1.65rem}
+.instrument-name-field{display:grid;gap:2px;min-width:0;font-size:1rem}
+.instrument-name-field select{width:100%;min-width:0;padding:1px 2px;border:0;background:transparent;color:inherit;font:inherit;font-size:.95rem;outline-offset:1px}
+.instrument-name-field select option{background:var(--panel);color:var(--text)}
+.instrument-name-field small{font-size:.69rem;opacity:.88}
+.instrument-card-play{font-size:1.3rem;text-align:center;text-shadow:0 1px 2px #0006}
+.instrument-config-bottom{min-height:66px;display:grid;grid-template-columns:1.15fr .8fr 1fr;align-items:stretch}
+.instrument-config-bottom>*{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;border-right:1px solid #ffffff42;text-align:center}
+.instrument-config-bottom>*:last-child{border-right:0}
+.instrument-hand,.instrument-sound-state{font-size:1.22rem}
+.instrument-hand small,.instrument-sound-state small{font-size:.66rem;line-height:1.2}
+.instrument-color-field{font-size:.68rem}
+.instrument-color-field input[type=color]{width:36px;height:25px;padding:2px;border:1px solid #ffffff6b;border-radius:3px;background:transparent;cursor:pointer}
+.instrument-voice-directions{width:min(740px,100%);padding:12px 14px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--text)}
+.instrument-voice-directions h2{margin:0 0 4px;font-size:.95rem}
+.instrument-voice-directions>p{margin:0;font-size:.78rem;color:var(--muted)}
+.instrument-voice-directions .mode-voice-directions{margin-top:10px;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.instrument-settings-footer{flex:0 0 auto;min-height:54px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:5px 9px calc(5px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--panel2);color:var(--text)}
+.instrument-settings-footer>.soft{min-height:36px;padding:5px 12px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--text);font-size:.8rem}
+.instrument-settings-footer>p{margin:0;font-size:.72rem;line-height:1.35;color:var(--muted)}
+.instrument-settings-footer .mode-screen-continue{min-height:36px;padding:5px 12px;border-radius:4px;font-size:.8rem}
+html[data-theme="dark"] .instrument-screen-header{background:#2f2f5c!important;color:#e8e6f0!important}
+html[data-theme="dark"] .instrument-header-actions .soft{background:#42426e!important;color:#e8c97a!important;border-color:#514777!important}
+html[data-theme="dark"] .instrument-config-card{background:#2f2f5c!important;border-color:#514777!important;color:#e8e6f0!important}
+html[data-theme="dark"] .instrument-config-top,html[data-theme="dark"] .instrument-config-bottom>*{border-color:#514777!important}
+html[data-theme="dark"] .instrument-card-icon{background:#42426e!important}
+html[data-theme="dark"] .instrument-settings-footer{background:#1b1b2e!important;color:#e8e6f0!important;border-color:#2a2a45!important}
+html[data-theme="dark"] .instrument-settings-footer>.soft{background:#292947!important;border-color:#514777!important;color:#e8e6f0!important}
+html[data-theme="dark"] .instrument-voice-directions{background:#1b1b2e!important;color:#e8e6f0!important;border-color:#2a2a45!important}
+@media(max-width:680px){
+ .instrument-screen-header{grid-template-columns:auto minmax(0,1fr);gap:6px;padding-inline:6px}
+ .instrument-header-actions{gap:4px}.instrument-header-actions .soft{min-height:29px;padding:4px 7px;font-size:.72rem}
+ .instrument-screen-header h1{font-size:.84rem}
+ .instrument-screen-main{gap:12px;padding:12px 8px}
+ .instrument-config-grid{grid-template-columns:minmax(0,1fr);gap:9px;max-width:390px}
+ .instrument-config-top{min-height:58px;grid-template-columns:38px minmax(0,1fr) 20px;padding:6px}
+ .instrument-card-icon{width:36px;height:36px;font-size:1.35rem}
+ .instrument-name-field,.instrument-name-field select{font-size:.86rem}
+ .instrument-config-bottom{min-height:52px}
+ .instrument-voice-directions{max-width:390px;padding:9px}
+ .instrument-voice-directions .mode-voice-directions{grid-template-columns:minmax(0,1fr);gap:7px}
+ .instrument-settings-footer{min-height:49px;grid-template-columns:auto minmax(0,1fr) auto;gap:5px;padding-inline:5px}
+ .instrument-settings-footer>.soft,.instrument-settings-footer .mode-screen-continue{min-height:32px;padding:4px 7px;font-size:.68rem}
+ .instrument-settings-footer>p{font-size:.59rem}
+}
+
+/* Ajustes de instrumentos: composición compacta de una sola pantalla */
+.instrument-screen-main{overflow:hidden!important;gap:10px!important;padding:17px 12px 8px!important}
+.instrument-config-grid{flex:0 0 auto!important}
+.instrument-voice-directions{flex:0 0 auto!important;padding:9px 12px!important}
+.instrument-voice-directions>p{font-size:.74rem!important}
+.instrument-voice-directions .mode-voice-directions{margin-top:7px!important;gap:8px!important}
+.instrument-card-play{display:grid;place-items:center;width:26px;height:32px;padding:0;border:0;border-radius:4px;background:transparent;color:inherit;font:inherit;font-size:1.25rem;cursor:pointer}
+.instrument-card-play:hover{background:#ffffff22}
+.instrument-sound-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;border:0;background:transparent;color:inherit;font:inherit;font-size:1.13rem;cursor:pointer}
+.instrument-sound-toggle small{font-size:.61rem;line-height:1.2}
+.instrument-sound-toggle[aria-checked="false"]{opacity:.57}
+.instrument-sound-toggle:focus-visible,.instrument-card-play:focus-visible{outline:2px solid currentColor;outline-offset:-2px}
+.instrument-help-dialog{position:fixed;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(450px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:19px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);box-shadow:0 16px 50px #0008}
+.instrument-help-dialog::backdrop{background:#071722a8;backdrop-filter:blur(3px)}
+.instrument-help-dialog form{display:flex;justify-content:flex-end;margin:-4px -4px 8px}
+.instrument-help-dialog form button{min-height:32px;padding:4px 10px}
+.instrument-help-dialog h2{margin:5px 0 12px;font-size:1.08rem}
+.instrument-help-dialog p{margin:8px 0;line-height:1.45;font-size:.86rem}
+html[data-theme="dark"] .instrument-help-dialog{border-color:#514777;background:#1b1b2e;color:#e8e6f0}
+#toast{z-index:1300!important}
+@media(max-width:680px){
+ .instrument-screen-main{overflow:hidden!important;gap:8px!important;padding:6px!important}
+ .instrument-config-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;max-width:none!important;gap:6px!important}
+ .instrument-config-top{min-height:52px!important;grid-template-columns:28px minmax(0,1fr) 18px!important;gap:4px!important;padding:4px!important}
+ .instrument-card-icon{width:27px!important;height:30px!important;font-size:1rem!important}
+ .instrument-name-field,.instrument-name-field select{font-size:.72rem!important}
+ .instrument-name-field small{font-size:.56rem!important}
+ .instrument-config-bottom{min-height:48px!important;grid-template-columns:1fr .72fr 1fr!important}
+ .instrument-hand,.instrument-sound-toggle{font-size:.92rem!important}
+ .instrument-hand small,.instrument-sound-toggle small{font-size:.52rem!important}
+ .instrument-color-field{font-size:.56rem!important}.instrument-color-field input[type=color]{width:30px!important;height:22px!important}
+ .instrument-voice-directions{padding:7px!important}.instrument-voice-directions h2{font-size:.79rem!important}.instrument-voice-directions>p{font-size:.62rem!important}
+ .instrument-voice-directions .mode-voice-directions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}
+ .instrument-voice-directions .mode-voice-directions label{gap:3px!important;font-size:.63rem!important}
+ .instrument-voice-directions .mode-voice-directions select{min-height:29px!important;padding:3px 5px!important;font-size:.6rem!important}
+ .instrument-settings-footer{min-height:44px!important;grid-template-columns:auto minmax(0,1fr) auto!important;gap:4px!important;padding:4px!important}
+ .instrument-settings-footer>.soft,.instrument-settings-footer .mode-screen-continue{min-height:29px!important;padding:3px 6px!important;font-size:.64rem!important}
+ .instrument-settings-footer>p{font-size:.53rem!important}
+}
+@media(max-height:500px){
+ .instrument-screen-header{flex-basis:38px!important;height:38px!important;min-height:38px!important}
+ .instrument-screen-main{gap:6px!important;padding-block:5px!important}
+ .instrument-config-top{min-height:48px!important}.instrument-config-bottom{min-height:42px!important}
+ .instrument-voice-directions{padding-block:5px!important}.instrument-voice-directions>p{display:none!important}
+ .instrument-voice-directions .mode-voice-directions{margin-top:4px!important}
+ .instrument-settings-footer{min-height:40px!important}
+}
+@media(max-height:500px){
+ .instrument-voice-directions{padding:6px 9px!important}
+ .instrument-voice-directions h2{margin:0!important;font-size:.82rem!important}
+ .instrument-voice-directions>p{display:none!important}
+ .instrument-voice-directions .mode-voice-directions{margin-top:4px!important;gap:7px!important}
+ .instrument-voice-directions .mode-voice-directions label{grid-template-columns:minmax(68px,.7fr) minmax(0,1.3fr)!important;align-items:center!important;gap:6px!important}
+ .instrument-voice-directions .mode-voice-directions select{min-height:31px!important}
+}
+
+/* Short landscape viewports: preserve room for the full lower details panel. */
+@media(max-height:600px){
+ .mode-screen-panel{overflow-y:auto!important}
+ .mode-screen-header{flex-basis:38px!important;height:38px!important;min-height:38px!important;padding-block:2px!important}
+ .mode-screen-header>.soft,.mode-screen-continue{min-height:27px!important;padding:3px 9px!important;font-size:.74rem!important}
+ .mode-screen-song h1{font-size:.82rem!important}
+ .mode-screen-song p{font-size:.68rem!important}
+ .mode-screen-upper{flex:1 1 0%!important;min-height:0!important;gap:12px!important;padding:6px 10px!important}
+ .mode-side-actions{gap:5px!important}
+ .mode-side-choice{min-height:50px!important;padding:5px 8px!important}
+ .mode-side-choice b{font-size:.78rem!important;line-height:1.2!important}
+ .mode-side-choice small{margin-top:2px!important;font-size:.63rem!important}
+ .mode-cards{align-self:center!important}
+ .mode-cards{gap:10px!important}
+ .mode-card-heading{min-height:19px!important;font-size:.83rem!important}
+ .mode-choice-card>small{min-height:17px!important;font-size:.66rem!important}
+ .mode-score-box{min-height:64px!important;gap:3px!important}
+ .mode-score-box strong{font-size:1.08rem!important}
+ .mode-score-box>span{font-size:.7rem!important}
+ .mode-section-title{flex-basis:32px!important}
+ .mode-section-title h2{font-size:.86rem!important}
+ .mode-detail-area{flex:1 1 0%!important;min-height:105px!important;grid-template-columns:155px minmax(0,1fr)!important}
+ .mode-detail-nav button{min-height:34px!important;padding:6px 8px!important;font-size:.72rem!important}
+ .mode-detail-content{padding:8px 12px!important;font-size:.76rem!important;line-height:1.4!important}
+ .mode-detail-panel h3{margin-bottom:6px!important;font-size:.88rem!important}
+ .mode-detail-panel p{margin-bottom:8px!important}
+ .mode-detail-panel ul{padding-left:17px!important}
+}
+
+/* Keep song options and instrument settings on the same dark palette as the song list. */
+html[data-theme="dark"] .mode-screen,
+html[data-theme="dark"] .mode-screen-panel,
+html[data-theme="dark"] .mode-screen-upper,
+html[data-theme="dark"] .mode-detail-content,
+html[data-theme="dark"] .instrument-screen-main{background:#202126!important;color:#f0f0f3!important}
+html[data-theme="dark"] .mode-screen-header,
+html[data-theme="dark"] .mode-section-title,
+html[data-theme="dark"] .instrument-screen-header{background:#1187b9!important;color:#fff!important}
+html[data-theme="dark"] .mode-screen-header>.soft,
+html[data-theme="dark"] .mode-screen-continue,
+html[data-theme="dark"] .instrument-header-actions .soft{border-color:#ffffff39!important;background:#0d78a8!important;color:#fff!important}
+html[data-theme="dark"] .mode-side-choice,
+html[data-theme="dark"] .mode-score-box,
+html[data-theme="dark"] .mode-detail-nav,
+html[data-theme="dark"] .mode-detail-nav button,
+html[data-theme="dark"] .instrument-config-card,
+html[data-theme="dark"] .instrument-voice-directions{border-color:#42434b!important;background:#292a30!important;color:#f0f0f3!important}
+html[data-theme="dark"] .mode-side-choice small,
+html[data-theme="dark"] .mode-choice-card>small,
+html[data-theme="dark"] .mode-score-box,
+html[data-theme="dark"] .instrument-voice-directions>p,
+html[data-theme="dark"] .instrument-settings-footer>p{color:#b7b8c2!important}
+html[data-theme="dark"] .mode-side-choice.active,
+html[data-theme="dark"] .mode-choice-card.active .mode-score-box{outline-color:#58bce4!important}
+html[data-theme="dark"] .mode-detail-nav button{border-color:#42434b!important}
+html[data-theme="dark"] .mode-detail-nav button.active{background:#17435a!important;color:#d7f3ff!important}
+html[data-theme="dark"] .instrument-config-top,
+html[data-theme="dark"] .instrument-config-bottom>*{border-color:#42434b!important}
+html[data-theme="dark"] .instrument-card-icon{background:#30313c!important;color:#d7f3ff!important}
+html[data-theme="dark"] .instrument-settings-footer{border-color:#42434b!important;background:#20212a!important;color:#f0f0f3!important}
+html[data-theme="dark"] .instrument-settings-footer>.soft{border-color:#555665!important;background:#30313c!important;color:#f0f0f3!important}
+html[data-theme="dark"] .instrument-voice-directions{border-color:#42434b!important}
+html[data-theme="dark"] .mode-voice-directions select,
+html[data-theme="dark"] .instrument-config-card select,
+html[data-theme="dark"] .instrument-config-card input[type="color"]{border-color:#555665!important;background:#202126!important;color:#f0f0f3!important}
+html[data-theme="dark"] .instrument-help-dialog{border-color:#42434b!important;background:#202126!important;color:#f0f0f3!important}
+
+/* Main menu header: app mark, live sync status, theme switch, then Admin. */
+body>header.app-header{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(130px,auto) minmax(0,1fr)!important;align-items:center!important;gap:12px!important;width:100%!important;height:58px!important;min-height:58px!important;padding:0 max(16px,calc((100vw - 1450px)/2))!important;background:#1187b9!important;color:#fff!important}
+body>header.app-header .brand-home{display:flex!important;justify-self:start!important;align-items:center!important;gap:9px!important;min-width:0!important;padding:0!important;border:0!important;background:transparent!important;color:#fff!important;text-decoration:none!important}
+body>header.app-header .brand-icon{display:block!important;flex:0 0 36px!important;width:36px!important;height:36px!important;object-fit:contain!important;border:0!important;border-radius:6px!important;background:#0d78a8!important;box-shadow:none!important}
+body>header.app-header .brand-home b{display:block!important;overflow:hidden!important;color:#fff!important;font-size:.92rem!important;font-weight:650!important;letter-spacing:.01em!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+body>header.app-header #connection{position:static!important;grid-column:2!important;grid-row:1!important;width:auto!important;height:auto!important;min-height:0!important;margin:0!important;overflow:hidden!important;transform:none!important;color:#e8f7fc!important;font-size:.72rem!important;font-weight:600!important;line-height:1.2!important;text-align:center!important;text-overflow:ellipsis!important;text-shadow:none!important;white-space:nowrap!important;pointer-events:none!important}
+body>header.app-header #connection.offline{color:#fff0c2!important}
+body>header.app-header .header-actions{grid-column:3!important;grid-row:1!important;justify-self:end!important;display:flex!important;align-items:center!important;gap:8px!important;min-width:0!important}
+body>header.app-header .theme-toggle{width:38px!important;height:38px!important;min-height:38px!important;background:#0d78a8!important;border:1px solid #ffffff42!important;color:#fff!important}
+body>header.app-header #adminBtn{position:static!important;inset:auto!important;display:block!important;min-height:38px!important;margin:0!important;padding:6px 13px!important;border:1px solid #ffffff42!important;border-radius:6px!important;background:#0d78a8!important;color:#fff!important;font-size:.8rem!important;white-space:nowrap!important}
+body>header.app-header #adminBtn.active{background:#d7f3ff!important;color:#075f83!important}
+@media(max-width:900px){
+ body>header.app-header{grid-template-columns:minmax(0,1fr) minmax(90px,auto) minmax(0,1fr)!important;gap:5px!important;height:46px!important;min-height:46px!important;padding:0 max(7px,env(safe-area-inset-right)) 0 max(7px,env(safe-area-inset-left))!important}
+ body>header.app-header .brand-home{gap:6px!important}
+ body>header.app-header .brand-icon{flex-basis:30px!important;width:30px!important;height:30px!important}
+ body>header.app-header .brand-home b{font-size:.76rem!important}
+ body>header.app-header #connection{font-size:.61rem!important}
+ body>header.app-header .header-actions{gap:4px!important}
+ body>header.app-header .theme-toggle{width:31px!important;height:31px!important;min-height:31px!important;font-size:16px!important}
+ body>header.app-header #adminBtn{min-height:31px!important;padding:4px 8px!important;font-size:.68rem!important}
+}
+@media(max-width:900px){body:has(#theoryView:not(.hidden))>header.app-header{display:none!important}}
+@media(max-width:360px){body>header.app-header{grid-template-columns:minmax(0,1fr) minmax(70px,.8fr) auto!important;gap:3px!important}body>header.app-header .brand-home b{font-size:.68rem!important}body>header.app-header #connection{font-size:.55rem!important}body>header.app-header .header-actions{gap:3px!important}body>header.app-header #adminBtn{padding-inline:6px!important;font-size:.63rem!important}}
+html[data-theme="dark"] body>header.app-header{background:#1187b9!important;border-bottom:1px solid #ffffff29!important}
+html[data-theme="dark"] body>header.app-header .theme-toggle,
+html[data-theme="dark"] body>header.app-header #adminBtn{border-color:#ffffff42!important;background:#0d78a8!important;color:#fff!important}
+html[data-theme="dark"] body>header.app-header #adminBtn.active{background:#d7f3ff!important;color:#075f83!important}
+
+/* Las pantallas de selección y ajustes son vistas completas, sin el encabezado del inicio. */
+body:has(#playModeModal:not(.hidden))>header.app-header,
+body:has(#instrumentSettingsScreen:not(.hidden))>header.app-header{display:none!important}
+body.song-list-active>header.app-header,
+body.create-list-active>header.app-header{display:none!important}
+body:has(#playModeModal:not(.hidden)) #playModeModal,
+body:has(#instrumentSettingsScreen:not(.hidden)) #instrumentSettingsScreen{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;margin:0!important;padding:0!important;z-index:1200!important}
+
+/* Add breathing room between the option labels, cards, and navigation buttons. */
+@media(max-height:600px) and (max-width:900px){
+ #playModeModal .mode-screen-header{padding-inline:12px!important}
+ #playModeModal .mode-screen-upper{gap:16px!important;padding:10px 16px!important}
+ #playModeModal .mode-side-actions{gap:10px!important}
+ #playModeModal .mode-side-choice{padding:7px 10px!important}
+ #playModeModal .mode-cards{gap:14px!important}
+ #playModeModal .mode-card-heading{min-height:22px!important;margin-bottom:3px!important;line-height:1.3!important}
+ #playModeModal .mode-choice-card>small{min-height:20px!important;margin-bottom:5px!important;line-height:1.3!important}
+ #playModeModal .mode-score-box{min-height:68px!important}
+ #playModeModal .mode-detail-nav button{padding-inline:10px!important}
+}
+
+/* Keep one consistent app typeface across mode headings, cards, and controls. */
+.mode-screen,.mode-screen *{font-family:inherit!important}
+.mode-screen .mode-card-heading{font-weight:600;letter-spacing:0}
+html[data-theme="dark"] body.home-active>main{background:#202126!important}
+html[data-theme="dark"] body.home-active #homeView{border-color:#42434b!important;background:#202126!important;box-shadow:none!important}
+html[data-theme="dark"] body.home-active #homeView .home-actions-heading h2,
+html[data-theme="dark"] body.home-active #homeView .home-welcome-card h1{color:#f0f0f3!important}
+html[data-theme="dark"] body.home-active #homeView .home-actions-heading small,
+html[data-theme="dark"] body.home-active #homeView .home-eyebrow,
+html[data-theme="dark"] body.home-active #homeView .home-welcome-card>p{color:#b7b8c2!important}
+html[data-theme="dark"] body.home-active #homeView .home-action.primary{border-color:#55b8df!important;background:#17445b!important;color:#f0f0f3!important}
+html[data-theme="dark"] body.home-active #homeView .home-action.primary b,
+html[data-theme="dark"] body.home-active #homeView .home-action.primary small{color:#f0f0f3!important}
+html[data-theme="dark"] body.home-active #homeView .home-action.primary .home-action-icon{background:#55b8df24!important;color:#d7f3ff!important}
+html[data-theme="dark"] body.home-active #homeView .home-action.secondary,
+html[data-theme="dark"] body.home-active #homeView .home-welcome-card,
+html[data-theme="dark"] body.home-active #homeView .home-shortcuts button,
+html[data-theme="dark"] body.home-active #homeView .home-info-card{border-color:#42434b!important;background:#292a30!important;color:#f0f0f3!important}
+html[data-theme="dark"] body.home-active #homeView .home-brand-mark,
+html[data-theme="dark"] body.home-active #homeView .home-shortcuts button>span,
+html[data-theme="dark"] body.home-active #homeView .home-info-icon{background:#30313c!important;color:#d7f3ff!important}
+html[data-theme="dark"] body.home-active #homeView .home-shortcuts small,
+html[data-theme="dark"] body.home-active #homeView .home-info-card p{color:#b7b8c2!important}
+
+/* Home spotlight now shows the last heard song above the illustrated keyboard. */
+#homeView .home-welcome-card{display:flex!important;align-items:center!important;justify-content:center!important;padding:clamp(20px,3vw,36px)!important}
+#homeView .home-last-played{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;max-width:min(760px,92%);text-align:center}
+#homeView .home-last-played>small{color:#52717d;font-size:.72rem;font-weight:700;letter-spacing:.08em}
+#homeView .home-last-played h1{margin:0!important;color:#243d49;font-family:inherit;font-size:clamp(1.2rem,2.4vw,2rem)!important;font-weight:650;line-height:1.2;overflow-wrap:anywhere}
+#homeView .home-last-played p{margin:0;color:#607983;font-size:.78rem}
+@media(max-width:900px){#homeView .home-welcome-card{padding:14px!important}#homeView .home-last-played{gap:5px;max-width:94%}#homeView .home-last-played>small{font-size:.59rem}#homeView .home-last-played h1{font-size:1.05rem!important}#homeView .home-last-played p{font-size:.65rem}}
+html[data-theme="dark"] #homeView .home-last-played>small{color:#b7b8c2!important}
+html[data-theme="dark"] #homeView .home-last-played h1{color:#f0f0f3!important}
+html[data-theme="dark"] #homeView .home-last-played p{color:#b7b8c2!important}
+#homeView .home-actions{gap:8px!important}
+#homeView .home-action{flex:0 0 auto!important;min-height:56px!important;padding:6px 9px!important;grid-template-columns:32px minmax(0,1fr) 12px!important;gap:7px!important}
+#homeView .home-action-icon{width:29px!important;height:29px!important;font-size:16px!important}
+#homeView .home-action>span:nth-child(2){text-align:center!important}
+#homeView .home-action b{font-size:.84rem!important}
+#homeView .home-action small{margin-top:2px!important;font-size:.64rem!important;line-height:1.2!important}
+#homeView .home-action-arrow{font-size:1.25rem!important}
+#homeView .home-recent-card{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:8px!important;padding:16px 18px 8px!important}
+#homeView .home-recent-heading{position:relative;z-index:1;margin:0;color:#334b55;font-size:.82rem;font-weight:600;line-height:1.2}
+#homeView .home-recent-list{position:relative;z-index:1;display:flex;flex:1 1 auto;flex-direction:column;gap:2px;min-height:0;overflow:auto;padding-bottom:30px}
+#homeView .home-recent-row{display:grid;flex:0 0 auto;grid-template-columns:minmax(0,1fr) auto 16px;align-items:center;gap:10px;min-height:39px;padding:5px 9px;border:1px solid #b5cbd3;border-radius:4px;background:#f1f5f6;color:#31444c;text-align:left;cursor:pointer;transition:background .12s,border-color .12s}
+#homeView .home-recent-row:hover,#homeView .home-recent-row:focus-visible{border-color:#1187b9;background:#e4f4f9}
+#homeView .home-recent-title{overflow:hidden;font-size:.82rem;font-weight:550;text-overflow:ellipsis;white-space:nowrap}
+#homeView .home-recent-time{color:#5e727c;font-size:.72rem;white-space:nowrap}
+#homeView .home-recent-arrow{color:#1684af;font-size:1.25rem;line-height:1;text-align:center}
+#homeView .home-recent-empty{margin:0;padding:8px 2px;color:#607983;font-size:.77rem}
+html[data-theme="dark"] #homeView .home-recent-heading{color:#f0f0f3!important}
+html[data-theme="dark"] #homeView .home-recent-row{border-color:#42434b!important;background:#292a30!important;color:#f0f0f3!important}
+html[data-theme="dark"] #homeView .home-recent-row:hover,html[data-theme="dark"] #homeView .home-recent-row:focus-visible{border-color:#58bce4!important;background:#17445b!important}
+html[data-theme="dark"] #homeView .home-recent-time,html[data-theme="dark"] #homeView .home-recent-empty{color:#b7b8c2!important}
+html[data-theme="dark"] #homeView .home-recent-arrow{color:#72c9eb!important}
+@media(max-width:900px){#homeView .home-recent-card{gap:5px!important;padding:9px 9px 4px!important}#homeView .home-recent-heading{font-size:.69rem}#homeView .home-recent-list{gap:2px;padding-bottom:23px}#homeView .home-recent-row{grid-template-columns:minmax(0,1fr) auto 12px;gap:5px;min-height:32px;padding:4px 6px}#homeView .home-recent-title{font-size:.68rem}#homeView .home-recent-time{font-size:.59rem}#homeView .home-recent-arrow{font-size:1rem}#homeView .home-recent-empty{font-size:.64rem}}
+/* Guía compacta: deja libre el centro para ver las barras y sus partículas. */
+#player .performance-layout{position:relative}
+.practice-guide{position:absolute;z-index:8;top:34px;right:8px;display:flex;align-items:center;gap:10px;width:max-content;max-width:calc(100% - 16px);margin:0;padding:6px 9px;border:1px solid #ffffff2c;border-radius:12px;background:#17191dcc;color:#fff;box-shadow:0 3px 12px #0005;backdrop-filter:blur(5px)}
+.practice-guide-copy{display:grid;gap:1px;min-width:0}.practice-guide-copy small{font-size:.58rem;font-weight:800;letter-spacing:.08em;opacity:.72}.practice-guide-copy strong{font-size:1.08rem;line-height:1.05;white-space:nowrap}.practice-guide-copy span{display:none}.practice-guide-actions{display:flex;gap:5px;flex:0 0 auto}.practice-guide-actions button{min-height:30px;padding:4px 8px;font-size:.75rem;white-space:nowrap}
+@media(max-width:900px){.practice-guide{top:clamp(58px,17dvh,70px);right:auto;left:8px;gap:7px;padding:5px 7px}.practice-guide-actions button{width:30px;min-width:30px;min-height:29px;padding:3px;font-size:.85rem}}
+
+/* Teoría musical: navegación táctil y tarjetas legibles en pantallas pequeñas. */
+@media(max-width:900px){
+  #theoryView,#theoryView *{font-family:inherit!important;}
+  #theoryView{gap:3px!important;padding:4px!important;}
+  #theoryView .theory-header{display:grid!important;grid-template-columns:minmax(70px,1fr) auto minmax(70px,1fr)!important;grid-template-rows:auto!important;align-items:center!important;column-gap:6px!important;margin:0!important;padding:0!important;}
+  #theoryView .theory-header .home-back{grid-column:1!important;grid-row:1!important;justify-self:start!important;min-height:31px!important;border-radius:9px!important;font-size:.78rem!important;}
+  #theoryView .theory-header h1{grid-column:2!important;grid-row:1!important;justify-self:center!important;margin:0!important;font-family:inherit!important;font-size:1.15rem!important;font-weight:800!important;letter-spacing:-.02em!important;white-space:nowrap!important;}
+  #theoryView .theory-header p{display:none!important;}
+  #theoryView .theory-root-picker{min-height:33px!important;padding:2px 8px!important;border-radius:9px!important;font-size:.76rem!important;}
+  #theoryView .theory-root-picker select{min-width:108px!important;min-height:28px!important;border-radius:7px!important;font-size:.77rem!important;}
+  #theoryView .theory-tabs{display:flex!important;gap:5px!important;overflow-x:auto!important;overflow-y:hidden!important;padding:0 1px 3px!important;scrollbar-width:none!important;scroll-snap-type:x proximity!important;-webkit-overflow-scrolling:touch;}
+  #theoryView .theory-tabs::-webkit-scrollbar{display:none!important;}
+  #theoryView .theory-tab{flex:0 0 auto!important;min-width:98px!important;min-height:32px!important;padding:4px 9px!important;border-radius:9px!important;font-size:.7rem!important;line-height:1.1!important;white-space:nowrap!important;scroll-snap-align:start;}
+  #theoryView .theory-panel:not(.hidden){padding:9px!important;border-radius:12px!important;}
+  #theoryView .theory-panel>h2{margin-bottom:4px!important;font-size:1rem!important;line-height:1.2!important;}
+  #theoryView .theory-intro{margin-bottom:7px!important;font-size:.74rem!important;line-height:1.35!important;}
+  #theoryView .theory-chord-layout{grid-template-columns:minmax(0,1fr)!important;gap:7px!important;}
+  #theoryView .theory-chord-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;}
+  #theoryView .theory-chord-card{min-height:58px!important;padding:8px!important;border-radius:9px!important;}
+  #theoryView .theory-chord-card b{font-size:.86rem!important;}
+  #theoryView .theory-chord-card span,#theoryView .theory-chord-card small{font-size:.69rem!important;line-height:1.25!important;}
+  #theoryView .theory-preview{padding:12px!important;border-radius:11px!important;}
+  #theoryView .theory-preview h3{font-size:1rem!important;}
+  #theoryView .theory-note-list{gap:6px!important;}
+  #theoryView .theory-note-list>*{min-height:30px!important;}
+  #theoryView .theory-key-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;}
+  #theoryView .theory-interval-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;}
+}
+
+@media(max-width:900px){
+  html[data-theme="dark"] #theoryView{background:transparent!important;color:var(--text)!important;}
+  html[data-theme="dark"] #theoryView .theory-header h1{color:var(--text)!important;}
+  html[data-theme="dark"] #theoryView .theory-root-picker,
+  html[data-theme="dark"] #theoryView .theory-mode-picker{border-color:var(--line)!important;background:var(--panel)!important;color:var(--text)!important;box-shadow:none!important;}
+  html[data-theme="dark"] #theoryView .theory-root-picker select,
+  html[data-theme="dark"] #theoryView .theory-mode-picker select{border-color:var(--line)!important;background:#11111d!important;color:var(--text)!important;}
+  html[data-theme="dark"] #theoryView .theory-tab{border-color:var(--line)!important;background:#171729!important;color:var(--text)!important;box-shadow:none!important;}
+  html[data-theme="dark"] #theoryView .theory-tab.active{border-color:var(--gold2)!important;background:#39344e!important;color:var(--gold2)!important;box-shadow:inset 0 -2px 0 var(--gold2)!important;}
+  html[data-theme="dark"] #theoryView .theory-panel,
+  html[data-theme="dark"] #theoryView .theory-preview{border-color:var(--line)!important;background:linear-gradient(145deg,rgba(34,34,70,.94),rgba(20,20,37,.97))!important;color:var(--text)!important;box-shadow:0 10px 28px #0004!important;}
+  html[data-theme="dark"] #theoryView .theory-panel h2,
+  html[data-theme="dark"] #theoryView .theory-preview h3,
+  html[data-theme="dark"] #theoryView .theory-chord-card b{color:var(--gold2)!important;}
+  html[data-theme="dark"] #theoryView .theory-intro,
+  html[data-theme="dark"] #theoryView .theory-chord-card span,
+  html[data-theme="dark"] #theoryView .theory-chord-card small{color:var(--muted)!important;}
+  html[data-theme="dark"] #theoryView .theory-chord-card,
+  html[data-theme="dark"] #theoryView .theory-key-card,
+  html[data-theme="dark"] #theoryView .theory-interval-card,
+  html[data-theme="dark"] #theoryView .theory-circle-results button{border-color:var(--line)!important;background:linear-gradient(145deg,#1c1c3f,#171729)!important;color:var(--text)!important;box-shadow:none!important;}
+  html[data-theme="dark"] #theoryView .theory-chord-card.selected,
+  html[data-theme="dark"] #theoryView .theory-interval-card.selected{border-color:var(--gold)!important;background:#302b50!important;color:var(--gold2)!important;box-shadow:inset 0 0 0 1px #c9a84c33!important;}
+  html[data-theme="dark"] #theoryView .theory-note{border-color:#514777!important;background:#302b50!important;color:var(--gold2)!important;}
+  html[data-theme="dark"] #theoryView .theory-formula{color:var(--gold2)!important;}
+}
+
+/* Live theory dock stays paired with the app keyboard, using the piano palette. */
+.toolbar-actions #theoryLiveToggle[aria-expanded="true"]{border-color:var(--gold2)!important;color:var(--gold2)!important;}
+.key.theory-highlight{outline:2px solid var(--gold2)!important;outline-offset:-2px;box-shadow:0 0 12px #e8c97a66!important;}
+.key.theory-highlight::after{content:attr(data-theory-name);position:absolute;z-index:4;top:12px;left:50%;transform:translateX(-50%);padding:2px 3px;border-radius:4px;background:#302b50;color:#f1d783;font:700 8px/1.1 Inter,system-ui,sans-serif;white-space:nowrap;pointer-events:none;}
+.live-theory-dock{display:none;}
+.live-theory-dock:not(.hidden){display:grid!important;grid-template-columns:minmax(0,1fr);gap:5px;order:3;flex:0 0 auto;max-height:clamp(96px,26dvh,170px);min-height:0;overflow:auto;padding:7px 10px;border:1px solid #c9a84c55;border-radius:10px;background:linear-gradient(145deg,#1c1c3f,#17172f);color:#e8e6f0;}
+#player .performance-layout:has(> #liveTheoryDock:not(.hidden)) > .piano-panel{order:4!important;}
+.live-theory-head{display:flex;align-items:center;justify-content:space-between;min-height:22px;color:#f1d783;font-size:.82rem;}
+.live-theory-head button{width:25px;height:24px;border:1px solid #514777;border-radius:7px;background:#242239;color:#e8e6f0;font-size:1.1rem;line-height:1;}
+.live-theory-modes{display:flex;gap:5px;}
+.live-theory-modes button{min-height:27px;padding:3px 10px;border:1px solid #343454;border-radius:7px;background:#171729;color:#e8e6f0;font:inherit;font-size:.72rem;}
+.live-theory-modes button.active{border-color:#c9a84c;background:#302b50;color:#f1d783;}
+.live-theory-controls{display:flex;align-items:end;gap:7px;flex-wrap:wrap;}
+.live-theory-controls label{display:grid;gap:2px;color:#aaa9c1;font-size:.64rem;font-weight:700;}
+.live-theory-controls select{min-width:96px;min-height:28px;padding:3px 7px;border:1px solid #343454;border-radius:7px;background:#11111d;color:#e8e6f0;font:inherit;font-size:.72rem;}
+.live-theory-controls .gold{min-height:28px;padding:4px 9px;font-size:.72rem;}
+.live-theory-explanation{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;}
+.live-theory-explanation p{margin:0;color:#d0cde0;font-size:.68rem;line-height:1.25;}
+.live-theory-notes{display:flex;gap:4px;flex:0 0 auto;flex-wrap:wrap;}
+.live-theory-notes span{padding:2px 5px;border:1px solid #514777;border-radius:5px;background:#302b50;color:#f1d783;font-size:.64rem;font-weight:750;}
+@media(max-width:900px){
+  #player .note-canvas > #liveTheoryDock:not(.hidden){order:3!important;}
+  .live-theory-dock:not(.hidden){width:100%;max-height:clamp(96px,26dvh,155px);padding:6px 8px;gap:4px;border-radius:9px;}
+  .live-theory-explanation{align-items:flex-start;}
+  .live-theory-explanation p{min-width:0;}
+  .key.theory-highlight::after{top:9px;font-size:7px;}
+}
+@media(max-width:900px) and (max-height:540px){
+  .live-theory-dock:not(.hidden){grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;align-content:start;max-height:clamp(102px,30dvh,130px);}
+  .live-theory-head{grid-column:1/-1;min-height:18px;}
+  .live-theory-modes{grid-column:1;align-self:center;}
+  .live-theory-modes button{min-height:24px;padding:2px 7px;font-size:.66rem;}
+  .live-theory-controls{grid-column:2;align-items:end;gap:4px;flex-wrap:nowrap;}
+  .live-theory-controls label{font-size:.59rem;}
+  .live-theory-controls select{min-width:74px;min-height:25px;padding:2px 5px;font-size:.66rem;}
+  .live-theory-controls .gold{min-height:25px;padding:3px 7px;font-size:.66rem;white-space:nowrap;}
+  .live-theory-explanation{grid-column:1/-1;align-items:flex-start;}
+  .live-theory-explanation p{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;}
+  .live-theory-notes{max-height:26px;overflow:auto;flex-wrap:nowrap;}
+}
+html[data-theme="dark"] .live-theory-dock:not(.hidden){border-color:#343454;background:linear-gradient(145deg,rgba(34,34,70,.96),rgba(20,20,37,.98));color:#e8e6f0;box-shadow:0 8px 24px #0005;}
+html[data-theme="dark"] .live-theory-head{color:#e8c97a;}
+html[data-theme="dark"] .live-theory-head button,html[data-theme="dark"] .live-theory-modes button{border-color:#343454;background:#171729;color:#e8e6f0;}
+html[data-theme="dark"] .live-theory-modes button.active{border-color:#c9a84c;background:#302b50;color:#e8c97a;}
+html[data-theme="dark"] .live-theory-controls label,html[data-theme="dark"] .live-theory-explanation p{color:#aaa9c1;}
+html[data-theme="dark"] .live-theory-controls select{border-color:#343454;background:#11111d;color:#e8e6f0;}
+html[data-theme="dark"] .live-theory-notes span{border-color:#514777;background:#302b50;color:#e8c97a;}
+
+/* Theory opens as a compact dashboard over the falling-note area. */
+#player .note-canvas > #liveTheoryDock:not(.hidden){position:absolute!important;z-index:45!important;top:42px!important;right:10px!important;bottom:auto!important;left:auto!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;width:min(420px,calc(100% - 20px))!important;max-height:calc(100% - 54px)!important;min-height:0!important;overflow:auto!important;order:initial!important;flex:none!important;margin:0!important;padding:12px!important;border:1px solid #c9a84c66!important;border-radius:12px!important;background:linear-gradient(145deg,rgba(34,34,70,.97),rgba(20,20,37,.98))!important;color:#e8e6f0!important;box-shadow:0 12px 32px #0008!important;backdrop-filter:blur(12px)!important;}
+#player .performance-layout:has(> #liveTheoryDock:not(.hidden)) > .piano-panel{order:initial!important;}
+#player #liveTheoryDock .live-theory-controls{align-items:end;}
+#player #liveTheoryDock .live-theory-explanation{align-items:flex-start;flex-direction:column;}
+#player #liveTheoryDock .live-theory-notes{flex:initial;}
+#player .stage-tool-rail #liveTheoryPlayKey:not(.hidden){display:grid!important;border:1px solid #c9a84c!important;background:#302b50!important;color:#f1d783!important;font-size:17px!important;box-shadow:0 0 8px #c9a84c33!important;}
+#player .stage-tool-rail #liveTheoryPlayKey:hover{background:#514777!important;}
+@media(max-width:900px){#player .note-canvas > #liveTheoryDock:not(.hidden){top:38px!important;right:8px!important;width:min(390px,calc(100% - 16px))!important;max-height:calc(100% - 46px)!important;padding:9px!important;gap:7px!important;}}
+
+/* Keep the live theory card simple and prevent theory labels from covering piano keys. */
+.key.theory-highlight::after{content:none!important;display:none!important;}
+#player .note-canvas > #liveTheoryDock:not(.hidden){grid-template-columns:minmax(0,1fr)!important;gap:10px!important;width:min(340px,calc(100% - 20px))!important;padding:12px!important;border:1px solid #45436a!important;border-radius:10px!important;background:#1b1b2e!important;box-shadow:0 6px 18px #0006!important;}
+#player #liveTheoryDock .live-theory-head,#player #liveTheoryDock .live-theory-modes,#player #liveTheoryDock .live-theory-controls,#player #liveTheoryDock .live-theory-explanation{grid-column:auto!important;grid-row:auto!important;}
+#player #liveTheoryDock .live-theory-head{min-height:26px;font-size:.88rem;}
+#player #liveTheoryDock .live-theory-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+#player #liveTheoryDock .live-theory-modes button{min-height:32px;padding:5px 8px;font-size:.76rem;}
+#player #liveTheoryDock .live-theory-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:end;}
+#player #liveTheoryDock .live-theory-controls label{font-size:.68rem;}
+#player #liveTheoryDock .live-theory-controls select{width:100%;min-width:0;min-height:34px;font-size:.76rem;}
+#player #liveTheoryDock .live-theory-explanation{display:block;}
+#player #liveTheoryDock .live-theory-explanation p{font-size:.72rem;line-height:1.35;}
+#player #liveTheoryDock .live-theory-notes{margin-top:6px;}
+@media(max-width:900px){#player .note-canvas > #liveTheoryDock:not(.hidden){top:38px!important;right:8px!important;width:min(330px,calc(100% - 16px))!important;max-height:calc(100% - 46px)!important;padding:10px!important;gap:8px!important;}#player #liveTheoryDock .live-theory-controls{grid-template-columns:repeat(2,minmax(0,1fr));flex-wrap:initial;}#player #liveTheoryDock .live-theory-controls label{font-size:.65rem;}#player #liveTheoryDock .live-theory-controls select{min-width:0;min-height:32px;padding:4px 7px;font-size:.72rem;}}
+
+/* Final live theory panel refinements: respect app colors and isolate it from global header styles. */
+#player #liveTheoryDock:not(.hidden){background:#f5f7f8!important;border:1px solid #a9c2cd!important;color:#243640!important;}
+#player #liveTheoryDock > .live-theory-head{position:static!important;inset:auto!important;display:flex!important;grid-column:auto!important;grid-row:auto!important;align-items:center!important;justify-content:space-between!important;width:auto!important;height:auto!important;min-height:26px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#243640!important;box-shadow:none!important;font:700 .88rem/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;}
+#player #liveTheoryDock > .live-theory-head button{flex:0 0 28px!important;width:28px!important;height:28px!important;border:1px solid #a9c2cd!important;border-radius:6px!important;background:#fff!important;color:#243640!important;font-size:1.1rem!important;}
+#player #liveTheoryDock .live-theory-modes button{border-color:#a9c2cd!important;background:#eaf3f6!important;color:#36515c!important;}
+#player #liveTheoryDock .live-theory-modes button.active{border-color:#1187b9!important;background:#1187b9!important;color:#fff!important;}
+#player #liveTheoryDock .live-theory-controls label{color:#5e727c!important;}
+#player #liveTheoryDock .live-theory-controls select{border-color:#a9c2cd!important;background:#fff!important;color:#243640!important;}
+#player #liveTheoryDock .live-theory-notes span{border-color:#a9c2cd!important;background:#eaf3f6!important;color:#266985!important;}
+html[data-theme="dark"] #player #liveTheoryDock:not(.hidden){background:#1b1b2e!important;border:1px solid #343454!important;color:#e8e6f0!important;}
+html[data-theme="dark"] #player #liveTheoryDock > .live-theory-head{background:transparent!important;color:#e8e6f0!important;}
+html[data-theme="dark"] #player #liveTheoryDock > .live-theory-head button{border-color:#343454!important;background:#11111d!important;color:#e8e6f0!important;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-modes button{border-color:#343454!important;background:#11111d!important;color:#e8e6f0!important;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-modes button.active{border-color:#c9a84c!important;background:#302b50!important;color:#e8c97a!important;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-controls label{color:#aaa9c1!important;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-controls select{border-color:#343454!important;background:#11111d!important;color:#e8e6f0!important;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-explanation p{color:#c6c4d5!important;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-notes span{border-color:#514777!important;background:#302b50!important;color:#e8c97a!important;}
+
+/* Make selected theory notes readable against the keyboard's persistent gold edge styling. */
+
+/* Compact theory controls so they leave most of the falling-note area visible. */
+#player #noteCanvas > #liveTheoryDock:not(.hidden){top:6px!important;right:8px!important;left:auto!important;bottom:auto!important;width:min(350px,calc(100% - 16px))!important;min-width:0!important;max-width:calc(100% - 16px)!important;max-height:min(132px,calc(100% - 12px))!important;box-sizing:border-box!important;overflow:auto!important;padding:7px 8px!important;gap:5px!important;border-radius:9px!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-head{min-height:20px!important;font-size:.76rem!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-head button{flex-basis:22px!important;width:22px!important;height:21px!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-modes{gap:4px!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-modes button{min-height:27px!important;padding:3px 5px!important;font-size:.68rem!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-controls{gap:5px!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-controls label{font-size:.59rem!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-controls select{min-height:29px!important;padding:3px 6px!important;font-size:.68rem!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-explanation p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.64rem!important;line-height:1.1!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-notes{display:none!important;}
+#player #liveTheoryDock .live-theory-head{cursor:grab!important;touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;}
+#player #liveTheoryDock.is-dragging .live-theory-head{cursor:grabbing!important;}
+#player #liveTheoryDock .live-theory-size-control{display:flex;align-items:center;gap:4px;color:var(--muted);font-size:.55rem!important;font-weight:650;}
+#player #liveTheoryDock .live-theory-size-control select{width:auto!important;min-width:0!important;min-height:22px!important;padding:1px 4px!important;border:1px solid var(--line)!important;border-radius:5px!important;background:var(--panel)!important;color:var(--text)!important;font:inherit!important;font-size:.58rem!important;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-size-control{color:#aaa9c1!important;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-size-control select{border-color:#343454!important;background:#11111d!important;color:#e8e6f0!important;}
+#player #noteCanvas > #liveTheoryDock[data-size="small"]:not(.hidden){width:min(285px,calc(100% - 16px))!important;max-height:min(105px,calc(100% - 12px))!important;padding:5px 6px!important;gap:4px!important;}
+#player #noteCanvas > #liveTheoryDock[data-size="large"]:not(.hidden){width:min(470px,calc(100% - 16px))!important;max-height:min(220px,calc(100% - 12px))!important;padding:12px!important;gap:9px!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-notes{display:flex!important;max-height:26px!important;overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;margin-top:2px!important;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-notes span{flex:0 0 auto!important;padding:2px 4px!important;font-size:.58rem!important;}
