@@ -28,13 +28,17 @@ let fallingNotesLastFrame = 0;
 // Reloj suave: en iPhone AudioContext.currentTime avanza a saltos; se interpola con performance.now().
 let playbackClockOffset = null, playbackClockLast = 0;
 function resetPlaybackClock(){playbackClockOffset=null;playbackClockLast=0;}
-function playbackNow(){
+function playbackNow(frameMs){
   const context=audioContext;if(!context)return 0;
   const perf=performance.now()/1000,audio=context.currentTime,sample=audio-perf;
-  // El desfase audio↔pantalla solo sube cuando el audio avanza (nunca va por delante del tiempo real) y baja muy despacio.
-  if(playbackClockOffset===null||sample>playbackClockOffset)playbackClockOffset=sample;
-  else playbackClockOffset+=(sample-playbackClockOffset)*.01;
-  const value=Math.max(playbackClockLast,audio,Math.min(perf+playbackClockOffset,audio+.4));
+  // El desfase se suaviza en ambos sentidos: currentTime en móvil avanza a saltos y esos saltos no deben mover las barras.
+  // Solo se re-sincroniza de golpe si la diferencia es grande (pausa del contexto, cambio de pestaña, etc.).
+  if(playbackClockOffset===null||Math.abs(sample-playbackClockOffset)>.15)playbackClockOffset=sample;
+  else playbackClockOffset+=(sample-playbackClockOffset)*.03;
+  // Se usa la marca de tiempo del frame (vsync) que entrega requestAnimationFrame, no el instante en que arranca el callback:
+  // así el avance es uniforme aunque el hilo principal se retrase un poco en el móvil.
+  const frame=(typeof frameMs==='number'&&frameMs>0)?frameMs/1000:perf;
+  const value=Math.max(playbackClockLast,frame+playbackClockOffset);
   playbackClockLast=value;return value;
 }
 let keyBaseWidthCache = 0;
@@ -526,9 +530,9 @@ function startPlaybackTimeline(startAt,duration){
   resetPlaybackClock();
   timelineStartedAt=startAt;
   updatePlaybackTimeline(0,duration);
-  const tick=()=>{
+  const tick=(frameTime)=>{
     if(!state.playing||!timelineStartedAt)return;
-    const elapsed=Math.max(0,(playbackNow()||timelineStartedAt)-timelineStartedAt);
+    const elapsed=Math.max(0,(playbackNow(frameTime)||timelineStartedAt)-timelineStartedAt);
     updatePlaybackTimeline(elapsed,duration);
     if(elapsed<duration)timelineFrame=requestAnimationFrame(tick);else timelineFrame=0;
   };
@@ -638,7 +642,7 @@ function drawFallingNotesFrame(timestamp){
   if(!fallingNotesGeometry)fallingNotesGeometry=rebuildFallingNotesGeometry();
   const geometry=fallingNotesGeometry;if(!geometry){stopFallingNotes();return;}
   const ctx=info.context,height=info.height,width=info.width,baseline=height-2,look=fallingNotesLookahead,pps=height/look,style=fallingNotesStyle;
-  const elapsed=Math.max(0,playbackNow()-run.startAt),scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom,hits=fnHits;hits.length=0;
+  const elapsed=Math.max(0,playbackNow(timestamp)-run.startAt),scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom,hits=fnHits;hits.length=0;
   ctx.clearRect(0,0,width,height);
   const oldestStart=elapsed-run.maxVisibleDuration;let low=0,high=run.events.length;
   while(low<high){const mid=(low+high)>>1;if(run.events[mid].start<oldestStart)low=mid+1;else high=mid;}
