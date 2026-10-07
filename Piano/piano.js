@@ -510,7 +510,7 @@ function updatePlaybackTimeline(elapsed=0,total=timelineDuration){
   if(elapsedText!==cache.elapsed){cache.elapsed=elapsedText;$('playbackElapsed').textContent=elapsedText;}
   if(durationText!==cache.duration){cache.duration=durationText;$('playbackDuration').textContent=durationText;}
   const ratio=duration?current/duration:0;
-  if(ratio!==cache.ratio&&(ratio===0||ratio===1||Math.abs(ratio-cache.ratio)>=.002)){cache.ratio=ratio;$('playbackProgressFill').style.transform=`scaleX(${ratio})`;}
+  if(ratio!==cache.ratio&&(ratio===0||ratio===1||Math.abs(ratio-cache.ratio)>=.0004)){cache.ratio=ratio;$('playbackProgressFill').style.transform=`scaleX(${ratio})`;}
   const percent=Math.round(ratio*100);
   if(percent!==cache.percent){cache.percent=percent;$('playbackProgressTrack').setAttribute('aria-valuenow',String(percent));}
   const empty=duration<=0;
@@ -532,9 +532,12 @@ function startPlaybackTimeline(startAt,duration){
   updatePlaybackTimeline(0,duration);
   const tick=(frameTime)=>{
     if(!state.playing||!timelineStartedAt)return;
-    const elapsed=Math.max(0,(playbackNow(frameTime)||timelineStartedAt)-timelineStartedAt);
+    const now=playbackNow(frameTime)||timelineStartedAt,elapsed=Math.max(0,now-timelineStartedAt);
+    const probeStart=perfProbe.on?performance.now():0;
+    flushVisualQueue(now,false);
     updatePlaybackTimeline(elapsed,duration);
-    if(elapsed<duration)timelineFrame=requestAnimationFrame(tick);else timelineFrame=0;
+    if(probeStart){const d=performance.now()-probeStart;perfProbe.tickSum+=d;perfProbe.tickN++;if(d>perfProbe.tickMax)perfProbe.tickMax=d;}
+    if(elapsed<duration)timelineFrame=requestAnimationFrame(tick);else{timelineFrame=0;flushVisualQueue(now,true);}
   };
   timelineFrame=requestAnimationFrame(tick);
 }
@@ -581,6 +584,30 @@ function lightKey(key,classes,ms){
   let counts=keyLightCounts.get(key);if(!counts){counts={};keyLightCounts.set(key,counts);}
   classes.forEach(cls=>{counts[cls]=(counts[cls]||0)+1;key.classList.add(cls);});
   state.playTimers.push(setTimeout(()=>{classes.forEach(cls=>{counts[cls]=Math.max(0,(counts[cls]||0)-1);if(!counts[cls])key.classList.remove(cls);});},Math.max(0,ms)));
+}
+// Cola de eventos visuales de la reproducción (teclas encendidas y nota actual). Sustituye a un setTimeout por nota:
+// se procesa en el mismo bucle y con el mismo reloj que las barras y la línea de tiempo, así todo cambia en el mismo frame.
+const visualQueue={pending:[],index:0,sorted:true,offs:[]};
+function resetVisualQueue(){visualQueue.pending.length=0;visualQueue.index=0;visualQueue.sorted=true;visualQueue.offs.length=0;}
+function queueVisualEvent(at,fn){visualQueue.pending.push({at,fn});visualQueue.sorted=false;}
+function lightKeyOn(key,classes){
+  let counts=keyLightCounts.get(key);if(!counts){counts={};keyLightCounts.set(key,counts);}
+  classes.forEach(cls=>{counts[cls]=(counts[cls]||0)+1;key.classList.add(cls);});
+}
+function lightKeyOff(key,classes){
+  const counts=keyLightCounts.get(key);if(!counts)return;
+  classes.forEach(cls=>{counts[cls]=Math.max(0,(counts[cls]||0)-1);if(!counts[cls])key.classList.remove(cls);});
+}
+function queueKeyLight(at,key,classes,ms){
+  if(!key)return;
+  queueVisualEvent(at,()=>{lightKeyOn(key,classes);visualQueue.offs.push({at:at+Math.max(0,ms)/1000,key,classes});});
+}
+function flushVisualQueue(now,finish){
+  const q=visualQueue;
+  if(!q.sorted){q.pending.splice(0,q.index);q.index=0;q.pending.sort((a,b)=>a.at-b.at);q.sorted=true;}
+  if(finish)q.index=q.pending.length;
+  else while(q.index<q.pending.length&&q.pending[q.index].at<=now){const event=q.pending[q.index++];event.fn();}
+  for(let i=q.offs.length-1;i>=0;i--){const off=q.offs[i];if(finish||off.at<=now){lightKeyOff(off.key,off.classes);q.offs.splice(i,1);}}
 }
 function makeFallingNotesEvents(playbackNotes,playbackChords){
   const events=[];
@@ -631,7 +658,39 @@ function fnGlow(ctx,color,baseline){
   return g;
 }
 function fnRand(n){const v=Math.sin(n*12.9898)*43758.5453;return v-Math.floor(v);}
-function drawFallingNotesFrame(timestamp){
+// Medidor de rendimiento opcional: se activa con ?perf=1 en la URL o manteniendo pulsada la línea de tiempo 0,7 s.
+const perfProbe={on:false,el:null,last:0,since:0,frames:0,slow:0,worst:0,drawSum:0,drawMax:0,tickSum:0,tickMax:0,tickN:0,longTasks:0,observer:null};
+function perfProbeEnable(on){
+  perfProbe.on=!!on;
+  if(!perfProbe.on){if(perfProbe.el)perfProbe.el.remove();perfProbe.el=null;if(perfProbe.observer){try{perfProbe.observer.disconnect();}catch(_){}perfProbe.observer=null;}return;}
+  if(!perfProbe.el){
+    const el=document.createElement('pre');
+    el.style.cssText='position:fixed;left:4px;bottom:4px;z-index:99999;margin:0;padding:5px 7px;border-radius:6px;background:rgba(0,0,0,.78);color:#7cfc9a;font:10px/1.35 ui-monospace,monospace;pointer-events:none;white-space:pre';
+    el.textContent='medidor activo: toca ▶';document.body.appendChild(el);perfProbe.el=el;
+  }
+  perfProbe.since=0;perfProbe.last=0;
+  try{if(window.PerformanceObserver&&!perfProbe.observer){perfProbe.observer=new PerformanceObserver(list=>{perfProbe.longTasks+=list.getEntries().length;});perfProbe.observer.observe({entryTypes:['longtask']});}}catch(_){}
+}
+function perfProbeFrame(ts){
+  const p=perfProbe;
+  if(p.last){const dt=ts-p.last;p.frames++;if(dt>24)p.slow++;if(dt>p.worst)p.worst=dt;}
+  p.last=ts;
+}
+function perfProbeReport(now){
+  const p=perfProbe;
+  if(!p.since){p.since=now;return;}
+  if(now-p.since<1000||!p.el)return;
+  const secs=(now-p.since)/1000,frames=Math.max(1,p.frames),info=fallingNotesCanvasInfo,ctx=audioContext;
+  p.el.textContent=[
+    `${Math.round(p.frames/secs)} fps · frames lentos (>24ms): ${p.slow} · peor: ${p.worst.toFixed(0)}ms`,
+    `dibujo: ${(p.drawSum/frames).toFixed(1)}ms medio · ${p.drawMax.toFixed(1)}ms máx`,
+    `línea de tiempo+teclas: ${(p.tickSum/Math.max(1,p.tickN)).toFixed(1)}ms medio · ${p.tickMax.toFixed(1)}ms máx`,
+    `tareas largas (>50ms): ${p.longTasks} · fuentes de audio activas: ${state.activePlaybackSources.length}`,
+    `canvas ${info?Math.round(info.width*info.dpr)+'x'+Math.round(info.height*info.dpr):'-'} · dpr ${window.devicePixelRatio||1} · estilo ${fallingNotesStyle} · latencia salida ${ctx&&ctx.outputLatency?Math.round(ctx.outputLatency*1000)+'ms':'n/d'}`
+  ].join('\n');
+  p.since=now;p.frames=0;p.slow=0;p.worst=0;p.drawSum=0;p.drawMax=0;p.tickSum=0;p.tickMax=0;p.tickN=0;p.longTasks=0;
+}
+function drawFallingNotesFrameInner(timestamp){
   if(!state.playing||!fallingNotesRun){stopFallingNotes();return;}
   if(document.hidden){fallingNotesFrame=0;return;}
   fallingNotesLastFrame=timestamp;
@@ -687,8 +746,15 @@ function drawFallingNotesFrame(timestamp){
   if(elapsed<=run.end+look)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
   else stopFallingNotes();
 }
+function drawFallingNotesFrame(timestamp){
+  if(!perfProbe.on){drawFallingNotesFrameInner(timestamp);return;}
+  const t0=performance.now();perfProbeFrame(timestamp);
+  drawFallingNotesFrameInner(timestamp);
+  const dt=performance.now()-t0;perfProbe.drawSum+=dt;if(dt>perfProbe.drawMax)perfProbe.drawMax=dt;
+  perfProbeReport(t0);
+}
 function startFallingNotes(playbackNotes,playbackChords,startAt,prebuiltEvents){
-  stopFallingNotes();
+  stopFallingNotes();perfProbe.last=0;
   const events=prebuiltEvents||makeFallingNotesEvents(playbackNotes,playbackChords);
   if(!events.length)return;
   ensureFallingNotesObservers();fallingNotesCanvasDirty=true;
@@ -1387,7 +1453,11 @@ async function playChord(chord) {
       const isBassChord=(chord.noteIndex!==undefined&&chord.noteIndex!==null)||(!chord.preview&&!!state.song);
       const barSeconds=Array.isArray(chord.lightDurations)&&Number.isFinite(chord.lightDurations[index])?chord.lightDurations[index]:null;
       const lightMs=barSeconds!==null?barSeconds*1000:Math.max(250,(duration+release)*1000);
-      if (key) state.playTimers.push(setTimeout(()=>lightKey(key,isBassChord?['playing','bass-playing']:['playing'],lightMs),Math.max(0,(noteWhen-context.currentTime)*1000)));
+      if (key) {
+        const lightClasses=isBassChord?['playing','bass-playing']:['playing'];
+        if (state.playing&&!chord.preview&&Number.isFinite(Number(chord.startAt))) queueKeyLight(noteWhen,key,lightClasses,lightMs);
+        else state.playTimers.push(setTimeout(()=>lightKey(key,lightClasses,lightMs),Math.max(0,(noteWhen-context.currentTime)*1000)));
+      }
     }
   } catch (error) {
     $('status').textContent = 'No se pudo cargar el sonido del acorde.';
@@ -1460,6 +1530,7 @@ function stopPlayback({suspendAudio=false}={}) {
   stopFallingNotes();
   state.playTimers.forEach(clearTimeout);
   state.playTimers = [];
+  resetVisualQueue();
   resetPlaybackTimeline();
   document.querySelectorAll('.piano-panel .key.playing,.piano-panel .key.bass-playing').forEach(key=>key.classList.remove('playing','bass-playing'));
   keyLightCounts.clear();
@@ -1503,11 +1574,12 @@ function schedulePlaybackNote(midi,element,duration,when,prepared,cut){
   gain.gain.setValueAtTime(.88,stopAt);gain.gain.linearRampToValueAtTime(.0001,stopAt+release);
   source.connect(gain);gain.connect(context.destination);source.start(when);source.stop(stopAt+release+.02);
   state.activePlaybackSources.push(source);source.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==source);},{once:true});
-  state.playTimers.push(setTimeout(()=>{
-    $('currentNote').textContent=noteName(midi);
-    $('currentNote').style.opacity='1';
-    if(element)lightKey(element,['playing'],(stopAt+release-when)*1000);
-  },Math.max(0,(when-context.currentTime)*1000)));
+  queueVisualEvent(when,()=>{
+    const readout=$('currentNote'),name=noteName(midi);
+    if(readout.textContent!==name)readout.textContent=name;
+    if(readout.style.opacity!=='1')readout.style.opacity='1';
+  });
+  if(element)queueKeyLight(when,element,['playing'],(stopAt+release-when)*1000);
 }
 async function playMelody() {
   const playbackNotes=notesForCurrentMix();
@@ -1760,6 +1832,10 @@ function bindInterface() {
     setKeyboardPreset(Number(button.dataset.keyRange));
   });
   $('keyboardScroll').addEventListener('scroll',syncStageScroll,{passive:true});
+  try{if(/[?&]perf=1/.test(location.search)||localStorage.getItem('yhwh_perf')==='1')perfProbeEnable(true);}catch(_){}
+  {const strip=$('playerTimeline');if(strip){let pressTimer=0;const cancelPress=()=>{clearTimeout(pressTimer);pressTimer=0;};
+    strip.addEventListener('pointerdown',()=>{cancelPress();pressTimer=setTimeout(()=>{pressTimer=0;perfProbeEnable(!perfProbe.on);try{localStorage.setItem('yhwh_perf',perfProbe.on?'1':'0');}catch(_){}},700);},{passive:true});
+    ['pointerup','pointercancel','pointerleave'].forEach(type=>strip.addEventListener(type,cancelPress,{passive:true}));}}
   {const tempoBox=document.querySelector('.stage-metronome-controls'),playGroup=document.querySelector('.player-playback-group');if(tempoBox&&playGroup&&tempoBox.parentElement!==playGroup)playGroup.appendChild(tempoBox);}
   initFallingStyleSetting();
   bindCanvasGestures();
