@@ -111,7 +111,7 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 .notation-button { border: 1px solid #ffffff48; border-radius: 4px; background: #f2f8fa; color: #0878a8; font-size: .85rem; font-weight: 750; }
 .performance-layout { display: flex; flex: 1; flex-direction: column; min-height: 0; background: #252629; }
 .note-canvas { --stage-key-width: 40px; position: relative; flex: 1 1 auto; min-height: 70px; overflow: hidden; background: linear-gradient(180deg,#292a2d,#242528); touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-.canvas-grid { position: absolute; inset: 0; contain: strict; pointer-events: none; background-image: linear-gradient(to right, #ffffff12 1px,transparent 1px),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: var(--stage-key-width) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0; opacity: .85; }
+.canvas-grid { position: absolute; inset: 0; contain: strict; pointer-events: none; background-image: linear-gradient(to right, #ffffff2c 1px,transparent 1px),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: var(--stage-key-width) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0; opacity: .85; }
 .falling-notes-canvas { position: absolute; z-index: 1; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
 .canvas-readouts { position: absolute; z-index: 2; top: 15px; left: calc(64px + env(safe-area-inset-left)); right: calc(12px + env(safe-area-inset-right)); display: flex; align-items: center; gap: 11px; min-height: 32px; color: #edf2f4; font-size: .78rem; text-shadow: 0 1px 3px #000; }
 .canvas-readouts #playerLabel { color: #dbeaf0; font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
@@ -197,6 +197,9 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 .settings-sheet .quick-track-key { grid-column: 1/-1; }
 .settings-sheet .quick-track-key>div { display: flex; gap: 5px!important; }
 .settings-sheet .quick-track-key select { flex: 1; width: 0; }
+.settings-sheet .master-volume-label { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:5px; color:#4f6770; font-size:.75rem; }
+.settings-sheet #masterVolume { display:block; width:100%; margin:0; accent-color:#1687b8; }
+html[data-theme="dark"] .settings-sheet .master-volume-label { color:#aaa9c1!important; }
 .settings-sheet .transpose-controls { display: grid; grid-column: 1/-1; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 4px; }
 .settings-sheet .transpose-controls span { grid-column: 1/-1; }
 .settings-sheet .quick-instrument { display: none!important; }
@@ -335,7 +338,7 @@ body.player-active #player { position: relative; display: flex!important; flex: 
   body:has(#player:not(.hidden)) #player { position: relative!important; display: flex!important; flex: 1 1 0%!important; flex-direction: column!important; width: 100%!important; height: 100vh; height: 100dvh; min-height: 0!important; margin: 0!important; gap: 0!important; overflow: hidden!important; background: #252629!important; }
   body.player-active #player > .player-top, body:has(#player:not(.hidden)) #player > .player-top { position: relative!important; z-index: 25; display: flex!important; flex: 0 0 calc(45px + env(safe-area-inset-top))!important; height: calc(45px + env(safe-area-inset-top))!important; min-height: 0!important; align-items: center!important; margin: 0!important; padding: env(safe-area-inset-top) max(7px,env(safe-area-inset-right)) 0 max(7px,env(safe-area-inset-left))!important; overflow: hidden; background: #1187b9!important; }
   body.player-active #player .performance-layout, body:has(#player:not(.hidden)) #player .performance-layout { position: relative!important; display: flex!important; flex: 1 1 0%!important; flex-direction: column!important; min-width: 0!important; min-height: 0!important; width: 100%!important; overflow: hidden!important; }
-  body.player-active #player .performance-layout > .note-canvas, body:has(#player:not(.hidden)) #player .performance-layout > .note-canvas { position: relative!important; order: 1!important; display: block!important; flex: 1 1 0%!important; width: 100%!important; min-height: 0!important; overflow: hidden!important; background: #252629!important; }
+  body.player-active #player .performance-layout > .note-canvas, body:has(#player:not(.hidden)) #player .performance-layout > .note-canvas { position: relative!important; order: 1!important; display: block!important; flex: 1 1 0%!important; width: 100%!important; min-height: 0!important; overflow: hidden!important; background: #000000!important; }
   body.player-active #player .performance-layout > .piano-panel { position: relative!important; order: 2!important; display: block!important; flex: 0 0 calc(clamp(160px,31dvh,250px) + env(safe-area-inset-bottom))!important; width: 100%!important; height: calc(clamp(160px,31dvh,250px) + env(safe-area-inset-bottom))!important; min-height: 125px!important; margin: 0!important; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)!important; overflow: hidden!important; border: 0!important; border-top: 3px solid #df3c42!important; border-radius: 0!important; background: #08090b!important; }
   body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel { position: relative!important; order: 2!important; display: block!important; flex: 0 0 calc(clamp(160px,31dvh,250px) + env(safe-area-inset-bottom))!important; width: 100%!important; height: calc(clamp(160px,31dvh,250px) + env(safe-area-inset-bottom))!important; min-height: 125px!important; margin: 0!important; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)!important; overflow: hidden!important; border: 0!important; border-top: 3px solid #df3c42!important; border-radius: 0!important; background: #08090b!important; }
   body.player-active #player .performance-layout > .piano-panel #keyboardScroll, body:has(#player:not(.hidden)) #player .performance-layout > .piano-panel #keyboardScroll { display: block!important; width: 100%!important; height: 100%!important; overflow-x: auto!important; overflow-y: hidden!important; touch-action: pan-x!important; }
@@ -615,13 +618,10 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 .note-canvas .falling-note.bass-note { border-color: #9e5dd1; background: var(--bass-note-color); }
 .visual-color-setting { display:block; margin:8px 0 3px; font-size:.82rem; font-weight:650; }
 .manual-note-effect { position:absolute; z-index:4; display:block; width:3px; height:var(--manual-rise,0px); bottom:calc(2px + var(--manual-offset,0px)); pointer-events:none; opacity:.94; background:var(--note-fx-color); border:0; border-radius:7px 7px 2px 2px; transform:translateX(-50%); }
-.manual-note-effect.is-bar::before { content:""; position:absolute; top:3px; bottom:5px; left:15%; width:20%; background:#ffffff55; }
-.manual-note-effect.is-bar::after { content:""; position:absolute; top:0; left:15%; width:70%; height:2px; background:#ffffffbb; }
+.manual-note-effect.is-bar.has-fire { overflow:hidden; background:linear-gradient(90deg,color-mix(in srgb,var(--note-fx-color) 78%,#572000),var(--note-fx-color),color-mix(in srgb,var(--note-fx-color) 72%,#ffad20)); box-shadow:0 0 5px 1px color-mix(in srgb,var(--note-fx-color) 42%,transparent); }
+.manual-note-effect.is-bar.has-fire::before { content:""; position:absolute; top:-70%; bottom:-70%; left:12%; width:76%; background:linear-gradient(180deg,transparent 0%,rgba(255,150,18,.4) 24%,rgba(255,239,112,.78) 43%,rgba(255,255,220,.58) 54%,rgba(255,174,29,.52) 70%,transparent 100%); background-size:100% 220%; mix-blend-mode:screen; animation:manual-lava-flow .9s linear infinite; }
 .manual-note-effect.is-drop { height:10px; bottom:calc(2px + var(--manual-rise,0px) + var(--manual-offset,0px)); border-radius:999px; }
-.manual-note-impact { position:absolute; z-index:5; left:50%; bottom:0; width:5px; height:5px; pointer-events:none; border-radius:50%; background:#fff; box-shadow:0 0 10px 5px color-mix(in srgb,var(--note-fx-color) 75%,transparent),0 0 22px 9px color-mix(in srgb,var(--note-fx-color) 48%,transparent); transform:translateX(-50%); animation:manual-impact-flash .48s ease-out forwards; }
-.manual-note-impact i { position:absolute; left:50%; top:50%; width:3px; height:3px; border-radius:50%; background:#fff; box-shadow:0 0 5px 2px var(--note-fx-color); transform:rotate(var(--particle-angle)) translateY(-4px); animation:manual-impact-particle .48s ease-out forwards; }
-@keyframes manual-impact-flash { 0% { opacity:1; transform:translateX(-50%) scale(.65); } 35% { opacity:.9; transform:translateX(-50%) scale(1.45); } 100% { opacity:0; transform:translateX(-50%) scale(.25); } }
-@keyframes manual-impact-particle { 0% { opacity:1; transform:rotate(var(--particle-angle)) translateY(-4px); } 100% { opacity:0; transform:rotate(var(--particle-angle)) translateY(calc(-1 * var(--particle-distance))); } }
+@keyframes manual-lava-flow { from { background-position:0 0; } to { background-position:0 100%; } }
 .active-chord-label { border-color: #bb82ef!important; background: #342044d9!important; color: #ead5ff!important; }
 
 @media (max-width: 900px) {
@@ -1275,6 +1275,8 @@ body.player-active #player .performance-layout > .player-timeline, body:has(#pla
 /* Orden en la barra: botones de reproducción primero y el tempo después (piano.css le daba order:2 a los botones). */
 #player > .player-top .player-playback-group > .mobile-player-controls { order: 0!important; }
 #player > .player-top .player-playback-group > .stage-metronome-controls { order: 1!important; }
+#player .mobile-player-controls #octaveModeToggle { font-size:12px!important; font-weight:800!important; letter-spacing:-.04em; }
+#player .mobile-player-controls #octaveModeToggle[aria-pressed="true"] { border-color:#e6ff8c99!important; background:#075c85!important; color:#e6ff8c!important; box-shadow:0 0 0 1px #e6ff8c44!important; }
 
 /* Teclas encendidas: mismo pintado en móvil y en PC. Melodía = color elegido; bajo = violeta. */
 #player .piano-panel .key.playing { border-color: var(--pressed-key-color)!important; background: var(--pressed-key-color)!important; box-shadow: 0 0 5px var(--pressed-key-color)!important; }
@@ -1809,29 +1811,35 @@ html body #player#player#player .mobile-player-controls button:active {
 }
 
 /* Selector de instrumentos por familias: navegación a la izquierda, instrumentos a la derecha. */
-#instrumentMenu { width:min(490px,calc(100vw - 66px)); min-width:360px; max-height:calc(100dvh - 90px); overflow:auto; }
-#instrumentMenu .instrument-browser { display:grid; grid-template-columns:112px minmax(0,1fr); gap:10px; min-width:0; }
-#instrumentMenu .instrument-categories { display:flex; flex-direction:column; align-items:stretch; border-right:1px solid #a6bbc2; }
-#instrumentMenu .instrument-category-tab { min-height:42px; padding:7px 9px; border:0; border-bottom:1px solid #a6bbc2; background:#edf2f4; color:#344951; font:inherit; text-align:left; cursor:pointer; }
+#instrumentMenu { width:min(496px,calc(100vw - 66px)); min-width:360px; max-height:calc(100dvh - 76px); overflow:visible; padding:9px; }
+#instrumentMenu::before { content:""; position:absolute; top:14px; left:-19px; width:0; height:0; border-top:12px solid transparent; border-right:12px solid #138bbd; border-bottom:12px solid transparent; }
+#instrumentMenu .instrument-browser { display:grid; grid-template-columns:minmax(120px,.62fr) minmax(0,1fr); gap:10px; min-width:0; }
+#instrumentMenu .instrument-categories { display:flex; flex-direction:column; align-items:stretch; overflow:hidden; border:1px solid #a6bbc2; border-radius:8px; background:#edf2f4; }
+#instrumentMenu .instrument-category-tab { flex:0 0 60px; min-height:60px; padding:9px 12px; border:0; border-bottom:1px solid #a6bbc2; background:#edf2f4; color:#344951; font:inherit; text-align:left; cursor:pointer; }
+#instrumentMenu .instrument-category-tab:last-child { border-bottom:0; }
 #instrumentMenu .instrument-category-tab[aria-selected="true"] { background:#1187b9; color:#fff; font-weight:700; }
 #instrumentMenu .instrument-category-panels { min-width:0; }
 #instrumentMenu .instrument-options { display:grid; gap:0; margin:0; overflow:hidden; border:1px solid #a6bbc2; border-radius:9px; background:#f5f7f8; }
-#instrumentMenu .instrument-option { min-height:60px; padding:6px 12px 6px 7px; border:0; border-bottom:1px solid #a6bbc2; border-radius:0; background:#f5f7f8; }
+#instrumentMenu .instrument-option { min-height:60px; padding:6px 12px 6px 9px; border:0; border-bottom:1px solid #a6bbc2; border-radius:0; background:#f5f7f8; }
 #instrumentMenu .instrument-option:last-child { border-bottom:0; }
 #instrumentMenu .instrument-option.active { position:relative; box-shadow:inset 0 0 0 2px #087fb0; }
 #instrumentMenu .instrument-option.active::after { content:"✓"; margin-left:auto; color:#245f9c; font-size:1.1rem; font-weight:800; }
 #instrumentMenu .instrument-option.active .instrument-icon { background:#dcebf0; color:#1d6480; }
+#instrumentMenu .instrument-option:hover { background:#e8f2f6; }
+#instrumentMenu .instrument-option:focus-visible,#instrumentMenu .instrument-category-tab:focus-visible { position:relative; z-index:1; outline:3px solid #ffd166; outline-offset:-3px; }
 html[data-theme="dark"] #instrumentMenu .instrument-category-tab { border-color:#2a2a45 !important; background:#11111d !important; color:#e8e6f0 !important; }
 html[data-theme="dark"] #instrumentMenu .instrument-category-tab[aria-selected="true"] { background:#2f2f5c !important; color:#e8c97a !important; }
 html[data-theme="dark"] #instrumentMenu .instrument-categories { border-color:#2a2a45 !important; }
+html[data-theme="dark"] #instrumentMenu::before { border-right-color:#514777 !important; }
 html[data-theme="dark"] #instrumentMenu .instrument-options { border-color:#2a2a45 !important; background:#11111d !important; }
 html[data-theme="dark"] #instrumentMenu .instrument-option { border-color:#2a2a45 !important; }
 html[data-theme="dark"] #instrumentMenu .instrument-option.active::after { color:#e8c97a !important; }
 @media (max-width:600px) {
-  body.player-active #player #instrumentMenu, body:has(#player:not(.hidden)) #player #instrumentMenu { width:calc(100vw - 58px) !important; max-width:calc(100vw - 58px) !important; min-width:0 !important; padding:9px !important; }
+  body.player-active #player #instrumentMenu, body:has(#player:not(.hidden)) #player #instrumentMenu { width:calc(100vw - 58px) !important; max-width:calc(100vw - 58px) !important; min-width:0 !important; padding:8px !important; }
   #instrumentMenu .instrument-browser { grid-template-columns:minmax(0,1fr); gap:7px; }
   #instrumentMenu .instrument-categories { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-right:0; border-bottom:1px solid #a6bbc2; }
-  #instrumentMenu .instrument-category-tab { min-height:36px; text-align:center; border-bottom:0; }
+  #instrumentMenu::before { top:9px; left:-13px; }
+  #instrumentMenu .instrument-category-tab { min-height:38px; text-align:center; border-bottom:0; }
   #instrumentMenu .instrument-category-tab[aria-selected="true"] { box-shadow:inset 0 -3px #ffd166; }
   #instrumentMenu .instrument-option { min-height:52px; }
   #instrumentMenu .instrument-icon { flex-basis:34px !important; width:34px !important; height:34px !important; }
@@ -3412,3 +3420,49 @@ html[data-theme="dark"] #theoryView .lesson-family-chords button small,html[data
   #theoryView:not(.hidden){position:fixed!important;inset:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)!important;z-index:25!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0 10px 16px!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important}
   #theoryView:not(.hidden)>.theory-header{position:sticky!important;top:0!important;z-index:30!important}
 }
+
+/* Práctica visual y táctil de pulso para las clases de ritmo. */
+#theoryView .lesson-rhythm-grid{display:grid;gap:8px;margin:10px 0}
+#theoryView .lesson-rhythm-bar{display:grid;grid-template-columns:repeat(var(--rhythm-cells,8),minmax(0,1fr));gap:5px;padding:7px;border:1px solid var(--course-border);border-radius:11px;background:var(--course-card)}
+#theoryView .lesson-rhythm-cell{display:grid;place-items:center;min-width:0;min-height:34px;border:1px solid var(--course-border);border-radius:8px;background:var(--course-bg);color:var(--course-muted);font-size:.7rem;font-style:normal;font-weight:800;transition:background-color .08s,border-color .08s,transform .08s}
+#theoryView .lesson-rhythm-cell.target{border-color:#c4d9c9;background:#eef7ef;color:#315b3d}
+#theoryView .lesson-rhythm-cell.current{outline:2px solid #e3bd55;outline-offset:1px;transform:translateY(-1px)}
+#theoryView .lesson-rhythm-cell.hit{border-color:#48a86d;background:#dff4e5;color:#1e6b3b}
+#theoryView .lesson-rhythm-cell.miss{border-color:#cf7b7b;background:#fae5e5;color:#9e3737}
+#theoryView .lesson-rhythm-actions{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+#theoryView .lesson-rhythm-pad{min-height:44px;padding:8px 18px;border:1px solid #4d8760;border-radius:11px;background:#eaf6ed;color:#285438;font:inherit;font-weight:850;touch-action:manipulation}
+#theoryView .lesson-rhythm-pad:active{transform:scale(.98)}
+html[data-theme="dark"] #theoryView .lesson-rhythm-bar{border-color:var(--course-border);background:var(--course-card)}
+html[data-theme="dark"] #theoryView .lesson-rhythm-cell{border-color:var(--course-border);background:#202823;color:#bdcabe}
+html[data-theme="dark"] #theoryView .lesson-rhythm-cell.target{border-color:#496d50;background:#2b4130;color:#d3ecd7}
+html[data-theme="dark"] #theoryView .lesson-rhythm-cell.hit{border-color:#4b9b63;background:#294531;color:#c9edcf}
+html[data-theme="dark"] #theoryView .lesson-rhythm-cell.miss{border-color:#9d5555;background:#4a292d;color:#ffd1d1}
+html[data-theme="dark"] #theoryView .lesson-rhythm-pad{border-color:#496d50;background:#2b4130;color:#d3ecd7}
+@media(max-width:600px){
+  #theoryView .lesson-rhythm-bar{gap:3px;padding:5px}
+  #theoryView .lesson-rhythm-cell{min-height:30px;border-radius:6px;font-size:.62rem}
+  #theoryView .lesson-rhythm-actions>*{flex:1 1 auto}
+}
+
+/* Mantén contenido de Teoría dentro de las zonas seguras del móvil. */
+@media(max-width:900px){
+  #theoryView:not(.hidden){padding-left:max(12px,env(safe-area-inset-left,0px))!important;padding-right:max(12px,env(safe-area-inset-right,0px))!important}
+}
+/* En móvil, dibuja la cuadrícula cada dos teclas blancas. */
+@media(max-width:900px){
+  body.player-active #player .performance-layout>.note-canvas>.canvas-grid,
+  body:has(#player:not(.hidden)) #player .performance-layout>.note-canvas>.canvas-grid{
+    background-size:calc(var(--stage-key-width) + var(--stage-key-width)) 100%,100% 100%!important
+  }
+}
+#instrumentMenu .strings-layer-controls{margin-top:10px;padding:10px 9px 7px;border-top:1px solid #7f9ba633;border-radius:8px;background:#eef6f8;color:#35474f}
+#instrumentMenu .strings-layer-switch{display:flex;align-items:center;gap:9px;cursor:pointer}
+#instrumentMenu .strings-layer-switch input{flex:0 0 auto;width:18px;height:18px;margin:0;accent-color:#1689b7}
+#instrumentMenu .strings-layer-switch span{display:grid;gap:2px}
+#instrumentMenu .strings-layer-switch b{font-size:.88rem}
+#instrumentMenu .strings-layer-switch small{font-size:.72rem;opacity:.78}
+#instrumentMenu .strings-layer-volume-label{display:flex;justify-content:space-between;gap:8px;margin:9px 0 2px;font-size:.75rem;font-weight:650}
+#instrumentMenu #stringsLayerVolume{display:block;width:100%;min-height:20px;margin:0;accent-color:#1689b7}
+#instrumentMenu #stringsLayerStatus{margin:3px 0 0;font-size:.7rem;line-height:1.35;opacity:.78}
+html[data-theme="dark"] #instrumentMenu .strings-layer-controls{border-color:#514777;background:#24233e;color:#e8e6f0}
+html[data-theme="dark"] #instrumentMenu .strings-layer-switch small,html[data-theme="dark"] #instrumentMenu #stringsLayerStatus{color:#c0bed2}

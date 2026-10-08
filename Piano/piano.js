@@ -6,13 +6,16 @@ const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 
 const NOTE_NAMES_LATINO = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si'];
 const NOTE_ROOT_LATINO = { C:'Do', D:'Re', E:'Mi', F:'Fa', G:'Sol', A:'La', B:'Si' };
 const LAST_HEARD_STORAGE_KEY = 'yhwh_last_heard_song';
+const SAVED_MASTER_VOLUME_RAW = localStorage.getItem('yhwh_piano_master_volume');
+const SAVED_MASTER_VOLUME = SAVED_MASTER_VOLUME_RAW===null?1:Number(SAVED_MASTER_VOLUME_RAW);
 const state = {
   view: 'home', category: 'adoracion', song: null, melodyType:'introduccion', voiceMix:{principal:true,segunda:false,tercera:false,acordes:true}, voiceDirection:{segunda:localStorage.getItem('yhwh_voice_second_direction')==='up'?'up':'down',tercera:localStorage.getItem('yhwh_voice_third_direction')==='up'?'up':'down'}, pendingSong:null, pendingPurpose:'listen', admin: false, selectedSongChord:null, theoryChord: { root:'C', quality:'major' }, theoryCircleChord: null, theoryCircleIndex:0, theoryCircleMinor:false, theoryCircleChords:null, theoryScale:'major', theoryInterval:7, theoryPianoIntervals:null, theoryPianoMode:'chord',
-  melodies: readMelodyCache(), melodyDirty:false, recording: false, recordStart: 0, notes: [], chords: [], chordTarget: null, melodySoundEnabled:localStorage.getItem('yhwh_melody_sound_enabled')!=='0', bassSoundEnabled:localStorage.getItem('yhwh_bass_sound_enabled')!=='0',
-  buffers: new Map(), instrumentBuffers: new Map(), sampleLoads:new Map(), instrumentSampleLoads:new Map(), instrument: ['steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_instrument')) ? localStorage.getItem('yhwh_piano_instrument') : 'grand-piano', bassInstrument: ['grand-piano','steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_bass_instrument')) ? localStorage.getItem('yhwh_piano_bass_instrument') : 'grand-piano', trumpetIntensity: localStorage.getItem('yhwh_piano_trumpet_intensity') === 'soft' ? 'soft' : 'strong', sustain: localStorage.getItem('yhwh_piano_sustain') === '1', tempo:Math.min(1.5,Math.max(.5,Number(localStorage.getItem('yhwh_piano_tempo'))||1)), playing: false, playTimers: [], activePlaybackSources:[], activePointers: new Map(), keyboardOctaveMidi:60, keyboardZoom:Math.min(1.8,Math.max(0.17,Number(localStorage.getItem('yhwh_piano_keyboard_zoom'))||1)), transpose: 0, originalTonic: 'C', songTonic: null,
+  melodies: readMelodyCache(), melodyDirty:false, recording: false, recordStart: 0, notes: [], chords: [], chordTarget: null, melodySoundEnabled:localStorage.getItem('yhwh_melody_sound_enabled')!=='0', bassSoundEnabled:localStorage.getItem('yhwh_bass_sound_enabled')!=='0', stringsLayerEnabled:localStorage.getItem('yhwh_piano_strings_enabled')==='1', stringsLayerVolume:(()=>{const value=localStorage.getItem('yhwh_piano_strings_volume');return value===null?34:Math.min(100,Math.max(0,Number.isFinite(Number(value))?Number(value):34));})(),
+  buffers: new Map(), instrumentBuffers: new Map(), stringsBuffers:new Map(), sampleLoads:new Map(), instrumentSampleLoads:new Map(), stringsSampleLoads:new Map(), instrument: ['steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_instrument')) ? localStorage.getItem('yhwh_piano_instrument') : 'grand-piano', bassInstrument: ['grand-piano','steinway-grand','trumpet-real'].includes(localStorage.getItem('yhwh_piano_bass_instrument')) ? localStorage.getItem('yhwh_piano_bass_instrument') : 'grand-piano', trumpetIntensity: localStorage.getItem('yhwh_piano_trumpet_intensity') === 'soft' ? 'soft' : 'strong', sustain: localStorage.getItem('yhwh_piano_sustain') === '1', octaveDoubling:localStorage.getItem('yhwh_piano_octave_doubling')==='1', tempo:Math.min(1.5,Math.max(.5,Number(localStorage.getItem('yhwh_piano_tempo'))||1)), playing: false, playTimers: [], activePlaybackSources:[], activePointers: new Map(), keyboardOctaveMidi:60, keyboardZoom:Math.min(1.8,Math.max(0.17,Number(localStorage.getItem('yhwh_piano_keyboard_zoom'))||1)), transpose: 0, originalTonic: 'C', songTonic: null,
   notation: ['ninguno','octavas','americano','latino','movil','grados','simple'].includes(localStorage.getItem('yhwh_piano_note_labels')) ? localStorage.getItem('yhwh_piano_note_labels') : (localStorage.getItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano'), showChordNames:localStorage.getItem('yhwh_piano_show_chords')!=='0', showRecordedNotes:localStorage.getItem('yhwh_piano_show_recorded')!=='0', keyColor:/^#[0-9a-f]{6}$/i.test(localStorage.getItem('yhwh_piano_key_color')||'')?localStorage.getItem('yhwh_piano_key_color'):'#90dd4a', bassColor:/^#[0-9a-f]{6}$/i.test(localStorage.getItem('yhwh_piano_bass_color')||'')?localStorage.getItem('yhwh_piano_bass_color'):'#bb82ef', lastMidi: null, db: null, auth: null,
   ref: null, set: null, onValue: null, signIn: null, signOut: null, authListener: null
 };
+state.masterVolume=Number.isFinite(SAVED_MASTER_VOLUME)?Math.max(0,Math.min(1.5,SAVED_MASTER_VOLUME)):1;
 let screenTransitionTimer = null;
 let selectedSongForContinue = null;
 let selectedPlayMode = 'listen';
@@ -165,7 +168,14 @@ async function previewSongInList(song,category,button){
   try{
     const prepared=await prepareMelodyAudio(notes),context=getAudioContext(),start=context.currentTime+.08,sources=[];
     if(!button.isConnected)return;
-    notes.forEach(note=>{const midi=Number(note.midi),entry=prepared.get(midi);if(!entry)return;const source=context.createBufferSource(),gain=context.createGain(),when=start+Math.max(0,Number(note.start)||0),duration=Math.max(.08,Number(note.duration)||.3);source.buffer=entry.buffer;source.playbackRate.value=2**((midi-entry.sampleMidi)/12);gain.gain.setValueAtTime(.0001,when);gain.gain.linearRampToValueAtTime(.72,when+.02);gain.gain.setValueAtTime(.72,when+duration);gain.gain.linearRampToValueAtTime(.0001,when+duration+.28);source.connect(gain);gain.connect(context.destination);source.start(when);source.stop(when+duration+.3);sources.push(source);});
+    notes.forEach(note=>{
+      const midi=Number(note.midi),entry=prepared.get(midi);if(!entry)return;
+      const source=context.createBufferSource(),gain=context.createGain(),when=start+Math.max(0,Number(note.start)||0),duration=Math.max(.08,Number(note.duration)||.3);
+      source.buffer=entry.buffer;source.playbackRate.value=2**((midi-entry.sampleMidi)/12);
+      gain.gain.setValueAtTime(.0001,when);gain.gain.linearRampToValueAtTime(.72,when+.02);gain.gain.setValueAtTime(.72,when+duration);gain.gain.linearRampToValueAtTime(.0001,when+duration+.28);
+      source.connect(gain);gain.connect(getMasterGain(context));source.start(when);source.stop(when+duration+.3);sources.push(source);
+      const stringsSource=scheduleStringsLayerNote(context,midi,entry.strings,when,duration,1.05);if(stringsSource)sources.push(stringsSource);
+    });
     const previewDuration=Math.max(1.2,...notes.map(note=>((Number(note.start)||0)+(Number(note.duration)||.3)+.4)/state.tempo));button.closest('.selected-audio-preview')?.style.setProperty('--preview-duration',previewDuration+'s');button.closest('.selected-audio-preview')?.classList.add('is-playing');listPreviewRun={songId:String(song.id),sources,button,timer:setTimeout(stopListPreview,previewDuration*1000)};rememberLastHeardSong(song,category);
     button.textContent='■';button.classList.add('is-playing');button.setAttribute('aria-label','Detener vista previa');
   }catch(error){console.error('Vista previa no disponible',error);button.classList.remove('is-playing');button.textContent='▶';toast('No se pudo cargar el audio de vista previa.');}
@@ -364,25 +374,29 @@ const THEORY_SCALES={major:{name:'Mayor',formula:'1 – 2 – 3 – 4 – 5 – 
 const THEORY_INTERVALS=[['Unísono','1 justa',0],['Segunda menor','2ª menor',1],['Segunda mayor','2ª mayor',2],['Tercera menor','3ª menor',3],['Tercera mayor','3ª mayor',4],['Cuarta justa','4ª justa',5],['Tritono','4ª aumentada / 5ª disminuida',6],['Quinta justa','5ª justa',7],['Sexta menor','6ª menor',8],['Sexta mayor','6ª mayor',9],['Séptima menor','7ª menor',10],['Séptima mayor','7ª mayor',11],['Octava','8ª justa',12]];
 function theoryRoot(pc){return NOTE_NAMES[((pc%12)+12)%12];}
 const THEORY_CHAPTERS=[
-  {id:'keyboard',title:'Capítulo 1 · Conoce el teclado',icon:'🗺️',intro:'El piano es un mapa de teclas que se repite. Primero aprenderás qué es una nota, cómo encontrar Do y cómo reconocer cualquier tecla blanca o negra.',goal:'Mirar una tecla y decir su nombre, incluida su octava.'},
-  {id:'distance',title:'Capítulo 2 · Pasos entre las notas',icon:'👣',intro:'Las notas están a distintas distancias. Vas a descubrir los pasos pequeños y grandes que luego usaremos para construir escalas y acordes.',goal:'Reconocer un semitono y un tono al mirar y escuchar dos teclas.'},
-  {id:'scales',title:'Capítulo 3 · Caminos de notas: las escalas',icon:'🪜',intro:'Una escala es un camino ordenado de notas. Aprenderás su receta y la usarás para construir escalas mayores y conocer La menor.',goal:'Construir y tocar escalas sin memorizar una lista de doce.'},
-  {id:'chords',title:'Capítulo 4 · Acordes para acompañar',icon:'🤝',intro:'Los acordes son grupos de notas que suenan juntas. Vas a armar acordes mayores y menores, escuchar la diferencia y probar inversiones útiles para acompañar.',goal:'Encontrar las notas de un acorde y tocarlo en el piano.'},
-  {id:'keys',title:'Capítulo 5 · La familia de una tonalidad',icon:'🏡',intro:'Una tonalidad organiza las notas y los acordes alrededor de un centro musical. Aprenderás qué acordes pertenecen juntos y cómo leer sus números romanos.',goal:'Ver la escala y los acordes de una tonalidad, como Do o Sol mayor.'},
-  {id:'progressions',title:'Capítulo 6 · Progresiones y canciones',icon:'🎶',intro:'Una progresión es un recorrido de acordes. La practicarás en varias tonalidades para poder acompañar canciones y cambiar la altura sin perder el mismo recorrido.',goal:'Escuchar, tocar y transportar una secuencia sencilla de acordes.'}
+  {id:'keyboard',title:'Capítulo 1 · Conoce el teclado',icon:'🗺️',intro:'El piano es un mapa de teclas que se repite. Primero encontrarás Do, aprenderás los nombres de las notas y descubrirás cómo reconocer teclas blancas, negras y octavas.',goal:'Mirar una tecla, encontrarla en el mapa y decir su nombre y altura.'},
+  {id:'rhythm',title:'Capítulo 2 · Pulso y ritmo',icon:'🥁',intro:'Las canciones tienen un latido que puedes sentir con el cuerpo. Aprenderás a contar despacio, reconocer los tiempos y tocar notas largas o rápidas sin correr.',goal:'Seguir un pulso constante y entender cómo se agrupan los tiempos.'},
+  {id:'distance',title:'Capítulo 3 · Pasos e intervalos',icon:'👣',intro:'Cada tecla vecina está a un paso pequeño; otras notas quedan más lejos. Vas a mirar y escuchar esas distancias para entender tonos, semitonos e intervalos.',goal:'Contar pasos entre notas y reconocer distancias sencillas al escuchar.'},
+  {id:'scales',title:'Capítulo 4 · Caminos de notas: las escalas',icon:'🪜',intro:'Una escala es un camino ordenado de notas. Aprenderás su receta y la usarás para construir escalas mayores y conocer La menor.',goal:'Construir y tocar escalas sin memorizar una lista de doce.'},
+  {id:'chords',title:'Capítulo 5 · Acordes para acompañar',icon:'🤝',intro:'Los acordes juntan varias notas para acompañar una canción. Empezaremos con grupos pequeños, escucharemos sus diferencias y aprenderemos a mover la mano con menos esfuerzo.',goal:'Reconocer y tocar tríadas mayores y menores, además de probar inversiones.'},
+  {id:'harmony',title:'Capítulo 6 · Tonalidades y progresiones',icon:'🏡',intro:'Una tonalidad es como el hogar de una canción y sus acordes forman una familia. Después aprenderás a ordenar esos acordes para acompañar una melodía.',goal:'Reconocer acordes de una tonalidad y seguir recorridos sencillos.'},
+  {id:'accompaniment',title:'Capítulo 7 · Acompaña canciones',icon:'🎶',intro:'Ahora unirás lo aprendido: leerás nombres de acordes, usarás notas graves y probarás maneras sencillas de acompañar. No hace falta tocar rápido ni usar las dos manos de golpe.',goal:'Tocar una vuelta de acordes con un pulso tranquilo y un patrón fácil.'}
 ];
 const THEORY_LESSONS=[
-  {chapter:'keyboard',title:'Las notas: nombres para los sonidos',time:'3 min',intro:'Una nota es un sonido al que le damos un nombre para poder encontrarlo y repetirlo.',parts:[['Siete nombres conocidos','En música usamos siete nombres: Do, Re, Mi, Fa, Sol, La y Si. Cada tecla produce un sonido, y estos nombres nos ayudan a hablar de esos sonidos.'],['Un camino que vuelve a empezar','Después de Si viene otra vez Do. Ese Do suena más agudo y empieza un nuevo grupo de siete nombres.'],['Las notas construyen música','Las melodías usan notas una después de otra. Las escalas las ordenan y los acordes juntan varias para que suenen al mismo tiempo.']],remember:'Después de Si, la lista vuelve a Do.',visual:['Do','Re','Mi','Fa','Sol','La','Si','Do'],demo:{notes:[60,62,64,65,67,69,71,72],spacing:430},exercise:{type:'choice',question:'¿Qué nombre viene después de Si?',answers:['Do','Fa','La'],correct:0,why:'El orden vuelve a empezar en Do.'},tab:'piano'},
   {chapter:'keyboard',title:'El patrón de dos y tres teclas negras',time:'3 min',intro:'Los grupos de teclas negras son las señales que te permiten orientarte en cualquier parte del piano.',parts:[['Encuentra un grupo de dos','Mira las teclas negras. Verás grupos de dos y de tres, repetidos por todo el instrumento.'],['Do está junto al par','Busca la tecla blanca pegada a la izquierda de un grupo de dos negras. Esa tecla es Do.'],['Usa el dibujo como mapa','Cuando encuentres Do, las teclas blancas que siguen hacia la derecha son Re, Mi, Fa, Sol, La y Si. El patrón vuelve a repetirse.']],remember:'Dos negras juntas: Do es la tecla blanca que está justo a su izquierda.',visual:['Do','● ●','Re','● ● ●','Mi'],demo:{notes:[60,62,64,65,67,69,71,72],spacing:360},exercise:{type:'find-note',pool:'do',hint:'Busca Do: está justo a la izquierda de un grupo de dos teclas negras.'},tab:'piano'},
+  {chapter:'keyboard',title:'Las notas: nombres para los sonidos',time:'3 min',intro:'Una nota es un sonido al que le damos un nombre para poder encontrarlo y repetirlo.',parts:[['Siete nombres conocidos','En música usamos siete nombres: Do, Re, Mi, Fa, Sol, La y Si. Cada tecla produce un sonido, y estos nombres nos ayudan a hablar de esos sonidos.'],['Un camino que vuelve a empezar','Después de Si viene otra vez Do. Ese Do suena más agudo y empieza un nuevo grupo de siete nombres.'],['Las notas construyen música','Las melodías usan notas una después de otra. Las escalas las ordenan y los acordes juntan varias para que suenen al mismo tiempo.']],remember:'Después de Si, la lista vuelve a Do.',visual:['Do','Re','Mi','Fa','Sol','La','Si','Do'],demo:{notes:[60,62,64,65,67,69,71,72],spacing:430},exercise:{type:'choice',question:'¿Qué nombre viene después de Si?',answers:['Do','Fa','La'],correct:0,why:'El orden vuelve a empezar en Do.'},tab:'piano'},
   {chapter:'keyboard',title:'Encuentra las notas naturales',time:'3 min',intro:'Las siete teclas blancas principales llevan los nombres Do, Re, Mi, Fa, Sol, La y Si. Practiquemos a encontrarlas en distintas octavas.',parts:[['Empieza desde Do','Localiza un par de teclas negras. La blanca que está a su izquierda es Do.'],['Avanza sin saltarte teclas','Desde Do, sigue por las blancas: Re, Mi, Fa, Sol, La y Si. Luego la próxima blanca se llama Do otra vez.'],['Observa y escucha','En esta práctica aparecerá una nota al azar. Busca su nombre y su número de octava en el teclado, y tócala.']],remember:'Las teclas blancas siguen el mismo orden una y otra vez.',visual:['Do','Re','Mi','Fa','Sol','La','Si'],demo:{notes:[60,62,64,65,67,69,71,72],spacing:360},exercise:{type:'find-note',pool:'natural',hint:'Busca la nota exacta que aparece en el reto. El número también importa.'},tab:'piano'},
   {chapter:'keyboard',title:'Teclas negras: sostenidos y bemoles',time:'4 min',intro:'Entre muchas teclas blancas hay una tecla negra. Esa tecla también es una nota y puede tener dos nombres.',parts:[['Sostenido sube un paso pequeño','El símbolo ♯ se llama sostenido. Do♯, o C♯, es la tecla negra inmediatamente a la derecha de Do.'],['Bemol baja un paso pequeño','El símbolo ♭ se llama bemol. Re♭, o D♭, es la tecla negra inmediatamente a la izquierda de Re.'],['Dos nombres para la misma tecla','C♯ y D♭ son dos maneras de nombrar la misma tecla. En una octava hay doce sonidos: siete naturales y cinco alterados. Por ahora basta saber que ambos nombres señalan el mismo lugar.']],remember:'♯ sube un semitono; ♭ baja un semitono. C♯ y D♭ comparten tecla.',visual:['C','C♯ / D♭','D','D♯ / E♭','E','F','F♯ / G♭','G','G♯ / A♭','A','A♯ / B♭','B'],demo:{notes:[60,61,62,63,64,65,66,67,68,69,70,71,72],spacing:250},exercise:{type:'find-note',pool:'altered',hint:'Las teclas negras tienen nombres con sostenido o bemol. Toca la nota pedida.'},tab:'piano'},
   {chapter:'keyboard',title:'Octavas: Do3, Do4 y Do5',time:'3 min',intro:'Las notas vuelven a aparecer en diferentes alturas. Cada vez que llegas al mismo nombre más arriba, completas una octava.',parts:[['De Do a Do','Cuenta desde Do hasta el Do siguiente: Do, Re, Mi, Fa, Sol, La, Si, Do. El Do de llegada suena más agudo.'],['El número indica la altura','Do3, Do4 y Do5 son todos Do, pero viven en zonas distintas del teclado. En esta app también puedes verlos como C3, C4 y C5.'],['Busca el mismo dibujo','Cada Do está a la izquierda de dos teclas negras. Encuentra el dibujo varias veces y nota cómo el sonido se vuelve más agudo al avanzar.']],remember:'El nombre de nota puede repetirse; el número te dice en qué octava está.',visual:['Do3','Do4','Do5'],demo:{notes:[48,60,72],spacing:700},exercise:{type:'find-note',pool:'do',hint:'Esta vez el número de octava sí cuenta: busca exactamente el Do indicado.'},tab:'piano'},
   {chapter:'keyboard',title:'Reto: encuentra cualquier nota',time:'4 min',intro:'Ya tienes un mapa para buscar notas. Ahora tendrás que encontrar sonidos naturales y alterados sin que el piano te señale la tecla.',parts:[['Lee la nota completa','El reto puede pedir, por ejemplo, Fa♯4 o Si3. El nombre dice qué nota buscar; el número indica qué octava.'],['Busca el patrón','Usa los pares de teclas negras para ubicar Do y cuenta desde allí. En las teclas negras, fíjate en ♯ o ♭.'],['Tócala para comprobar','Si aciertas, escucharás esa nota y el reto cambiará. Si no, la app te dirá qué tecla tocaste para que puedas volver a buscar.']],remember:'Mira el nombre y el número de octava antes de tocar.',visual:['Nombre','Octava','Tecla'],demo:{notes:[66],spacing:0},exercise:{type:'find-note',pool:'all',hint:'Busca la tecla exacta. Puedes pedir otra nota si quieres seguir practicando.'},tab:'piano'},
-  {chapter:'distance',title:'Semitono: el paso más pequeño',time:'3 min',intro:'Un semitono es la distancia más corta entre dos teclas vecinas, ya sean blancas o negras.',parts:[['Mira dos vecinas','C y C♯ están una al lado de la otra: entre ellas hay un semitono. Cuenta las teclas negras también.'],['Escucha el pequeño paso','Toca primero una tecla y luego su vecina. Los sonidos cambian poquito porque solo avanzaste un semitono.'],['Piensa en movimiento','Al subir por el teclado vas hacia sonidos más agudos. Al bajar vas hacia sonidos más graves. En ambos sentidos, una tecla vecina está a un semitono.']],remember:'De una tecla a la tecla que está justo a su lado hay un semitono.',visual:['C','C♯','D'],demo:{notes:[60,61,62],spacing:700},exercise:{type:'choice',question:'¿Cuántos semitonos separan dos teclas vecinas?',answers:['Uno','Dos','Siete'],correct:0,why:'Una tecla y su vecina forman un paso pequeño: un semitono.'},tab:'intervals'},
+  {chapter:'rhythm',title:'El pulso: el latido de la música',time:'3 min',intro:'El pulso es el latido regular que puedes marcar con el pie mientras escuchas una canción. No necesitas saber tocar todavía: primero vamos a sentir cuándo vuelve cada golpe.',parts:[['Encuentra el latido','Escucha una canción y prueba a mover la cabeza o el pie con los golpes que se repiten. Ese latido constante se llama pulso.'],['Cuenta sin apurarte','Puedes contar 1, 2, 3, 4 una y otra vez. Si pierdes la cuenta, espera el siguiente golpe fuerte y vuelve a empezar en 1.'],['La velocidad se puede cambiar','Una canción lenta deja más espacio entre los golpes. Una canción rápida los acerca. En la app podrás oír clics lentos para practicar con calma.']],remember:'El pulso es el latido constante de la música; tocar a tiempo es seguirlo.',visual:['1','2','3','4','1','2','3','4'],demo:{rhythm:'x.x.x.x.|x.x.x.x.',bpm:66},exercise:{type:'rhythm',pattern:'x.x.x.x.|x.x.x.x.',bpm:66,tolerance:.32,prompt:'Escucha los cuatro clics de entrada. Luego toca el botón una vez en cada pulso, como si marcaras el latido con el pie.',hint:'Espera los cuatro clics y toca una vez con cada golpe que sigue.'}},
+  {chapter:'rhythm',title:'Compás 4/4: contar hasta cuatro',time:'3 min',intro:'El compás es una cajita que ordena los pulsos. En 4/4, cada cajita tiene cuatro pulsos y luego empieza otra vez en 1.',parts:[['Cuenta los cuatro lugares','Di “1, 2, 3, 4” con espacios iguales. Cuando llegas al 4, no te detienes: el siguiente pulso vuelve a ser 1.'],['El primer tiempo ayuda a orientarte','El 1 suele sentirse un poco más fuerte, como el comienzo de una nueva vuelta. No significa que debas tocar fuerte; solo te ayuda a saber dónde estás.'],['La barrita marca el inicio','En una partitura, una línea vertical separa un compás del siguiente. En una canción puedes imaginar esa línea cuando vuelves a contar desde 1.']],remember:'4/4 significa cuatro pulsos en cada compás: 1, 2, 3, 4.',visual:['|','1','2','3','4','|','1','2','3','4'],demo:{rhythm:'x.......|x.......',bpm:64},exercise:{type:'choice',question:'En un compás de 4/4, ¿cuántos pulsos contamos antes de volver a 1?',answers:['Cuatro','Tres','Siete'],correct:0,why:'En 4/4 cuentas 1, 2, 3, 4 y luego empieza el siguiente compás.'}},
+  {chapter:'rhythm',title:'Negra, blanca y corchea: notas cortas y largas',time:'4 min',intro:'Las notas no solo tienen un sonido: también pueden durar más o menos tiempo. Primero imagina que cada pulso es un paso al caminar.',parts:[['La negra ocupa un paso','Si cuentas “1, 2, 3, 4”, puedes tocar una negra en cada número: una nota por pulso.'],['La blanca ocupa dos pasos','Una blanca dura el espacio de dos negras. Tócala en el 1 y deja que suene mientras cuentas “2”.'],['Dos corcheas caben en un paso','Una corchea dura la mitad de un pulso. Por eso puedes decir “1 y 2 y”: el número es el pulso y “y” cae entre dos pulsos.']],remember:'Negra: 1 pulso. Blanca: 2 pulsos. Dos corcheas: 1 pulso.',visual:['Negra · 1','Blanca · 2','Corcheas · ½ + ½'],demo:{rhythm:'xxxxxxxx|xxxxxxxx',bpm:58},exercise:{type:'rhythm',pattern:'xxxxxxxx|xxxxxxxx',bpm:58,tolerance:.28,prompt:'El clic marca los pulsos. Toca dos veces por cada clic: una en el número y otra en “y”. Son 16 toques tranquilos.'}},
+  {chapter:'rhythm',title:'Compás de 3 y balanceo de 6/8',time:'3 min',intro:'No todas las canciones se cuentan hasta cuatro. Algunas tienen tres pulsos; otras se sienten como dos balanceos, cada uno dividido en tres partes.',parts:[['3/4 se cuenta 1, 2, 3','Imagina un vals: el 1 es el primer paso y luego vienen 2 y 3. Después vuelve el siguiente 1.'],['6/8 tiene seis partes pequeñas','Puedes decir “1, 2, 3, 4, 5, 6”. Muchas veces se siente como dos grupos: “1-2-3, 4-5-6”, con un balanceo grande en cada grupo.'],['Escucha dónde se balancea','No te preocupes si al principio cuesta distinguirlos. Mueve la mano como si mecieras algo: eso ayuda a sentir el grupo de tres.']],remember:'3/4: tres pulsos. 6/8: dos grupos de tres partes pequeñas.',visual:['3/4 · 1 2 3','6/8 · 1 2 3 · 4 5 6'],demo:{rhythm:'x..x..|x..x..',bpm:62,beatsPerBar:2,subdivisions:3},exercise:{type:'rhythm',pattern:'x..x..|x..x..',beatsPerBar:2,subdivisions:3,bpm:62,tolerance:.34,prompt:'El clic marca los dos balanceos grandes. Espera los cuatro clics de entrada y luego toca una vez al comienzo de cada grupo: “1-2-3, 4-5-6”.',question:'En 3/4, ¿cuántos pulsos contamos antes de volver a 1?',answers:['Tres','Cuatro','Seis'],correct:0,why:'En 3/4 contamos tres pulsos principales. En 6/8 también vemos seis partes pequeñas, pero suelen agruparse en dos balanceos de tres.'}},  {chapter:'distance',title:'Semitono: el paso más pequeño',time:'3 min',intro:'Un semitono es la distancia más corta entre dos teclas vecinas, ya sean blancas o negras.',parts:[['Mira dos vecinas','C y C♯ están una al lado de la otra: entre ellas hay un semitono. Cuenta las teclas negras también.'],['Escucha el pequeño paso','Toca primero una tecla y luego su vecina. Los sonidos cambian poquito porque solo avanzaste un semitono.'],['Piensa en movimiento','Al subir por el teclado vas hacia sonidos más agudos. Al bajar vas hacia sonidos más graves. En ambos sentidos, una tecla vecina está a un semitono.']],remember:'De una tecla a la tecla que está justo a su lado hay un semitono.',visual:['C','C♯','D'],demo:{notes:[60,61,62],spacing:700},exercise:{type:'choice',question:'¿Cuántos semitonos separan dos teclas vecinas?',answers:['Uno','Dos','Siete'],correct:0,why:'Una tecla y su vecina forman un paso pequeño: un semitono.'},tab:'intervals'},
   {chapter:'distance',title:'Mi–Fa y Si–Do: vecinos sin tecla negra',time:'3 min',intro:'Hay dos pares de teclas blancas que ya están pegados. Entre ellas hay un semitono aunque no veas una tecla negra.',parts:[['Mi y Fa están juntos','Toca Mi y después la tecla blanca que sigue, Fa. Son vecinos: la distancia es un semitono.'],['Si y Do también','Haz lo mismo con Si y el siguiente Do. También están a un semitono de distancia.'],['La regla incluye las negras','Entre dos teclas vecinas siempre hay un semitono. A veces una es negra; entre Mi–Fa y Si–Do, las dos son blancas.']],remember:'Mi–Fa y Si–Do son semitonos naturales.',visual:['Mi','Fa','Si','Do'],demo:{notes:[64,65,71,72],spacing:700},exercise:{type:'choice',question:'¿Qué pares están separados por un semitono?',answers:['Mi–Fa y Si–Do','Do–Re y Fa–Sol','Do–Mi y Sol–Si'],correct:0,why:'Mi–Fa y Si–Do son dos pares de teclas vecinas.'},tab:'intervals'},
   {chapter:'distance',title:'Tono: dos pasos pequeños',time:'3 min',intro:'Un tono equivale a dos semitonos. Es como dar dos pasos seguidos en el teclado.',parts:[['De Do a Re','Entre Do y Re pasas por Do♯: Do → Do♯ → Re. Son dos semitonos, es decir, un tono.'],['De Fa a Sol','Entre Fa y Sol está Fa♯. También cuentas dos pasos: Fa → Fa♯ → Sol.'],['Compara las distancias','Do–Do♯ es un semitono. Do–Re es un tono. Cuenta cuántas teclas atraviesas para saber la distancia.']],remember:'Dos semitonos juntos forman un tono.',visual:['Do','Do♯','Re','=','2 semitonos'],demo:{notes:[60,62,65,67],spacing:650},exercise:{type:'choice',question:'¿Cuántos semitonos forman un tono?',answers:['Uno','Dos','Tres'],correct:1,why:'Un tono contiene dos semitonos.'},tab:'intervals'},
   {chapter:'distance',title:'Reto: ¿tono o semitono?',time:'4 min',intro:'Mira dos notas, escucha el intervalo y decide si entre ellas hay un paso o dos.',parts:[['Escucha las dos notas','La app te dará dos notas para comparar, como La y Si o Mi y Fa. Pulsa Escuchar y atiende a la distancia.'],['Cuenta los pasos','Si son teclas vecinas, hay un semitono. Si hay una tecla en medio, hay dos semitonos: un tono.'],['Elige tu respuesta','La práctica cambia los pares, así que no tienes que aprender una lista de memoria. Mira y escucha cada ejemplo.']],remember:'Vecinas: un semitono. Una tecla entre ellas: un tono.',visual:['¿1 paso?','Semitono','¿2 pasos?','Tono'],demo:{notes:[69,71],spacing:800},exercise:{type:'interval',pairs:[[60,61],[64,65],[71,72],[60,62],[65,67],[69,71],[67,69],[60,63]],answers:[{value:1,label:'1 semitono'},{value:2,label:'1 tono'},{value:3,label:'3 semitonos'}],hint:'Mira el teclado y cuenta las teclas entre las dos notas.'},tab:'intervals'},
-  {chapter:'scales',title:'Escala: un camino ordenado',time:'3 min',intro:'Una escala es un grupo de notas en orden. Sirve como mapa para crear melodías y aprender qué notas suelen funcionar juntas.',parts:[['Sube o baja por el camino','Puedes empezar en una nota y avanzar paso a paso hacia sonidos más agudos. También puedes recorrer las mismas notas hacia abajo.'],['Do mayor es un buen primer mapa','Do mayor usa Do, Re, Mi, Fa, Sol, La y Si. En el piano puedes tocarla usando las teclas blancas.'],['Los números muestran lugares','A veces verás 1, 2, 3, 4, 5, 6 y 7. Son los puestos de las notas dentro de la escala, en orden.']],remember:'Una escala ordena notas para que tengamos un camino musical.',visual:['1','2','3','4','5','6','7'],demo:{notes:[60,62,64,65,67,69,71,72],spacing:400},exercise:{type:'choice',question:'¿Qué es una escala?',answers:['Un grupo ordenado de notas','Una sola tecla negra','Una canción completa'],correct:0,why:'La escala organiza varias notas en un orden.'},tab:'scales'},
+  {chapter:'distance',title:'Intervalos: contar nombres entre dos notas',time:'3 min',intro:'Además de contar teclas, podemos contar los nombres de las notas para decir qué distancia hay. Esa distancia se llama intervalo.',parts:[['La primera nota cuenta como uno','Desde Do hasta Mi contamos Do (1), Re (2), Mi (3). Por eso decimos que Do y Mi forman una tercera.'],['El número dice cuántos nombres hay','Do hasta Sol es Do, Re, Mi, Fa, Sol: cinco nombres, así que es una quinta. No hace falta memorizar todos los tamaños todavía.'],['La distancia también se oye','Toca primero las dos notas por separado. Luego tócalas juntas o escucha el ejemplo. Tu oído irá aprendiendo cómo se siente cada intervalo.']],remember:'Para nombrar un intervalo, cuenta ambos extremos: Do–Mi son tres nombres, una tercera.',visual:['Do (1)','Re (2)','Mi (3)','3.ª'],demo:{notes:[60,64,60,67],spacing:800},exercise:{type:'choice',question:'¿Qué intervalo forman Do y Sol al contar los nombres?',answers:['Una quinta','Una tercera','Una segunda'],correct:0,why:'Do, Re, Mi, Fa, Sol: contamos cinco nombres.'},tab:'intervals'},  {chapter:'scales',title:'Escala: un camino ordenado',time:'3 min',intro:'Una escala es un grupo de notas en orden. Sirve como mapa para crear melodías y aprender qué notas suelen funcionar juntas.',parts:[['Sube o baja por el camino','Puedes empezar en una nota y avanzar paso a paso hacia sonidos más agudos. También puedes recorrer las mismas notas hacia abajo.'],['Do mayor es un buen primer mapa','Do mayor usa Do, Re, Mi, Fa, Sol, La y Si. En el piano puedes tocarla usando las teclas blancas.'],['Los números muestran lugares','A veces verás 1, 2, 3, 4, 5, 6 y 7. Son los puestos de las notas dentro de la escala, en orden.']],remember:'Una escala ordena notas para que tengamos un camino musical.',visual:['1','2','3','4','5','6','7'],demo:{notes:[60,62,64,65,67,69,71,72],spacing:400},exercise:{type:'choice',question:'¿Qué es una escala?',answers:['Un grupo ordenado de notas','Una sola tecla negra','Una canción completa'],correct:0,why:'La escala organiza varias notas en un orden.'},tab:'scales'},
   {chapter:'scales',title:'La receta de la escala mayor',time:'4 min',intro:'La escala mayor se puede construir desde distintas notas siguiendo siempre la misma receta de pasos.',parts:[['T significa tono; S, semitono','El patrón es T–T–S–T–T–T–S. T es un tono, que equivale a dos semitonos; S es un semitono.'],['También puedes contar semitonos','La misma receta se escribe 2–2–1–2–2–2–1. Cada número dice cuántas teclas avanzar antes de la siguiente nota.'],['Termina en el mismo nombre','Después de siete notas, el último semitono te lleva al nombre inicial, una octava más arriba.']],remember:'Escala mayor: tono, tono, semitono, tono, tono, tono, semitono.',visual:['T','T','S','T','T','T','S'],demo:{notes:[60,62,64,65,67,69,71,72],spacing:380},exercise:{type:'choice',question:'¿Cuál es la receta de pasos de la escala mayor?',answers:['T–T–S–T–T–T–S','T–S–T–T–S–T–T','S–T–T–S–T–T–T'],correct:0,why:'La escala mayor sigue tono, tono, semitono, tono, tono, tono, semitono.'},tab:'scales'},
   {chapter:'scales',title:'Construyamos escalas mayores',time:'5 min',intro:'Ahora usaremos la receta para armar una escala. Empieza en Do, escucha el ejemplo y luego toca las notas en orden.',parts:[['Empieza por Do','En Do mayor avanzas usando solo teclas blancas: Do–Re–Mi–Fa–Sol–La–Si–Do.'],['Usa la receta en otros lugares','La receta también funciona en Sol, Fa, Re y La. Algunas escalas necesitan teclas negras para conservar las mismas distancias.'],['Tócala tú','Elige una nota de inicio. La app mostrará la escala que resulta; escucha el ejemplo y luego toca cada nota en orden.']],remember:'No memorices cada escala por separado: aplica la receta desde la nota inicial.',visual:['C mayor','G mayor','F mayor','D mayor','A mayor'],demo:{notes:[60,62,64,65,67,69,71,72],spacing:380},exercise:{type:'scale',roots:['C','G','F','D','A'],hint:'Escucha el ejemplo y toca la escala nota por nota, en orden.'},tab:'scales'},
   {chapter:'scales',title:'La menor y su familiar Do mayor',time:'4 min',intro:'La menor natural y Do mayor usan las mismas teclas blancas, pero comienzan en notas diferentes y se sienten distintas.',parts:[['La menor empieza en La','La escala es La–Si–Do–Re–Mi–Fa–Sol–La. Al recorrerla desde La, ese es el centro que escuchamos.'],['Do mayor empieza en Do','Do mayor usa Do–Re–Mi–Fa–Sol–La–Si–Do. Comparte sus notas con La menor natural.'],['Se llaman relativas','Do mayor y La menor son tonalidades relativas: comparten las notas, pero su nota de descanso es distinta. Por ahora escucha cómo cambia el punto de llegada.']],remember:'Do mayor y La menor natural comparten las teclas blancas, pero no el mismo centro.',visual:['C mayor','C D E F G A B','A menor','A B C D E F G'],demo:{notes:[60,62,64,65,67,69,71,72,69,71,72,74,76,77,79,81],spacing:350},exercise:{type:'choice',question:'¿Qué comparten Do mayor y La menor natural?',answers:['Las mismas siete notas','La misma nota de inicio','Solo las teclas negras'],correct:0,why:'Usan las mismas notas blancas, pero empiezan en centros diferentes.'},tab:'scales'},
@@ -394,15 +408,20 @@ const THEORY_LESSONS=[
   {chapter:'chords',title:'El acorde disminuido: una primera mirada',time:'3 min',intro:'Hay otros tipos de acordes además de mayor y menor. Solo conoceremos por ahora el disminuido, que aparece en el séptimo lugar de Do mayor.',parts:[['B–D–F forman Si disminuido','Toca Si, Re y Fa. La fórmula es 1–♭3–♭5: la tercera y la quinta quedan más cerca que en el acorde mayor.'],['Escúchalo como parte de la familia','En Do mayor, Si disminuido es un acorde especial. No tienes que aprender a usarlo mucho todavía; basta con reconocerlo.'],['Una etiqueta corta','En una lista de acordes puedes verlo como Bdim o B°. Ambos nombres señalan este tipo de acorde.']],remember:'Bdim en Do mayor usa Si, Re y Fa.',visual:['B','D','F','1–♭3–♭5'],demo:{notes:[71,74,77],spacing:0,duration:1.3},exercise:{type:'choice',question:'¿Qué notas forman B disminuido?',answers:['B–D–F','B–D♯–F♯','C–E–G'],correct:0,why:'B disminuido usa Si, Re y Fa.'},tab:'chords'},
   {chapter:'chords',title:'Inversiones: el mismo acorde en otro orden',time:'4 min',intro:'Una inversión conserva las notas del acorde, pero cambia cuál queda abajo. Así la mano puede moverse menos entre acordes.',parts:[['Posición fundamental','Do mayor en su orden inicial es Do–Mi–Sol. Do, la fundamental, queda abajo.'],['Primera inversión: C/E','Sube el Do una octava: Mi–Sol–Do. El acorde sigue siendo Do mayor, pero Mi quedó abajo. C/E significa Do mayor con Mi en el bajo.'],['Segunda inversión','Sube también Mi: Sol–Do–Mi. Las notas siguen siendo Do, Mi y Sol, solo cambió el orden y la altura.']],remember:'Invertir cambia el orden y la nota más grave; el acorde conserva sus notas.',visual:['C–E–G','E–G–C','G–C–E'],demo:{chords:[[60,64,67],[64,67,72],[67,72,76]],spacing:1150,duration:1},exercise:{type:'inversion',root:'C',quality:'major',inversion:1,hint:'Construye C/E: toca Mi4, Sol4 y el Do de la octava siguiente.'},tab:'chords'},
   {chapter:'chords',title:'Reto: construye acordes básicos',time:'5 min',intro:'Ya viste cómo se forman distintos acordes. Ahora la app te pedirá uno para que encuentres sus tres notas en el piano.',parts:[['Lee el nombre del acorde','La letra o nota inicial te dice la raíz. La palabra mayor o menor te dice qué tercera buscar.'],['Mira las notas de ayuda','La app mostrará el acorde y sus notas. Las teclas iluminadas te ayudan a ubicarlas en el teclado.'],['Arma el acorde','Toca las tres notas. Puedes presionarlas una por una; cuando estén las tres, escucharás que completaste el acorde.']],remember:'Raíz, tercera y quinta forman la tríada.',visual:['C','G','F','D','A','Am'],demo:{notes:[67,71,74],spacing:0,duration:1.3},exercise:{type:'chord-builder',targets:[{root:'C',quality:'major'},{root:'G',quality:'major'},{root:'F',quality:'major'},{root:'D',quality:'major'},{root:'A',quality:'major'},{root:'A',quality:'minor'},{root:'D',quality:'minor'}],random:true,hint:'La app eligió un acorde. Toca sus tres notas; puedes cambiar de reto cuando quieras.'},tab:'chords'},
-  {chapter:'keys',title:'Tonalidad: el hogar de una canción',time:'3 min',intro:'Una tonalidad es el grupo de notas y acordes que gira alrededor de una nota principal, como si fuera el hogar de la canción.',parts:[['Do mayor descansa en Do','La nota Do suele sentirse como un buen lugar para terminar una canción en Do mayor. Por eso decimos que Do es su centro.'],['La menor descansa en La','La menor usa las mismas notas blancas, pero La es su centro. La música puede sentirse distinta aunque las teclas sean las mismas.'],['La escala organiza la tonalidad','La escala te muestra qué notas pertenecen a ese hogar. De esas notas nacen los acordes que combinan bien.']],remember:'La tonalidad nos dice cuál es el centro musical y qué notas forman su familia.',visual:['Centro','Notas','Acordes','Canción'],demo:{chords:[[60,64,67],[69,72,76]],spacing:1300,duration:1.1},exercise:{type:'choice',question:'¿Qué nos ayuda a entender una tonalidad?',answers:['El centro y la familia de notas y acordes','Solo el volumen de la canción','Cuántas teclas negras hay en el piano'],correct:0,why:'La tonalidad organiza notas y acordes alrededor de un centro.'},tab:'keys'},
-  {chapter:'keys',title:'Acordes de Do mayor y La menor',time:'4 min',intro:'Cada nota de una escala puede ser el inicio de un acorde. Así obtenemos una familia de acordes que suenan relacionados.',parts:[['La familia de Do mayor','Do mayor tiene: C, Dm, Em, F, G, Am y Bdim. Se forman usando las notas de la escala de Do mayor.'],['La familia de La menor','La menor natural comparte esas notas: Am, Bdim, C, Dm, Em, F y G. La familia es la misma, pero el centro ahora es La.'],['Se apilan notas alternas','Para formar cada tríada, toma una nota, salta la siguiente de la escala, toma otra, salta una y toma la tercera. Esa es una forma sencilla de entender 1–3–5.']],remember:'Los acordes de una tonalidad se construyen usando las notas de su escala.',visual:['C','Dm','Em','F','G','Am','Bdim'],demo:{chords:[[60,64,67],[62,65,69],[64,67,72],[65,69,72],[67,71,74],[69,72,76],[71,74,77]],spacing:900,duration:.8},exercise:{type:'choice',question:'¿Cuál de estos acordes pertenece a Do mayor?',answers:['Re menor','Re mayor','Fa sostenido mayor'],correct:0,why:'Re menor se forma con las notas de Do mayor.'},tab:'keys'},
-  {chapter:'keys',title:'Números romanos: un mapa para los acordes',time:'4 min',intro:'Los números romanos nombran el puesto de cada acorde dentro de una tonalidad. Así podemos hablar del recorrido sin depender de una sola nota inicial.',parts:[['Cada número es un lugar','En Do mayor, I es Do, ii es Re menor, iii es Mi menor y así seguimos hasta vii°.'],['Mayúscula y minúscula','I, IV y V suelen ser acordes mayores. ii, iii y vi son menores. El símbolo ° muestra que el acorde del séptimo lugar es disminuido.'],['El patrón viaja','I–V–vi–IV en Do significa C–G–Am–F. En otra tonalidad, los nombres cambian pero los números conservan su orden.']],remember:'Los números romanos nombran el lugar del acorde, no una tecla fija.',visual:['I','ii','iii','IV','V','vi','vii°'],demo:{chords:[[60,64,67],[67,71,74],[69,72,76],[65,69,72]],spacing:1000,duration:.9},exercise:{type:'choice',question:'En Do mayor, ¿qué acorde representa V?',answers:['Sol mayor','Fa mayor','La menor'],correct:0,why:'V es el quinto acorde: Sol mayor.'},tab:'keys'},
-  {chapter:'keys',title:'Explora una tonalidad y su familia',time:'5 min',intro:'Elige una tonalidad y observa cómo la escala produce siete acordes. Escucha cada uno para conectar la teoría con el piano.',parts:[['Mira primero las notas','En Sol mayor, por ejemplo, las notas son G–A–B–C–D–E–F♯.'],['Debajo aparecen sus acordes','La familia de Sol mayor es G, Am, Bm, C, D, Em y F♯dim. Cada acorde empieza en una nota de la escala.'],['Elige un acorde para oírlo','Toca una tarjeta de acorde. La app resaltará sus notas en el piano y lo reproducirá para que veas y escuches de qué está hecho.']],remember:'G mayor incluye F♯; sus acordes salen de las notas G–A–B–C–D–E–F♯.',visual:['G','Am','Bm','C','D','Em','F♯dim'],demo:{chords:[[67,71,74],[69,72,76],[71,74,78],[72,76,79],[74,78,81],[76,79,83],[78,81,84]],spacing:900,duration:.8},exercise:{type:'key-family',roots:['C','G'],targetDegree:6,hint:'Elige Do o Sol mayor y toca la tarjeta del acorde vi.'},tab:'keys'},
-  {chapter:'progressions',title:'Progresión: un recorrido de acordes',time:'3 min',intro:'Una progresión es una secuencia de acordes que acompaña una parte de una canción.',parts:[['Sigue el orden','I–IV–V es una progresión: toca el acorde I, luego IV y luego V. En Do mayor sería C–F–G.'],['El número depende de la tonalidad','En Do mayor, I es C. En Sol mayor, I es G. El número siempre indica el puesto en la escala elegida.'],['Vuelve a empezar','Después del último acorde puedes regresar al primero. Así se forma una vuelta que acompaña una estrofa o un coro.']],remember:'Una progresión te dice qué acordes tocar y en qué orden.',visual:['I','IV','V','I'],demo:{chords:[[60,64,67],[65,69,72],[67,71,74],[60,64,67]],spacing:1000,duration:.9},exercise:{type:'choice',question:'¿Qué describe una progresión?',answers:['Una secuencia ordenada de acordes','Una tecla tocada más fuerte','Los nombres de las octavas'],correct:0,why:'Una progresión es un camino de acordes en un orden determinado.'},tab:'keys'},
-  {chapter:'progressions',title:'Tres caminos para acompañar canciones',time:'4 min',intro:'Hay progresiones que aparecen en muchas canciones y acompañamientos modernos. No pertenecen a un solo estilo; son caminos útiles para practicar.',parts:[['I–IV–V','En Do mayor: C–F–G. Es un recorrido corto y fácil de escuchar.'],['I–V–vi–IV','En Do: C–G–Am–F. En Sol: G–D–Em–C. El mismo patrón cambia de nombres al cambiar de tonalidad.'],['vi–IV–I–V','En Do: Am–F–C–G. Empezar en vi da otro punto de partida, aunque use la misma familia de acordes.']],remember:'Los números muestran el recorrido; la tonalidad determina los nombres de los acordes.',visual:['I–IV–V','I–V–vi–IV','vi–IV–I–V'],demo:{chords:[[60,64,67],[67,71,74],[69,72,76],[65,69,72]],spacing:1000,duration:.9},exercise:{type:'choice',question:'¿Cuál es I–V–vi–IV en Do mayor?',answers:['C–G–Am–F','C–F–G–C','Am–F–C–G'],correct:0,why:'En Do mayor, I=C, V=G, vi=Am y IV=F.'},tab:'keys'},
-  {chapter:'progressions',title:'Cambia de tonalidad, conserva el recorrido',time:'4 min',intro:'Transportar una progresión significa mover todo el recorrido a otra tonalidad manteniendo el mismo orden.',parts:[['El ejemplo en Do','I–V–vi–IV en Do mayor es C–G–Am–F.'],['Ahora en Sol','El mismo patrón en Sol mayor es G–D–Em–C. Cambiaron los nombres y las teclas, pero los puestos siguen iguales.'],['También en Re','En Re mayor queda D–A–Bm–G. Así puedes adaptar una canción a una voz más cómoda sin inventar una progresión nueva.']],remember:'Cambia la tonalidad y los acordes; conserva los números romanos y su orden.',visual:['C: C–G–Am–F','G: G–D–Em–C','D: D–A–Bm–G'],demo:{chords:[[62,66,69],[69,73,76],[71,74,78],[67,71,74]],spacing:1000,duration:.9},exercise:{type:'progression',roots:['C','G','D'],degrees:[1,5,6,4],hint:'Escucha la vuelta y luego toca los cuatro acordes, uno por uno.'},tab:'keys'}
+  {chapter:'harmony',title:'Tonalidad: el hogar de una canción',time:'3 min',intro:'Una tonalidad es el grupo de notas y acordes que gira alrededor de una nota principal, como si fuera el hogar de la canción.',parts:[['Do mayor descansa en Do','La nota Do suele sentirse como un buen lugar para terminar una canción en Do mayor. Por eso decimos que Do es su centro.'],['La menor descansa en La','La menor usa las mismas notas blancas, pero La es su centro. La música puede sentirse distinta aunque las teclas sean las mismas.'],['La escala organiza la tonalidad','La escala te muestra qué notas pertenecen a ese hogar. De esas notas nacen los acordes que combinan bien.']],remember:'La tonalidad nos dice cuál es el centro musical y qué notas forman su familia.',visual:['Centro','Notas','Acordes','Canción'],demo:{chords:[[60,64,67],[69,72,76]],spacing:1300,duration:1.1},exercise:{type:'choice',question:'¿Qué nos ayuda a entender una tonalidad?',answers:['El centro y la familia de notas y acordes','Solo el volumen de la canción','Cuántas teclas negras hay en el piano'],correct:0,why:'La tonalidad organiza notas y acordes alrededor de un centro.'},tab:'keys'},
+  {chapter:'harmony',title:'Acordes de Do mayor y La menor',time:'4 min',intro:'Cada nota de una escala puede ser el inicio de un acorde. Así obtenemos una familia de acordes que suenan relacionados.',parts:[['La familia de Do mayor','Do mayor tiene: C, Dm, Em, F, G, Am y Bdim. Se forman usando las notas de la escala de Do mayor.'],['La familia de La menor','La menor natural comparte esas notas: Am, Bdim, C, Dm, Em, F y G. La familia es la misma, pero el centro ahora es La.'],['Se apilan notas alternas','Para formar cada tríada, toma una nota, salta la siguiente de la escala, toma otra, salta una y toma la tercera. Esa es una forma sencilla de entender 1–3–5.']],remember:'Los acordes de una tonalidad se construyen usando las notas de su escala.',visual:['C','Dm','Em','F','G','Am','Bdim'],demo:{chords:[[60,64,67],[62,65,69],[64,67,72],[65,69,72],[67,71,74],[69,72,76],[71,74,77]],spacing:900,duration:.8},exercise:{type:'choice',question:'¿Cuál de estos acordes pertenece a Do mayor?',answers:['Re menor','Re mayor','Fa sostenido mayor'],correct:0,why:'Re menor se forma con las notas de Do mayor.'},tab:'keys'},
+  {chapter:'harmony',title:'Números romanos: un mapa para los acordes',time:'4 min',intro:'Los números romanos nombran el puesto de cada acorde dentro de una tonalidad. Así podemos hablar del recorrido sin depender de una sola nota inicial.',parts:[['Cada número es un lugar','En Do mayor, I es Do, ii es Re menor, iii es Mi menor y así seguimos hasta vii°.'],['Mayúscula y minúscula','I, IV y V suelen ser acordes mayores. ii, iii y vi son menores. El símbolo ° muestra que el acorde del séptimo lugar es disminuido.'],['El patrón viaja','I–V–vi–IV en Do significa C–G–Am–F. En otra tonalidad, los nombres cambian pero los números conservan su orden.']],remember:'Los números romanos nombran el lugar del acorde, no una tecla fija.',visual:['I','ii','iii','IV','V','vi','vii°'],demo:{chords:[[60,64,67],[67,71,74],[69,72,76],[65,69,72]],spacing:1000,duration:.9},exercise:{type:'choice',question:'En Do mayor, ¿qué acorde representa V?',answers:['Sol mayor','Fa mayor','La menor'],correct:0,why:'V es el quinto acorde: Sol mayor.'},tab:'keys'},
+  {chapter:'harmony',title:'El círculo de quintas: un mapa de tonalidades',time:'4 min',intro:'El círculo de quintas es un mapa redondo que ordena las tonalidades. No tienes que memorizarlo hoy: vamos a aprender a leer solo una pequeña parte.',parts:[['Do está arriba','En el mapa, Do mayor aparece arriba. Si avanzas un lugar hacia la derecha, llegas a Sol mayor; después viene Re mayor.'],['Las vecinas se parecen','Dos tonalidades vecinas comparten muchas notas y se diferencian poco. Por eso el círculo ayuda a encontrar tonalidades cercanas.'],['También muestra acordes menores','Debajo o dentro de cada tonalidad mayor suele aparecer su familiar menor. Do mayor y La menor, por ejemplo, usan las mismas teclas blancas.']],remember:'Al avanzar una posición a la derecha desde Do en el círculo de quintas, llegas a Sol.',visual:['Do','Sol','Re','La','Mi'],demo:{chords:[[60,64,67],[67,71,74],[62,66,69],[69,73,76]],spacing:900,duration:1},exercise:{type:'choice',question:'En el círculo de quintas, ¿qué tonalidad sigue a Do al avanzar una posición a la derecha?',answers:['Sol','Fa','La'],correct:0,why:'El recorrido hacia la derecha empieza Do, Sol, Re, La, Mi…'},tab:'circle'},  {chapter:'harmony',title:'Explora una tonalidad y su familia',time:'5 min',intro:'Elige una tonalidad y observa cómo la escala produce siete acordes. Escucha cada uno para conectar la teoría con el piano.',parts:[['Mira primero las notas','En Sol mayor, por ejemplo, las notas son G–A–B–C–D–E–F♯.'],['Debajo aparecen sus acordes','La familia de Sol mayor es G, Am, Bm, C, D, Em y F♯dim. Cada acorde empieza en una nota de la escala.'],['Elige un acorde para oírlo','Toca una tarjeta de acorde. La app resaltará sus notas en el piano y lo reproducirá para que veas y escuches de qué está hecho.']],remember:'G mayor incluye F♯; sus acordes salen de las notas G–A–B–C–D–E–F♯.',visual:['G','Am','Bm','C','D','Em','F♯dim'],demo:{chords:[[67,71,74],[69,72,76],[71,74,78],[72,76,79],[74,78,81],[76,79,83],[78,81,84]],spacing:900,duration:.8},exercise:{type:'key-family',roots:['C','G'],targetDegree:6,hint:'Elige Do o Sol mayor y toca la tarjeta del acorde vi.'},tab:'keys'},
+  {chapter:'harmony',title:'Progresión: un recorrido de acordes',time:'3 min',intro:'Una progresión es una secuencia de acordes que acompaña una parte de una canción.',parts:[['Sigue el orden','I–IV–V es una progresión: toca el acorde I, luego IV y luego V. En Do mayor sería C–F–G.'],['El número depende de la tonalidad','En Do mayor, I es C. En Sol mayor, I es G. El número siempre indica el puesto en la escala elegida.'],['Vuelve a empezar','Después del último acorde puedes regresar al primero. Así se forma una vuelta que acompaña una estrofa o un coro.']],remember:'Una progresión te dice qué acordes tocar y en qué orden.',visual:['I','IV','V','I'],demo:{chords:[[60,64,67],[65,69,72],[67,71,74],[60,64,67]],spacing:1000,duration:.9},exercise:{type:'choice',question:'¿Qué describe una progresión?',answers:['Una secuencia ordenada de acordes','Una tecla tocada más fuerte','Los nombres de las octavas'],correct:0,why:'Una progresión es un camino de acordes en un orden determinado.'},tab:'keys'},
+  {chapter:'harmony',title:'Tres caminos para acompañar canciones',time:'4 min',intro:'Hay progresiones que aparecen en muchas canciones y acompañamientos modernos. No pertenecen a un solo estilo; son caminos útiles para practicar.',parts:[['I–IV–V','En Do mayor: C–F–G. Es un recorrido corto y fácil de escuchar.'],['I–V–vi–IV','En Do: C–G–Am–F. En Sol: G–D–Em–C. El mismo patrón cambia de nombres al cambiar de tonalidad.'],['vi–IV–I–V','En Do: Am–F–C–G. Empezar en vi da otro punto de partida, aunque use la misma familia de acordes.']],remember:'Los números muestran el recorrido; la tonalidad determina los nombres de los acordes.',visual:['I–IV–V','I–V–vi–IV','vi–IV–I–V'],demo:{chords:[[60,64,67],[67,71,74],[69,72,76],[65,69,72]],spacing:1000,duration:.9},exercise:{type:'choice',question:'¿Cuál es I–V–vi–IV en Do mayor?',answers:['C–G–Am–F','C–F–G–C','Am–F–C–G'],correct:0,why:'En Do mayor, I=C, V=G, vi=Am y IV=F.'},tab:'keys'},
+  {chapter:'harmony',title:'Cambia de tonalidad, conserva el recorrido',time:'4 min',intro:'Transportar una progresión significa mover todo el recorrido a otra tonalidad manteniendo el mismo orden.',parts:[['El ejemplo en Do','I–V–vi–IV en Do mayor es C–G–Am–F.'],['Ahora en Sol','El mismo patrón en Sol mayor es G–D–Em–C. Cambiaron los nombres y las teclas, pero los puestos siguen iguales.'],['También en Re','En Re mayor queda D–A–Bm–G. Así puedes adaptar una canción a una voz más cómoda sin inventar una progresión nueva.']],remember:'Cambia la tonalidad y los acordes; conserva los números romanos y su orden.',visual:['C: C–G–Am–F','G: G–D–Em–C','D: D–A–Bm–G'],demo:{chords:[[62,66,69],[69,73,76],[71,74,78],[67,71,74]],spacing:1000,duration:.9},exercise:{type:'progression',roots:['C','G','D'],degrees:[1,5,6,4],hint:'Escucha la vuelta y luego toca los cuatro acordes, uno por uno.'},tab:'keys'},
+  {chapter:'accompaniment',title:'Lee el cifrado: C, Am, F y G',time:'4 min',intro:'En muchas canciones, las letras sobre la melodía son una forma rápida de decir qué acorde tocar. Se llama cifrado de acordes.',parts:[['Una letra nombra la nota de inicio','C significa Do; G significa Sol; F significa Fa. Esos nombres usan letras del alfabeto para las notas.'],['La letra “m” quiere decir menor','Am se lee La menor. La letra A significa La y la m pequeña avisa que es un acorde menor. Si no hay una m, como en C, normalmente hablamos de Do mayor.'],['El cifrado indica cuándo cambiar','Cuando la letra aparece sobre una parte de la canción, toca ese acorde mientras suena esa parte. Al aparecer el siguiente cifrado, cambias al siguiente acorde.']],remember:'C = Do mayor · Am = La menor. La letra nombra la raíz y “m” indica menor.',visual:['C = Do','Am = La menor','F = Fa','G = Sol'],demo:{chords:[[60,64,67],[69,72,76],[65,69,72],[67,71,74]],spacing:1000,duration:1},exercise:{type:'choice',question:'¿Qué significa Am en un cifrado?',answers:['La menor','La mayor','Do menor'],correct:0,why:'A es La y la m indica que el acorde es menor.'},tab:'chords'},
+  {chapter:'accompaniment',title:'La mano izquierda: toca una nota grave',time:'4 min',intro:'Para empezar a acompañar no necesitas aprender muchas notas a la vez. La mano izquierda puede tocar una sola nota grave que dé apoyo al acorde.',parts:[['Busca una nota más grave','Los sonidos graves están hacia la izquierda del piano. Do3 es un Do que suena más bajo que Do4.'],['El bajo da el suelo','Si el acorde es Do mayor, puedes tocar un Do grave mientras la mano derecha toca Do, Mi y Sol. Esa nota grave ayuda a que la canción se sienta firme.'],['Empieza con una sola nota','No estires ni tenses la mano. Primero encuentra el Do indicado y tócalo despacio. Cuando te resulte cómodo, prueba otras raíces.']],remember:'La mano izquierda puede tocar la nota raíz del acorde en una zona grave.',visual:['Mano izquierda','Do3','Mano derecha','Do–Mi–Sol'],demo:{notes:[48,60,64,67],spacing:550},exercise:{type:'find-note',targetMidi:48,random:false,pool:'do',hint:'Busca Do3, el Do más grave que aparece en este teclado.'},tab:'piano'},
+  {chapter:'accompaniment',title:'Tres patrones sencillos para acompañar',time:'5 min',intro:'Un patrón es una manera de repartir las notas del acorde en el tiempo. Con las mismas notas puedes acompañar de varias formas.',parts:[['Acorde completo','La opción más fácil: toca las tres notas de la mano derecha juntas al empezar el compás y deja que suenen.'],['Bajo y acorde por turnos','Toca la nota grave con la izquierda en el primer pulso. Luego responde con el acorde de la derecha. Alterna sin apurarte.'],['Notas separadas o arpegio','También puedes tocar las notas del acorde una después de otra: Do, Mi, Sol. Empieza lento y mantén el pulso parejo.']],remember:'Primero mantén el ritmo constante; después cambia la forma de repartir las notas.',visual:['Juntas','Bajo · acorde','Do · Mi · Sol'],demo:{notes:[48,60,64,67,60,64,67,64,60],spacing:420},exercise:{type:'choice',question:'Si estás empezando, ¿qué patrón es más fácil para el primer intento?',answers:['Tocar el acorde completo en el primer pulso','Tocar muchas notas muy rápido','Cambiar el acorde en cada medio pulso'],correct:0,why:'Tocar el acorde completo al comienzo es sencillo y deja tiempo para prepararte.'},tab:'chords'},
+  {chapter:'accompaniment',title:'Cambia de acorde con movimientos pequeños',time:'4 min',intro:'Al pasar de un acorde a otro, no siempre tienes que mover toda la mano. Puedes buscar una posición donde las notas queden cerca.',parts:[['Escucha dos acordes seguidos','Toca Do mayor y luego Fa mayor. Nota qué dedos se mueven y cuáles pueden quedarse cerca.'],['Una inversión cambia el orden','Do–Mi–Sol puede convertirse en Mi–Sol–Do. Siguen siendo las mismas notas, pero el acorde queda en otra posición.'],['Busca el camino más cómodo','En una canción, las inversiones ayudan a que la mano recorra menos distancia entre un acorde y el siguiente. No cambian el nombre del acorde.']],remember:'Una inversión conserva las notas del acorde y puede hacer más corto el siguiente movimiento.',visual:['Do–Mi–Sol','Mi–Sol–Do','Sol–Do–Mi'],demo:{chords:[[60,64,67],[65,69,72],[64,67,72]],spacing:1200,duration:1},exercise:{type:'inversion',root:'C',quality:'major',inversion:1,hint:'Toca Mi4, Sol4 y el Do de la octava de arriba; son las notas de C/E.'},tab:'chords'},
+  {chapter:'accompaniment',title:'Reto final: acompaña una vuelta',time:'6 min',intro:'Llegaste a la práctica final. Vas a escuchar una secuencia, reconocer cada acorde y tocar sus notas en orden. Si hace falta, puedes volver a empezar más despacio.',parts:[['Escucha antes de tocar','Primero deja que suene la vuelta completa. Presta atención a cuándo cambia cada acorde.'],['Sigue los números','En Do mayor, I–IV–V–I quiere decir Do mayor, Fa mayor, Sol mayor y Do mayor otra vez.'],['Toca a tu ritmo','Completa las notas de cada acorde en el piano. Cuando ya conozcas el recorrido, abre el taller de práctica para probar el bajo y los patrones.']],remember:'Acompañar es escuchar, seguir el pulso y tocar los acordes en el orden indicado.',visual:['I · Do','IV · Fa','V · Sol','I · Do'],demo:{chords:[[60,64,67],[65,69,72],[67,71,74],[60,64,67]],spacing:1100,duration:1},exercise:{type:'progression',title:'Prueba I – IV – V – I',roots:['C','G'],degrees:[1,4,5,1],hint:'Escucha la vuelta y toca las tres notas de cada acorde en orden.',showWorkshop:true},tab:'keys'}
 ];
-let theoryLessonIndex=0,theoryLessonFeedback='',theoryLessonHeard=false,theoryLessonTouched=false,theoryExerciseForIndex=-1,theoryExerciseTarget=null,theoryExerciseRoot='C',theoryExerciseQuality='major',theoryExerciseStep=0,theoryExerciseTapped=new Set(),theoryExerciseStatus='',theoryLessonNotation=localStorage.getItem('yhwh_theory_notation')==='americano'?'americano':'latino',worshipPracticeTimer=0,worshipPracticeRunning=false,worshipPracticeStep=0;
+let theoryRhythmRun=null,theoryRhythmDemoNodes=[],theoryLessonIndex=0,theoryLessonFeedback='',theoryLessonHeard=false,theoryLessonTouched=false,theoryExerciseForIndex=-1,theoryExerciseTarget=null,theoryExerciseRoot='C',theoryExerciseQuality='major',theoryExerciseStep=0,theoryExerciseTapped=new Set(),theoryExerciseStatus='',theoryLessonNotation=localStorage.getItem('yhwh_theory_notation')==='americano'?'americano':'latino',worshipPracticeTimer=0,worshipPracticeRunning=false,worshipPracticeStep=0;
 function worshipPitchName(pc){const names=['Do','Do♯','Re','Mi♭','Mi','Fa','Fa♯','Sol','La♭','La','Si♭','Si'];return names[((pc%12)+12)%12];}
 function worshipChordPlan(){
   const roots={C:0,Db:1,D:2,Eb:3,E:4,F:5,Gb:6,G:7,Ab:8,A:9,Bb:10,B:11},root=roots[$('worshipKey')?.value]??0,scale=[0,2,4,5,7,9,11],degrees=($('worshipProgression')?.value||'1-5-6-4').split('-').map(Number);
@@ -442,11 +461,20 @@ function lessonKeyForMidi(midi){
   return document.querySelector('#theoryLearning:not(.hidden) .lesson-key[data-lesson-midi="'+midi+'"]');
 }
 function openLessonExplorer(){const lesson=THEORY_LESSONS[theoryLessonIndex];document.querySelectorAll('[data-theory-mode]').forEach(button=>button.classList.toggle('active',button.dataset.theoryMode==='explore'));$('theoryLearning').classList.add('hidden');$('theoryExplore').classList.remove('hidden');changeTheoryTab(lesson.tab);}
-const THEORY_LESSON_PROGRESS_KEY='yhwh_theory_lessons_v2';
+const THEORY_LESSON_PROGRESS_KEY='yhwh_theory_lessons_v3';
 
 const THEORY_MAJOR_STEPS=[0,2,4,5,7,9,11],THEORY_MAJOR_FORMULA=[0,2,4,5,7,9,11,12],THEORY_NATURAL_PCS=[0,2,4,5,7,9,11],THEORY_ALTERED_PCS=[1,3,6,8,10];
 const THEORY_FLAT_NAMES_EN=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],THEORY_FLAT_NAMES_LATINO=['Do','Re♭','Re','Mi♭','Mi','Fa','Sol♭','Sol','La♭','La','Si♭','Si'];
-function theoryProgress(){try{const value=JSON.parse(localStorage.getItem(THEORY_LESSON_PROGRESS_KEY)||'[]');return Array.isArray(value)?value.filter(Number.isInteger):[]}catch(_){return[]}}
+function theoryProgress(){
+  try{
+    const current=localStorage.getItem(THEORY_LESSON_PROGRESS_KEY);
+    if(current!==null){const value=JSON.parse(current);return Array.isArray(value)?value.filter(index=>Number.isInteger(index)&&index>=0&&index<THEORY_LESSONS.length):[];}
+    const previous=JSON.parse(localStorage.getItem('yhwh_theory_lessons_v2')||'[]');
+    const migrated=Array.isArray(previous)?previous.filter(index=>Number.isInteger(index)&&index>=0&&index<29).map(index=>index===0?1:index===1?0:index<6?index:index<10?index+4:index<26?index+5:index+6):[];
+    localStorage.setItem(THEORY_LESSON_PROGRESS_KEY,JSON.stringify(migrated));
+    return migrated;
+  }catch(_){return[]}
+}
 function theoryPitch(root){const names={C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};return names[root]??0}
 function theoryNoteLabel(midi,withOctave=true,preferFlat=false){
   const pc=((midi%12)+12)%12,octave=Math.floor(midi/12)-1;
@@ -484,7 +512,7 @@ function prepareTheoryExercise(){
   if(theoryExerciseForIndex===theoryLessonIndex)return;
   theoryExerciseForIndex=theoryLessonIndex;theoryExerciseTarget=null;theoryExerciseStep=0;theoryExerciseTapped=new Set();theoryExerciseStatus='';theoryLessonHeard=false;
   const exercise=THEORY_LESSONS[theoryLessonIndex]?.exercise||{};theoryExerciseRoot=exercise.roots?.[0]||'C';theoryExerciseQuality=exercise.quality||'major';
-  if(exercise.type==='find-note'){const pitches=theoryAllowedPitches(exercise.pool||'all');theoryExerciseTarget=pitches[Math.floor(Math.random()*pitches.length)]||60;}
+  if(exercise.type==='find-note'){const pitches=theoryAllowedPitches(exercise.pool||'all');theoryExerciseTarget=Number.isInteger(exercise.targetMidi)?exercise.targetMidi:(pitches[Math.floor(Math.random()*pitches.length)]||60);}
   else if(exercise.type==='interval'){const pairs=exercise.pairs||[[60,62]];theoryExerciseTarget=pairs[Math.floor(Math.random()*pairs.length)];}
   else if(exercise.type==='chord-builder'){const targets=exercise.targets||[{root:'C',quality:'major'}];theoryExerciseTarget=exercise.random?targets[Math.floor(Math.random()*targets.length)]:targets[0];theoryExerciseRoot=theoryExerciseTarget.root;theoryExerciseQuality=theoryExerciseTarget.quality;}
   else if(exercise.type==='inversion'){theoryExerciseTarget={root:exercise.root||'C',quality:exercise.quality||'major',inversion:exercise.inversion||1};theoryExerciseRoot=theoryExerciseTarget.root;theoryExerciseQuality=theoryExerciseTarget.quality;}
@@ -513,9 +541,15 @@ function theoryChapterNumber(id){return Math.max(1,THEORY_CHAPTERS.findIndex(cha
 function theoryRenderAnswerButtons(exercise){return(exercise.answers||[]).map((answer,index)=>'<button type="button" class="lesson-answer" data-answer-index="'+index+'">'+escapeHTML(answer.label||answer)+'</button>').join('')}
 function theoryRenderExercise(lesson){
   const exercise=lesson.exercise||{},status=theoryExerciseStatus||exercise.hint||'Tómate tu tiempo. Puedes volver a escuchar el ejemplo cuando quieras.';
+  if(exercise.type==='rhythm'){
+    const bars=(exercise.pattern||'x.x.x.x.|x.x.x.x.').split('|'),subdivisions=Math.max(1,Math.floor(Number(exercise.subdivisions)||2)),beatsPerBar=Math.max(1,Math.floor(Number(exercise.beatsPerBar)||4)),cellsPerBar=subdivisions*beatsPerBar;
+    const grid=bars.map((bar,barIndex)=>'<div class="lesson-rhythm-bar" style="--rhythm-cells:'+cellsPerBar+'" aria-label="Compás '+(barIndex+1)+'">'+[...bar].map((mark,step)=>'<i class="lesson-rhythm-cell'+(mark==='x'?' target':'')+'" data-rhythm-cell="'+(barIndex*cellsPerBar+step)+'"><span aria-hidden="true">'+(subdivisions===2?(step%2===0?String(step/2+1):'y'):String(step+1))+'</span></i>').join('')+'</div>').join('');
+    const rhythmQuestion=exercise.question?'<div class="lesson-rhythm-question"><p>'+escapeHTML(exercise.question)+'</p><div class="lesson-answers">'+(exercise.answers||[]).map((answer,index)=>'<button type="button" class="lesson-answer" data-answer-index="'+index+'">'+escapeHTML(answer)+'</button>').join('')+'</div></div>':'';
+    return'<div class="lesson-task lesson-rhythm-task"><small>ESCUCHA Y MARCA EL RITMO</small><h3>Sigue los clics con calma</h3><p>'+escapeHTML(exercise.prompt||'Escucha y toca al ritmo de los clics.')+'</p><div class="lesson-rhythm-grid" aria-label="Patrón: cada fila muestra un compás; los cuadros marcados son los momentos para tocar">'+grid+'</div><p class="lesson-task-status" id="theoryExerciseStatus" role="status">'+escapeHTML(theoryExerciseStatus||'Pulsa empezar. Escucharás cuatro clics para prepararte.')+'</p><div class="lesson-rhythm-actions"><button type="button" class="lesson-task-secondary" data-rhythm-start>▶ Empezar práctica</button><button type="button" class="lesson-rhythm-pad" data-rhythm-pad>👆 Tocar aquí</button></div>'+rhythmQuestion+'</div>';
+  }
   if(exercise.type==='find-note'){
     const target=Number(theoryExerciseTarget)||60,display=theoryNoteLabel(target,true),alias=theoryEnharmonicLabel(target);
-    return'<div class="lesson-task"><small>RETO EN EL TECLADO</small><h3>Encuentra '+escapeHTML(display)+'</h3>'+(alias?'<p class="lesson-task-alias">Esta tecla también puede llamarse '+escapeHTML(alias)+'.</p>':'')+'<p>Busca la tecla exacta. La octava indicada también cuenta.</p><p class="lesson-task-status" id="theoryExerciseStatus" role="status">'+escapeHTML(status)+'</p><button type="button" class="lesson-task-secondary" data-exercise-reset>🎲 Pedir otra nota</button></div>';
+    return'<div class="lesson-task"><small>RETO EN EL TECLADO</small><h3>Encuentra '+escapeHTML(display)+'</h3>'+(alias?'<p class="lesson-task-alias">Esta tecla también puede llamarse '+escapeHTML(alias)+'.</p>':'')+'<p>Busca la tecla exacta. La octava indicada también cuenta.</p><p class="lesson-task-status" id="theoryExerciseStatus" role="status">'+escapeHTML(status)+'</p>'+(exercise.targetMidi===undefined?'<button type="button" class="lesson-task-secondary" data-exercise-reset>🎲 Pedir otra nota</button>':'')+'</div>';
   }
   if(exercise.type==='interval'){
     const pair=theoryExerciseTarget||[60,62],options=exercise.answers||[];
@@ -538,8 +572,8 @@ function theoryRenderExercise(lesson){
     return'<div class="lesson-task"><small>ESCALA Y FAMILIA DE ACORDES</small><h3>Explora una tonalidad mayor</h3><p>Elige una tonalidad: verás sus siete notas y los acordes que nacen de ellas. Después encuentra el acorde vi.</p><label class="lesson-task-select">Tonalidad<select data-theory-exercise-root>'+roots.map(item=>'<option value="'+escapeHTML(item)+'"'+(item===root?' selected':'')+'>'+escapeHTML(theoryPcLabel(theoryPitch(item)))+' mayor</option>').join('')+'</select></label><div class="lesson-task-note-row">'+family.scale.map(pc=>'<span>'+escapeHTML(theoryPcLabel(pc,true))+'</span>').join('')+'</div><div class="lesson-family-chords">'+family.chords.map(chord=>'<button type="button" data-family-degree="'+chord.degree+'" data-family-root="'+escapeHTML(chord.root)+'" data-family-quality="'+chord.quality+'" data-family-roman="'+escapeHTML(chord.roman)+'" aria-label="'+escapeHTML(chord.roman+' '+chord.label)+'"><small>'+escapeHTML(chord.roman)+'</small><b>'+escapeHTML(chord.label)+'</b></button>').join('')+'</div><p class="lesson-task-status" id="theoryExerciseStatus" role="status">'+escapeHTML(theoryExerciseStatus||('En '+theoryPcLabel(theoryPitch(root))+' mayor, toca el acorde '+(family.chords[targetDegree-1]?.roman||'vi')+'.'))+'</p></div>';
   }
   if(exercise.type==='progression'){
-    const roots=exercise.roots||['C','G','D'],progression=theoryExerciseProgression(),current=progression.chords[Math.min(theoryExerciseStep,progression.chords.length-1)];
-    return'<div class="lesson-task"><small>ESCUCHA Y PRACTICA LA PROGRESIÓN</small><h3>El mismo recorrido en otra tonalidad</h3><label class="lesson-task-select">Tonalidad<select data-theory-exercise-root>'+roots.map(root=>'<option value="'+escapeHTML(root)+'"'+(root===theoryExerciseRoot?' selected':'')+'>'+escapeHTML(theoryPcLabel(theoryPitch(root)))+' mayor</option>').join('')+'</select></label><p class="lesson-task-formula">I – V – vi – IV</p><div class="lesson-progression-chords">'+progression.chords.map((chord,index)=>'<span class="'+(index===theoryExerciseStep?'current':'')+'"><small>'+escapeHTML(chord.roman)+'</small><b>'+escapeHTML(chord.label)+'</b></span>').join('')+'</div><button type="button" class="lesson-task-secondary" data-progression-listen>▶ Escuchar primero</button><p class="lesson-task-status" id="theoryExerciseStatus" role="status">'+escapeHTML(theoryExerciseStatus||(theoryLessonHeard?'Ahora toca '+(current?.label||'el acorde indicado')+'.':'Escucha una vuelta completa antes de practicar.'))+'</p></div>';
+    const roots=exercise.roots||['C','G','D'],progression=theoryExerciseProgression(),current=progression.chords[Math.min(theoryExerciseStep,progression.chords.length-1)],romanPattern=progression.chords.map(chord=>chord.roman).join(' – '),title=exercise.title||'El mismo recorrido en otra tonalidad';
+    return'<div class="lesson-task"><small>ESCUCHA Y PRACTICA LA PROGRESIÓN</small><h3>'+escapeHTML(title)+'</h3><label class="lesson-task-select">Tonalidad<select data-theory-exercise-root>'+roots.map(root=>'<option value="'+escapeHTML(root)+'"'+(root===theoryExerciseRoot?' selected':'')+'>'+escapeHTML(theoryPcLabel(theoryPitch(root)))+' mayor</option>').join('')+'</select></label><p class="lesson-task-formula">'+escapeHTML(romanPattern)+'</p><div class="lesson-progression-chords">'+progression.chords.map((chord,index)=>'<span class="'+(index===theoryExerciseStep?'current':'')+'"><small>'+escapeHTML(chord.roman)+'</small><b>'+escapeHTML(chord.label)+'</b></span>').join('')+'</div><button type="button" class="lesson-task-secondary" data-progression-listen>▶ Escuchar primero</button>'+(exercise.showWorkshop?'<button type="button" class="lesson-task-secondary" data-open-worship-practice>🎹 Abrir el taller de acompañamiento</button>':'')+'<p class="lesson-task-status" id="theoryExerciseStatus" role="status">'+escapeHTML(theoryExerciseStatus||(theoryLessonHeard?'Ahora toca '+(current?.label||'el acorde indicado')+'.':'Escucha una vuelta completa antes de practicar.'))+'</p></div>';
   }
   if(exercise.type==='choice')return'<div class="lesson-task"><small>COMPRUEBA LA IDEA</small><h3>'+escapeHTML(exercise.question||'¿Qué aprendiste?')+'</h3><div class="lesson-answers">'+theoryRenderAnswerButtons(exercise)+'</div><p class="lesson-task-status" id="theoryExerciseStatus" role="status">'+escapeHTML(theoryExerciseStatus||'Elige una respuesta. Si quieres, escucha el ejemplo otra vez.')+'</p></div>';
   return'<div class="lesson-task"><small>PRUEBA LO APRENDIDO</small><p class="lesson-task-status" id="theoryExerciseStatus" role="status">'+escapeHTML(status)+'</p></div>';
@@ -557,9 +591,9 @@ function renderTheoryLessons(){
   list.innerHTML='<details class="lesson-syllabus"><summary>Capítulos y clases · '+done.length+' de '+THEORY_LESSONS.length+' completadas</summary>'+THEORY_CHAPTERS.map(item=>'<details class="lesson-level"'+(item.id===lesson.chapter?' open':'')+'><summary><span>'+escapeHTML(item.icon)+'</span><div><b>'+escapeHTML(item.title)+'</b><small>'+escapeHTML(item.goal)+'</small></div></summary><p class="lesson-syllabus-intro">'+escapeHTML(item.intro)+'</p>'+THEORY_LESSONS.map((entry,index)=>({entry,index})).filter(row=>row.entry.chapter===item.id).map(row=>'<button type="button" class="lesson-link'+(row.index===theoryLessonIndex?' active':'')+(done.includes(row.index)?' complete':'')+'" data-lesson-index="'+row.index+'"><span>'+(done.includes(row.index)?'✓':String(row.index+1).padStart(2,'0'))+'</span><b>'+escapeHTML(row.entry.title)+'</b><small>'+escapeHTML(row.entry.time)+'</small></button>').join('')+'</details>').join('')+'</details>';
   const percent=Math.round(done.length/THEORY_LESSONS.length*100),progressBar=$('theoryProgressFill')?.parentElement;if(progressBar)progressBar.setAttribute('aria-valuenow',String(percent));
   const welcomeTitle=$('theoryWelcomeTitle'),welcomeCopy=$('theoryWelcomeCopy'),welcomeLesson=$('theoryWelcomeLesson'),welcomeTime=$('theoryWelcomeTime'),welcomeButton=$('theoryJumpToLesson');
-  if(done.length>=THEORY_LESSONS.length){if(welcomeTitle)welcomeTitle.textContent='¡Ya recorriste los seis capítulos!';if(welcomeCopy)welcomeCopy.textContent='Ya sabes orientarte en el teclado, construir escalas y acordes, y seguir progresiones. Puedes volver a cualquier capítulo para practicar otra vez.';if(welcomeButton)welcomeButton.innerHTML='Volver a practicar <span aria-hidden="true">→</span>';}
+  if(done.length>=THEORY_LESSONS.length){if(welcomeTitle)welcomeTitle.textContent='¡Ya recorriste los siete capítulos!';if(welcomeCopy)welcomeCopy.textContent='Ya sabes orientarte en el teclado, seguir el pulso, construir escalas y acordes, leer progresiones y acompañar canciones. Puedes volver a cualquier capítulo para practicar otra vez.';if(welcomeButton)welcomeButton.innerHTML='Volver a practicar <span aria-hidden="true">→</span>';}
   else if(done.length){if(welcomeTitle)welcomeTitle.textContent='Sigamos con la siguiente clase';if(welcomeCopy)welcomeCopy.textContent='Tu avance se guarda en este dispositivo. Sigue a tu ritmo: observa, escucha, toca las teclas y repite cada práctica cuando la necesites.';if(welcomeButton)welcomeButton.innerHTML='Ir a mi clase <span aria-hidden="true">→</span>';}
-  else{if(welcomeTitle)welcomeTitle.textContent='¡Hola! Vamos a conocer el piano desde el principio';if(welcomeCopy)welcomeCopy.textContent='El piano es un mapa de sonidos: las teclas de la izquierda suenan más graves y las de la derecha más agudas. Cada tecla produce una nota. Las notas tienen nombres —Do, Re, Mi, Fa, Sol, La y Si— y después de Si el orden vuelve a empezar en Do. Las teclas negras ayudan a orientarte: aparecen en grupos de dos y de tres, y Do está justo a la izquierda de cada grupo de dos. El dibujo se repite por todo el teclado.\n\nEn una vuelta de Do a Do hay doce pasos pequeños: siete teclas blancas naturales y cinco teclas negras alteradas. A esa vuelta la llamamos octava. Una nota puede repetirse en varias alturas, por ejemplo Do3, Do4 y Do5. El nombre te dice qué sonido buscas; el número te dice en qué zona del piano está. También puedes cambiar la forma de ver los nombres entre Do–Re–Mi y C–D–E.\n\nPrimero aprenderás a encontrar y tocar notas. Luego compararás las distancias entre ellas, construirás escalas y juntarás notas para formar acordes. Al final verás cómo los acordes pertenecen a una tonalidad y cómo seguir una progresión para acompañar canciones. Para empezar, toca con un dedo, despacio y con la mano relajada; no hace falta tocar fuerte, rápido ni usar ambas manos. No necesitas leer partituras ni memorizar todo antes de empezar: cada capítulo explica una idea, te la muestra y te deja probarla en el teclado.';}
+  else{if(welcomeTitle)welcomeTitle.textContent='¡Hola! Vamos a conocer el piano desde el principio';if(welcomeCopy)welcomeCopy.textContent='El piano es un mapa de sonidos: las teclas de la izquierda suenan más graves y las de la derecha más agudas. Cada tecla produce una nota. Las notas tienen nombres —Do, Re, Mi, Fa, Sol, La y Si— y después de Si el orden vuelve a empezar en Do. Las teclas negras ayudan a orientarte: aparecen en grupos de dos y de tres, y Do está justo a la izquierda de cada grupo de dos. El dibujo se repite por todo el teclado.\n\nEn una vuelta de Do a Do hay doce pasos pequeños: siete teclas blancas naturales y cinco teclas negras alteradas. A esa vuelta la llamamos octava. Una nota puede repetirse en varias alturas, por ejemplo Do3, Do4 y Do5. El nombre te dice qué sonido buscas; el número te dice en qué zona del piano está. También puedes cambiar la forma de ver los nombres entre Do–Re–Mi y C–D–E.\n\nEmpezaremos por reconocer el dibujo del teclado y encontrar Do; no necesitas saber ningún nombre antes de comenzar. Luego sentirás el pulso y el ritmo, aprenderás a contar los pasitos entre notas, y usarás esos pasos para construir escalas. Después juntaremos notas para formar acordes, descubriremos cómo se organizan en una tonalidad y practicaremos recorridos que aparecen en canciones. Al final probarás cómo acompañarlas con acordes y notas graves. Cada capítulo comienza con una introducción y cada clase explica una idea en pasos pequeños, la muestra con un ejemplo y te deja practicar en el piano. Puedes avanzar despacio, repetir las veces que quieras y descansar cuando lo necesites. Empieza con un dedo y la mano relajada: no hace falta tocar fuerte, rápido, usar las dos manos ni leer partituras.';}
   if(welcomeLesson)welcomeLesson.textContent=lesson.title;if(welcomeTime)welcomeTime.textContent=lesson.time+' · explicación y práctica';
   $('theoryProgressText').textContent=done.length+' de '+THEORY_LESSONS.length+' clases completadas';$('theoryProgressFill').style.width=percent+'%';
   const topicMarkup='<section class="lesson-chapter-banner" aria-label="Introducción al capítulo"><div class="lesson-chapter-icon" aria-hidden="true">'+escapeHTML(chapter.icon)+'</div><div class="lesson-chapter-copy"><small>INTRODUCCIÓN DEL CAPÍTULO '+chapterIndex+'</small><h3>'+escapeHTML(chapter.title)+'</h3><p>'+escapeHTML(chapter.intro)+'</p><div class="lesson-chapter-goal"><b>Al terminar:</b> '+escapeHTML(chapter.goal)+'</div></div></section>';
@@ -607,7 +641,7 @@ function playLessonDemo(){
   if(exercise.type==='progression')return playExerciseProgression();if(exercise.type==='scale')return playLessonNotes(theoryExerciseScaleTarget().notes,420,.75,.7);
   if(exercise.type==='interval')return playLessonNotes(theoryExerciseTarget||[60,62],800,.95,.85);
   if(exercise.type==='chord-builder'||exercise.type==='inversion'){const target=theoryExerciseChordTarget();return playLessonNotes(target.midis,0,1.2,1);}
-  const demo=lesson.demo||{};if(demo.chords)return playLessonChordSequence(demo.chords,demo.spacing||1000,demo.duration||.9);if(demo.notes)return playLessonNotes(demo.notes,demo.spacing||0,demo.duration||.8,demo.visualDuration||.7);
+  const demo=lesson.demo||{};if(demo.rhythm)return playTheoryRhythmDemo(demo);if(demo.chords)return playLessonChordSequence(demo.chords,demo.spacing||1000,demo.duration||.9);if(demo.notes)return playLessonNotes(demo.notes,demo.spacing||0,demo.duration||.8,demo.visualDuration||.7);
 }
 function theoryPlayFamilyChord(button){
   const chord={root:button.dataset.familyRoot,quality:button.dataset.familyQuality},midis=theoryChordMidis(chord.root,chord.quality),pcs=theoryChordIntervals(chord.quality).map(interval=>(theoryPitch(chord.root)+interval)%12);
@@ -653,7 +687,7 @@ function theoryResetExerciseProgress(){theoryExerciseStep=0;theoryExerciseTapped
 function closeLessonPiano(){stopTheorySequence();const panel=$('lessonPianoFocus');if(panel)panel.classList.add('hidden');document.querySelector('[data-open-piano]')?.focus()}
 function bindTheoryLearning(){
   const savedProgress=theoryProgress();if(savedProgress.length){const resumeAt=THEORY_LESSONS.findIndex((_,index)=>!savedProgress.includes(index));theoryLessonIndex=resumeAt<0?0:resumeAt;}
-  document.querySelectorAll('[data-theory-mode]').forEach(button=>button.onclick=()=>{const learning=button.dataset.theoryMode==='learn';document.querySelectorAll('[data-theory-mode]').forEach(item=>{item.classList.toggle('active',item===button);item.setAttribute('aria-pressed',String(item===button));});$('theoryLearning').classList.toggle('hidden',!learning);$('theoryExplore').classList.toggle('hidden',learning);if(learning)renderTheoryLessons();});
+  document.querySelectorAll('[data-theory-mode]').forEach(button=>button.onclick=()=>{const learning=button.dataset.theoryMode==='learn';if(!learning)stopTheorySequence();document.querySelectorAll('[data-theory-mode]').forEach(item=>{item.classList.toggle('active',item===button);item.setAttribute('aria-pressed',String(item===button));});$('theoryLearning').classList.toggle('hidden',!learning);$('theoryExplore').classList.toggle('hidden',learning);if(learning)renderTheoryLessons();});
   const theoryJump=$('theoryJumpToLesson');if(theoryJump)theoryJump.onclick=()=>{const stage=$('theoryLessonStage');stage.scrollIntoView({behavior:'smooth',block:'start'});stage.setAttribute('tabindex','-1');stage.focus({preventScroll:true});};
   $('theoryLearning').addEventListener('click',event=>{
     if(event.target.closest('#lessonPianoFocusClose,#lessonPianoFocusDone')){closeLessonPiano();return;}
@@ -668,7 +702,7 @@ function bindTheoryLearning(){
     if(event.target.closest('[data-lesson-demo]')){playLessonDemo();theoryLessonHeard=true;const lesson=THEORY_LESSONS[theoryLessonIndex],button=event.target.closest('[data-lesson-demo]');if(button)button.textContent='↻ Escuchar otra vez';if(lesson.exercise?.type==='scale'){const scaleRow=$('theoryScaleNoteRow');if(scaleRow)scaleRow.classList.remove('hidden');theoryUpdateHighlights();theoryUpdateExerciseStatus('Escuchaste la escala. Ahora tócala nota por nota, empezando en '+theoryScaleNoteLabel(theoryExerciseScaleTarget().notes[0],theoryExerciseRoot)+'.');}return;}
     if(event.target.closest('[data-progression-listen]')){playExerciseProgression();return;}
     if(event.target.closest('[data-exercise-listen]')){const pair=theoryExerciseTarget||[60,62];playLessonNotes(pair,800,.9,.85);theoryLessonHeard=true;theoryUpdateExerciseStatus('Escuchaste el par. Cuenta los pasos entre las dos notas y elige la respuesta.');return;}
-    if(event.target.closest('[data-exercise-reset]')){theoryResetExercise();return;}
+    if(event.target.closest('[data-exercise-reset]')){theoryResetExercise();return;}if(event.target.closest('[data-rhythm-start]')){void startTheoryRhythm();return;}if(event.target.closest('[data-rhythm-pad]')){theoryRhythmTap();return;}if(event.target.closest('[data-open-worship-practice]')){const workshop=document.querySelector('.worship-practice');if(workshop){workshop.open=true;workshop.scrollIntoView({behavior:'smooth',block:'center'});}return;}
     const familyButton=event.target.closest('[data-family-degree]');if(familyButton){theoryPlayFamilyChord(familyButton);return;}
     const next=event.target.closest('[data-lesson-next]');if(next&&!next.disabled){theoryLessonIndex=theoryLessonIndex<THEORY_LESSONS.length-1?theoryLessonIndex+1:0;theoryLessonFeedback='';theoryExerciseForIndex=-1;theoryLessonHeard=false;theoryLessonTouched=false;renderTheoryLessons();$('theoryLessonStage').scrollIntoView({behavior:'smooth',block:'start'});return;}
     const answer=event.target.closest('[data-answer-index]');if(answer){const exercise=THEORY_LESSONS[theoryLessonIndex].exercise,correct=Number(answer.dataset.answerIndex)===Number(exercise.correct);if(correct)theoryCompleteLesson('¡Correcto! '+(exercise.why||'Ya entendiste esta idea.'));else theoryUpdateExerciseStatus('Todavía no. Vuelve a leer la explicación y prueba otra respuesta. '+(exercise.why||''));return;}
@@ -751,7 +785,73 @@ function renderTheoryIntervals(){
   }
 }
 function selectTheoryInterval(semitone){state.theoryInterval=Number(semitone);state.theoryPianoMode='interval';renderTheoryIntervals();}
-function stopTheorySequence(){theorySequenceTimers.forEach(clearTimeout);theorySequenceTimers=[];}
+function theoryRhythmTone(ctx,when,frequency=880,volume=.12){
+  const oscillator=ctx.createOscillator(),gain=ctx.createGain();
+  oscillator.type='sine';oscillator.frequency.setValueAtTime(frequency,when);
+  gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(volume,when+.008);gain.gain.exponentialRampToValueAtTime(.0001,when+.065);
+  oscillator.connect(gain);gain.connect(getMasterGain(ctx));oscillator.start(when);oscillator.stop(when+.08);return oscillator;
+}
+function playTheoryRhythmDemo(demo){
+  stopTheorySequence();const ctx=getAudioContext();void resumeAudioContext(ctx);
+  const bars=(demo.rhythm||'x.x.x.x.|x.x.x.x.').split('|'),beatsPerBar=Math.max(1,Math.floor(Number(demo.beatsPerBar)||4)),subdivisions=Math.max(1,Math.floor(Number(demo.subdivisions)||2)),beat=60/(Number(demo.bpm)||66),start=ctx.currentTime+.12,nodes=[];
+  for(let index=0;index<bars.length*beatsPerBar;index++)nodes.push(theoryRhythmTone(ctx,start+index*beat,index%beatsPerBar===0?1100:760,.1));
+  bars.forEach((bar,barIndex)=>[...bar].forEach((mark,step)=>{if(mark==='x')nodes.push(theoryRhythmTone(ctx,start+(barIndex*beatsPerBar+step/subdivisions)*beat,step%subdivisions?620:520,.075));}));
+  theoryRhythmDemoNodes=nodes;
+}
+async function startTheoryRhythm(){
+  if(theoryRhythmRun)return;
+  const exercise=THEORY_LESSONS[theoryLessonIndex]?.exercise;if(exercise?.type!=='rhythm')return;
+  stopTheorySequence();const ctx=getAudioContext();await resumeAudioContext(ctx);
+  const bars=(exercise.pattern||'x.x.x.x.|x.x.x.x.').split('|'),beatsPerBar=Math.max(1,Math.floor(Number(exercise.beatsPerBar)||4)),subdivisions=Math.max(1,Math.floor(Number(exercise.subdivisions)||2)),cellsPerBar=beatsPerBar*subdivisions,beat=60/(Number(exercise.bpm)||66),countInBeats=4,countStart=ctx.currentTime+.12,start=countStart+countInBeats*beat,nodes=[],expected=[];
+  for(let index=0;index<countInBeats+bars.length*beatsPerBar;index++)nodes.push(theoryRhythmTone(ctx,countStart+index*beat,index%beatsPerBar===0?1200:820,.12));
+  bars.forEach((bar,barIndex)=>[...bar].forEach((mark,step)=>{if(mark==='x')expected.push({beat:barIndex*beatsPerBar+step/subdivisions,cell:barIndex*cellsPerBar+step,hit:false,missed:false});}));
+  theoryRhythmRun={ctx,start,beat,countStart,totalBeats:bars.length*beatsPerBar,beatsPerBar,subdivisions,meterLabel:beatsPerBar===2&&subdivisions===3?'balanceo':'pulso',expected,nodes,extra:0,tolerance:Number(exercise.tolerance)||.3,raf:0};
+  const startButton=document.querySelector('#theoryLessonStage [data-rhythm-start]');if(startButton){startButton.disabled=true;startButton.textContent='Escuchando…';}
+  theoryUpdateExerciseStatus('Cuenta los cuatro clics de entrada. Después toca con el patrón.');
+  theoryRhythmRun.raf=requestAnimationFrame(theoryRhythmFrame);
+}
+function theoryRhythmFrame(){
+  const run=theoryRhythmRun;if(!run)return;
+  const now=run.ctx.currentTime,position=(now-run.start)/run.beat,status=$('theoryExerciseStatus');
+  if(status){
+    const label=position<0?'Cuenta de entrada: '+Math.max(1,Math.min(4,Math.floor((now-run.countStart)/run.beat)+1)):'Compás '+(Math.floor(position/run.beatsPerBar)+1)+' · '+run.meterLabel+' '+(Math.floor(((position%run.beatsPerBar)+run.beatsPerBar)%run.beatsPerBar)+1)+' de '+run.beatsPerBar;
+    if(status.textContent!==label)status.textContent=label;
+  }
+  const cellIndex=Math.floor(position*run.subdivisions);
+  document.querySelectorAll('#theoryLessonStage [data-rhythm-cell]').forEach(cell=>cell.classList.toggle('current',Number(cell.dataset.rhythmCell)===cellIndex));
+  run.expected.forEach(target=>{if(!target.hit&&!target.missed&&position>target.beat+run.tolerance/run.beat){target.missed=true;document.querySelector('#theoryLessonStage [data-rhythm-cell="'+target.cell+'"]')?.classList.add('miss');}});
+  if(now>run.start+run.totalBeats*run.beat+.45*run.beat){finishTheoryRhythm();return;}
+  run.raf=requestAnimationFrame(theoryRhythmFrame);
+}
+function theoryRhythmTap(){
+  const ctx=getAudioContext();theoryRhythmTone(ctx,ctx.currentTime+.005,560,.08);
+  const run=theoryRhythmRun;if(!run){theoryUpdateExerciseStatus('Pulsa «Empezar práctica» y espera los cuatro clics de entrada.');return;}
+  const latency=ctx.outputLatency||ctx.baseLatency||0,position=(ctx.currentTime-latency-run.start)/run.beat;
+  if(position<-.25){theoryUpdateExerciseStatus('Espera a que terminen los cuatro clics de entrada.');return;}
+  let nearest=null,distance=Infinity;
+  run.expected.forEach(target=>{if(target.hit||target.missed)return;const delta=Math.abs(target.beat-position);if(delta<distance){distance=delta;nearest=target;}});
+  if(nearest&&distance*run.beat<=run.tolerance){
+    nearest.hit=true;document.querySelector('#theoryLessonStage [data-rhythm-cell="'+nearest.cell+'"]')?.classList.add('hit');
+    theoryUpdateExerciseStatus('¡A tiempo! Sigue escuchando el siguiente pulso.');
+  }else{run.extra++;theoryUpdateExerciseStatus('Ese toque quedó entre los pulsos. Escucha el clic y prueba otra vez.');}
+}
+function finishTheoryRhythm(){
+  const run=theoryRhythmRun;if(!run)return;
+  if(run.raf)cancelAnimationFrame(run.raf);run.nodes.forEach(node=>{try{node.stop();}catch(_){}});
+  const hits=run.expected.filter(target=>target.hit).length,needed=Math.max(1,Math.ceil(run.expected.length*.75)),ok=hits>=needed&&run.extra<=Math.max(2,Math.floor(run.expected.length*.5));
+  theoryRhythmRun=null;
+  const startButton=document.querySelector('#theoryLessonStage [data-rhythm-start]');if(startButton){startButton.disabled=false;startButton.textContent='↻ Intentar otra vez';}
+  document.querySelectorAll('#theoryLessonStage [data-rhythm-cell]').forEach(cell=>cell.classList.remove('current'));
+  if(ok)theoryCompleteLesson('¡Buen pulso! Marcaste '+hits+' de '+run.expected.length+' toques a tiempo.');
+  else theoryUpdateExerciseStatus('Acertaste '+hits+' de '+run.expected.length+'. Escucha el clic y vuelve a intentarlo; puedes ir más despacio.');
+}
+function stopTheoryRhythm(){
+  const run=theoryRhythmRun;if(run?.raf)cancelAnimationFrame(run.raf);
+  [...(run?.nodes||[]),...theoryRhythmDemoNodes].forEach(node=>{try{node.stop();}catch(_){}});
+  theoryRhythmRun=null;theoryRhythmDemoNodes=[];
+  const startButton=document.querySelector('#theoryLessonStage [data-rhythm-start]');if(startButton){startButton.disabled=false;startButton.textContent='▶ Empezar práctica';}
+}
+function stopTheorySequence(){theorySequenceTimers.forEach(clearTimeout);theorySequenceTimers=[];stopTheoryRhythm();}
 function syncMetronomeUI(){
   const bpm=$('metronomeBpm'),meter=$('metronomeMeter'),value=$('metronomeBpmValue');
   if(bpm)bpm.value=String(metronomeBpm);
@@ -774,7 +874,7 @@ function scheduleMetronomeBeat(context,time,beatIndex){
   const oscillator=context.createOscillator(),gain=context.createGain();
   oscillator.type='sine';oscillator.frequency.setValueAtTime(beatIndex===0?1760:1175,time);
   gain.gain.setValueAtTime(.0001,time);gain.gain.exponentialRampToValueAtTime(beatIndex===0?.16:.105,time+.002);gain.gain.exponentialRampToValueAtTime(.0001,time+.055);
-  oscillator.connect(gain);gain.connect(context.destination);oscillator.start(time);oscillator.stop(time+.06);
+  oscillator.connect(gain);gain.connect(getMasterGain(context));oscillator.start(time);oscillator.stop(time+.06);
   const visualTimer=setTimeout(()=>{
     metronomeVisualTimers=metronomeVisualTimers.filter(timer=>timer!==visualTimer);
     if(!metronomeOn)return;
@@ -1088,7 +1188,7 @@ function ensureFallingNotesObservers(){
     fallingNotesVisibilityBound=true;
     document.addEventListener('visibilitychange',()=>{
       if(document.hidden){if(fallingNotesFrame)cancelAnimationFrame(fallingNotesFrame);fallingNotesFrame=0;return;}
-      if(state.playing&&fallingNotesRun&&!fallingNotesFrame&&fallingNotesStyle!=='off')fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+      if((state.playing&&fallingNotesRun||fnHitBursts.length)&&!fallingNotesFrame&&fallingNotesStyle!=='off')fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
     });
   }
   if(typeof ResizeObserver==='undefined'||fallingNotesResizeObserver)return;
@@ -1185,19 +1285,58 @@ function rebuildFallingNotesGeometry(){
 function clearFallingNotesCanvas(){
   const info=fallingNotesCanvasInfo;
   if(info){info.context.clearRect(0,0,info.width,info.height);info.context.globalAlpha=1;}
+  fnHits.length=0;fnHitBursts.length=0;
 }
 function stopFallingNotes(){
   if(fallingNotesFrame)cancelAnimationFrame(fallingNotesFrame);
   fallingNotesFrame=0;fallingNotesRun=null;fallingNotesLastFrame=0;clearFallingNotesCanvas();
 }
+function finishFallingNotesPlayback(){
+  fallingNotesRun=null;fallingNotesLastFrame=0;
+  if(fnHitBursts.length){
+    if(!fallingNotesFrame&&!document.hidden&&fallingNotesStyle!=='off')fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+  }else stopFallingNotes();
+}
 function fnRoundRect(c,x,y,w,h,r){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h);}
-const fnHits=[],fnGlowCache=new Map();
+const fnHits=[],fnHitBursts=[],fnGlowCache=new Map();let fnManualHitIndex=0;
 function fnGlow(ctx,color,baseline){
   const key=color+'|'+baseline;let g=fnGlowCache.get(key);
-  if(!g){if(fnGlowCache.size>24)fnGlowCache.clear();g=ctx.createLinearGradient(0,baseline,0,baseline-46);g.addColorStop(0,color);g.addColorStop(1,'rgba(0,0,0,0)');fnGlowCache.set(key,g);}
+  if(!g){if(fnGlowCache.size>24)fnGlowCache.clear();g=ctx.createLinearGradient(0,baseline,0,baseline-88);g.addColorStop(0,color);g.addColorStop(.38,'rgba(255,190,46,.18)');g.addColorStop(1,'rgba(0,0,0,0)');fnGlowCache.set(key,g);}
   return g;
 }
 function fnRand(n){const v=Math.sin(n*12.9898)*43758.5453;return v-Math.floor(v);}
+function fnDrawMoltenBarFlow(ctx,event,index,x,top,width,height,bottom,elapsed){
+  if(!fxGlow||height<4)return;
+  ctx.save();fnRoundRect(ctx,x,top,width,height,Math.min(7,width/2,height/2));ctx.clip();ctx.globalCompositeOperation='screen';
+  const base=ctx.createLinearGradient(x,top,x+width,top);
+  base.addColorStop(0,'rgba(255,145,24,.2)');base.addColorStop(.2,'rgba(255,255,255,.06)');base.addColorStop(.52,'rgba(255,255,255,.13)');base.addColorStop(1,'rgba(255,170,35,.22)');
+  ctx.globalAlpha=.72;ctx.fillStyle=base;ctx.fillRect(x,top,width,height);
+  // Match the manually played bar: a soft gold and cream ribbon glides upward through its color.
+  const span=Math.max(34,height*2.2),travel=Math.max(24,height*1.2),phase=((elapsed*height*1.333+event.midi*11+event.start*31+index*17)%travel+travel)%travel,tail=bottom+span*.55-phase;
+  const flow=ctx.createLinearGradient(0,tail-span,0,tail);
+  flow.addColorStop(0,'rgba(255,150,18,0)');flow.addColorStop(.24,'rgba(255,150,18,.4)');flow.addColorStop(.43,'rgba(255,239,112,.78)');flow.addColorStop(.54,'rgba(255,255,220,.58)');flow.addColorStop(.7,'rgba(255,174,29,.52)');flow.addColorStop(1,'rgba(255,150,18,0)');
+  ctx.globalAlpha=.58;ctx.fillStyle=flow;ctx.fillRect(x,top,width,height);
+  ctx.restore();
+}
+function fnDrawMoltenHitBurst(ctx,hit,baseline,reducedMotion){
+  const life=1-hit.t;ctx.save();ctx.globalCompositeOperation='screen';
+  ctx.fillStyle=fnGlow(ctx,hit.color,baseline);ctx.globalAlpha=life*.44;ctx.fillRect(hit.center-hit.barWidth*1.5,baseline-88,hit.barWidth*3,88);
+  if(!reducedMotion){
+    const coreRadius=Math.max(14,hit.barWidth*2.1),core=ctx.createRadialGradient(hit.center,baseline-7,1,hit.center,baseline-7,coreRadius);
+    core.addColorStop(0,'rgba(255,255,217,.68)');core.addColorStop(.25,'rgba(255,215,64,.38)');core.addColorStop(1,'rgba(255,145,0,0)');
+    ctx.globalAlpha=life*.4;ctx.fillStyle=core;ctx.fillRect(hit.center-coreRadius,baseline-coreRadius-7,coreRadius*2,coreRadius*2);
+    const count=hit.barWidth<16?22:30;
+    for(let i=0;i<count;i++){
+      const seed=fnRand(hit.index*97+i*13+3),delay=fnRand(hit.index*31+i*19+9)*.2;if(hit.t<delay)continue;
+      const progress=Math.min(1,(hit.t-delay)/(1-delay)),height=44+seed*118,spread=(seed-.5)*hit.barWidth*(.8+progress*1.5);
+      const curl=Math.sin(progress*7+seed*12+i)*hit.barWidth*(.1+progress*.24),sway=Math.sin(progress*3.8+seed*9+i*1.7)*hit.barWidth*.24;
+      const px=hit.center+spread*progress+curl+sway,py=baseline-(5+progress*height),radius=(.65+seed*1.35)*(1-progress*.42);
+      ctx.globalAlpha=life*(.48+seed*.34)*(1-progress*.15);
+      ctx.fillStyle=i%6===0?'rgba(255,255,225,.96)':'rgba(255,205,61,.9)';ctx.beginPath();ctx.arc(px,py,radius,0,Math.PI*2);ctx.fill();
+    }
+  }
+  ctx.restore();
+}
 // Medidor de rendimiento opcional: se activa con ?perf=1 en la URL o manteniendo pulsada la línea de tiempo 0,7 s.
 const perfProbe={on:false,el:null,last:0,since:0,frames:0,slow:0,worst:0,drawSum:0,drawMax:0,tickSum:0,tickMax:0,tickN:0,longTasks:0,observer:null};
 function perfProbeEnable(on){
@@ -1231,18 +1370,20 @@ function perfProbeReport(now){
   p.since=now;p.frames=0;p.slow=0;p.worst=0;p.drawSum=0;p.drawMax=0;p.tickSum=0;p.tickMax=0;p.tickN=0;p.longTasks=0;
 }
 function drawFallingNotesFrameInner(timestamp){
-  if(!state.playing||!fallingNotesRun){stopFallingNotes();return;}
+  const run=fallingNotesRun,playbackActive=!!(state.playing&&run);
   if(document.hidden){fallingNotesFrame=0;return;}
+  if(!playbackActive&&!fnHitBursts.length){stopFallingNotes();return;}
   fallingNotesLastFrame=timestamp;
   if(pinchFlush)pinchFlush();
   if(fallingNotesCanvasDirty&&!resizeFallingNotesCanvas()){fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);return;}
-  const run=fallingNotesRun,info=fallingNotesCanvasInfo,scroll=$('keyboardScroll');
-  if(!info||!scroll){stopFallingNotes();return;}
+  const info=fallingNotesCanvasInfo,scroll=$('keyboardScroll');
+  if(!info||playbackActive&&!scroll){stopFallingNotes();return;}
   if(!fallingNotesGeometry)fallingNotesGeometry=rebuildFallingNotesGeometry();
-  const geometry=fallingNotesGeometry;if(!geometry){stopFallingNotes();return;}
-  const ctx=info.context,height=info.height,width=info.width,baseline=height-2,look=fallingNotesLookahead,pps=height/look,style=fallingNotesStyle;
-  let elapsed=practiceRun?0:Math.max(0,playbackNow(timestamp)-run.startAt);
-  if(practiceRun){
+  const geometry=fallingNotesGeometry;if(playbackActive&&!geometry){stopFallingNotes();return;}
+  const ctx=info.context,height=info.height,width=info.width,baseline=height-2,look=playbackActive?fallingNotesLookahead:0,pps=height/fallingNotesLookahead,style=fallingNotesStyle;
+  const calm=run?.calm??!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  let elapsed=playbackActive?(practiceRun?0:Math.max(0,playbackNow(timestamp)-run.startAt)):timestamp/1000;
+  if(playbackActive&&practiceRun){
     const target=practiceRun.events[practiceRun.index]?.start;
     if(target!==undefined){
       // Practice is driven by the visual clock, not AudioContext.currentTime:
@@ -1257,22 +1398,27 @@ function drawFallingNotesFrameInner(timestamp){
       }
     }
   }
-  const scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom,hits=fnHits;hits.length=0;
+  const hits=fnHits;hits.length=0;
   ctx.clearRect(0,0,width,height);
+  if(playbackActive){
+  const scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom;
   const oldestStart=elapsed-run.maxVisibleDuration;let low=0,high=run.events.length;
   while(low<high){const mid=(low+high)>>1;if(run.events[mid].start<oldestStart)low=mid+1;else high=mid;}
   for(let index=low;index<run.events.length;index++){
     const event=run.events[index];if(event.start>elapsed+look)break;
     if(practiceRun&&event.start<(practiceRun.events[practiceRun.index]?.start??Infinity)-.001)continue;
-    if(elapsed>event.start+event.visualDuration+(style==='drops'&&fxGlow ? .5 : 0))continue;
     if(style==='melody'&&event.kind==='chord')continue;
     const key=geometry.positions.get(event.midi);if(!key)continue;
     const keyWidth=key.width*zoomScale,center=geometry.left+key.center*zoomScale-scrollLeft;
     const barWidth=Math.max(3,Math.min(keyWidth-2,keyWidth*.72)),barHeight=Math.max(7,event.visualDuration*pps);
+    const age=elapsed-event.start,isChord=event.kind==='chord';
+    if(fxGlow&&age>=0&&!event.moltenBurstStarted){
+      event.moltenBurstStarted=true;
+      if(center>-40&&center<width+40)fnHitBursts.push({index,center,barWidth,color:isChord?geometry.chordColor:geometry.melodyColor,at:event.start,clock:'song'});
+    }
+    if(elapsed>event.start+event.visualDuration+(style==='drops'&&fxGlow ? .5 : 0))continue;
     if(style==='drops'){
-      const dw=Math.max(5,Math.min(barWidth,16)),dh=dw*1.4,dBottom=Math.min(baseline,baseline-(event.start-elapsed)*pps),isChord=event.kind==='chord';
-      const age=elapsed-event.start;
-      if(fxGlow&&age>=0&&age<.5)hits.push({index,center,barWidth,color:isChord?geometry.chordColor:geometry.melodyColor,t:age/.5});
+      const dw=Math.max(5,Math.min(barWidth,16)),dh=dw*1.4,dBottom=Math.min(baseline,baseline-(event.start-elapsed)*pps);
       if(age>.05&&!practiceRun)continue;
       if(dBottom<0||center<-dw||center>width+dw)continue;
       ctx.fillStyle=isChord?geometry.chordColor:geometry.melodyColor;ctx.globalAlpha=isChord?.8:.95;
@@ -1281,28 +1427,21 @@ function drawFallingNotesFrameInner(timestamp){
     }
     const front=baseline-(event.start-elapsed)*pps,bottom=Math.min(front,baseline),top=front-barHeight,x=center-barWidth/2,h=bottom-top;
     if(h<=0||x+barWidth<0||x>width||top>height||bottom<0)continue;
-    const chord=event.kind==='chord',live=elapsed>=event.start,fade=1,r=Math.min(7,barWidth/2,h/2);
+    const chord=event.kind==='chord',fade=1,r=Math.min(7,barWidth/2,h/2);
     ctx.fillStyle=chord?geometry.chordColor:geometry.melodyColor;
     ctx.globalAlpha=(chord?.72:.94)*fade;fnRoundRect(ctx,x,top,barWidth,h,r);ctx.fill();
-    ctx.fillStyle='#fff';
-    if(barWidth>=6){ctx.globalAlpha=(live?.34:.2)*fade;ctx.fillRect(x+barWidth*.14,top+3,Math.max(1.5,barWidth*.2),Math.max(0,h-6));}
-    ctx.globalAlpha=.9*fade;ctx.fillRect(x+r*.6,bottom-2,barWidth-r*1.2,2);
-    if(fxGlow&&live&&elapsed-event.start<.5)hits.push({index,center,barWidth,color:chord?geometry.chordColor:geometry.melodyColor,t:(elapsed-event.start)/.5});
+    fnDrawMoltenBarFlow(ctx,event,index,x,top,barWidth,h,bottom,elapsed);
   }
-  for(const k of hits){
-    const life=1-k.t,w=k.barWidth*1.8,glow=fnGlow(ctx,k.color,baseline);
-    ctx.fillStyle=glow;ctx.globalAlpha=life*.7;ctx.fillRect(k.center-w/2,baseline-46,w,46);
-    ctx.fillStyle='#fff';ctx.globalAlpha=life*.85;ctx.fillRect(k.center-w*.35,baseline-2.5,w*.7,2.5);
-    if(run.calm)continue;
-    ctx.globalAlpha=life*.9;ctx.beginPath();
-    for(let i=0;i<4;i++){
-      const px=k.center+(fnRand(k.index*7+i)-.5)*k.barWidth*1.5,py=baseline-(14+fnRand(k.index*13+i*3+1)*44)*k.t,pr=.7+1.6*life;
-      ctx.moveTo(px+pr,py);ctx.arc(px,py,pr,0,6.283);
-    }
-    ctx.fill();
   }
+  for(let i=fnHitBursts.length-1;i>=0;i--){
+    const burst=fnHitBursts[i],burstElapsed=burst.clock==='wall'?timestamp/1000-burst.at:elapsed-burst.at,t=burstElapsed/1.5;
+    if(t>=1){fnHitBursts.splice(i,1);continue;}
+    if(t<0)continue;
+    hits.push({...burst,t});
+  }
+  for(const hit of hits)fnDrawMoltenHitBurst(ctx,hit,baseline,calm);
   ctx.globalAlpha=1;
-  if(elapsed<=run.end+look)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+  if(playbackActive&&elapsed<=run.end+look||fnHitBursts.length)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
   else stopFallingNotes();
 }
 function drawFallingNotesFrame(timestamp){
@@ -1465,11 +1604,11 @@ function updateVisualOptions(){
   $('notationToggle').textContent={ninguno:'∅',octavas:'8va',americano:'C',latino:'La',movil:'Do',grados:'1',simple:'C'}[state.notation]||'C';
 }
 function showManualNoteEffect(midi,key){
-  if(state.playing||fallingNotesStyle==='off'||!key)return;
+  if(fallingNotesStyle==='off'||!key)return;
   if(!key.closest('.piano-panel'))key=document.querySelector(`.piano-panel .key[data-midi="${midi}"]`);
   if(!key)return;
   const stage=$('noteCanvas'),stageRect=stage?.getBoundingClientRect(),keyRect=key.getBoundingClientRect();if(!stageRect||!keyRect)return;
-  const effect=document.createElement('span');effect.className=`manual-note-effect ${fallingNotesStyle==='drops'?'is-drop':'is-bar'}`;
+  const effect=document.createElement('span');effect.className=`manual-note-effect ${fallingNotesStyle==='drops'?'is-drop':'is-bar'}${fxGlow?' has-fire':''}`;
   const isDrop=fallingNotesStyle==='drops';
   const barWidth=Math.max(3,Math.min(keyRect.width-2,keyRect.width*.72)),effectWidth=isDrop?Math.max(5,Math.min(barWidth,16)):barWidth;
   effect.style.width=`${effectWidth}px`;
@@ -1478,9 +1617,13 @@ function showManualNoteEffect(midi,key){
   effect.style.left=`${keyRect.left-stageRect.left+keyRect.width/2}px`;
   stage.appendChild(effect);
   if(fxGlow){
-    const impact=document.createElement('span');impact.className='manual-note-impact';impact.style.left=effect.style.left;impact.style.setProperty('--note-fx-color',midi<=48?state.bassColor:state.keyColor);
-    for(let i=0;i<6;i++){const particle=document.createElement('i');particle.style.setProperty('--particle-angle',`${i*60}deg`);particle.style.setProperty('--particle-distance',`${18+(i%2)*9}px`);impact.appendChild(particle);}
-    stage.appendChild(impact);impact.addEventListener('animationend',()=>impact.remove(),{once:true});
+    ensureFallingNotesObservers();
+    const canvasReady=fallingNotesCanvasInfo&&!fallingNotesCanvasDirty||resizeFallingNotesCanvas();
+    if(canvasReady){
+      const center=keyRect.left-stageRect.left+keyRect.width/2,at=performance.now()/1000,index=++fnManualHitIndex;
+      fnHitBursts.push({index,center,barWidth,color:midi<=48?state.bassColor:state.keyColor,at,clock:'wall'});
+      if(!fallingNotesFrame)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+    }
   }
   const started=performance.now(),maxRise=Math.max(60,stage.clientHeight-(isDrop?20:8)),speed=stage.clientHeight/Math.max(.8,fallingNotesLookahead);let frame=0,releasedAt=null,heldRise=0,atTop=false;
   const grow=now=>{
@@ -1787,14 +1930,13 @@ function renderKeyboard() {
     const element = document.elementFromPoint(x, y)?.closest('.key');
     if (!element || !keys.contains(element) || state.activePointers.get(pointerId)?.element === element) return;
     const previous = state.activePointers.get(pointerId);
-    if (previous) { previous.element.classList.remove('playing'); previous.stopNote?.(); }
-    const active = { element, stopNote:null };
+    if (previous) { previous.element.classList.remove('playing');previous.releasedAt=performance.now();previous.stopNote?.(previous.releasedAt); }
+    const active = { element, stopNote:null, releasedAt:null };
     state.activePointers.set(pointerId, active);
     updateActiveChordLabel();
-    const asTouch = state.recording && state.instrument === 'trumpet-real';
-    playNote(Number(element.dataset.midi), element, asTouch ? .35 : Infinity).then(stopNote => {
+    playNote(Number(element.dataset.midi), element, Infinity).then(stopNote => {
       if (state.activePointers.get(pointerId) === active) active.stopNote = stopNote;
-      else stopNote?.();
+      else stopNote?.(active.releasedAt);
     });
   };
   keys.onpointerdown = event => {
@@ -1809,7 +1951,7 @@ function renderKeyboard() {
     const active = state.activePointers.get(event.pointerId);
     if (!active) return;
     active.element.classList.remove('playing');
-    active.stopNote?.();
+    active.releasedAt=performance.now();active.stopNote?.(active.releasedAt);
     state.activePointers.delete(event.pointerId);
     updateActiveChordLabel();
   };
@@ -1852,7 +1994,6 @@ const INSTRUMENT_ICONS={
 function buildInstrumentButtons(){
   const select=$('instrumentSelect'),menu=$('instrumentMenu');
   if(!select||!menu||menu.querySelector('.instrument-browser'))return;
-  const title=document.createElement('h2');title.textContent='Instrumento';
   const browser=document.createElement('div');browser.className='instrument-browser';
   const categories=document.createElement('div');categories.className='instrument-categories';categories.setAttribute('role','tablist');categories.setAttribute('aria-label','Familia de instrumentos');
   const panels=document.createElement('div');panels.className='instrument-category-panels';
@@ -1876,9 +2017,15 @@ function buildInstrumentButtons(){
       panels.querySelectorAll('[role="tabpanel"]').forEach(item=>item.hidden=item!==panel);
     };
   });
-  browser.append(categories,panels);menu.prepend(title,browser);syncInstrumentButtons();
+  browser.append(categories,panels);menu.prepend(browser);syncInstrumentButtons();
 }
 function syncInstrumentButtons(){
+  const instrumentButton=$('instrumentToggle'),instrumentNames={'grand-piano':'Grand Piano','steinway-grand':'Steinway de cola','trumpet-real':'Trompeta real'};
+  if(instrumentButton){
+    const name=instrumentNames[state.instrument]||instrumentNames['grand-piano'],icon=INSTRUMENT_ICONS[state.instrument]||INSTRUMENT_ICONS['grand-piano'];
+    instrumentButton.innerHTML=icon.replace('<svg ','<svg class="ui-icon ui-icon-instrument" ');
+    instrumentButton.setAttribute('aria-label',`Instrumento actual: ${name}. Cambiar instrumento`);instrumentButton.title=name;
+  }
   document.querySelectorAll('#instrumentMenu [data-instrument]').forEach(button=>{const on=button.dataset.instrument===state.instrument;button.classList.toggle('active',on);button.setAttribute('aria-checked',String(on));});
   const group=state.instrument==='trumpet-real'?'brass':'piano';
   const tab=$(`instrument-tab-${group}`),panel=$(`instrument-panel-${group}`);
@@ -2034,10 +2181,107 @@ function initializeSplash() {
   enter.addEventListener('click', hide);
   setTimeout(reveal, 350);
 }
-let audioContext = null;
+let audioContext = null,masterGainNode = null,masterLimiterNode = null,stringsLayerGainNode = null;
 function getAudioContext() {
   if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  getMasterGain(audioContext);
   return audioContext;
+}
+function getMasterGain(context=audioContext){
+  if(!context)context=getAudioContext();
+  if(!masterGainNode){
+    masterGainNode=context.createGain();masterGainNode.gain.value=state.masterVolume;
+    if(typeof context.createDynamicsCompressor==='function'){
+      masterLimiterNode=context.createDynamicsCompressor();masterLimiterNode.threshold.value=-1;masterLimiterNode.knee.value=0;masterLimiterNode.ratio.value=20;masterLimiterNode.attack.value=.003;masterLimiterNode.release.value=.18;
+      masterGainNode.connect(masterLimiterNode);masterLimiterNode.connect(context.destination);
+    }else masterGainNode.connect(context.destination);
+  }
+  return masterGainNode;
+}
+function setMasterVolume(percent){
+  const value=Math.round(Math.max(0,Math.min(150,Number(percent)||0)));
+  state.masterVolume=value/100;
+  const slider=$('masterVolume'),output=$('masterVolumeValue');
+  if(slider&&slider.value!==String(value))slider.value=String(value);
+  if(output)output.value=`${value}%`;
+  if(masterGainNode&&audioContext){const now=audioContext.currentTime;masterGainNode.gain.cancelScheduledValues(now);masterGainNode.gain.setTargetAtTime(state.masterVolume,now,.025);}
+  try{localStorage.setItem('yhwh_piano_master_volume',String(state.masterVolume));}catch(_){}
+}
+const STRINGS_SAMPLE_ROOTS=[
+  {midi:55,file:'vsco-violin-ens-55.wav'}, {midi:57,file:'vsco-violin-ens-57.wav'},
+  {midi:59,file:'vsco-violin-ens-59.wav'}, {midi:62,file:'vsco-violin-ens-62.wav'},
+  {midi:66,file:'vsco-violin-ens-66.wav'}, {midi:69,file:'vsco-violin-ens-69.wav'},
+  {midi:72,file:'vsco-violin-ens-72.wav'}, {midi:76,file:'vsco-violin-ens-76.wav'},
+  {midi:79,file:'vsco-violin-ens-79.wav'}, {midi:83,file:'vsco-violin-ens-83.wav'},
+  {midi:86,file:'vsco-violin-ens-86.wav'}
+];
+function stringsLayerTargetGain(){return state.stringsLayerEnabled?state.stringsLayerVolume/100:0;}
+function getStringsLayerGain(context=getAudioContext()){
+  if(!stringsLayerGainNode){stringsLayerGainNode=context.createGain();stringsLayerGainNode.gain.value=stringsLayerTargetGain();stringsLayerGainNode.connect(getMasterGain(context));}
+  return stringsLayerGainNode;
+}
+function updateStringsLayerGain(){
+  if(!stringsLayerGainNode||!audioContext)return;
+  const now=audioContext.currentTime;stringsLayerGainNode.gain.cancelScheduledValues(now);stringsLayerGainNode.gain.setTargetAtTime(stringsLayerTargetGain(),now,.035);
+}
+function syncStringsLayerControls(){
+  const toggle=$('stringsLayerToggle'),slider=$('stringsLayerVolume'),value=$('stringsLayerVolumeValue'),status=$('stringsLayerStatus');
+  if(toggle){toggle.checked=state.stringsLayerEnabled;toggle.setAttribute('aria-checked',String(state.stringsLayerEnabled));}
+  if(slider&&slider.value!==String(state.stringsLayerVolume))slider.value=String(state.stringsLayerVolume);
+  if(value)value.value=`${state.stringsLayerVolume}%`;
+  if(status&&!state.stringsLayerEnabled)status.textContent='Toca una tecla para escuchar Strings junto al piano.';
+}
+function setStringsLayerVolume(value){
+  state.stringsLayerVolume=Math.round(Math.max(0,Math.min(100,Number(value)||0)));
+  try{localStorage.setItem('yhwh_piano_strings_volume',String(state.stringsLayerVolume));}catch(_){}
+  syncStringsLayerControls();updateStringsLayerGain();
+}
+async function getStringsSample(midi){
+  const sample=STRINGS_SAMPLE_ROOTS.reduce((best,item)=>Math.abs(item.midi-midi)<Math.abs(best.midi-midi)?item:best,STRINGS_SAMPLE_ROOTS[0]);
+  if(!state.stringsBuffers.has(sample.midi)){
+    let pending=state.stringsSampleLoads.get(sample.midi);
+    if(!pending){
+      pending=(async()=>{const response=await fetch(`audio/strings/${sample.file}`);if(!response.ok)throw new Error(`No se pudo cargar la muestra Strings ${sample.file}`);state.stringsBuffers.set(sample.midi,await getAudioContext().decodeAudioData(await response.arrayBuffer()));})();
+      state.stringsSampleLoads.set(sample.midi,pending);
+    }
+    try{await pending;}finally{state.stringsSampleLoads.delete(sample.midi);}
+  }
+  return {buffer:state.stringsBuffers.get(sample.midi),sampleMidi:sample.midi};
+}
+async function getOptionalStringsSample(midi){
+  try{return await getStringsSample(midi);}
+  catch(error){
+    console.warn('No se pudo cargar la capa Strings:',error);
+    const status=$('stringsLayerStatus');if(status&&state.stringsLayerEnabled)status.textContent='No se pudo cargar Strings. Comprueba la conexión e inténtalo de nuevo.';
+    return null;
+  }
+}
+function scheduleStringsLayerNote(context,midi,sample,when,duration,release=1.05){
+  if(!sample||!state.stringsLayerEnabled||state.stringsLayerVolume<=0)return null;
+  const source=context.createBufferSource(),gain=context.createGain(),stopAt=when+Math.max(duration,.42),tail=Math.max(.35,release);
+  source.buffer=sample.buffer;source.playbackRate.value=2**((midi-sample.sampleMidi)/12);
+  gain.gain.setValueAtTime(.0001,when);gain.gain.linearRampToValueAtTime(.85,when+.18);
+  gain.gain.setValueAtTime(.85,stopAt);gain.gain.linearRampToValueAtTime(.0001,stopAt+tail);
+  source.connect(gain);gain.connect(getStringsLayerGain(context));source.start(when);source.stop(stopAt+tail+.02);
+  return source;
+}
+function primeStringsLayer(){
+  if(!state.stringsLayerEnabled)return;
+  const status=$('stringsLayerStatus');if(status)status.textContent='Preparando las muestras de cuerdas…';
+  const commonNotes=[60,64,67,72];
+  void Promise.all(commonNotes.map(getStringsSample)).then(()=>{
+    if(status&&state.stringsLayerEnabled)status.textContent='Strings listo. Toca una tecla para mezclarlo con el piano.';
+  }).catch(error=>{
+    console.warn('No se pudieron preparar las muestras Strings:',error);
+    if(status&&state.stringsLayerEnabled)status.textContent='Se cargarán al tocar. Comprueba la conexión si no suenan.';
+  });
+}
+function setStringsLayerEnabled(enabled){
+  state.stringsLayerEnabled=!!enabled;
+  try{localStorage.setItem('yhwh_piano_strings_enabled',state.stringsLayerEnabled?'1':'0');}catch(_){}
+  syncStringsLayerControls();
+  if(audioContext)updateStringsLayerGain();
+  if(state.stringsLayerEnabled){void resumeAudioContext(getAudioContext()).catch(()=>{});getStringsLayerGain();primeStringsLayer();}
 }
 function resumeAudioContext(context=getAudioContext()){
   if(context.state==='running')return Promise.resolve();
@@ -2111,12 +2355,14 @@ async function playChord(chord) {
     const resumePromise=resumeAudioContext(context);
     const chordInstrument = chord.instrument || state.bassInstrument || 'grand-piano';
     const entries = await Promise.all([resumePromise,...chordMidiNotes(chord).map(async midi => {
+      const stringsLoad=state.stringsLayerEnabled&&state.stringsLayerVolume>0?getOptionalStringsSample(midi):Promise.resolve(null);
       if (chordInstrument === 'grand-piano') {
         const sampleMidi = Math.max(60, Math.min(76, midi));
-        return { midi, sampleMidi, buffer: await getSample(midi) };
+        const [buffer,strings]=await Promise.all([getSample(midi),stringsLoad]);
+        return { midi, sampleMidi, buffer, strings };
       }
-      const sample = await getInstrumentSample(midi, chordInstrument);
-      return { midi, sampleMidi: sample.sampleMidi, buffer: sample.buffer };
+      const [sample,strings]=await Promise.all([getInstrumentSample(midi, chordInstrument),stringsLoad]);
+      return { midi, sampleMidi: sample.sampleMidi, buffer: sample.buffer, strings };
     })]).then(([, ...loaded])=>loaded);
     if (!state.playing && !chord.preview) return;
     const when = Number(chord.startAt) || context.currentTime + 0.015;
@@ -2144,10 +2390,12 @@ async function playChord(chord) {
       gain.gain.setValueAtTime(0.78, noteWhen);
       gain.gain.setValueAtTime(0.78, stopAt);
       gain.gain.linearRampToValueAtTime(0.0001, stopAt + release);
-      source.connect(gain); gain.connect(context.destination);
+      source.connect(gain); gain.connect(getMasterGain(context));
       source.start(noteWhen);
       source.stop(stopAt + release + 0.02);
       if(state.playing&&!chord.preview){state.activePlaybackSources.push(source);source.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==source);},{once:true});}
+      const stringsSource=scheduleStringsLayerNote(context,entry.midi,entry.strings,noteWhen,duration,1.05);
+      if(stringsSource&&state.playing&&!chord.preview){state.activePlaybackSources.push(stringsSource);stringsSource.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==stringsSource);},{once:true});}
       const key = document.querySelector(`.key[data-midi="${entry.midi}"]`);
       const isBassChord=(chord.noteIndex!==undefined&&chord.noteIndex!==null)||(!chord.preview&&!!state.song);
       const barSeconds=Array.isArray(chord.lightDurations)&&Number.isFinite(chord.lightDurations[index])?chord.lightDurations[index]:null;
@@ -2163,17 +2411,28 @@ async function playChord(chord) {
     console.error(error);
   }
 }
-async function playNote(midi, element, duration = 0.4, visualDuration = null) {
+async function playNote(midi, element, duration = 0.4, visualDuration = null, octaveLayer = false) {
   if (midi < 21 || midi > 108) return;
-  handlePracticeInput(midi);
+  if(!octaveLayer)handlePracticeInput(midi);
   element?.classList.add('playing');
-  state.lastMidi = midi;
-  $('currentNote').textContent = noteName(midi);
-  $('currentNote').style.opacity = '1';
+  if(!octaveLayer){state.lastMidi = midi;$('currentNote').textContent = noteName(midi);$('currentNote').style.opacity = '1';}
+  let recordedNote=null,recordedNoteFinalized=false;
   if (state.recording) {
-    state.notes.push({ midi, note: canonicalNoteName(midi), start: (performance.now() - state.recordStart) / 1000, duration: 0.35 });
+    recordedNote={midi,note:canonicalNoteName(midi),start:(performance.now()-state.recordStart)/1000,duration:.35};
+    state.notes.push(recordedNote);
     state.melodyDirty=true;
     renderRecorded();
+  }
+  const finalizeRecordedNote=(endedAt=performance.now())=>{
+    if(!recordedNote||recordedNoteFinalized)return;
+    recordedNoteFinalized=true;
+    recordedNote.duration=Math.max(.06,Number((((endedAt-state.recordStart)/1000-recordedNote.start)).toFixed(3)));
+    state.melodyDirty=true;updateTrackTimeline();
+  };
+  let octaveStop=null,octaveReleaseRequested=false,octaveReleaseAt=null;
+  if(!octaveLayer&&state.octaveDoubling&&midi+12<=108){
+    const octaveMidi=midi+12,octaveKey=document.querySelector(`.piano-panel .key[data-midi="${octaveMidi}"]`);
+    void playNote(octaveMidi,octaveKey,duration,visualDuration,true).then(stop=>{octaveStop=stop;if(octaveReleaseRequested)octaveStop?.(octaveReleaseAt);});
   }
   try {
     const context = getAudioContext();
@@ -2181,13 +2440,18 @@ async function playNote(midi, element, duration = 0.4, visualDuration = null) {
     const resumePromise=resumeAudioContext(context);
     const source = context.createBufferSource();
     const gain = context.createGain();
+    const wantsStrings=state.stringsLayerEnabled&&state.stringsLayerVolume>0;
+    const stringsLoad=wantsStrings?getOptionalStringsSample(midi):Promise.resolve(null);
+    let stringsSample=null,stringsSource=null,stringsGain=null;
     if (state.instrument === 'grand-piano') {
       const sampleMidi = Math.max(60, Math.min(76, midi));
-      const [buffer]=await Promise.all([getSample(midi),resumePromise]);
+      const [buffer,,loadedStrings]=await Promise.all([getSample(midi),resumePromise,stringsLoad]);
+      stringsSample=loadedStrings;
       source.buffer = buffer;
       source.playbackRate.value = 2 ** ((midi - sampleMidi) / 12);
     } else {
-      const [sample]=await Promise.all([getInstrumentSample(midi),resumePromise]);
+      const [sample,,loadedStrings]=await Promise.all([getInstrumentSample(midi),resumePromise,stringsLoad]);
+      stringsSample=loadedStrings;
       source.buffer = sample.buffer;
       source.playbackRate.value = 2 ** ((midi - sample.sampleMidi) / 12);
       duration = Math.max(duration, sample.release);
@@ -2202,16 +2466,30 @@ async function playNote(midi, element, duration = 0.4, visualDuration = null) {
     gain.gain.linearRampToValueAtTime(0.88, attackAt + 0.018);
     gain.gain.setValueAtTime(0.88, stopAt);
     gain.gain.linearRampToValueAtTime(0.0001, stopAt + release);
-    source.connect(gain); gain.connect(context.destination);
+    source.connect(gain); gain.connect(getMasterGain(context));
     source.start(attackAt);
+    const stringsRelease=Math.max(1.05,release);
+    if(stringsSample){
+      stringsSource=context.createBufferSource();stringsGain=context.createGain();
+      stringsSource.buffer=stringsSample.buffer;
+      stringsSource.playbackRate.value=2**((midi-stringsSample.sampleMidi)/12);
+      const stringsStopAt=attackAt+(held?noteDuration:Math.max(noteDuration,.42));
+      stringsGain.gain.setValueAtTime(.0001,contextNow);
+      stringsGain.gain.linearRampToValueAtTime(.85,attackAt+.18);
+      stringsGain.gain.setValueAtTime(.85,stringsStopAt);
+      stringsGain.gain.linearRampToValueAtTime(.0001,stringsStopAt+stringsRelease);
+      stringsSource.connect(stringsGain);stringsGain.connect(getStringsLayerGain(context));
+      stringsSource.start(attackAt);stringsSource.stop(stringsStopAt+stringsRelease+.02);
+    }
     const finishNoteEffect=showManualNoteEffect(midi,element||document.querySelector(`.piano-panel .key[data-midi="${midi}"]`));
     source.stop(stopAt + release + 0.02);
-    if(!held)setTimeout(()=>{finishNoteEffect?.();element?.classList.remove('playing');},visualDuration===null?noteDuration:Math.min(noteDuration,Math.max(.08,visualDuration)));
+    if(!held){setTimeout(()=>{finishNoteEffect?.();element?.classList.remove('playing');},visualDuration===null?noteDuration:Math.min(noteDuration,Math.max(.08,visualDuration)));if(recordedNote)setTimeout(finalizeRecordedNote,noteDuration*1000);}
     let released = false;
-    const stopNote = () => {
+    const stopNote = (releasedAt=performance.now()) => {
       if (released) return;
       released = true;
       finishNoteEffect?.();
+      finalizeRecordedNote(releasedAt);
       const releaseAt = context.currentTime;
       try {
         gain.gain.cancelScheduledValues(releaseAt);
@@ -2219,10 +2497,21 @@ async function playNote(midi, element, duration = 0.4, visualDuration = null) {
         gain.gain.linearRampToValueAtTime(0.0001, releaseAt + release);
         source.stop(releaseAt + release + 0.03);
       } catch (_) {}
+      if(stringsGain&&stringsSource){
+        try{
+          stringsGain.gain.cancelScheduledValues(releaseAt);
+          stringsGain.gain.setValueAtTime(Math.max(.0001,stringsGain.gain.value),releaseAt);
+          stringsGain.gain.linearRampToValueAtTime(.0001,releaseAt+stringsRelease);
+          stringsSource.stop(releaseAt+stringsRelease+.03);
+        }catch(_){}
+      }
       element?.classList.remove('playing');
     };
-    if (held) return stopNote;
+    if(octaveLayer)return stopNote;
+    if (held) return (releasedAt=performance.now())=>{octaveReleaseRequested=true;octaveReleaseAt=releasedAt;octaveStop?.(releasedAt);stopNote(releasedAt);};
   } catch (error) {
+    octaveReleaseAt=performance.now();finalizeRecordedNote(octaveReleaseAt);
+    octaveReleaseRequested=true;octaveStop?.(octaveReleaseAt);
     $('status').textContent = 'No se pudo cargar el sonido. Comprueba la conexión y la carpeta audio.';
     console.error(error);
   }
@@ -2230,13 +2519,16 @@ async function playNote(midi, element, duration = 0.4, visualDuration = null) {
 async function previewInstrumentNote(instrument,midi){
   const context=getAudioContext(),resumePromise=resumeAudioContext(context);
   try{
-    const sample=instrument==='grand-piano'?{buffer:await getSample(midi),sampleMidi:Math.max(60,Math.min(76,midi))}:await getInstrumentSample(midi,instrument);
+    const samplePromise=instrument==='grand-piano'?getSample(midi).then(buffer=>({buffer,sampleMidi:Math.max(60,Math.min(76,midi))})):getInstrumentSample(midi,instrument);
+    const stringsPromise=state.stringsLayerEnabled&&state.stringsLayerVolume>0?getOptionalStringsSample(midi):Promise.resolve(null);
+    const [sample,strings]=await Promise.all([samplePromise,stringsPromise]);
     await resumePromise;
     const source=context.createBufferSource(),gain=context.createGain(),start=context.currentTime+.01;
     source.buffer=sample.buffer;source.playbackRate.value=2**((midi-sample.sampleMidi)/12);
     const release=instrument==='trumpet-real'?.25:instrument==='steinway-grand'?.7:.32,stopAt=start+.55;
     gain.gain.setValueAtTime(.0001,context.currentTime);gain.gain.linearRampToValueAtTime(.78,start+.02);gain.gain.setValueAtTime(.78,stopAt);gain.gain.linearRampToValueAtTime(.0001,stopAt+release);
-    source.connect(gain);gain.connect(context.destination);source.start(start);source.stop(stopAt+release+.02);
+    source.connect(gain);gain.connect(getMasterGain(context));source.start(start);source.stop(stopAt+release+.02);
+    scheduleStringsLayerNote(context,midi,strings,start,.55,1.05);
   }catch(error){console.error('No se pudo reproducir la muestra del instrumento:',error);toast('No se pudo cargar el sonido de prueba. Revisa la conexión.');}
 }
 function setStagePlaying(on){document.body.classList.toggle('melody-playing',!!on);}
@@ -2265,13 +2557,21 @@ async function prepareMelodyAudio(notesToPrepare=state.notes) {
   const resumePromise=resumeAudioContext(context);
   const noteMidis = [...new Set(notesToPrepare.map(note => Number(note.midi)).filter(Number.isFinite))];
   const entries=await Promise.all(noteMidis.map(async midi=>{
-    if(state.instrument==='grand-piano'){const sampleMidi=Math.max(60,Math.min(76,midi));return [midi,{buffer:await getSample(midi),sampleMidi,release:.4}];}
-    return [midi,await getInstrumentSample(midi,state.instrument)];
+    const stringsLoad=state.stringsLayerEnabled&&state.stringsLayerVolume>0?getOptionalStringsSample(midi):Promise.resolve(null);
+    if(state.instrument==='grand-piano'){
+      const [buffer,strings]=await Promise.all([getSample(midi),stringsLoad]);
+      const sampleMidi=Math.max(60,Math.min(76,midi));return [midi,{buffer,sampleMidi,release:.4,strings}];
+    }
+    const [sample,strings]=await Promise.all([getInstrumentSample(midi,state.instrument),stringsLoad]);
+    return [midi,{...sample,strings}];
   }));
   const loads = [];
   state.chords.forEach(chord => {
     const instrument = chord.instrument || state.bassInstrument || 'grand-piano';
-    chordMidiNotes(chord).forEach(midi => loads.push(instrument === 'grand-piano' ? getSample(midi) : getInstrumentSample(midi, instrument)));
+    chordMidiNotes(chord).forEach(midi => {
+      loads.push(instrument === 'grand-piano' ? getSample(midi) : getInstrumentSample(midi, instrument));
+      if(state.stringsLayerEnabled&&state.stringsLayerVolume>0)loads.push(getOptionalStringsSample(midi));
+    });
   });
   await Promise.all([...loads,resumePromise]);
   return new Map(entries);
@@ -2288,8 +2588,10 @@ function schedulePlaybackNote(midi,element,duration,when,prepared,cut){
   const stopAt=when+noteDuration;
   gain.gain.setValueAtTime(.0001,when);gain.gain.linearRampToValueAtTime(.88,when+.018);
   gain.gain.setValueAtTime(.88,stopAt);gain.gain.linearRampToValueAtTime(.0001,stopAt+release);
-  source.connect(gain);gain.connect(context.destination);source.start(when);source.stop(stopAt+release+.02);
+  source.connect(gain);gain.connect(getMasterGain(context));source.start(when);source.stop(stopAt+release+.02);
   state.activePlaybackSources.push(source);source.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==source);},{once:true});
+  const stringsSource=scheduleStringsLayerNote(context,midi,entry.strings,when,noteDuration,cut ? .35 : 1.05);
+  if(stringsSource){state.activePlaybackSources.push(stringsSource);stringsSource.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==stringsSource);},{once:true});}
   queueVisualEvent(when,()=>{
     const readout=$('currentNote'),name=noteName(midi);
     if(readout.textContent!==name)readout.textContent=name;
@@ -2350,7 +2652,7 @@ async function playMelody() {
   const end = Math.max(noteEnd, chordEnd);
   startPlaybackTimeline(playbackStart,end);
   startFallingNotes(playbackNotes,playbackChords,playbackStart,fallingEvents);
-  state.playTimers.push(setTimeout(() => { state.playing = false; setStagePlaying(false); stopFallingNotes(); if(timelineFrame)cancelAnimationFrame(timelineFrame);timelineFrame=0;timelineStartedAt=0;updatePlaybackTimeline(end,end);$('tempoControl').disabled=false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = 'Melodía terminada.'; }, end * 1000 + 500));
+  state.playTimers.push(setTimeout(() => { state.playing = false; setStagePlaying(false); finishFallingNotesPlayback(); if(timelineFrame)cancelAnimationFrame(timelineFrame);timelineFrame=0;timelineStartedAt=0;updatePlaybackTimeline(end,end);$('tempoControl').disabled=false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = 'Melodía terminada.'; }, end * 1000 + 500));
 }
 function toggleRecord() {
   if (!state.admin) { toast('Solo Admin puede grabar.'); return; }
@@ -2374,7 +2676,8 @@ async function saveMelody() {
     notas: state.notes.map((note, index, all) => {
       const start=Number(note.start)||0;
       const next=all.slice(index+1).find(item=>(Number(item.start)||0)>start+.035);
-      return { midi: Number(note.midi), note: canonicalNoteName(Number(note.midi)), start: Number(start.toFixed(3)), duration: Number((next ? Math.max(0.12, Number(next.start)-start) : Math.max(0.35, Number(note.duration)||0.35)).toFixed(3)) };
+      const storedDuration=Number(note.duration),duration=Number.isFinite(storedDuration)&&storedDuration>0?storedDuration:next?Math.max(.12,Number(next.start)-start):.35;
+      return { midi: Number(note.midi), note: canonicalNoteName(Number(note.midi)), start: Number(start.toFixed(3)), duration: Number(Math.max(.06,duration).toFixed(3)) };
     })
   };
   try {
@@ -2563,6 +2866,7 @@ function bindInterface() {
   $('practiceSkipBtn').onclick=advancePracticeNote;
   $('tempoControl').value = String(Math.round(state.tempo*100));
   $('tempoValue').textContent = `${Math.round(state.tempo*100)}%`;
+  const volumeControl=$('masterVolume');if(volumeControl){volumeControl.value=String(Math.round(state.masterVolume*100));setMasterVolume(volumeControl.value);volumeControl.oninput=event=>setMasterVolume(event.target.value);}
   $('tempoControl').oninput = event => {
     state.tempo = Math.min(1.5,Math.max(.5,Number(event.target.value)/100));
     $('tempoValue').textContent = `${Math.round(state.tempo*100)}%`;
@@ -2645,6 +2949,10 @@ function bindInterface() {
   document.addEventListener('pointerdown',event=>{if(!event.target.closest('.stage-popover,.player-sheet,.toolbar-icon,.top-tempo,.stage-tool-rail'))closePlayerPopovers();});
   $('instrumentSelect').value = state.instrument;
   buildInstrumentButtons();
+  syncStringsLayerControls();
+  $('stringsLayerToggle').onchange=event=>setStringsLayerEnabled(event.target.checked);
+  $('stringsLayerVolume').oninput=event=>setStringsLayerVolume(event.target.value);
+  if(state.stringsLayerEnabled){getStringsLayerGain();primeStringsLayer();}
   $('trumpetIntensity').value = state.trumpetIntensity;
   $('trumpetIntensitySetting').classList.toggle('hidden', state.instrument !== 'trumpet-real');
   $('trumpetIntensity').onchange = event => { state.trumpetIntensity = event.target.value === 'soft' ? 'soft' : 'strong'; try { localStorage.setItem('yhwh_piano_trumpet_intensity', state.trumpetIntensity); } catch (_) {} };
@@ -2653,6 +2961,7 @@ function bindInterface() {
     $('trumpetIntensitySetting').classList.toggle('hidden', state.instrument !== 'trumpet-real');
     try { localStorage.setItem('yhwh_piano_instrument', state.instrument); } catch (_) {}
     primeAudioForInstrument(state.instrument);
+    syncInstrumentButtons();
     $('status').textContent = `Instrumento seleccionado: ${{'steinway-grand':'Steinway de cola','trumpet-real':'Trompeta real','grand-piano':'Grand Piano'}[state.instrument]}.`;
   };
   const sustainButton = $('sustainBtn');
@@ -2690,6 +2999,12 @@ function bindInterface() {
     playChord({ noteIndex:state.chordTarget, root:$('chordRoot').value, quality:$('chordQuality').value, inversion:Number($('chordInversion').value), octave:Number($('chordOctave').value), duration:Number($('chordDuration').value), arpeggio:$('chordArpeggio').checked, instrument:$('bassInstrument').value, preview:true });
   };
   $('showNotesBtn').onclick = jumpToMelodyNotes;
+  const octaveModeButton=$('octaveModeToggle');
+  if(octaveModeButton){
+    const syncOctaveModeButton=()=>{octaveModeButton.classList.toggle('active',state.octaveDoubling);octaveModeButton.setAttribute('aria-pressed',String(state.octaveDoubling));const label=`${state.octaveDoubling?'Desactivar':'Activar'} doblado a la octava`;octaveModeButton.setAttribute('aria-label',label);octaveModeButton.title=label;};
+    syncOctaveModeButton();
+    octaveModeButton.onclick=()=>{state.octaveDoubling=!state.octaveDoubling;try{localStorage.setItem('yhwh_piano_octave_doubling',state.octaveDoubling?'1':'0');}catch(_){}syncOctaveModeButton();};
+  }
   $('activeKeyName').onclick=()=>togglePlayerPopover('keyTransposePopover');
   $('transposeTargetKey').onchange=event=>transposeMelodyToKey(event.target.value);
   $('transposeToOriginal').onclick=()=>{if(state.transpose)transposeMelody(-state.transpose);closePlayerPopovers();};
