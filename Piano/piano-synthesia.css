@@ -3466,3 +3466,13 @@ html[data-theme="dark"] #theoryView .lesson-rhythm-pad{border-color:#496d50;back
 #instrumentMenu #stringsLayerStatus{margin:3px 0 0;font-size:.7rem;line-height:1.35;opacity:.78}
 html[data-theme="dark"] #instrumentMenu .strings-layer-controls{border-color:#514777;background:#24233e;color:#e8e6f0}
 html[data-theme="dark"] #instrumentMenu .strings-layer-switch small,html[data-theme="dark"] #instrumentMenu #stringsLayerStatus{color:#c0bed2}
+
+/* Reserva los laterales seguros en las listas de Adoración, Júbilo y Crear melodía. */
+@media(max-width:900px){
+  body:has(> main > #songView:not(.hidden))>main>#songView,
+  body:has(> main > #createView:not(.hidden))>main>#createView{
+    box-sizing:border-box!important;
+    padding-left:max(12px,env(safe-area-inset-left,0px))!important;
+    padding-right:max(12px,env(safe-area-inset-right,0px))!important;
+  }
+}
