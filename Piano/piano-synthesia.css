@@ -3448,6 +3448,14 @@ html[data-theme="dark"] #theoryView .lesson-rhythm-pad{border-color:#496d50;back
 @media(max-width:900px){
   #theoryView:not(.hidden){padding-left:max(12px,env(safe-area-inset-left,0px))!important;padding-right:max(12px,env(safe-area-inset-right,0px))!important}
 }
+
+/* En las teclas blancas, coloca el indicador justo encima del nombre de la nota. */
+#player .piano-panel .key.white.playing::after,
+#player .piano-panel .key.white.bass-playing::after,
+#player .piano-panel .key.white.note-sounding::after{
+  top:auto!important;
+  bottom:25px!important;
+}
 /* En móvil, dibuja la cuadrícula cada dos teclas blancas. */
 @media(max-width:900px){
   body.player-active #player .performance-layout>.note-canvas>.canvas-grid,
