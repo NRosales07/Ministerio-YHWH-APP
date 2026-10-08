@@ -1310,7 +1310,7 @@ body.player-active #player .performance-layout > .player-timeline, body:has(#pla
 .instrument-options { display: grid; gap: 6px; margin-top: 8px; }
 .instrument-option { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 6px 14px 6px 7px; border: 1px solid #a6bbc2; border-radius: 6px; background: #f5f7f8; color: #344951; font-size: .95rem; text-align: left; cursor: pointer; }
 .instrument-option .instrument-icon { display: grid; place-items: center; flex: 0 0 40px; width: 40px; height: 40px; border-radius: 6px; background: #dcebf0; color: #1d6480; }
-.instrument-option svg { display: block; width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.instrument-option svg:not(.instrument-art) { display: block; width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .instrument-option.active { border-color: #087fb0; background: #e6f3f7; color: #0878a8; font-weight: 700; box-shadow: inset 0 0 0 1px #087fb0; }
 .instrument-option.active .instrument-icon { background: #138bbd; color: #fff; }
 
@@ -3474,6 +3474,72 @@ html[data-theme="dark"] #theoryView .lesson-rhythm-pad{border-color:#496d50;back
 #instrumentMenu #stringsLayerStatus{margin:3px 0 0;font-size:.7rem;line-height:1.35;opacity:.78}
 html[data-theme="dark"] #instrumentMenu .strings-layer-controls{border-color:#514777;background:#24233e;color:#e8e6f0}
 html[data-theme="dark"] #instrumentMenu .strings-layer-switch small,html[data-theme="dark"] #instrumentMenu #stringsLayerStatus{color:#c0bed2}
+
+/* Selector de instrumentos compacto, con categorías laterales e ilustraciones. */
+#instrumentMenu .instrument-option .instrument-icon{font-size:1.45rem;line-height:1;flex-basis:36px;width:36px;height:36px;border-radius:8px}
+#instrumentMenu .instrument-option{min-height:50px}
+#instrumentMenu .instrument-options{max-height:min(72dvh,520px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+@media(max-width:600px){
+  body.player-active #player #instrumentMenu,body:has(#player:not(.hidden)) #player #instrumentMenu{width:min(430px,calc(100vw - 54px))!important;max-width:calc(100vw - 54px)!important;min-width:0!important;max-height:calc(100dvh - 92px)!important;padding:6px!important}
+  #instrumentMenu .instrument-browser{grid-template-columns:minmax(76px,.36fr) minmax(0,1fr)!important;gap:6px!important;align-items:start}
+  #instrumentMenu .instrument-categories{display:flex!important;flex-direction:column!important;align-items:stretch!important;border:1px solid #a6bbc2!important;border-radius:8px!important;overflow:hidden}
+  #instrumentMenu .instrument-category-tab{flex:0 0 auto!important;min-height:43px!important;padding:7px 8px!important;text-align:left!important;font-size:.76rem!important;line-height:1.15!important;border-bottom:1px solid #a6bbc2!important}
+  #instrumentMenu .instrument-category-tab[aria-selected="true"]{box-shadow:inset 3px 0 #ffd166!important}
+  #instrumentMenu .instrument-category-panels,#instrumentMenu .instrument-category-panel{min-width:0!important;min-height:0!important}
+  #instrumentMenu .instrument-options{max-height:min(76dvh,520px)!important;border-radius:8px!important}
+  #instrumentMenu .instrument-option{min-height:42px!important;padding:4px 6px!important;gap:7px!important;font-size:.78rem!important;line-height:1.12!important}
+  #instrumentMenu .instrument-option .instrument-icon{flex:0 0 30px!important;width:30px!important;height:30px!important;font-size:1.3rem!important}
+  #instrumentMenu .instrument-option .instrument-name{min-width:0;overflow-wrap:anywhere}
+}
+html[data-theme="dark"] #instrumentMenu .instrument-options{scrollbar-color:#514777 #11111d}
+/* Evita el bloque vacío bajo las categorías: su fondo termina con la última opción. */
+#instrumentMenu .instrument-browser{align-items:start}
+#instrumentMenu .instrument-categories{height:max-content;min-height:0;align-self:start;background:transparent}
+html[data-theme="dark"] #instrumentMenu .instrument-categories{background:transparent!important}
+#instrumentMenu .strings-layer-controls{display:none!important}
+#instrumentMenu .instrument-picker-targets,#instrumentMenu .instrument-picker-mix{grid-column:1/-1;min-width:0}
+#instrumentMenu .instrument-picker-targets{display:grid;grid-template-columns:1fr 1fr auto;gap:5px;align-items:center}
+#instrumentMenu .instrument-picker-target{min-height:30px;padding:5px 8px;border:1px solid #a6bbc2;border-radius:7px;background:#edf2f4;color:#344951;font:inherit;font-size:.78rem;cursor:pointer}
+#instrumentMenu .instrument-picker-target.active{border-color:#087fb0;background:#dcebf0;color:#0878a8;font-weight:700}
+#instrumentMenu .instrument-picker-layer-switch{display:flex;align-items:center;gap:4px;padding:0 4px;font-size:.7rem;white-space:nowrap}
+#instrumentMenu .instrument-picker-layer-switch input{width:16px;height:16px;margin:0;accent-color:#1689b7}
+#instrumentMenu .instrument-picker-mix{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#instrumentMenu .instrument-mix-control{display:grid;gap:1px;min-width:0}
+#instrumentMenu .instrument-mix-control label{display:flex;justify-content:space-between;gap:4px;font-size:.7rem;line-height:1.2;white-space:nowrap}
+#instrumentMenu .instrument-mix-control input{width:100%;min-height:17px;margin:0;accent-color:#1689b7}
+#instrumentMenu #stringsLayerStatus{grid-column:1/-1;margin:0;font-size:.67rem;line-height:1.2;opacity:.76}
+html[data-theme="dark"] #instrumentMenu .instrument-picker-target{border-color:#2a2a45;background:#1b1b2e;color:#e8e6f0}
+html[data-theme="dark"] #instrumentMenu .instrument-picker-target.active{border-color:#514777;background:#2f2f5c;color:#e8c97a}
+html[data-theme="dark"] #instrumentMenu .instrument-picker-layer-switch{color:#e8e6f0}
+@media(max-height:480px){
+  body.player-active #player #instrumentMenu,body:has(#player:not(.hidden)) #player #instrumentMenu{max-height:calc(100dvh - 116px)!important;overflow:visible!important;padding:5px!important;width:min(560px,calc(100vw - 282px))!important;max-width:calc(100vw - 282px)!important;min-width:0!important}
+  #instrumentMenu .instrument-browser{grid-template-columns:minmax(88px,.38fr) minmax(0,1fr)!important;gap:5px!important;align-items:start!important}
+  #instrumentMenu .instrument-categories{display:flex!important;flex-direction:column!important;height:max-content!important;align-self:start!important;overflow:hidden}
+  #instrumentMenu .instrument-category-tab{flex:0 0 auto!important;min-height:31px!important;padding:4px 7px!important;font-size:.68rem!important;text-align:left!important}
+  #instrumentMenu .instrument-category-tab[aria-selected="true"]{box-shadow:inset 3px 0 #ffd166!important}
+  #instrumentMenu .instrument-options{max-height:none!important;overflow:visible!important;grid-template-columns:minmax(0,1fr)!important}
+  #instrumentMenu .instrument-picker-targets{gap:3px}
+  #instrumentMenu .instrument-picker-target{min-height:26px;padding:3px 5px;font-size:.65rem}
+  #instrumentMenu .instrument-picker-layer-switch{gap:3px;padding:0 2px;font-size:.6rem}
+  #instrumentMenu .instrument-picker-layer-switch input{width:14px;height:14px}
+  #instrumentMenu .instrument-picker-mix{gap:5px}
+  #instrumentMenu .instrument-mix-control label{font-size:.58rem}
+  #instrumentMenu .instrument-mix-control input{min-height:14px;height:14px}
+  #instrumentMenu #stringsLayerStatus{display:none}
+  #instrumentMenu .instrument-option{box-sizing:border-box;min-height:26px!important;height:26px!important;padding:2px 5px!important;gap:5px!important;white-space:nowrap!important;font-size:.67rem!important;line-height:1!important}
+  #instrumentMenu .instrument-option .instrument-icon{flex:0 0 23px!important;width:23px!important;height:22px!important;font-size:0!important;border-radius:4px!important}
+  #instrumentMenu .instrument-option .instrument-icon svg{width:23px;height:23px;display:block}
+  #instrumentMenu .instrument-option .instrument-name{white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis}
+  #instrumentMenu .strings-layer-controls{display:none!important}
+}
+@media(min-width:700px) and (max-height:480px){
+  #instrumentMenu .instrument-options{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #instrumentMenu .instrument-option{height:35px!important;min-height:35px!important;padding:3px 6px!important;font-size:.72rem!important;gap:6px!important}
+  #instrumentMenu .instrument-option .instrument-icon{flex-basis:28px!important;width:28px!important;height:28px!important}
+  #instrumentMenu .instrument-option .instrument-icon svg{width:28px;height:28px}
+  #instrumentMenu .instrument-option:nth-child(odd){border-right:1px solid #a6bbc2}
+  html[data-theme="dark"] #instrumentMenu .instrument-option:nth-child(odd){border-right-color:#2a2a45}
+}
 
 /* Reserva los laterales seguros en las listas de Adoración, Júbilo y Crear melodía. */
 @media(max-width:900px){
