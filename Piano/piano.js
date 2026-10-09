@@ -17,10 +17,19 @@ const state = {
   notation: ['ninguno','octavas','americano','latino','movil','grados','simple'].includes(localStorage.getItem('yhwh_piano_note_labels')) ? localStorage.getItem('yhwh_piano_note_labels') : (localStorage.getItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano'), showChordNames:localStorage.getItem('yhwh_piano_show_chords')!=='0', showRecordedNotes:localStorage.getItem('yhwh_piano_show_recorded')!=='0', keyColor:/^#[0-9a-f]{6}$/i.test(localStorage.getItem('yhwh_piano_key_color')||'')?localStorage.getItem('yhwh_piano_key_color'):'#90dd4a', bassColor:/^#[0-9a-f]{6}$/i.test(localStorage.getItem('yhwh_piano_bass_color')||'')?localStorage.getItem('yhwh_piano_bass_color'):'#bb82ef', lastMidi: null, db: null, auth: null,
   ref: null, set: null, onValue: null, signIn: null, signOut: null, authListener: null
 };
+const freePlayInstrumentConfig={instrument:state.instrument,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
 state.masterVolume=Number.isFinite(SAVED_MASTER_VOLUME)?Math.max(0,Math.min(2,SAVED_MASTER_VOLUME)):1;
+const DEVICE_SETTINGS_KEY='yhwh_device_settings_v1';
+const DEVICE_THEME_PALETTES={light:{primary:'#1187b9',accent:'#41a5ce',page:'#bdd7e2',surface:'#f5f7f8',optionPanel:'#f5f7f8',headingBackground:'#1187b9',headingText:'#ffffff',offlineCardBackground:'#eaf5f9',offlineCardText:'#243640',text:'#243640',line:'#a9c2cd'},dark:{primary:'#1187b9',accent:'#e8c97a',page:'#0d0d14',surface:'#1c1c3f',optionPanel:'#1c1c3f',headingBackground:'#1187b9',headingText:'#ffffff',offlineCardBackground:'#151522',offlineCardText:'#e8e6f0',text:'#e8e6f0',line:'#393653'}};
+const deviceInitialTheme=localStorage.getItem('piano_theme')==='dark'?'dark':'light';
+const DEVICE_SETTINGS_DEFAULTS={theme:deviceInitialTheme,font:'Inter, system-ui, Arial, sans-serif',fontSize:15,headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',headingSize:26,mobileHeadingSize:18,homeButtonHeight:46,radius:12,...DEVICE_THEME_PALETTES[deviceInitialTheme],paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,brand:'Ministerio YHWH',worship:'Adoración',joy:'Júbilo',freePlay:'Reproducción libre',create:'Crear melodía',theory:'Teoría musical',noteNotation:state.notation==='latino'?'latino':'americano',noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,gridSpacing:4,melodyColor:state.keyColor,bassColor:state.bassColor,masterVolume:Math.round(state.masterVolume*100),layerEnabled:state.stringsLayerEnabled,layerVolume:state.stringsLayerVolume,fallingStyle:localStorage.getItem('yhwh_piano_barstyle')||'bars',fxGlow:localStorage.getItem('yhwh_piano_fx_glow')==='1',barFlow:localStorage.getItem('yhwh_piano_bar_flow')==='1',lightKeys:localStorage.getItem('yhwh_piano_light_keys')!=='0'};
+function readDeviceSettings(){try{const saved=JSON.parse(localStorage.getItem(DEVICE_SETTINGS_KEY)||'{}'),theme=saved.theme==='dark'?'dark':'light',settings={...DEVICE_SETTINGS_DEFAULTS,...saved};settings.paletteLight={...DEVICE_THEME_PALETTES.light,...saved.paletteLight};settings.paletteDark={...DEVICE_THEME_PALETTES.dark,...saved.paletteDark};if(!saved.paletteLight&&!saved.paletteDark)Object.keys(DEVICE_THEME_PALETTES[theme]).forEach(key=>{if(saved[key])settings[theme==='dark'?'paletteDark':'paletteLight'][key]=saved[key];});return settings;}catch(_){return {...DEVICE_SETTINGS_DEFAULTS};}}
+let deviceSettings=readDeviceSettings();
 let instrumentPickerTarget='primary';
 let screenTransitionTimer = null;
 let selectedSongForContinue = null;
+let selectedCreateSong = null;
+let selectedCreateTrack = 'melodia';
 let selectedPlayMode = 'listen';
 let selectedModeTab = 'instructions';
 let liveTheoryMode = 'key';
@@ -69,7 +78,8 @@ const FALLING_NOTES_FRAME_MS = 1000 / 60 - 3;
 // Opciones de rendimiento (Ajustes). Por defecto todo queda como estaba; el usuario puede apagar cada efecto.
 const SHOW_PLAYER_TIMELINE = true; // línea de tiempo (0:00 ——— 0:00) visible; pon false para quitarla
 const perfOption=(key)=>{try{return localStorage.getItem(key)!=='0';}catch(_){return true;}};
-let fxGlow=perfOption('yhwh_piano_fx_glow');        // brillo y partículas al impacto de las barras
+let fxGlow=(()=>{try{return localStorage.getItem('yhwh_piano_fx_glow')==='1';}catch(_){return false;}})(); // destellos y partículas al llegar a la tecla, apagados por defecto
+let fallingFlowEnabled=(()=>{try{return localStorage.getItem('yhwh_piano_bar_flow')==='1';}catch(_){return false;}})();
 let lightKeys=perfOption('yhwh_piano_light_keys');  // encender las teclas mientras suena la melodía
 let keyEdge=(()=>{try{return localStorage.getItem('yhwh_piano_key_edge')==='1';}catch(_){return false;}})(); // destello ligero solo en el borde de la tecla (apagado por defecto)
 let keyColorOn=perfOption('yhwh_piano_key_color_on'); // color en las teclas encendidas (apagado = gris neutro)
@@ -97,6 +107,7 @@ function noteName(midi) {
   const names = state.notation === 'latino' ? NOTE_NAMES_LATINO : NOTE_NAMES;
   return names[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1);
 }
+function fallingNoteName(midi){const pitch=((midi%12)+12)%12;return deviceSettings.noteNotation==='latino'?NOTE_NAMES_LATINO[pitch]:NOTE_NAMES[pitch].replace('#','♯');}
 function keyboardLabel(midi) {
   const pitch=((midi%12)+12)%12, octave=Math.floor(midi/12)-1;
   if(state.notation==='ninguno')return '';
@@ -116,14 +127,26 @@ function keyboardLabel(midi) {
   return noteName(midi);
 }
 function melodyFor(category, id) { return state.melodies[category]?.[String(id)] || null; }
+const SONG_TRACK_TYPES=['melodia','acompanamiento1','acompanamiento2','introduccion','voz'];
+const SONG_TRACK_LABELS={melodia:'Melodía',acompanamiento1:'Acompañamiento 1',acompanamiento2:'Acompañamiento 2',introduccion:'Introducción',voz:'Voz principal'};
 function melodyTracks(record){
-  if(!record)return {introduccion:null,voz:null};
-  if(Object.prototype.hasOwnProperty.call(record,'introduccion')||Object.prototype.hasOwnProperty.call(record,'voz'))return {introduccion:record.introduccion||null,voz:record.voz||null};
-  return {introduccion:Array.isArray(record.notas)?record:null,voz:null};
+  const tracks={introduccion:null,voz:null,melodia:null,acompanamiento1:null,acompanamiento2:null,trackSettings:{}};
+  if(!record)return tracks;
+  if(Array.isArray(record.notas)){tracks.introduccion=record;return tracks;}
+  SONG_TRACK_TYPES.forEach(type=>{tracks[type]=record[type]||null;});
+  tracks.trackSettings=record.trackSettings&&typeof record.trackSettings==='object'?record.trackSettings:{};
+  return tracks;
+}
+function serializeMelodyTracks(source,tracks){
+  const stored=source&&typeof source==='object'&&!Array.isArray(source.notas)?{...source}:{};
+  delete stored.notas;
+  SONG_TRACK_TYPES.forEach(type=>{if(tracks[type])stored[type]=tracks[type];else delete stored[type];});
+  if(Object.keys(tracks.trackSettings||{}).length)stored.trackSettings=tracks.trackSettings;else delete stored.trackSettings;
+  return stored;
 }
 function trackFor(category,id,type=state.melodyType){return melodyTracks(melodyFor(category,id))[type]||null;}
 function hasTrack(category,id,type){return !!trackFor(category,id,type)?.notas?.length;}
-function hasMelody(category, id) { return hasTrack(category,id,'introduccion')||hasTrack(category,id,'voz'); }
+function hasMelody(category, id) { return SONG_TRACK_TYPES.some(type=>hasTrack(category,id,type)); }
 function escapeHTML(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
 
 function songsFor(category) { return category === 'jubilo' ? SONGS_JUBILO : SONGS_ADORACION; }
@@ -166,7 +189,7 @@ function rememberLastHeardSong(song,category){
 async function previewSongInList(song,category,button){
   if(listPreviewRun?.songId===String(song.id)){stopListPreview();return;}
   stopListPreview();button.classList.add('is-playing');button.textContent='…';
-  const track=trackFor(category,song.id,'introduccion')||trackFor(category,song.id,'voz');
+  const track=SONG_TRACK_TYPES.map(type=>trackFor(category,song.id,type)).find(item=>item?.notas?.length);
   const notes=track?.notas||[];if(!notes.length){button.classList.remove('is-playing');button.textContent='▶';return;}
   try{
     const prepared=await prepareMelodyAudio(notes),context=getAudioContext(),start=context.currentTime+.08,sources=[];
@@ -189,16 +212,19 @@ const SONG_CHIP_ICONS={
 };
 function createCard(song, category, showMelodyBadge) {
   const tracks=melodyTracks(melodyFor(category,song.id));
-  const hasIntro=!!tracks.introduccion?.notas?.length,hasVoice=!!tracks.voz?.notas?.length;
+  const hasIntro=!!tracks.introduccion?.notas?.length,hasVoice=!!tracks.voz?.notas?.length,hasMelodyTrack=!!tracks.melodia?.notas?.length,hasAccomp1=!!tracks.acompanamiento1?.notas?.length,hasAccomp2=!!tracks.acompanamiento2?.notas?.length;
   const chips=[];
+  if(hasMelodyTrack)chips.push('<span class="song-chip voice">Melodía</span>');
+  if(hasAccomp1)chips.push('<span class="song-chip intro">Acomp. 1</span>');
+  if(hasAccomp2)chips.push('<span class="song-chip intro">Acomp. 2</span>');
   if(hasIntro)chips.push(`<span class="song-chip intro">${SONG_CHIP_ICONS.intro}Intro</span>`);
   if(hasVoice)chips.push(`<span class="song-chip voice">${SONG_CHIP_ICONS.voz}Voz</span>`);
   if(!showMelodyBadge&&!chips.length)chips.push('<span class="song-chip create">＋ Crear</span>');
   const key=String(song.tono||'').trim();
-  const action=showMelodyBadge?'':(hasIntro||hasVoice?'Editar melodía':'Crear melodía');
+  const action=showMelodyBadge?'':(hasIntro||hasVoice||hasMelodyTrack||hasAccomp1||hasAccomp2?'Grabar o editar pistas completas':'Crear grabación');
   if(showMelodyBadge)return `<article class="song-card song-card-selectable${selectedSongForContinue&&String(selectedSongForContinue.song.id)===String(song.id)&&selectedSongForContinue.category===category?' selected':''}" data-song-id="${escapeHTML(song.id)}" data-category="${category}">
     <button class="song-card-main" type="button" aria-label="Seleccionar ${escapeHTML(song.title||'Alabanza')}"><span class="song-key"${key?` title="Tono ${escapeHTML(key)}"`:''}>${key?escapeHTML(key):'♪'}</span><span class="song-info"><b>${escapeHTML(song.title||'Alabanza')}</b><small>${song.compositor?escapeHTML(song.compositor):''}</small></span>${chips.length?`<span class="song-chips">${chips.join('')}</span>`:''}</button></article>`;
-  return `<button class="song-card" data-song-id="${escapeHTML(song.id)}" data-category="${category}"${action?` title="${action}"`:''}>
+  return `<button class="song-card${selectedCreateSong&&String(selectedCreateSong.song.id)===String(song.id)&&selectedCreateSong.category===category?' selected':''}" data-song-id="${escapeHTML(song.id)}" data-category="${category}"${action?` title="${action}"`:''}>
     <span class="song-key"${key?` title="Tono ${escapeHTML(key)}"`:''}>${key?escapeHTML(key):'♪'}</span>
     <span class="song-info"><b>${escapeHTML(song.title || 'Alabanza')}</b><small>${song.compositor?escapeHTML(song.compositor):''}</small></span>
     ${chips.length?`<span class="song-chips">${chips.join('')}</span>`:''}</button>`;
@@ -224,15 +250,16 @@ function renderLists() {
 
   const query = $('createSearch').value;
   const allSongs = [
-    ...songsFor('adoracion').filter(song => matches(song, query)).map(song => ({ song, category: 'adoracion' })),
-    ...songsFor('jubilo').filter(song => matches(song, query)).map(song => ({ song, category: 'jubilo' }))
+    ...songsFor('adoracion').filter(song => !hasMelody('adoracion',song.id) && matches(song, query)).map(song => ({ song, category: 'adoracion' })),
+    ...songsFor('jubilo').filter(song => !hasMelody('jubilo',song.id) && matches(song, query)).map(song => ({ song, category: 'jubilo' }))
   ];
   const createResults = [
     ...allSongs.filter(item => item.category === 'adoracion').slice(0, 40),
     ...allSongs.filter(item => item.category === 'jubilo').slice(0, 40)
   ];
-  if($('createCount'))$('createCount').textContent = `${allSongs.length} ${allSongs.length === 1 ? 'alabanza' : 'alabanzas'}`;
-  if($('createFooterCount'))$('createFooterCount').textContent=`${allSongs.length} ${allSongs.length===1?'alabanza':'alabanzas'}`;
+  if($('createCount'))$('createCount').textContent = `${allSongs.length} disponibles`;
+  if($('createFooterCount'))$('createFooterCount').textContent=`${allSongs.length} ${allSongs.length===1?'alabanza disponible':'alabanzas disponibles'}`;
+  if($('createPermissionHint'))$('createPermissionHint').textContent=state.admin?'Elige una alabanza sin pistas grabadas y continúa para crearla.':'Solo Admin puede grabar pistas. Las alabanzas que ya tienen grabaciones no aparecen aquí.';
   const createGroup = (cat, label) => {
     const items = createResults.filter(item => item.category === cat);
     if (!items.length) return '';
@@ -241,15 +268,19 @@ function renderLists() {
   };
   $('createList').innerHTML = allSongs.length
     ? createGroup('adoracion', 'Adoración') + createGroup('jubilo', 'Júbilo') + (allSongs.length > createResults.length ? '<div class="empty">Se muestran hasta 40 de cada sección. Escribe el nombre en Buscar para encontrar otra alabanza.</div>' : '')
-    : '<div class="empty">No se cargaron las canciones. Comprueba que los archivos canciones-adoracion.js y canciones-jubilo.js estén disponibles.</div>';
+    : (songsFor('adoracion').length+songsFor('jubilo').length===0
+      ? '<div class="empty">No se cargaron las canciones. Comprueba que canciones-adoracion.js y canciones-jubilo.js estén disponibles.</div>'
+      : '<div class="empty">No hay alabanzas sin pistas grabadas que coincidan. Las que ya tienen grabaciones no aparecen aquí.</div>');
 
   document.querySelectorAll('#createList [data-song-id]').forEach(card => {
     card.onclick = () => {
       const category = card.dataset.category;
       const song = songsFor(category).find(item => String(item.id) === card.dataset.songId);
-      if (song) openTrackChooser(song,category,'create');
+      if (song) { selectedCreateSong={song,category};document.querySelectorAll('#createList [data-song-id]').forEach(item=>item.classList.toggle('selected',item===card));$('createContinueBtn').disabled=!state.admin; }
     };
   });
+  if(selectedCreateSong&&!allSongs.some(item=>item.category===selectedCreateSong.category&&String(item.song.id)===String(selectedCreateSong.song.id)))selectedCreateSong=null;
+  $('createContinueBtn').disabled=!state.admin||!selectedCreateSong;
   document.querySelectorAll('#songList .song-card-selectable').forEach(card=>{
     const select=()=>{const category=card.dataset.category,song=songsFor(category).find(item=>String(item.id)===card.dataset.songId);if(!song)return;stopListPreview();selectedSongForContinue={song,category};document.querySelectorAll('#songList .song-card').forEach(item=>item.classList.toggle('selected',item===card));$('selectedSongLabel').textContent=song.title||'Alabanza';$('selectedSongLabel').title=song.title||'Alabanza';$('continueSongBtn').disabled=false;$('selectedPreviewBtn').disabled=false;};
     card.querySelector('.song-card-main').onclick=select;
@@ -273,6 +304,180 @@ function confirmDiscardUnsavedMelody(){
   if(!window.confirm('Hay cambios de la melodía que todavía no se han guardado en Firebase. ¿Quieres descartarlos?'))return false;
   state.melodyDirty=false;return true;
 }
+const GUIDED_TOUR_STEPS={
+  home:[
+    {selector:'[data-view="adoracion"]',title:'Adoración',text:'Abre el catálogo de alabanzas de adoración. Puedes buscar, filtrar, escuchar una muestra y elegir cómo practicar.'},
+    {selector:'[data-view="jubilo"]',title:'Júbilo',text:'Aquí están las alabanzas de celebración. El catálogo funciona igual: busca una canción y elige una forma de escucharla o practicarla.'},
+    {selector:'#freePlayBtn',title:'Piano libre',text:'Entra directamente al teclado para tocar, cambiar instrumentos y practicar sin escoger una alabanza.'},
+    {selector:'[data-view="crear"]',title:'Crear o editar melodías',text:'Busca una alabanza y abre una pista para grabar o editar sus notas. Algunas acciones requieren acceso de Admin.'},
+    {selector:'[data-view="teoria"]',title:'Aprender música',text:'Explora las lecciones paso a paso y las herramientas de acordes, escalas, tonalidades e intervalos.'},
+    {selector:'#deviceSettingsBtn',title:'Ajustes para este dispositivo',text:'Personaliza tema, colores, encabezados, teclado, sonido, efectos y descarga de instrumentos.'},
+    {selector:'#recentSongsList',title:'Reproducidas recientemente',text:'Las alabanzas que escuches aparecen aquí para que puedas volver a abrirlas rápidamente.'},
+    {selector:'.home-info-card',title:'Estado de los sonidos',text:'Consulta el avance de los sonidos guardados para practicar con menos espera y sin conexión.'}
+  ],
+  adoracion:[
+    {selector:'#songFilters',title:'Filtra el catálogo',text:'Muestra todas las alabanzas o limita la lista a las que tienen introducción o voz grabada.'},
+    {selector:'#search',title:'Busca por nombre',text:'Escribe parte del título para encontrar una alabanza sin recorrer toda la lista.'},
+    {selector:'#songList',title:'Elige una alabanza',text:'Toca una tarjeta para seleccionarla. Puedes escuchar una vista previa antes de continuar.'},
+    {selector:'#continueSongBtn',title:'Continúa a la práctica',text:'Con una alabanza seleccionada, este botón abre las opciones de reproducción y práctica.'}
+  ],
+  jubilo:[
+    {selector:'#songFilters',title:'Filtra el catálogo',text:'Muestra todas las alabanzas o limita la lista a las que tienen introducción o voz grabada.'},
+    {selector:'#search',title:'Busca por nombre',text:'Escribe parte del título para encontrar una alabanza de júbilo.'},
+    {selector:'#songList',title:'Elige una alabanza',text:'Toca una tarjeta para seleccionarla; si quieres, escucha una muestra primero.'},
+    {selector:'#continueSongBtn',title:'Continúa a la práctica',text:'Este botón abre las distintas formas de escuchar o practicar la canción elegida.'}
+  ],
+  libre:[
+    {selector:'#keyboard',title:'Toca el piano',text:'Pulsa o toca las teclas. En el teléfono también puedes deslizarte por el teclado para recorrer las octavas.'},
+    {selector:'#instrumentToggle',title:'Instrumento y segunda capa',text:'Abre el selector para elegir el sonido principal y mezclar un segundo instrumento.',prepare:()=>guidedOpenPopover('instrumentMenu')},
+    {selector:'#stringsLayerToggle',title:'Activa la segunda capa',text:'Activa la casilla para mezclar otro instrumento con el sonido principal.'},
+    {selector:'#stringsLayerVolume',title:'Mezcla la capa',text:'Elige el instrumento adicional y ajusta su volumen independientemente.'},
+    {selector:'#keyColorToggle',title:'Color al tocar',text:'Cambia los colores con los que se iluminan la melodía y el bajo.'},
+    {selector:'#keyboardRangeToggle',title:'Rango y tamaño',text:'Elige 18, 25 o 88 teclas, ajusta su tamaño y desplázate por octavas.',prepare:()=>guidedOpenPopover('keyboardRangeMenu')},
+    {selector:'#keyboardNavigation',title:'Desplaza el teclado',text:'Usa las flechas para moverte por octavas y los botones para mostrar más o menos teclas.'},
+    {selector:'#notationToggle',title:'Nombres de las notas',text:'Muestra etiquetas en cifrado americano, latino, por octavas o grados.',prepare:()=>guidedOpenPopover('notationMenu')},
+    {selector:'#settingsToggle',title:'Volumen y efectos',text:'Abre los ajustes del piano para controlar el volumen general, las barras y sus efectos.',prepare:()=>guidedOpenPopover('playerSettings')},
+    {selector:'#masterVolume',title:'Volumen general',text:'Este control cambia el nivel de todo el piano y de sus instrumentos.'},
+    {selector:'#sustainBtn',title:'Sustain',text:'Mantiene las notas sonando un poco después de soltar la tecla, como el pedal de un piano.'}
+  ],
+  crear:[
+    {selector:'#createView .create-mobile-header',title:'Graba una alabanza completa',text:'Elige una canción para crear la melodía y sus acompañamientos como pistas separadas.'},
+    {selector:'#createSearch',title:'Encuentra la alabanza',text:'Busca por título para abrir rápidamente la canción que vas a grabar.'},
+    {selector:'#createList',title:'Selecciona una canción',text:'Toca una alabanza de la lista. Luego pulsa Continuar para elegir qué pista grabar.'},
+    {selector:'#createContinueBtn',title:'Continúa a las pistas',text:'Aquí eliges entre melodía, dos acompañamientos o configurar sus instrumentos.'}
+  ],
+  grabar:[
+    {selector:'#createTrackScreen [data-record-track="melodia"]',title:'Graba la melodía',text:'Entra al piano y toca la melodía completa en tiempo real. El instrumento escogido queda guardado para esta pista.'},
+    {selector:'#createTrackScreen [data-record-track="acompanamiento1"]',title:'Primer acompañamiento',text:'Graba el bajo, acordes u otra parte completa sin asignar acordes nota por nota.'},
+    {selector:'#createTrackScreen [data-record-track="acompanamiento2"]',title:'Segundo acompañamiento',text:'Añade otra interpretación independiente, por ejemplo cuerdas o un refuerzo.'},
+    {selector:'#createTrackScreen [data-open-song-track-settings]',title:'Ajusta instrumentos y capas',text:'Elige un sonido por pista. La segunda capa está apagada hasta que la actives.'}
+  ],
+  teoria:[
+    {selector:'#theoryView .theory-header',title:'Aprende a tu ritmo',text:'La ruta empieza desde lo básico y presenta las ideas en lecciones breves con ejemplos de piano.'},
+    {selector:'#theoryView .theory-mode-tabs',title:'Dos maneras de explorar',text:'Sigue los capítulos en orden o cambia a consultar temas para ir directamente a una herramienta.'},
+    {selector:'#theoryJumpToLesson',title:'Empieza con una lección',text:'La primera clase te ayuda a ubicar Do en el teclado. Puedes repetirla y avanzar a tu ritmo.'},
+    {selector:'#theoryLessonList',title:'Avanza por los capítulos',text:'Abre cualquier lección de la ruta; el progreso se guarda mientras aprendes.'}
+  ],
+  modo:[
+    {selector:'#playModeModal .mode-side-actions',title:'Escucha o configura',text:'Puedes observar la alabanza completa o abrir los ajustes de manos, colores e instrumentos.'},
+    {selector:'#playModeModal .mode-cards',title:'Elige qué practicar',text:'Practica la melodía o escucha la segunda y tercera voz por separado.'},
+    {selector:'#playModeModal .mode-detail-nav',title:'Más detalles',text:'Consulta las instrucciones, la dirección de las voces y los ajustes de color e instrumentos.'},
+    {selector:'#modePanelTitle',title:'Instrucciones del modo',text:'Este panel explica lo que hará la opción que seleccionaste.'},
+    {selector:'#modeStartBtn',title:'Entra al piano',text:'Cuando tengas lista tu opción, pulsa Continuar para empezar.'}
+  ],
+  instrumentos:[
+    {selector:'#modeBassInstrument',title:'Pista del bajo',text:'Elige el instrumento que acompaña las notas graves, asignadas a la mano izquierda.'},
+    {selector:'#modeMelodyInstrument',title:'Pista de melodía',text:'Elige el sonido de la melodía principal, que se muestra para la mano derecha.'},
+    {selector:'#previewBassSound',title:'Prueba el sonido',text:'Escucha una nota de muestra antes de decidir qué instrumento usar.'},
+    {selector:'#modeSecondDirection',title:'Dirección de las armonías',text:'Decide si la segunda y tercera voz deben sonar por encima o por debajo de la melodía.'},
+    {selector:'.instrument-settings-footer',title:'Cambios guardados',text:'Los ajustes se guardan automáticamente. Puedes restaurar valores o volver a elegir colores.'}
+  ],
+  instrumentosGrabacion:[
+    {selector:'#songSettingsTrack',title:'Selecciona una pista',text:'Cada alabanza tiene ajustes separados para melodía y sus dos acompañamientos.'},
+    {selector:'#songTrackInstrument',title:'Elige el sonido principal',text:'Este instrumento queda asignado a la pista seleccionada y se usa al reproducirla.'},
+    {selector:'#songTrackLayerEnabled',title:'Capa opcional',text:'Actívala solo si quieres mezclar otro sonido en esta pista.'},
+    {selector:'#songTrackLayerInstrument',title:'Sonido y mezcla',text:'Escoge el instrumento de la capa y ajusta cuánto se escucha.'}
+  ],
+  configuracion:[
+    {selector:'#deviceSettingsScreen .device-settings-nav',title:'Categorías de ajustes',text:'Elige apariencia, colores, textos, teclado, sonido o biblioteca de instrumentos.'},
+    {selector:'#deviceSettingsScreen .device-settings-content',title:'Ajusta cada opción',text:'Los controles cambian solo este dispositivo. Los colores se editan por separado para tema claro y oscuro.'},
+    {selector:'#deviceSettingsPreview',title:'Vista previa',text:'Cuando una categoría tiene vista previa, aquí puedes ver el efecto de tus cambios antes de salir.'},
+    {selector:'#replayQuickGuide',title:'Vuelve a abrir esta guía',text:'Puedes reiniciar aquí los recorridos iniciales y volver a verlos desde el menú.'}
+  ],
+  piano:[
+    {selector:'#keyboard',title:'Teclado y notas',text:'Toca las teclas para practicar. Las barras muestran las notas que tocas o que suenan durante la reproducción.'},
+    {selector:'#instrumentToggle',title:'Instrumento y capas',text:'Selecciona un sonido principal y, si quieres, mezcla otro desde Segunda capa.',prepare:()=>guidedOpenPopover('instrumentMenu')},
+    {selector:'#stringsLayerToggle',title:'Activa la segunda capa',text:'Marca esta opción para que el segundo instrumento suene junto con el principal.'},
+    {selector:'#stringsLayerVolume',title:'Controla la mezcla',text:'Escoge el instrumento de la capa y ajusta cuánto se escucha.',},
+    {selector:'#playMelody',title:'Escucha o reproduce',text:'Inicia la melodía guardada. Puedes detenerla o volver a escucharla desde estos controles.'},
+    {selector:'#sustainBtn',title:'Sustain y octava',text:'Activa sustain para prolongar el sonido o el doblado a la octava para enriquecer las notas.'},
+    {selector:'#keyboardRangeToggle',title:'Ajusta el teclado',text:'Cambia el número y tamaño de las teclas visibles y navega por octavas.',prepare:()=>guidedOpenPopover('keyboardRangeMenu')},
+    {selector:'#notationToggle',title:'Elige cómo leer las notas',text:'Activa cifrado americano, latino, nombres de octava, grados u oculta las etiquetas.',prepare:()=>guidedOpenPopover('notationMenu')},
+    {selector:'#keyColorToggle',title:'Color de las notas',text:'Personaliza cómo se iluminan las notas de melodía y las del bajo.'},
+    {selector:'#settingsToggle',title:'Sonido y efectos',text:'Desde Configuración ajustas volumen general, estilo de barras, destellos y otras opciones.',prepare:()=>guidedOpenPopover('playerSettings')},
+    {selector:'#masterVolume',title:'Volumen general',text:'Sube o baja el nivel de salida de todo el piano y sus capas.'}
+  ]
+};
+let activeGuidedTour=null,guidedTourInitialized=false,guidedTourTimer=0;
+function ensureGuidedTour(){
+  if(guidedTourInitialized)return;
+  const tour=document.createElement('div');tour.id='guidedTour';tour.className='guided-tour hidden';tour.innerHTML='<div class="guided-tour-backdrop"></div><div class="guided-tour-spotlight" aria-hidden="true"></div><section class="guided-tour-card" role="dialog" aria-modal="true" aria-labelledby="guidedTourTitle" aria-describedby="guidedTourText"><div class="guided-tour-kicker"><span class="guided-tour-spark">✦</span> GUÍA RÁPIDA <span id="guidedTourStep"></span></div><button type="button" class="guided-tour-close" aria-label="Cerrar guía">×</button><div class="guided-tour-progress" aria-hidden="true"><i></i></div><h2 id="guidedTourTitle"></h2><p id="guidedTourText"></p><footer><button type="button" class="guided-tour-skip">Saltar recorrido</button><div><button type="button" class="guided-tour-back" aria-label="Paso anterior">Anterior</button><button type="button" class="guided-tour-next">Siguiente</button></div></footer></section>';
+  document.body.appendChild(tour);
+  tour.querySelector('.guided-tour-skip').onclick=finishGuidedTour;
+  tour.querySelector('.guided-tour-close').onclick=finishGuidedTour;
+  tour.querySelector('.guided-tour-next').onclick=()=>moveGuidedTour(1);
+  tour.querySelector('.guided-tour-back').onclick=()=>moveGuidedTour(-1);
+  tour.querySelector('.guided-tour-backdrop').onclick=finishGuidedTour;
+  window.addEventListener('resize',positionGuidedSpotlight,{passive:true});
+  window.addEventListener('scroll',positionGuidedSpotlight,{passive:true,capture:true});
+  document.addEventListener('keydown',event=>{
+    if(!activeGuidedTour)return;
+    if(event.key==='Escape'){finishGuidedTour();return;}
+    if(event.key==='Tab'){
+      const focusable=[...$('guidedTour').querySelectorAll('button:not(:disabled)')],first=focusable[0],last=focusable[focusable.length-1];
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
+    }
+  });
+  guidedTourInitialized=true;
+}
+function queueGuidedTour(id,delay=420){
+  clearTimeout(guidedTourTimer);
+  guidedTourTimer=setTimeout(()=>startGuidedTour(id),delay);
+}
+function startGuidedTour(id){
+  let alreadyDone=false;try{alreadyDone=localStorage.getItem(`yhwh_guided_tour_${id}_v1`)==='done';}catch(_){ }
+  if(activeGuidedTour||alreadyDone)return;
+  const steps=GUIDED_TOUR_STEPS[id];if(!steps?.length)return;
+  ensureGuidedTour();activeGuidedTour={id,steps,index:0};$('guidedTour').classList.remove('hidden');showGuidedTourStep();
+}
+function guidedOpenPopover(id){
+  if(!$(id))return;
+  closePlayerPopovers(id);
+  $(id).classList.remove('hidden');
+}
+function guidedStepIsVisible(step){
+  const target=document.querySelector(step.selector);if(!target||!target.isConnected)return false;
+  const style=getComputedStyle(target);return target.getClientRects().length>0&&style.visibility!=='hidden'&&style.display!=='none';
+}
+function showGuidedTourStep(){
+  if(!activeGuidedTour)return;
+  const {steps}=activeGuidedTour;let {index}=activeGuidedTour,step,target;
+  while(index>=0&&index<steps.length){step=steps[index];step.prepare?.();if(guidedStepIsVisible(step)){target=document.querySelector(step.selector);break;}index+=1;}
+  if(!target){if(index>=steps.length)finishGuidedTour();else finishGuidedTour();return;}
+  activeGuidedTour.index=index;
+  target.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
+  $('guidedTourTitle').textContent=step.title;$('guidedTourText').textContent=step.text;$('guidedTourStep').textContent=`${index+1} / ${steps.length}`;
+  $('guidedTour').querySelector('.guided-tour-back').disabled=index===0;
+  $('guidedTour').querySelector('.guided-tour-next').textContent=index===steps.length-1?'Terminar':'Siguiente';
+  $('guidedTour').querySelector('.guided-tour-progress i').style.width=`${((index+1)/steps.length)*100}%`;
+  requestAnimationFrame(()=>setTimeout(()=>{positionGuidedSpotlight();$('guidedTour')?.querySelector('.guided-tour-next')?.focus({preventScroll:true});},80));
+}
+function positionGuidedSpotlight(){
+  if(!activeGuidedTour)return;
+  const target=document.querySelector(activeGuidedTour.steps[activeGuidedTour.index].selector),spotlight=$('guidedTour')?.querySelector('.guided-tour-spotlight');
+  if(!target||!spotlight)return;
+  const rect=target.getBoundingClientRect();Object.assign(spotlight.style,{left:`${Math.max(4,rect.left-4)}px`,top:`${Math.max(4,rect.top-4)}px`,width:`${Math.max(0,rect.width+8)}px`,height:`${Math.max(0,rect.height+8)}px`});
+}
+function moveGuidedTour(direction){
+  if(!activeGuidedTour)return;
+  let next=activeGuidedTour.index+direction;
+  if(next<0)return;if(next>=activeGuidedTour.steps.length){finishGuidedTour();return;}
+  const steps=activeGuidedTour.steps;
+  while(next>=0&&next<steps.length){steps[next].prepare?.();if(guidedStepIsVisible(steps[next]))break;next+=direction;}
+  if(next<0)return;if(next>=steps.length){finishGuidedTour();return;}
+  activeGuidedTour.index=next;showGuidedTourStep();
+}
+function finishGuidedTour(){
+  if(!activeGuidedTour)return;
+  try{localStorage.setItem(`yhwh_guided_tour_${activeGuidedTour.id}_v1`,'done');}catch(_){ }
+  $('guidedTour')?.classList.add('hidden');const spotlight=$('guidedTour')?.querySelector('.guided-tour-spotlight');if(spotlight)spotlight.removeAttribute('style');activeGuidedTour=null;
+}
+function replayQuickGuide(){
+  clearTimeout(guidedTourTimer);finishGuidedTour();
+  try{Object.keys(localStorage).filter(key=>key.startsWith('yhwh_guided_tour_')&&key.endsWith('_v1')).forEach(key=>localStorage.removeItem(key));}catch(_){ }
+  $('closeDeviceSettings')?.click();queueGuidedTour('home',520);
+}
 function setView(view) {
   if(!$('player').classList.contains('hidden')&&!confirmDiscardUnsavedMelody())return;
   stopMetronome();closeLiveTheoryDock();
@@ -283,26 +488,27 @@ function setView(view) {
   stopPlayback({suspendAudio:true});
   stopTheorySequence();
   const target={home:'homeView',adoracion:'songView',jubilo:'songView',crear:'createView',teoria:'theoryView'}[view]||'homeView';
-  transitionScreen(target,['homeView','songView','createView','theoryView','player']);
+  transitionScreen(target,['homeView','songView','createView','createTrackScreen','theoryView','player','instrumentSettingsScreen']);
   document.querySelectorAll('.tab').forEach(button => button.classList.toggle('active', button.dataset.view === view));
   renderLists();
   if (view === 'teoria') renderTheory();
   window.scrollTo(0, 0);
+  if(view==='adoracion'||view==='jubilo'||view==='crear'||view==='teoria')queueGuidedTour(view);
 }
 function openFreePlay() {
   if(state.melodyDirty&&!confirmDiscardUnsavedMelody())return;
   stopPlayback();stopTheorySequence();stopMetronome();closePlayerPopovers();closeLiveTheoryDock();
   clearSongIntro();
-  state.song=null;state.view='libre';state.category='adoracion';state.melodyType='introduccion';state.notes=[];state.chords=[];state.chordTarget=null;state.transpose=0;state.melodyDirty=false;state.recording=false;state.lastMidi=null;chordEditorOpen=false;
+  state.song=null;state.view='libre';state.category='adoracion';state.melodyType='introduccion';state.notes=[];state.chords=[];state.chordTarget=null;state.transpose=0;state.melodyDirty=false;state.recording=false;state.lastMidi=null;chordEditorOpen=false;applySongTrackInstrument(freePlayInstrumentConfig);
   document.body.classList.remove('home-active');
   document.body.classList.remove('song-list-active');
   document.body.classList.remove('create-list-active');
   $('songTitle').textContent='Reproducción libre';$('songMeta').textContent='Toca, explora acordes y practica a tu ritmo.';
   updateTrackTimeline();
-  primeAudioForInstrument(state.instrument);
   $('playerLabel').textContent='Reproducción libre';$('activeKeyName').textContent='';$('activeKeyName').disabled=true;$('status').textContent='Toca las teclas para escuchar.';$('currentNote').textContent='';$('activeChordLabel').textContent='';
   $('voiceMixer').classList.add('hidden');$('notesPanel').dataset.open='';$('notesPanel').classList.add('hidden');$('lyricsPanel').classList.add('hidden');$('chordEditorPanel').classList.add('hidden');
   renderRecorded();updateAdminControls();transitionScreen('player',['homeView','songView','createView','theoryView','player']);
+  queueGuidedTour('libre');
   setTimeout(startKeyboardAtC4,170);window.scrollTo(0,0);
 }
 function chordNames(song) {
@@ -1058,7 +1264,84 @@ function openTrackChooser(song,category,purpose='listen'){
   const introExists=hasTrack(category,song.id,'introduccion'),voiceExists=hasTrack(category,song.id,'voz');
   $('introTrackState').textContent=introExists?'Melodía guardada':state.admin?'Aún no grabada · puedes crearla como Admin':'Aún no grabada';
   $('voiceTrackState').textContent=voiceExists?'Voz principal y armonías guardadas':state.admin?'Aún no grabada · puedes crearla como Admin':'Aún no grabada';
+  const trackStateIds={melodia:'melodyTrackState',acompanamiento1:'accompaniment1TrackState',acompanamiento2:'accompaniment2TrackState'};
+  Object.entries(trackStateIds).forEach(([type,id])=>{const exists=hasTrack(category,song.id,type),button=document.querySelector(`[data-track-select="${type}"]`);$(id).textContent=exists?`${SONG_TRACK_LABELS[type]} guardada`:state.admin?'Aún no grabada · se crea desde Crear melodía':'Aún no grabada';button?.classList.toggle('hidden',!exists);});
+  document.querySelector('[data-track-select="introduccion"]')?.classList.toggle('hidden',!introExists);
+  document.querySelector('[data-track-select="voz"]')?.classList.toggle('hidden',!voiceExists);
   $('trackModal').classList.remove('hidden');
+}
+function openCreateTrackScreen(){
+  if(!selectedCreateSong)return;
+  if(!state.admin){toast('Inicia sesión como Admin para grabar pistas.');return;}
+  const {song,category}=selectedCreateSong;
+  $('createTracksSongTitle').textContent=song.title||'Alabanza';
+  $('createTrackScreen').dataset.category=category;$('createTrackScreen').dataset.songId=String(song.id);
+  document.querySelectorAll('[data-record-track]').forEach(button=>{
+    const exists=hasTrack(category,song.id,button.dataset.recordTrack);
+    const label=button.querySelector('em');if(label)label.textContent=exists?'Grabación guardada · puedes reemplazarla':'Aún no grabada';
+  });
+  transitionScreen('createTrackScreen',['homeView','songView','createView','theoryView','createTrackScreen','player','instrumentSettingsScreen']);
+  document.body.classList.remove('create-list-active');
+  queueGuidedTour('grabar');
+}
+function beginCreateTrack(type){
+  if(!selectedCreateSong||!['melodia','acompanamiento1','acompanamiento2'].includes(type))return;
+  if(!state.admin){toast('Solo Admin puede grabar pistas.');return;}
+  selectedCreateTrack=type;
+  const {song,category}=selectedCreateSong;
+  state.pendingSong={song,category};state.pendingPurpose='create';
+  openSong(song,category,type,false,'record');
+}
+function openCreateTrackSettings(){
+  if(!selectedCreateSong)return;
+  state.pendingSong=selectedCreateSong;state.pendingPurpose='create';
+  selectedCreateTrack=$('songSettingsTrack')?.value||selectedCreateTrack;
+  const screen=$('instrumentSettingsScreen');screen.classList.add('create-track-settings-mode');
+  $('songTrackSettings').classList.remove('hidden');$('songSettingsTrack').value=selectedCreateTrack;
+  const options=[...$('instrumentSelect').options].map(option=>`<option value="${escapeHTML(option.value)}">${escapeHTML(option.textContent)}</option>`).join('');
+  $('songTrackInstrument').innerHTML=options;$('songTrackLayerInstrument').innerHTML=options;
+  syncSongTrackSettingsForm(selectedCreateTrack);
+  transitionScreen('instrumentSettingsScreen',['homeView','songView','createView','createTrackScreen','theoryView','player','playModeModal','instrumentSettingsScreen']);
+  queueGuidedTour('instrumentosGrabacion');
+}
+function instrumentTrackConfig(category,id,type){
+  const record=melodyFor(category,id)||{},saved=record.trackSettings?.[type]||{};
+  const track=trackFor(category,id,type)||{};
+  const newTrack=['melodia','acompanamiento1','acompanamiento2'].includes(type);
+  const instrument=track.instrument||saved.instrument||(type==='acompanamiento1'?state.bassInstrument:state.instrument);
+  return {instrument,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:saved.layerInstrument||track.layerInstrument||(newTrack?'strings':state.layerInstrument),layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
+}
+function syncSongTrackSettingsForm(type=$('songSettingsTrack')?.value||selectedCreateTrack){
+  if(!selectedCreateSong)return;
+  const {category,song}=selectedCreateSong,config=instrumentTrackConfig(category,song.id,type);
+  $('songTrackInstrument').value=config.instrument;$('songTrackLayerEnabled').checked=config.layerEnabled;
+  $('songTrackLayerInstrument').value=config.layerInstrument;$('songTrackLayerVolume').value=String(config.layerVolume);
+  $('songTrackLayerVolumeValue').textContent=`${config.layerVolume}%`;
+  $('songTrackLayerInstrument').disabled=!config.layerEnabled;$('songTrackLayerVolume').disabled=!config.layerEnabled;
+  $('songTrackSettingsStatus').textContent=`${SONG_TRACK_LABELS[type]} · ${instrumentLabel(config.instrument)}${config.layerEnabled?` + ${instrumentLabel(config.layerInstrument)}`:''}`;
+}
+async function saveSongTrackSettings(){
+  if(!selectedCreateSong)return;
+  const {song,category}=selectedCreateSong,type=$('songSettingsTrack').value;
+  const current=instrumentTrackConfig(category,song.id,type);
+  const config={instrument:$('songTrackInstrument').value||current.instrument,layerEnabled:$('songTrackLayerEnabled').checked,layerInstrument:$('songTrackLayerInstrument').value||current.layerInstrument,layerVolume:Math.max(0,Math.min(200,Number($('songTrackLayerVolume').value)||0))};
+  const record=melodyFor(category,song.id)||{},tracks=melodyTracks(record);
+  tracks.trackSettings={...tracks.trackSettings,[type]:config};
+  const stored=serializeMelodyTracks(record,tracks);
+  state.melodies[category]||={};state.melodies[category][String(song.id)]=stored;
+  try{localStorage.setItem('yhwh_melodias_cache',JSON.stringify(state.melodies));}catch(_){ }
+  if(state.admin&&state.db&&state.ref&&state.set){
+    try{await state.set(state.ref(state.db,`melodias/${category}/${song.id}`),stored);$('songTrackSettingsStatus').textContent=`${SONG_TRACK_LABELS[type]} guardado para esta alabanza.`;}
+    catch(error){$('songTrackSettingsStatus').textContent='No se pudo sincronizar. El ajuste quedó en este dispositivo.';console.warn('No se sincronizó la configuración de instrumento',error);}
+  }else $('songTrackSettingsStatus').textContent='Guardado en este dispositivo. Inicia sesión como Admin para sincronizarlo.';
+  if(state.song&&state.song.category===category&&String(state.song.song.id)===String(song.id)&&state.melodyType===type)applySongTrackInstrument(config);
+  renderLists();
+}
+function applySongTrackInstrument(config){
+  state.instrument=config.instrument;state.layerInstrument=config.layerInstrument;state.stringsLayerEnabled=!!config.layerEnabled;state.stringsLayerVolume=config.layerVolume;
+  if($('instrumentSelect'))$('instrumentSelect').value=state.instrument;
+  syncDynamicLayerControl(state.instrument);syncPianoLayerControl(state.instrument);syncInstrumentButtons();syncStringsLayerControls();if(audioContext)updateStringsLayerGain();
+  primeAudioForInstrument(state.instrument);if(state.stringsLayerEnabled)primeStringsLayer();
 }
 function chooseTrack(type){
   if(!state.pendingSong)return;
@@ -1069,7 +1352,7 @@ function syncModeScreen(){
   const pairs=[['modeMelodyInstrument','instrumentSelect'],['modeBassInstrument','bassInstrumentQuick'],['modeMelodyColor','keyColorPicker'],['modeBassColor','bassColorPicker'],['modeSecondDirection','secondVoiceDirection'],['modeThirdDirection','thirdVoiceDirection']];
   pairs.forEach(([targetId,sourceId])=>{const target=$(targetId),source=$(sourceId);if(target&&source)target.value=source.value;});
   selectPlayMode('listen');showModeScreenTab('instructions');
-  const track=selectedSongForContinue&&trackFor(selectedSongForContinue.category,selectedSongForContinue.song.id,'introduccion');
+  const track=selectedSongForContinue&&(['introduccion','melodia','acompanamiento1','acompanamiento2','voz'].map(type=>trackFor(selectedSongForContinue.category,selectedSongForContinue.song.id,type)).find(item=>item?.notas?.length));
   if($('modeMelodyCount'))$('modeMelodyCount').textContent=`${track?.notas?.length||0} notas`;
 }
 function applyInstrumentSettingsPreset(settings){
@@ -1105,7 +1388,7 @@ function beginSelectedSong(mode='listen'){
   if(!selectedSongForContinue)return;
   stopListPreview();
   const {song,category}=selectedSongForContinue;
-  const trackType=(mode==='second'||mode==='third')&&hasTrack(category,song.id,'voz')?'voz':hasTrack(category,song.id,'introduccion')?'introduccion':'voz';
+  const trackType=(mode==='second'||mode==='third')&&hasTrack(category,song.id,'voz')?'voz':(['introduccion','melodia','acompanamiento1','acompanamiento2','voz'].find(type=>hasTrack(category,song.id,type))||'voz');
   openSong(song,category,trackType,true,mode);
 }
 function openSong(song, category, trackType='introduccion',autoPlay=false,playMode='listen') {
@@ -1113,9 +1396,10 @@ function openSong(song, category, trackType='introduccion',autoPlay=false,playMo
   clearSongIntro();
   document.body.classList.remove('song-list-active','create-list-active');
   state.song = { song, category };
+  $('instrumentSettingsScreen').classList.remove('create-track-settings-mode');$('songTrackSettings')?.classList.add('hidden');
   if(autoPlay)rememberLastHeardSong(song,category);
-  primeAudioForInstrument(state.instrument);
   state.melodyType=trackType;
+  applySongTrackInstrument(instrumentTrackConfig(category,song.id,trackType));
   state.playMode=playMode;
   state.melodyDirty=false;
   state.selectedSongChord=null;document.querySelectorAll('#keyboard .key.chord-selected').forEach(key=>key.classList.remove('chord-selected'));
@@ -1134,14 +1418,15 @@ function openSong(song, category, trackType='introduccion',autoPlay=false,playMo
   updateTrackTimeline();
   $('activeKeyName').textContent=state.songTonic?`Tono ${state.songTonic}`:'';
   updateTransposeUI();
-  const trackLabel=trackType==='voz'?'Voz principal':'Introducción';
+  const trackLabel=SONG_TRACK_LABELS[trackType]||'Introducción';
   $('playerLabel').textContent = `${trackLabel}${savedMelody.notas?.length?' · Guardada':''}`;
-  $('status').textContent = savedMelody.notas?.length ? (trackType==='voz'?'Voz principal guardada. Activa las voces que quieras escuchar.':'Introducción guardada. Pulsa reproducir.') : `Todavía no hay ${trackType==='voz'?'voz principal':'introducción'} grabada. Toca el piano o graba si tienes acceso de Admin.`;
+  $('status').textContent = savedMelody.notas?.length ? `${trackLabel} guardada. Pulsa reproducir.` : `Todavía no hay ${trackLabel.toLocaleLowerCase('es')} grabada. Toca el piano o pulsa Grabar si tienes acceso de Admin.`;
   $('voiceMixer').classList.toggle('hidden',!state.showRecordedNotes);$('notesPanel').dataset.open='';$('notesPanel').classList.add('hidden');$('lyricsPanel').classList.add('hidden');$('chordEditorPanel').classList.add('hidden');$('activeChordLabel').textContent='';renderVoiceMixer();
   renderChordPresets();
   renderRecorded();
   updateAdminControls();
-  transitionScreen('player',['homeView','songView','createView','theoryView','playModeModal','instrumentSettingsScreen','player']);
+  transitionScreen('player',['homeView','songView','createView','createTrackScreen','theoryView','playModeModal','instrumentSettingsScreen','player']);
+  queueGuidedTour('piano',650);
   songIntroStartTimer=setTimeout(()=>{songIntroStartTimer=null;showSongIntro(autoPlay,playMode);},180);
   setTimeout(startKeyboardAtC4,170);
   window.scrollTo(0, 0);
@@ -1309,6 +1594,12 @@ function finishFallingNotesPlayback(){
   }else stopFallingNotes();
 }
 function fnRoundRect(c,x,y,w,h,r){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h);}
+function drawFallingNoteTag(ctx,midi,x,centerY,canvasWidth,canvasHeight){
+  const label=fallingNoteName(midi),size=Math.min(18,Math.max(8,Number(deviceSettings.noteLabelSize)||12));
+  ctx.save();ctx.font=`800 ${size}px system-ui, sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.globalAlpha=1;const left=Math.max(2,Math.min(canvasWidth-2,x)),top=Math.max(size/2+1,Math.min(canvasHeight-size/2-1,centerY));
+  ctx.fillStyle=deviceSettings.noteLabelColor||'#111111';ctx.fillText(label,left,top);ctx.restore();
+}
 const fnHits=[],fnHitBursts=[],fnGlowCache=new Map();let fnManualHitIndex=0;
 function fnGlow(ctx,color,baseline){
   const key=color+'|'+baseline;let g=fnGlowCache.get(key);
@@ -1317,7 +1608,7 @@ function fnGlow(ctx,color,baseline){
 }
 function fnRand(n){const v=Math.sin(n*12.9898)*43758.5453;return v-Math.floor(v);}
 function fnDrawMoltenBarFlow(ctx,event,index,x,top,width,height,bottom,elapsed){
-  if(!fxGlow||height<4)return;
+  if(!fallingFlowEnabled||height<4)return;
   ctx.save();fnRoundRect(ctx,x,top,width,height,Math.min(7,width/2,height/2));ctx.clip();ctx.globalCompositeOperation='screen';
   const base=ctx.createLinearGradient(x,top,x+width,top);
   base.addColorStop(0,'rgba(255,145,24,.2)');base.addColorStop(.2,'rgba(255,255,255,.06)');base.addColorStop(.52,'rgba(255,255,255,.13)');base.addColorStop(1,'rgba(255,170,35,.22)');
@@ -1433,15 +1724,16 @@ function drawFallingNotesFrameInner(timestamp){
       if(age>.05&&!practiceRun)continue;
       if(dBottom<0||center<-dw||center>width+dw)continue;
       ctx.fillStyle=isChord?geometry.chordColor:geometry.melodyColor;ctx.globalAlpha=isChord?.8:.95;
-      fnRoundRect(ctx,center-dw/2,dBottom-dh,dw,dh,dw/2);ctx.fill();
+       fnRoundRect(ctx,center-dw/2,dBottom-dh,dw,dh,dw/2);ctx.fill();drawFallingNoteTag(ctx,event.midi,center,baseline-9,width,height);
       continue;
     }
     const front=baseline-(event.start-elapsed)*pps,bottom=Math.min(front,baseline),top=front-barHeight,x=center-barWidth/2,h=bottom-top;
     if(h<=0||x+barWidth<0||x>width||top>height||bottom<0)continue;
     const chord=event.kind==='chord',fade=1,r=Math.min(7,barWidth/2,h/2);
     ctx.fillStyle=chord?geometry.chordColor:geometry.melodyColor;
-    ctx.globalAlpha=(chord?.72:.94)*fade;fnRoundRect(ctx,x,top,barWidth,h,r);ctx.fill();
-    fnDrawMoltenBarFlow(ctx,event,index,x,top,barWidth,h,bottom,elapsed);
+     ctx.globalAlpha=(chord?.72:.94)*fade;fnRoundRect(ctx,x,top,barWidth,h,r);ctx.fill();
+     fnDrawMoltenBarFlow(ctx,event,index,x,top,barWidth,h,bottom,elapsed);
+     drawFallingNoteTag(ctx,event.midi,center,Math.min(bottom-7,baseline-9),width,height);
   }
   }
   for(let i=fnHitBursts.length-1;i>=0;i--){
@@ -1580,11 +1872,10 @@ function startKeyboardAtC4() {
     scroll.scrollTo({ left: Math.max(0, Math.min(scroll.scrollWidth-scroll.clientWidth,left-(scroll.clientWidth-c4.offsetWidth)/2)), behavior: 'instant' });syncStageScroll();
   });
 }function updateAdminControls() {
+  const usesLegacyChordEditor=['introduccion','voz'].includes(state.melodyType);
   if(!state.admin||!state.song)chordEditorOpen=false;
-  document.querySelectorAll('.admin-only:not(#chordEditor):not(#chordEditorToggle)').forEach(button => button.classList.toggle('hidden', !state.admin||!state.song));
-  $('chordEditorToggle').classList.toggle('hidden',!state.admin||!state.song);
-  $('chordEditorToggle').setAttribute('aria-expanded',String(chordEditorOpen&&state.admin&&!!state.song));
-  $('chordsViewToggle').classList.toggle('hidden',!state.song);
+  document.querySelectorAll('.admin-only:not(#chordEditor)').forEach(button => button.classList.toggle('hidden', !state.admin||!state.song));
+  $('chordsViewToggle').classList.toggle('hidden',!state.song||!usesLegacyChordEditor);
   $('chordEditorPanel').classList.toggle('hidden',!state.admin||!state.song||!chordEditorOpen);
   $('chordEditor').classList.toggle('hidden',!state.admin||!state.song);
   $('deleteBtn').classList.toggle('hidden',!state.admin||!state.song||!hasTrack(state.song.category,state.song.song.id,state.melodyType));
@@ -1619,7 +1910,8 @@ function showManualNoteEffect(midi,key){
   if(!key.closest('.piano-panel'))key=document.querySelector(`.piano-panel .key[data-midi="${midi}"]`);
   if(!key)return;
   const stage=$('noteCanvas'),stageRect=stage?.getBoundingClientRect(),keyRect=key.getBoundingClientRect();if(!stageRect||!keyRect)return;
-  const effect=document.createElement('span');effect.className=`manual-note-effect ${fallingNotesStyle==='drops'?'is-drop':'is-bar'}${fxGlow?' has-fire':''}`;
+  const effect=document.createElement('span');effect.className=`manual-note-effect ${fallingNotesStyle==='drops'?'is-drop':'is-bar'}${fallingFlowEnabled?' has-fire':''}`;
+  const label=document.createElement('span');label.className='manual-note-label';label.textContent=fallingNoteName(midi);effect.appendChild(label);
   const isDrop=fallingNotesStyle==='drops';
   const barWidth=Math.max(4,Math.min(keyRect.width-2,keyRect.width*.78)),effectWidth=isDrop?Math.max(5,Math.min(barWidth,16)):barWidth;
   effect.style.width=`${effectWidth}px`;
@@ -1661,14 +1953,15 @@ function chordDisplayName(chord) {
   return `${root}${quality}`;
 }
 function renderRecorded() {
+  const legacyChordEditing=['introduccion','voz'].includes(state.melodyType);
   const voiceParts=state.melodyType==='voz'?generatedVoiceParts():null;
   $('recordedNotes').innerHTML = state.notes.map((note, index) => {
     const chord = state.chords.find(item => Number(item.noteIndex) === index);
-    const label = chord ? `<span class="note-chord-label">${escapeHTML(chordDisplayName(chord))}</span>` : '<span class="note-chord-label empty" aria-hidden="true"></span>';
+    const label = legacyChordEditing?(chord ? `<span class="note-chord-label">${escapeHTML(chordDisplayName(chord))}</span>` : '<span class="note-chord-label empty" aria-hidden="true"></span>'):'';
     const suggested=voiceParts?`<span class="suggested-voice-notes">2ª ${voiceParts.segunda[index]?noteName(voiceParts.segunda[index].midi):'—'} · 3ª ${voiceParts.tercera[index]?noteName(voiceParts.tercera[index].midi):'—'}</span>`:'';
-    const item=`<div class="melody-note-item${state.chordTarget === index ? ' selected' : ''}" data-note-index="${index}">${label}${suggested}<button class="note-chip" type="button" data-note-index="${index}" title="${voiceParts?`Principal ${noteName(note.midi)}; segunda ${noteName(voiceParts.segunda[index]?.midi??note.midi)}; tercera ${noteName(voiceParts.tercera[index]?.midi??note.midi)}`:''}" ${state.admin ? '' : 'disabled'}>${escapeHTML(noteName(note.midi))}</button></div>`;
+    const item=`<div class="melody-note-item${legacyChordEditing&&state.chordTarget === index ? ' selected' : ''}" ${legacyChordEditing?`data-note-index="${index}"`:''}>${label}${suggested}<button class="note-chip" type="button" ${legacyChordEditing?`data-note-index="${index}"`:''} title="${voiceParts?`Principal ${noteName(note.midi)}; segunda ${noteName(voiceParts.segunda[index]?.midi??note.midi)}; tercera ${noteName(voiceParts.tercera[index]?.midi??note.midi)}`:''}" ${state.admin&&legacyChordEditing ? '' : 'disabled'}>${escapeHTML(noteName(note.midi))}</button></div>`;
     const gapTarget=index+0.5,gapChord=state.chords.find(item=>Number(item.noteIndex)===gapTarget);
-    const gap=index<state.notes.length-1?`<button type="button" class="chord-gap-target${state.chordTarget===gapTarget?' selected':''}" data-chord-target="${gapTarget}" ${state.admin?'':'disabled'} aria-label="Colocar acorde entre las notas ${index+1} y ${index+2}">${gapChord?`<span>${escapeHTML(chordDisplayName(gapChord))}</span>`:'+'}</button>`:'';
+    const gap=legacyChordEditing&&index<state.notes.length-1?`<button type="button" class="chord-gap-target${state.chordTarget===gapTarget?' selected':''}" data-chord-target="${gapTarget}" ${state.admin?'':'disabled'} aria-label="Colocar acorde entre las notas ${index+1} y ${index+2}">${gapChord?`<span>${escapeHTML(chordDisplayName(gapChord))}</span>`:'+'}</button>`:'';
     return item+gap;
   }).join('');
 }
@@ -2068,7 +2361,7 @@ function buildInstrumentButtons(){
   browser.append(categories,panels);menu.prepend(browser);syncInstrumentButtons();
 }
 function registerExtraInstrumentOptions(){
-  const selectIds=['instrumentSelect','layerInstrumentSelect','bassInstrumentQuick','bassInstrument','modeBassInstrument','modeMelodyInstrument'];
+  const selectIds=['instrumentSelect','layerInstrumentSelect','bassInstrumentQuick','bassInstrument','modeBassInstrument','modeMelodyInstrument','songTrackInstrument','songTrackLayerInstrument'];
   selectIds.forEach(id=>{const select=$(id);if(!select)return;EXTRA_INSTRUMENTS.forEach(instrument=>{if([...select.options].some(option=>option.value===instrument.id))return;const option=document.createElement('option');option.value=instrument.id;option.textContent=instrument.label;select.appendChild(option);});});
 }
 function syncInstrumentButtons(){
@@ -2118,17 +2411,12 @@ function closePlayerPopovers(except=''){
   if(except!=='chordEditorPanel')chordEditorOpen=false;
   playerPopoverIds.forEach(id=>{if(id!==except)$(id)?.classList.add('hidden');});
   if(except!=='chordEditorPanel')$('chordEditorPanel')?.classList.add('hidden');
-  [['instrumentToggle','instrumentMenu'],['keyColorToggle','colorMenu'],['keyboardRangeToggle','keyboardRangeMenu'],['notationToggle','notationMenu'],['chordsViewToggle','lyricsPanel'],['settingsToggle','playerSettings'],['chordEditorToggle','chordEditorPanel'],['activeKeyName','keyTransposePopover']].forEach(([button,panel])=>$(button)?.setAttribute('aria-expanded',String(panel===except||panel==='chordEditorPanel'&&except==='chordEditorPanel')));
+  [['instrumentToggle','instrumentMenu'],['keyColorToggle','colorMenu'],['keyboardRangeToggle','keyboardRangeMenu'],['notationToggle','notationMenu'],['chordsViewToggle','lyricsPanel'],['settingsToggle','playerSettings'],['activeKeyName','keyTransposePopover']].forEach(([button,panel])=>$(button)?.setAttribute('aria-expanded',String(panel===except)));
 }
 function togglePlayerPopover(id){
   const panel=$(id),willOpen=panel.classList.contains('hidden');closePlayerPopovers(willOpen?id:'');
   if(willOpen)panel.classList.remove('hidden');
   return willOpen;
-}
-function toggleChordEditor(){
-  if(!state.admin||!state.song){toast('El editor de acordes está disponible al editar una melodía como Admin.');return;}
-  chordEditorOpen=!chordEditorOpen;closePlayerPopovers(chordEditorOpen?'chordEditorPanel':'');
-  $('chordEditorPanel').classList.toggle('hidden',!chordEditorOpen);$('chordEditorToggle').setAttribute('aria-expanded',String(chordEditorOpen));
 }
 function toggleLyricsPanel(){
   const open=togglePlayerPopover('lyricsPanel');
@@ -2146,6 +2434,7 @@ function syncFallingStyleButtons(){
 function setFallingNotesStyle(value){
   if(!FALLING_STYLE_OPTIONS.some(option=>option[0]===value))value='bars';
   fallingNotesStyle=value;
+  if(typeof deviceSettings==='object'){deviceSettings.fallingStyle=value;saveDeviceSettings();if($('deviceFallingStyle'))$('deviceFallingStyle').value=value;}
   try{localStorage.setItem('yhwh_piano_barstyle',value);}catch(_){}
   if(value==='off'){
     if(fallingNotesFrame)cancelAnimationFrame(fallingNotesFrame);
@@ -2154,6 +2443,7 @@ function setFallingNotesStyle(value){
     fallingNotesLastFrame=0;fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
   }
   syncFallingStyleButtons();
+  if($('devicePreviewStyle'))$('devicePreviewStyle').textContent=({bars:'Barras completas',melody:'Solo melodía',drops:'Gotas',off:'Sin barras'})[value];
 }
 function initFallingStyleSetting(){
   const sheet=$('playerSettings');if(!sheet||$('fallingStyleBlock'))return;
@@ -2261,7 +2551,7 @@ function initializeSplash() {
     splash.dataset.hidden = '1';
     if (autoCloseTimer) clearTimeout(autoCloseTimer);
     splash.classList.add('splash-hide');
-    setTimeout(() => splash.remove(), 650);
+    setTimeout(() => {splash.remove();queueGuidedTour('home',180);}, 650);
   };
   const reveal = () => {
     if (!document.body.contains(splash) || splash.dataset.ready) return;
@@ -2293,6 +2583,7 @@ function getMasterGain(context=audioContext){
 function setMasterVolume(percent){
   const value=Math.round(Math.max(0,Math.min(200,Number(percent)||0)));
   state.masterVolume=value/100;
+  if(typeof deviceSettings==='object'){deviceSettings.masterVolume=value;if($('deviceMasterVolume'))$('deviceMasterVolume').value=String(value);if($('deviceMasterVolumeValue'))$('deviceMasterVolumeValue').textContent=`${value}%`;}
   const slider=$('masterVolume'),output=$('masterVolumeValue'),picker=$('pickerMasterVolume'),pickerOutput=$('pickerMasterVolumeValue');
   if(slider&&slider.value!==String(value))slider.value=String(value);
   if(output)output.value=`${value}%`;if(picker&&picker.value!==String(value))picker.value=String(value);if(pickerOutput)pickerOutput.value=`${value}%`;
@@ -2301,6 +2592,14 @@ function setMasterVolume(percent){
 }
 const CLOUDINARY_AUDIO_BASE='https://res.cloudinary.com/hie4so71/video/upload/';
 const AUDIO_CACHE_NAME='yhwh-cloudinary-audio-v1';
+let homeAudioCacheStatus={cached:0,total:0,progress:false};
+async function refreshHomeAudioStatus(cached=homeAudioCacheStatus.cached,total=homeAudioCacheStatus.total,progress=homeAudioCacheStatus.progress){
+  homeAudioCacheStatus={cached,total,progress};
+  let instrumentSamples=0;
+  try{if('caches' in window){const cache=await caches.open(AUDIO_CACHE_NAME);instrumentSamples=(await cache.keys()).length;}}catch(_){ }
+  const text=`${cached} de ${total} sonidos base guardados · ${instrumentSamples} muestras de instrumentos descargadas${progress?' · descargando…':''}.`;
+  ['offlineStatus','devicePreviewOffline'].forEach(id=>{const target=$(id);if(!target)return;if(id==='devicePreviewOffline'){const span=target.querySelector('span');if(span)span.textContent=text;}else target.textContent=text;});
+}
 // Guarda en el dispositivo cada muestra de Cloudinary la primera vez que se descarga;
 // las siguientes aperturas de la app la leen del disco en vez de la red.
 async function fetchAudioCached(url){
@@ -2355,7 +2654,8 @@ function syncStringsLayerControls(){
 }
 function setStringsLayerVolume(value){
   state.stringsLayerVolume=Math.round(Math.max(0,Math.min(200,Number(value)||0)));
-  try{localStorage.setItem('yhwh_piano_strings_volume',String(state.stringsLayerVolume));}catch(_){}
+  if(typeof deviceSettings==='object'){deviceSettings.layerVolume=state.stringsLayerVolume;if($('deviceLayerVolume'))$('deviceLayerVolume').value=String(state.stringsLayerVolume);if($('deviceLayerVolumeValue'))$('deviceLayerVolumeValue').textContent=`${state.stringsLayerVolume}%`;}
+  if(!state.song){freePlayInstrumentConfig.layerVolume=state.stringsLayerVolume;try{localStorage.setItem('yhwh_piano_strings_volume',String(state.stringsLayerVolume));}catch(_){} }
   syncStringsLayerControls();updateStringsLayerGain();
 }
 function setStringsLayerAttack(value){
@@ -2426,7 +2726,7 @@ function primeStringsLayer(){
 }
 function setStringsLayerEnabled(enabled){
   state.stringsLayerEnabled=!!enabled;
-  try{localStorage.setItem('yhwh_piano_strings_enabled',state.stringsLayerEnabled?'1':'0');}catch(_){}
+  if(!state.song){freePlayInstrumentConfig.layerEnabled=state.stringsLayerEnabled;try{localStorage.setItem('yhwh_piano_strings_enabled',state.stringsLayerEnabled?'1':'0');}catch(_){} }
   syncStringsLayerControls();
   if(audioContext)updateStringsLayerGain();
   if(state.stringsLayerEnabled){void resumeAudioContext(getAudioContext()).catch(()=>{});getStringsLayerGain();primeStringsLayer();}
@@ -2448,7 +2748,7 @@ function instrumentAttackTime(instrument){return instrument==='strings'?state.st
 function instrumentReleaseTime(instrument,sustain=state.sustain){return instrument==='strings'?.9:INSTRUMENTS[instrument]?.release||VSCO2_TRUMPET_PATCHES[instrument]?.release||VSCO2_UPRIGHT_PATCHES[instrument]?.release||(instrument==='headroom-piano'?.8:instrument==='splendid-grand'?.7:instrument==='livingroom-upright-micro'?.9:instrument==='maestro-concert-grand'?.7:instrument==='salamander-grand'?.9:isTrumpetInstrument(instrument)?.25:instrument==='steinway-grand'?.7:(sustain?.9:.32));}
 function setLayerInstrument(value){
   state.layerInstrument=['strings','solo-violin','distorted-guitar','grand-piano','steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand',...Object.keys(VSCO2_UPRIGHT_PATCHES),'trumpet-real','trumpet-vsco2-sus-vib',...Object.keys(VSCO2_TRUMPET_PATCHES),...NEW_INSTRUMENT_IDS].includes(value)?value:'strings';
-  try{localStorage.setItem('yhwh_piano_layer_instrument',state.layerInstrument);}catch(_){}
+  if(!state.song){freePlayInstrumentConfig.layerInstrument=state.layerInstrument;try{localStorage.setItem('yhwh_piano_layer_instrument',state.layerInstrument);}catch(_){} }
   syncStringsLayerControls();
   if(state.stringsLayerEnabled)primeStringsLayer();
 }
@@ -2944,11 +3244,11 @@ async function playMelody() {
 function toggleRecord() {
   if (!state.admin) { toast('Solo Admin puede grabar.'); return; }
   if (state.recording) {
-    state.recording = false; setPlayerControl('recordBtn','⏺','Grabar'); $('status').textContent = `${state.melodyType==='voz'?'Voz principal':'Introducción'} grabada. Asigna los acordes de cada tramo y guarda la pista.`; renderRecorded(); updateTrackTimeline(); return;
+    state.recording = false; setPlayerControl('recordBtn','⏺','Grabar'); $('status').textContent = `${SONG_TRACK_LABELS[state.melodyType]||'Introducción'} grabada. Pulsa Guardar para sincronizarla con esta alabanza.`; renderRecorded(); updateTrackTimeline(); return;
   }
   state.notes = []; state.chords = []; state.chordTarget = null; updateTrackTimeline(); state.recordStart = performance.now(); state.recording = true;
   state.melodyDirty=true;
-  setPlayerControl('recordBtn','⏹','Detener grabación'); $('status').textContent = `Grabando ${state.melodyType==='voz'?'voz principal':'introducción'}… toca las notas.`; renderRecorded();
+  setPlayerControl('recordBtn','⏹','Detener grabación'); $('status').textContent = `Grabando ${SONG_TRACK_LABELS[state.melodyType]||'Introducción'}… toca toda la pista.`; renderRecorded();
 }
 async function saveMelody() {
   if (!state.admin || !state.song || !state.set || !state.ref || !state.db) { toast('Inicia sesión y conéctate para guardar.'); return; }
@@ -2958,6 +3258,10 @@ async function saveMelody() {
   const payload = {
     songId: song.id,
     updatedAt: new Date().toISOString(),
+    instrument:state.instrument,
+    layerEnabled:state.stringsLayerEnabled,
+    layerInstrument:state.layerInstrument,
+    layerVolume:state.stringsLayerVolume,
     tono: transposedTonic(),
     acordes: state.chords.map(chord => { const baked = chord.noTranspose ? { root:String(chord.root), octave:Number(chord.octave)||36 } : bakeChordTranspose(chord, state.transpose); return { noteIndex:Number(chord.noteIndex), start:Number(chordStartTime(chord)?.toFixed(3)||0), root:baked.root, quality:String(chord.quality), inversion:Number(chord.inversion)||0, octave:baked.octave, duration:Number(chord.duration)||2, arpeggio:!!chord.arpeggio, instrument:chord.instrument||state.bassInstrument }; }),
     notas: state.notes.map((note, index, all) => {
@@ -2968,8 +3272,9 @@ async function saveMelody() {
     })
   };
   try {
-    const tracks=melodyTracks(melodyFor(category,song.id));tracks[state.melodyType]=payload;
-    const storedRecord={};if(tracks.introduccion)storedRecord.introduccion=tracks.introduccion;if(tracks.voz)storedRecord.voz=tracks.voz;
+    const source=melodyFor(category,song.id),tracks=melodyTracks(source);tracks[state.melodyType]=payload;
+    tracks.trackSettings={...tracks.trackSettings,[state.melodyType]:{instrument:state.instrument,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume}};
+    const storedRecord=serializeMelodyTracks(source,tracks);
     await state.set(state.ref(state.db, `melodias/${category}/${song.id}`), storedRecord);
     state.melodies[category] ||= {};
     state.melodies[category][String(song.id)] = storedRecord;
@@ -2979,7 +3284,7 @@ async function saveMelody() {
     // Lo guardado ya está en el tono transportado: ese pasa a ser el tono de la pista.
     state.originalTonic = payload.tono; state.transpose = 0; state.chords = payload.acordes.map(chord => ({ ...chord }));
     renderChordPresets(); updateTransposeUI(); renderRecorded();
-    $('playerLabel').textContent=`${state.melodyType==='voz'?'Voz principal':'Introducción'} · Guardada`;
+    $('playerLabel').textContent=`${SONG_TRACK_LABELS[state.melodyType]||'Introducción'} · Guardada`;
     renderLists();
     toast('Melodía guardada y sincronizada.');
     $('status').textContent = 'Melodía guardada.';
@@ -2993,13 +3298,13 @@ async function deleteMelody() {
   if (!state.admin || !state.song || !state.set || !state.ref || !state.db || !hasTrack(state.song.category,state.song.song.id,state.melodyType)) return;
   if (!confirm(`¿Eliminar la pista ${state.melodyType==='voz'?'de voz principal':'de introducción'} de esta alabanza?`)) return;
   try {
-    const tracks=melodyTracks(melodyFor(state.song.category,state.song.song.id));tracks[state.melodyType]=null;
-    const storedRecord={};if(tracks.introduccion)storedRecord.introduccion=tracks.introduccion;if(tracks.voz)storedRecord.voz=tracks.voz;
+    const source=melodyFor(state.song.category,state.song.song.id),tracks=melodyTracks(source);tracks[state.melodyType]=null;
+    const storedRecord=serializeMelodyTracks(source,tracks);
     await state.set(state.ref(state.db, `melodias/${state.song.category}/${state.song.song.id}`), Object.keys(storedRecord).length?storedRecord:null);
     if(Object.keys(storedRecord).length)state.melodies[state.song.category][String(state.song.song.id)]=storedRecord;else delete state.melodies[state.song.category][String(state.song.song.id)];
     state.notes = []; state.chords = []; state.chordTarget = null; state.melodyDirty=false; renderRecorded(); updateTrackTimeline(); updateAdminControls();
-    $('playerLabel').textContent=state.melodyType==='voz'?'Voz principal':'Introducción';
-    $('status').textContent=`Se eliminó la pista de ${state.melodyType==='voz'?'voz principal':'introducción'}.`;
+    $('playerLabel').textContent=SONG_TRACK_LABELS[state.melodyType]||'Introducción';
+    $('status').textContent=`Se eliminó la pista ${SONG_TRACK_LABELS[state.melodyType]||'Introducción'}.`;
     try{localStorage.setItem('yhwh_melodias_cache',JSON.stringify(state.melodies));}catch(_){}
     renderLists();toast('Pista eliminada.');
   } catch (_) { toast('No se pudo eliminar.'); }
@@ -3040,21 +3345,27 @@ function bindInterface() {
     $('playModeSongTitle').textContent=song.title||'Alabanza';
     syncModeScreen();
     transitionScreen('playModeModal',['homeView','songView','createView','theoryView','player','playModeModal']);
+    queueGuidedTour('modo');
   };
   $('freePlayBtn').onclick = openFreePlay;
   document.querySelectorAll('[data-go-home]').forEach(button => button.onclick = () => setView('home'));
   document.querySelectorAll('[data-track-select]').forEach(button=>button.onclick=()=>chooseTrack(button.dataset.trackSelect));
   $('closeTrackModal').onclick=closeTrackChooser;
   $('trackModal').onclick=event=>{if(event.target===$('trackModal'))closeTrackChooser();};
-  $('continueSongBtn').onclick=()=>{if(!selectedSongForContinue)return;$('playModeSongTitle').textContent=selectedSongForContinue.song.title||'Alabanza';syncModeScreen();transitionScreen('playModeModal',['homeView','songView','createView','theoryView','player','playModeModal']);};
+  $('continueSongBtn').onclick=()=>{if(!selectedSongForContinue)return;$('playModeSongTitle').textContent=selectedSongForContinue.song.title||'Alabanza';syncModeScreen();transitionScreen('playModeModal',['homeView','songView','createView','theoryView','player','playModeModal']);queueGuidedTour('modo');};
+  $('createContinueBtn').onclick=openCreateTrackScreen;
+  $('createTracksBack').onclick=()=>{document.body.classList.add('create-list-active');transitionScreen('createView',['homeView','songView','createView','createTrackScreen','player']);};
+  document.querySelectorAll('[data-record-track]').forEach(button=>button.onclick=()=>beginCreateTrack(button.dataset.recordTrack));
+  document.querySelector('[data-open-song-track-settings]').onclick=openCreateTrackSettings;
   $('selectedPreviewBtn').onclick=()=>{if(!selectedSongForContinue){toast('Selecciona una alabanza primero.');return;}previewSongInList(selectedSongForContinue.song,selectedSongForContinue.category,$('selectedPreviewBtn'));};
   $('closePlayMode').onclick=()=>transitionScreen('songView',['homeView','songView','createView','theoryView','player','playModeModal']);
   document.querySelectorAll('[data-screen-settings]').forEach(button=>button.onclick=()=>{
+    state.pendingPurpose='listen';
     const track=selectedSongForContinue&&trackFor(selectedSongForContinue.category,selectedSongForContinue.song.id,'introduccion');
     if($('modeMelodyMeta'))$('modeMelodyMeta').textContent=`${track?.notas?.length||0} notas · Canal 1`;
-    transitionScreen('instrumentSettingsScreen',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen']);
+    transitionScreen('instrumentSettingsScreen',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen']);queueGuidedTour('instrumentos');
   });
-  $('closeInstrumentSettings').onclick=()=>transitionScreen('playModeModal',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen']);
+  $('closeInstrumentSettings').onclick=()=>{if(state.pendingPurpose==='create'){ $('instrumentSettingsScreen').classList.remove('create-track-settings-mode');$('songTrackSettings').classList.add('hidden');transitionScreen('createTrackScreen',['homeView','songView','createView','theoryView','player','createTrackScreen','instrumentSettingsScreen']);}else transitionScreen('playModeModal',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen']);};
   $('instrumentHelpButton').onclick=()=>{const dialog=$('instrumentHelpDialog');if(dialog?.showModal)dialog.showModal();};
   $('instrumentSettingsReset').onclick=()=>{applyInstrumentSettingsPreset({instrument:'grand-piano',bassInstrument:'grand-piano',keyColor:'#90dd4a',bassColor:'#bb82ef',second:'down',third:'down'});updateInstrumentSoundToggle('melody',true);updateInstrumentSoundToggle('bass',true);};
   $('instrumentColorAuto').onclick=()=>applyInstrumentSettingsPreset({keyColor:'#90dd4a',bassColor:'#bb82ef'});
@@ -3066,14 +3377,22 @@ function bindInterface() {
   document.querySelectorAll('[data-play-mode]').forEach(button=>button.onclick=()=>selectPlayMode(button.dataset.playMode));
   $('modeStartBtn').onclick=()=>{
     if(selectedPlayMode==='settings'){
+      state.pendingPurpose='listen';
       const track=selectedSongForContinue&&trackFor(selectedSongForContinue.category,selectedSongForContinue.song.id,'introduccion');
       if($('modeMelodyMeta'))$('modeMelodyMeta').textContent=`${track?.notas?.length||0} notas · Canal 1`;
       transitionScreen('instrumentSettingsScreen',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen']);
+      queueGuidedTour('instrumentos');
       return;
     }
     beginSelectedSong(selectedPlayMode);
   };
   document.querySelectorAll('[data-mode-tab]').forEach(button=>button.onclick=()=>showModeScreenTab(button.dataset.modeTab));
+  $('songSettingsTrack').onchange=()=>{selectedCreateTrack=$('songSettingsTrack').value;syncSongTrackSettingsForm(selectedCreateTrack);};
+  $('songTrackInstrument').onchange=saveSongTrackSettings;
+  $('songTrackLayerEnabled').onchange=saveSongTrackSettings;
+  $('songTrackLayerInstrument').onchange=saveSongTrackSettings;
+  $('songTrackLayerVolume').oninput=()=>{$('songTrackLayerVolumeValue').textContent=`${$('songTrackLayerVolume').value}%`;if(selectedCreateSong&&$('songSettingsTrack').value===state.melodyType)applySongTrackInstrument({...instrumentTrackConfig(selectedCreateSong.category,selectedCreateSong.song.id,state.melodyType),layerEnabled:$('songTrackLayerEnabled').checked,layerInstrument:$('songTrackLayerInstrument').value,layerVolume:Number($('songTrackLayerVolume').value)});};
+  $('songTrackLayerVolume').onchange=saveSongTrackSettings;
   document.querySelectorAll('[data-play-mode]').forEach(button=>['focus','pointerenter'].forEach(signal=>button.addEventListener(signal,()=>{
     const copy={listen:['Solo ver y escuchar','Reproduce automáticamente la alabanza completa.'],practice:['Practicar melodía','Las notas de la melodía esperan a que las toques para avanzar.'],second:['Escuchar segunda voz','Reproduce únicamente la segunda voz generada según la dirección elegida.'],third:['Escuchar tercera voz','Reproduce únicamente la tercera voz generada según la dirección elegida.']}[button.dataset.playMode];
     if(copy)selectPlayMode(button.dataset.playMode);
@@ -3141,11 +3460,11 @@ function bindInterface() {
   $('backBtn').onclick = () => {
     if(!confirmDiscardUnsavedMelody())return;
   clearSongIntro();stopPlayback();stopTheorySequence();stopMetronome();closePlayerPopovers();closeLiveTheoryDock();state.recording=false;
-    const returnTo=state.view==='libre'?'homeView':state.view==='crear'?'createView':state.view==='teoria'?'theoryView':'songView';
+    const returnTo=state.view==='libre'?'homeView':state.view==='crear'?'createTrackScreen':state.view==='teoria'?'theoryView':'songView';
     document.body.classList.toggle('song-list-active',returnTo==='songView');
     document.body.classList.toggle('create-list-active',returnTo==='createView');
     document.body.classList.toggle('home-active',returnTo==='homeView');
-    transitionScreen(returnTo,['homeView','songView','createView','theoryView','player']);
+    transitionScreen(returnTo,['homeView','songView','createView','createTrackScreen','instrumentSettingsScreen','theoryView','player']);
     renderLists();
   };
   $('playMelody').onclick = () => practiceRun ? stopPlayback() : state.playMode==='practice' ? startPracticeMelody() : playMelody();
@@ -3170,9 +3489,10 @@ function bindInterface() {
   $('tapTempo').onclick = tapMetronomeTempo;
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMetronome();});
   if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', event => {
-    if (event.data?.type === 'AUDIO_CACHE_STARTED') $('offlineStatus').textContent = 'Descargando sonidos para usar sin conexión…';
-    if (event.data?.type === 'AUDIO_CACHE_PROGRESS') $('offlineStatus').textContent = `Descargando sonidos para usar sin conexión… ${event.data.done}/${event.data.total}`;
-    if (event.data?.type === 'AUDIO_CACHE_DONE') { offlineAudioDownloadRunning=false; $('offlineStatus').textContent = `Listo. ${event.data.done} sonidos guardados para usar sin conexión.`; }
+    if (event.data?.type === 'AUDIO_CACHE_STATUS') refreshHomeAudioStatus(event.data.cached,event.data.total,false);
+    if (event.data?.type === 'AUDIO_CACHE_STARTED') refreshHomeAudioStatus(homeAudioCacheStatus.cached,homeAudioCacheStatus.total,true);
+    if (event.data?.type === 'AUDIO_CACHE_PROGRESS') refreshHomeAudioStatus(event.data.cached,event.data.total,true);
+    if (event.data?.type === 'AUDIO_CACHE_DONE') { offlineAudioDownloadRunning=false; refreshHomeAudioStatus(event.data.done,event.data.total,false); }
     if (event.data?.type === 'AUDIO_CACHE_ERROR') { offlineAudioDownloadRunning=false; $('offlineStatus').textContent = `La descarga quedó incompleta (${event.data.done}/${event.data.total}). Se reanudará cuando haya conexión.`; }
   });
   $('stopMelody').onclick = () => {
@@ -3190,6 +3510,8 @@ function bindInterface() {
   window.addEventListener('resize',()=>{keyBaseWidthCache=0;stageLastKeyWidth=-1;fallingNotesGeometry=null;syncStageScroll();},{passive:true});
   $('keyboardNotation').onchange = event => {
     state.notation = ['ninguno','octavas','americano','latino','movil','grados','simple'].includes(event.target.value)?event.target.value:'americano';
+    deviceSettings.noteNotation=state.notation==='latino'?'latino':'americano';
+    saveDeviceSettings();
     try { localStorage.setItem('yhwh_piano_note_labels',state.notation);localStorage.setItem('yhwh_cifrado_latino', state.notation === 'latino' ? '1' : '0'); } catch (_) {}
     renderKeyboard(); renderRecorded(); renderTheory();
     if (state.lastMidi !== null) $('currentNote').textContent = noteName(state.lastMidi);
@@ -3204,7 +3526,6 @@ function bindInterface() {
   $('chordsViewToggle').onclick=toggleLyricsPanel;
   $('settingsToggle').onclick=()=>togglePlayerPopover('playerSettings');
   $('closeSettings').onclick=()=>closePlayerPopovers();
-  $('chordEditorToggle').onclick=toggleChordEditor;
   $('closeChordEditor').onclick=()=>{chordEditorOpen=false;closePlayerPopovers();};
   $('closeNotes').onclick=()=>{$('notesPanel').dataset.open='';updateVisualOptions();};
   $('keyColorPicker').value=state.keyColor;
@@ -3214,8 +3535,8 @@ function bindInterface() {
   {const glowSwitch=$('fxGlowSwitch'),lightSwitch=$('lightKeysSwitch'),colorSwitch=$('keyColorOnSwitch'),edgeSwitch=$('keyEdgeSwitch');
     const save=(key,on)=>{try{localStorage.setItem(key,on?'1':'0');}catch(_){}};
     const applyKeyLook=()=>{document.body.classList.toggle('keys-no-color',!keyColorOn);document.body.classList.toggle('keys-edge',keyEdge);document.body.classList.toggle('keys-fill-off',!lightKeys);if(colorSwitch)colorSwitch.disabled=!(lightKeys||keyEdge);};
-    if(glowSwitch){glowSwitch.checked=fxGlow;glowSwitch.onchange=event=>{fxGlow=event.target.checked;save('yhwh_piano_fx_glow',fxGlow);};}
-    if(lightSwitch){lightSwitch.checked=lightKeys;lightSwitch.onchange=event=>{lightKeys=event.target.checked;save('yhwh_piano_light_keys',lightKeys);applyKeyLook();};}
+    if(glowSwitch){glowSwitch.checked=fxGlow;glowSwitch.onchange=event=>{fxGlow=event.target.checked;deviceSettings.fxGlow=fxGlow;save('yhwh_piano_fx_glow',fxGlow);if($('deviceGlowEnabled'))$('deviceGlowEnabled').checked=fxGlow;updateDeviceSettingsPreview();saveDeviceSettings();};}
+    if(lightSwitch){lightSwitch.checked=lightKeys;lightSwitch.onchange=event=>{lightKeys=event.target.checked;deviceSettings.lightKeys=lightKeys;save('yhwh_piano_light_keys',lightKeys);applyKeyLook();if($('deviceKeyLightEnabled'))$('deviceKeyLightEnabled').checked=lightKeys;saveDeviceSettings();};}
     if(colorSwitch){colorSwitch.checked=keyColorOn;colorSwitch.onchange=event=>{keyColorOn=event.target.checked;save('yhwh_piano_key_color_on',keyColorOn);applyKeyLook();};}
     if(edgeSwitch){edgeSwitch.checked=keyEdge;edgeSwitch.onchange=event=>{keyEdge=event.target.checked;save('yhwh_piano_key_edge',keyEdge);applyKeyLook();};}
     applyKeyLook();}
@@ -3250,7 +3571,7 @@ function bindInterface() {
     state.instrument = ['steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand',...Object.keys(VSCO2_UPRIGHT_PATCHES),'trumpet-real','trumpet-vsco2-sus-vib',...Object.keys(VSCO2_TRUMPET_PATCHES),'strings','solo-violin','distorted-guitar',...NEW_INSTRUMENT_IDS].includes(event.target.value) ? event.target.value : 'grand-piano';
     syncDynamicLayerControl(state.instrument);
     syncPianoLayerControl(state.instrument);
-    try { localStorage.setItem('yhwh_piano_instrument', state.instrument); } catch (_) {}
+    if(!state.song){freePlayInstrumentConfig.instrument=state.instrument;try { localStorage.setItem('yhwh_piano_instrument', state.instrument); } catch (_) {}}
     primeAudioForInstrument(state.instrument);
     syncInstrumentButtons();
     $('status').textContent = `Instrumento seleccionado: ${instrumentLabel(state.instrument)}.`;
@@ -3319,13 +3640,12 @@ function bindInterface() {
 }
 async function downloadOfflineAudio() {
   const status=$('offlineStatus');
-  if (!navigator.onLine) { status.textContent='Los sonidos se descargarán automáticamente cuando vuelva la conexión.'; return; }
   if (offlineAudioDownloadRunning) return;
   if (!('serviceWorker' in navigator)) { status.textContent='Este navegador no permite guardar sonidos para usarlos sin conexión.'; return; }
-  offlineAudioDownloadRunning=true; status.textContent='Preparando descarga automática de sonidos…';
+  if(navigator.onLine){offlineAudioDownloadRunning=true;status.textContent='Preparando descarga automática de sonidos…';}
   try {
     const registration=await navigator.serviceWorker.ready;
-    await registration.update();
+    if(navigator.onLine)await registration.update();
     if(registration.installing){
       const installing=registration.installing;
       await new Promise(resolve=>{
@@ -3335,10 +3655,11 @@ async function downloadOfflineAudio() {
     }
     const worker=registration.active||navigator.serviceWorker.controller;
     if (!worker) throw new Error('El trabajador sin conexión no está disponible.');
-    worker.postMessage({type:'CACHE_ALL_AUDIO'});
+    worker.postMessage({type:'GET_AUDIO_CACHE_STATUS'});
+    if(navigator.onLine)worker.postMessage({type:'CACHE_ALL_AUDIO'});
   } catch(error) {
     offlineAudioDownloadRunning=false;
-    status.textContent='La descarga automática se reintentará cuando haya conexión.';
+    status.textContent=navigator.onLine?'La descarga automática se reintentará cuando haya conexión.':'No se pudo consultar cuántos sonidos están guardados.';
     console.error('Error iniciando la descarga sin conexión:',error);
   }
 }
@@ -3410,7 +3731,7 @@ function initializeFirebase() {
         state.chords = (syncedMelody.acordes||[]).map(chord => ({ ...chord }));
         state.originalTonic = parseTonic(syncedMelody.tono) || state.songTonic || 'C'; state.transpose = 0;
         updateTrackTimeline();
-        renderChordPresets(); updateTransposeUI(); renderRecorded(); $('playerLabel').textContent = `${state.melodyType==='voz'?'Voz principal':'Introducción'}${syncedMelody.notas?.length?' · Guardada':''}`; updateAdminControls();
+        renderChordPresets(); updateTransposeUI(); renderRecorded(); $('playerLabel').textContent = `${SONG_TRACK_LABELS[state.melodyType]||'Introducción'}${syncedMelody.notas?.length?' · Guardada':''}`; updateAdminControls();
       }
     }, () => {
       $('connection').textContent = '📴 Sin conexión con Firebase'; $('connection').className = 'connection offline';
@@ -3422,13 +3743,180 @@ function initializeFirebase() {
   });
 }
 
+function saveDeviceSettings(){try{localStorage.setItem(DEVICE_SETTINGS_KEY,JSON.stringify(deviceSettings));}catch(_){$('deviceBackgroundStatus')&&($('deviceBackgroundStatus').textContent='No hay espacio para guardar la personalización en este dispositivo.');}}
+function setDeviceTheme(theme){
+  const next=theme==='dark'?'dark':'light';deviceSettings.theme=next;
+  if(deviceSettings.theme==='dark')document.documentElement.setAttribute('data-theme','dark');else document.documentElement.removeAttribute('data-theme');
+  try{localStorage.setItem('piano_theme',deviceSettings.theme);}catch(_){}
+  const dark=deviceSettings.theme==='dark';
+  ['themeToggle','songThemeToggle','createThemeToggle'].forEach(id=>{const button=$(id);if(button){button.textContent=dark?'☀️':'🌙';button.setAttribute('aria-label',dark?'Cambiar a modo claro':'Cambiar a modo oscuro');button.title=dark?'Modo claro':'Modo oscuro';}});
+  const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=dark?'#0d0d14':'#1187b9';
+  applyDeviceCustomization();saveDeviceSettings();
+}
+let appliedDeviceHeadingStyle=null;
+function applyDeviceHeadingSizes(){
+  const signature=[deviceSettings.headingSize,deviceSettings.headingFont,deviceSettings.headingText||deviceSettings.headingColor,deviceSettings.text].join('|');
+  if(appliedDeviceHeadingStyle===signature)return;
+  appliedDeviceHeadingStyle=signature;
+  document.querySelectorAll('h1,h2,h3').forEach(element=>{element.style.setProperty('font-size',`${deviceSettings.headingSize}px`,'important');element.style.setProperty('font-family',deviceSettings.headingFont,'important');const color=element.closest('.track-modal-card')?deviceSettings.text:(deviceSettings.headingText||deviceSettings.headingColor);element.style.setProperty('color',color,'important');});
+}
+function applyDeviceCustomization(){
+  const palette=deviceSettings[deviceSettings.theme==='dark'?'paletteDark':'paletteLight']||DEVICE_THEME_PALETTES[deviceSettings.theme==='dark'?'dark':'light'];
+  Object.assign(deviceSettings,palette);
+  deviceSettings.headingColor=deviceSettings.headingText||deviceSettings.headingColor;
+  applyDeviceHeadingSizes();
+  const root=document.documentElement;root.classList.add('device-customization-enabled');
+  const css={
+    '--gold':deviceSettings.primary,'--gold2':deviceSettings.accent,'--bg':deviceSettings.page,'--panel':deviceSettings.surface,
+    '--panel2':`color-mix(in srgb, ${deviceSettings.surface} 84%, ${deviceSettings.primary})`,'--line':deviceSettings.line,'--text':deviceSettings.text,
+    '--muted':`color-mix(in srgb, ${deviceSettings.text} 65%, transparent)`,'--device-page-color':deviceSettings.page,'--device-surface-color':deviceSettings.surface,
+    '--device-text-color':deviceSettings.text,'--device-line-color':deviceSettings.line,'--device-option-panel-color':deviceSettings.optionPanel||deviceSettings.surface,'--device-heading-background':deviceSettings.headingBackground||deviceSettings.primary,'--device-heading-text':deviceSettings.headingText||'#ffffff','--device-offline-card-background':deviceSettings.offlineCardBackground||deviceSettings.surface,'--device-offline-card-text':deviceSettings.offlineCardText||deviceSettings.text,'--device-font':deviceSettings.font,'--device-font-size':`${deviceSettings.fontSize}px`,
+    '--device-heading-size':`${deviceSettings.headingSize}px`,'--device-heading-font':deviceSettings.headingFont,'--device-heading-color':deviceSettings.headingText||deviceSettings.headingColor,'--device-icon-color':deviceSettings.iconColor,'--device-mobile-heading-size':`${deviceSettings.mobileHeadingSize||18}px`,'--device-mobile-menu-button-height':`${deviceSettings.homeButtonHeight||46}px`,'--device-radius':`${deviceSettings.radius}px`,'--device-note-label-size':`${deviceSettings.noteLabelSize}px`,
+    '--device-note-label-color':deviceSettings.noteLabelColor||'#111111','--device-key-label-color':deviceSettings.keyLabelColor||'#636a6c','--device-key-label-size':`${deviceSettings.keyLabelSize||9}px`,'--device-octave-label-color':deviceSettings.octaveLabelColor||'#bd9e00','--device-octave-label-size':`${deviceSettings.octaveLabelSize||11}px`,'--device-piano-image-blur':`${deviceSettings.pianoImageBlur||0}px`,'--device-piano-image-opacity':`${Number(deviceSettings.pianoImageOpacity??34)/100}`,'--device-accent-color':deviceSettings.accent,
+    '--device-melody-color':deviceSettings.melodyColor,'--device-bass-color':deviceSettings.bassColor
+  };
+  Object.entries(css).forEach(([name,value])=>root.style.setProperty(name,value));
+  const base=Number.parseFloat(getComputedStyle(document.querySelector('#noteCanvas')||document.body).getPropertyValue('--stage-key-width'))||40;
+  const gridSpacing=Math.max(1,Math.min(12,Number(deviceSettings.gridSpacing)||4)),gridSize=`calc(${Array(gridSpacing).fill(`var(--stage-key-width, ${base}px)`).join(' + ')})`;
+  root.style.setProperty('--device-grid-spacing',gridSize);
+  const stageGrid=document.querySelector('#noteCanvas .canvas-grid');if(stageGrid){stageGrid.style.setProperty('background-size',`${gridSize} 100%,100% 100%`,'important');stageGrid.style.setProperty('--stage-key-width',`${base}px`);}
+  const deviceBackground=`linear-gradient(135deg,${deviceSettings.page},${deviceSettings.surface})`;
+  root.style.setProperty('--device-home-background',deviceBackground);
+  root.style.setProperty('--device-app-background',deviceBackground);
+  root.style.setProperty('--device-piano-background-image',deviceSettings.backgroundImage?`url("${deviceSettings.backgroundImage}")`:'none');
+  $('noteCanvas')?.classList.toggle('has-device-background',!!deviceSettings.backgroundImage);
+  if(deviceSettings.theme==='dark')root.setAttribute('data-theme','dark');else root.removeAttribute('data-theme');
+  const brand=$('homeBtn')?.querySelector('b');if(brand)brand.textContent=deviceSettings.brand;
+  const actionTexts=[['[data-view="adoracion"] b',deviceSettings.worship],['[data-view="jubilo"] b',deviceSettings.joy],['#freePlayBtn b',deviceSettings.freePlay],['[data-view="crear"] b',deviceSettings.create],['[data-view="teoria"] b',deviceSettings.theory]];
+  actionTexts.forEach(([selector,text])=>{const target=document.querySelector(selector);if(target)target.textContent=text;});
+  if($('devicePreviewBrand'))$('devicePreviewBrand').textContent=deviceSettings.brand;
+  const preview=$('devicePreviewCard');if(preview){preview.style.fontFamily=deviceSettings.font;preview.style.fontSize=`${deviceSettings.fontSize}px`;preview.style.borderRadius=`${deviceSettings.radius}px`;preview.style.color=deviceSettings.text;preview.style.backgroundColor=deviceSettings.surface;preview.style.backgroundImage=`linear-gradient(145deg,${deviceSettings.surface},${deviceSettings.page})`;}
+  if($('devicePreviewHeading')){$('devicePreviewHeading').style.color=deviceSettings.headingText||deviceSettings.headingColor;$('devicePreviewHeading').style.background=deviceSettings.headingBackground||deviceSettings.primary;$('devicePreviewHeading').style.padding='7px 10px';$('devicePreviewHeading').style.borderRadius='7px';$('devicePreviewHeading').style.fontFamily=deviceSettings.headingFont;$('devicePreviewHeading').style.fontSize=`${deviceSettings.headingSize}px`;}
+  if($('devicePreviewIcon'))$('devicePreviewIcon').style.color=deviceSettings.iconColor;
+  if($('devicePreviewButton')){$('devicePreviewButton').style.background=deviceSettings.primary;$('devicePreviewButton').style.borderRadius=`${deviceSettings.radius}px`;}
+  ['devicePreviewNote','devicePreviewPianoNote'].forEach(id=>{const note=$(id);if(note){note.textContent=fallingNoteName(60);note.style.color=deviceSettings.noteLabelColor||'#111111';note.style.fontSize=`${deviceSettings.noteLabelSize}px`;}});
+  const keyLabelPreview=$('devicePreviewKeyLabel');if(keyLabelPreview){keyLabelPreview.style.color=deviceSettings.keyLabelColor;keyLabelPreview.style.fontSize=`${deviceSettings.keyLabelSize}px`;}
+  const octaveLabelPreview=$('devicePreviewOctaveLabel');if(octaveLabelPreview){octaveLabelPreview.style.color=deviceSettings.octaveLabelColor;octaveLabelPreview.style.fontSize=`${deviceSettings.octaveLabelSize}px`;}
+  const previewBg=$('devicePianoPreview')?.querySelector('.device-piano-preview-bg');if(previewBg){previewBg.style.backgroundImage=deviceSettings.backgroundImage?`url("${deviceSettings.backgroundImage}")`:'none';previewBg.style.filter=`blur(${deviceSettings.pianoImageBlur||0}px)`;previewBg.style.opacity=String(Number(deviceSettings.pianoImageOpacity??34)/100);}
+  const previewBar=$('devicePreviewPianoNote')?.parentElement;if(previewBar){previewBar.style.background=deviceSettings.melodyColor;previewBar.style.color=deviceSettings.noteLabelColor||'#111111';}
+  const soundBar=$('devicePreviewStyle');if(soundBar)soundBar.textContent=({bars:'Barras completas',melody:'Solo melodía',drops:'Gotas',off:'Sin barras'})[fallingNotesStyle]||'Barras completas';
+  if($('devicePreviewEffects'))$('devicePreviewEffects').textContent=fxGlow||fallingFlowEnabled?'Efectos activados':'Efectos apagados';
+  const volumeMeter=$('devicePreviewVolume')?.querySelector('i');if(volumeMeter)volumeMeter.style.width=`${Math.max(0,Math.min(100,state.masterVolume*50))}%`;
+  const textPreview={devicePreviewBrandText:deviceSettings.brand,devicePreviewWorship:deviceSettings.worship,devicePreviewJoy:deviceSettings.joy,devicePreviewFreePlay:deviceSettings.freePlay};Object.entries(textPreview).forEach(([id,value])=>{if($(id))$(id).textContent=value;});
+}
+function updateDeviceSettingsPreview(){
+  applyDeviceCustomization();
+  const selectedTheme=$('devicePaletteTheme')?.value==='dark'?'dark':'light',selectedPalette=deviceSettings[selectedTheme==='dark'?'paletteDark':'paletteLight']||DEVICE_THEME_PALETTES[selectedTheme],colorPreview=$('devicePianoPreview');
+  if(colorPreview){colorPreview.style.background=`linear-gradient(145deg,${selectedPalette.page},${selectedPalette.surface})`;colorPreview.style.color=selectedPalette.text;colorPreview.style.borderColor=selectedPalette.line;Object.entries({'--device-page-color':selectedPalette.page,'--device-surface-color':selectedPalette.surface,'--device-text-color':selectedPalette.text,'--device-line-color':selectedPalette.line,'--device-option-panel-color':selectedPalette.optionPanel||selectedPalette.surface,'--device-heading-background':selectedPalette.headingBackground||selectedPalette.primary,'--device-heading-text':selectedPalette.headingText||'#ffffff','--device-accent-color':selectedPalette.accent,'--device-melody-color':deviceSettings.melodyColor}).forEach(([name,value])=>colorPreview.style.setProperty(name,value));}
+  const popupPreview=$('devicePreviewPopup');if(popupPreview){popupPreview.style.background=selectedPalette.optionPanel||selectedPalette.surface;popupPreview.style.color=selectedPalette.text;popupPreview.style.borderColor=selectedPalette.line;}
+  const headingPreview=$('devicePianoPreview')?.querySelector('.device-piano-preview-title');if(headingPreview){headingPreview.style.background=selectedPalette.headingBackground||selectedPalette.primary;headingPreview.style.color=selectedPalette.headingText||'#fff';}
+  const offlinePreview=$('devicePreviewOffline');if(offlinePreview){offlinePreview.style.background=selectedPalette.offlineCardBackground||selectedPalette.surface;offlinePreview.style.color=selectedPalette.offlineCardText||selectedPalette.text;offlinePreview.style.borderColor=selectedPalette.line;}
+  const colorPreviewTheme=$('deviceColorPreviewTheme');if(colorPreviewTheme)colorPreviewTheme.textContent=`Vista previa del tema ${selectedTheme==='dark'?'oscuro':'claro'}`;
+  const heading=$('devicePreviewHeading');if(heading)heading.style.fontSize=`${deviceSettings.headingSize}px`;
+  document.querySelectorAll('[data-device-value]').forEach(output=>{const input=$(output.dataset.deviceValue);if(!input)return;const suffix=input.id==='deviceGridSpacing'?' teclas':input.id==='deviceRadius'?' px':input.id==='deviceFontSize'||input.id==='deviceHeadingSize'||input.id==='deviceNoteLabelSize'?' px':'';output.textContent=`${input.value}${suffix}`;});
+}
+function populateDeviceSettingsForm(){
+  const palette=deviceSettings[deviceSettings.theme==='dark'?'paletteDark':'paletteLight']||DEVICE_THEME_PALETTES.light;
+  const paletteLabel=deviceSettings.theme==='dark'?'tema oscuro':'tema claro';
+  [['devicePrimaryColorLabel','Color principal de la app'],['deviceAccentColorLabel','Color de acento'],['devicePageColorLabel','Fondo general de la app'],['deviceSurfaceColorLabel','Fondo de tarjetas y secciones'],['deviceOptionPanelColorLabel','Fondo de paneles emergentes del piano'],['deviceHeadingBackgroundColorLabel','Fondo de encabezados'],['deviceHeadingTextColorLabel','Letras de encabezados'],['deviceOfflineCardBackgroundColorLabel','Fondo del cuadro de sonidos descargados'],['deviceOfflineCardTextColorLabel','Letras del cuadro de sonidos descargados'],['deviceTextColorLabel','Color del texto general'],['deviceLineColorLabel','Color de bordes y líneas']].forEach(([id,label])=>{if($(id))$(id).textContent=`${label} · ${paletteLabel}`;});
+  const values={deviceTheme:deviceSettings.theme,devicePaletteTheme:deviceSettings.theme,deviceFont:deviceSettings.font,deviceFontSize:deviceSettings.fontSize,deviceHeadingFont:deviceSettings.headingFont,deviceIconColor:deviceSettings.iconColor,deviceHeadingSize:deviceSettings.headingSize,deviceMobileHeadingSize:deviceSettings.mobileHeadingSize,deviceHomeButtonHeight:deviceSettings.homeButtonHeight,deviceRadius:deviceSettings.radius,devicePrimaryColor:palette.primary,deviceAccentColor:palette.accent,devicePageColor:palette.page,deviceSurfaceColor:palette.surface,deviceOptionPanelColor:palette.optionPanel||palette.surface,deviceHeadingBackgroundColor:palette.headingBackground||palette.primary,deviceHeadingTextColor:palette.headingText||'#ffffff',deviceOfflineCardBackgroundColor:palette.offlineCardBackground||palette.surface,deviceOfflineCardTextColor:palette.offlineCardText||palette.text,deviceTextColor:palette.text,deviceLineColor:palette.line,devicePianoImageBlur:deviceSettings.pianoImageBlur,devicePianoImageOpacity:deviceSettings.pianoImageOpacity,deviceBrandText:deviceSettings.brand,deviceWorshipText:deviceSettings.worship,deviceJoyText:deviceSettings.joy,deviceFreePlayText:deviceSettings.freePlay,deviceCreateText:deviceSettings.create,deviceTheoryText:deviceSettings.theory,deviceNoteNotation:deviceSettings.noteNotation,deviceNoteLabelSize:deviceSettings.noteLabelSize,deviceNoteLabelColor:deviceSettings.noteLabelColor,deviceKeyLabelColor:deviceSettings.keyLabelColor,deviceKeyLabelSize:deviceSettings.keyLabelSize,deviceOctaveLabelColor:deviceSettings.octaveLabelColor,deviceOctaveLabelSize:deviceSettings.octaveLabelSize,deviceGridSpacing:deviceSettings.gridSpacing,deviceMelodyColor:deviceSettings.melodyColor,deviceBassColor:deviceSettings.bassColor,deviceMasterVolume:Math.round(state.masterVolume*100),deviceLayerVolume:state.stringsLayerVolume,deviceFallingStyle:fallingNotesStyle};
+  Object.entries(values).forEach(([id,value])=>{const control=$(id);if(control)control.value=String(value);});
+  [['deviceLayerEnabled',state.stringsLayerEnabled],['deviceGlowEnabled',fxGlow],['deviceBarFlowEnabled',fallingFlowEnabled],['deviceKeyLightEnabled',lightKeys]].forEach(([id,value])=>{const control=$(id);if(control)control.checked=!!value;});
+  const file=$('deviceBackgroundImage');if(file)file.value='';
+  if($('deviceBackgroundStatus'))$('deviceBackgroundStatus').textContent=deviceSettings.backgroundImage?'Imagen del piano guardada en este dispositivo.':'';
+  const outputs={deviceFontSizeValue:`${deviceSettings.fontSize} px`,deviceHeadingSizeValue:`${deviceSettings.headingSize} px`,deviceMobileHeadingSizeValue:`${deviceSettings.mobileHeadingSize} px`,deviceHomeButtonHeightValue:`${deviceSettings.homeButtonHeight} px`,deviceRadiusValue:`${deviceSettings.radius} px`,deviceNoteLabelSizeValue:`${deviceSettings.noteLabelSize} px`,deviceKeyLabelSizeValue:`${deviceSettings.keyLabelSize} px`,deviceOctaveLabelSizeValue:`${deviceSettings.octaveLabelSize} px`,deviceGridSpacingValue:`${deviceSettings.gridSpacing} teclas`,devicePianoImageBlurValue:`${deviceSettings.pianoImageBlur} px`,devicePianoImageOpacityValue:`${deviceSettings.pianoImageOpacity}%`,deviceMasterVolumeValue:`${Math.round(state.masterVolume*100)}%`,deviceLayerVolumeValue:`${state.stringsLayerVolume}%`};
+  Object.entries(outputs).forEach(([id,text])=>{if($(id))$(id).textContent=text;});
+}
+function initializeDeviceSettings(){
+  applyDeviceCustomization();populateDeviceSettingsForm();
+  const syncPreviewVisibility=tab=>{const hidden=tab==='library';$('deviceSettingsPreview')?.classList.toggle('hidden',hidden);document.querySelector('.device-settings-workspace')?.classList.toggle('without-preview',hidden);};
+  const open=()=>{deviceSettings.theme=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';saveDeviceSettings();populateDeviceSettingsForm();syncPreviewVisibility(document.querySelector('[data-device-tab].active')?.dataset.deviceTab);transitionScreen('deviceSettingsScreen',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen']);queueGuidedTour('configuracion');};
+  $('deviceSettingsBtn').onclick=open;
+  $('replayQuickGuide')?.addEventListener('click',replayQuickGuide);
+  $('closeDeviceSettings').onclick=()=>transitionScreen('homeView',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen']);
+  document.querySelectorAll('[data-device-tab]').forEach(button=>button.onclick=()=>{
+    document.querySelectorAll('[data-device-tab]').forEach(item=>{const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active));});
+    document.querySelectorAll('[data-device-panel]').forEach(panel=>panel.classList.toggle('hidden',panel.dataset.devicePanel!==button.dataset.deviceTab));
+    document.querySelectorAll('[data-device-preview]').forEach(panel=>panel.classList.toggle('hidden',panel.dataset.devicePreview!==button.dataset.deviceTab));
+    syncPreviewVisibility(button.dataset.deviceTab);
+    updateDeviceSettingsPreview();
+  });
+  const bindings={deviceFont:'font',deviceFontSize:'fontSize',deviceHeadingFont:'headingFont',deviceIconColor:'iconColor',deviceHeadingSize:'headingSize',deviceMobileHeadingSize:'mobileHeadingSize',deviceHomeButtonHeight:'homeButtonHeight',deviceRadius:'radius',devicePrimaryColor:'primary',deviceAccentColor:'accent',devicePageColor:'page',deviceSurfaceColor:'surface',deviceOptionPanelColor:'optionPanel',deviceHeadingBackgroundColor:'headingBackground',deviceHeadingTextColor:'headingText',deviceOfflineCardBackgroundColor:'offlineCardBackground',deviceOfflineCardTextColor:'offlineCardText',deviceTextColor:'text',deviceLineColor:'line',devicePianoImageBlur:'pianoImageBlur',devicePianoImageOpacity:'pianoImageOpacity',deviceBrandText:'brand',deviceWorshipText:'worship',deviceJoyText:'joy',deviceFreePlayText:'freePlay',deviceCreateText:'create',deviceTheoryText:'theory',deviceNoteLabelSize:'noteLabelSize',deviceNoteLabelColor:'noteLabelColor',deviceKeyLabelColor:'keyLabelColor',deviceKeyLabelSize:'keyLabelSize',deviceOctaveLabelColor:'octaveLabelColor',deviceOctaveLabelSize:'octaveLabelSize',deviceGridSpacing:'gridSpacing',deviceMelodyColor:'melodyColor',deviceBassColor:'bassColor'};
+  const paletteKeys=new Set(['primary','accent','page','surface','optionPanel','headingBackground','headingText','offlineCardBackground','offlineCardText','text','line']);
+  const outputIds={fontSize:'deviceFontSizeValue',headingSize:'deviceHeadingSizeValue',mobileHeadingSize:'deviceMobileHeadingSizeValue',homeButtonHeight:'deviceHomeButtonHeightValue',radius:'deviceRadiusValue',noteLabelSize:'deviceNoteLabelSizeValue',keyLabelSize:'deviceKeyLabelSizeValue',octaveLabelSize:'deviceOctaveLabelSizeValue',gridSpacing:'deviceGridSpacingValue',pianoImageBlur:'devicePianoImageBlurValue',pianoImageOpacity:'devicePianoImageOpacityValue'};
+  Object.entries(bindings).forEach(([id,key])=>{const control=$(id);if(!control)return;const syncSetting=()=>{
+    const value=['fontSize','headingSize','mobileHeadingSize','homeButtonHeight','radius','noteLabelSize','keyLabelSize','octaveLabelSize','gridSpacing','pianoImageBlur','pianoImageOpacity'].includes(key)?Number(control.value):control.value;
+    if(paletteKeys.has(key)){const paletteName=$('devicePaletteTheme').value==='dark'?'paletteDark':'paletteLight';deviceSettings[paletteName]={...deviceSettings[paletteName],[key]:value};if((paletteName==='paletteDark')===(deviceSettings.theme==='dark'))deviceSettings[key]=value;}
+    else deviceSettings[key]=value;
+    if(outputIds[key]&&$(outputIds[key]))$(outputIds[key]).textContent=`${value}${key==='gridSpacing'?' teclas':key==='pianoImageOpacity'?'%':' px'}`;
+    if(key==='melodyColor'){state.keyColor=value;try{localStorage.setItem('yhwh_piano_key_color',value);}catch(_){}updateVisualOptions();}
+    if(key==='bassColor'){state.bassColor=value;try{localStorage.setItem('yhwh_piano_bass_color',value);}catch(_){}updateVisualOptions();}
+    saveDeviceSettings();updateDeviceSettingsPreview();
+  };control.addEventListener('input',syncSetting);control.addEventListener('change',syncSetting);});
+  const gridSpacingControl=$('deviceGridSpacing');if(gridSpacingControl){
+    let spacingPointer=null;
+    const setSpacingFromPointer=event=>{const bounds=gridSpacingControl.getBoundingClientRect(),min=Number(gridSpacingControl.min)||1,max=Number(gridSpacingControl.max)||12,ratio=Math.max(0,Math.min(1,(event.clientX-bounds.left)/Math.max(1,bounds.width))),value=min+Math.round(ratio*(max-min));if(String(value)!==gridSpacingControl.value){gridSpacingControl.value=String(value);gridSpacingControl.dispatchEvent(new Event('input',{bubbles:true}));}};
+    gridSpacingControl.addEventListener('pointerdown',event=>{if(event.pointerType!=='touch')return;spacingPointer=event.pointerId;gridSpacingControl.setPointerCapture?.(event.pointerId);setSpacingFromPointer(event);});
+    gridSpacingControl.addEventListener('pointermove',event=>{if(spacingPointer===event.pointerId)setSpacingFromPointer(event);});
+    const releaseSpacingPointer=event=>{if(spacingPointer===event.pointerId){setSpacingFromPointer(event);spacingPointer=null;gridSpacingControl.dispatchEvent(new Event('change',{bubbles:true}));}};
+    gridSpacingControl.addEventListener('pointerup',releaseSpacingPointer);gridSpacingControl.addEventListener('pointercancel',releaseSpacingPointer);
+  }
+  $('devicePaletteTheme').addEventListener('change',event=>{
+    const selectedTheme=event.target.value==='dark'?'dark':'light',palette=deviceSettings[selectedTheme==='dark'?'paletteDark':'paletteLight'],suffix=selectedTheme==='dark'?'tema oscuro':'tema claro';
+    const ids={primary:'devicePrimaryColor',accent:'deviceAccentColor',page:'devicePageColor',surface:'deviceSurfaceColor',optionPanel:'deviceOptionPanelColor',headingBackground:'deviceHeadingBackgroundColor',headingText:'deviceHeadingTextColor',offlineCardBackground:'deviceOfflineCardBackgroundColor',offlineCardText:'deviceOfflineCardTextColor',text:'deviceTextColor',line:'deviceLineColor'};
+    Object.entries(ids).forEach(([key,id])=>{if($(id))$(id).value=palette[key];});
+    [['devicePrimaryColorLabel','Color principal de la app'],['deviceAccentColorLabel','Color de acento'],['devicePageColorLabel','Fondo general de la app'],['deviceSurfaceColorLabel','Fondo de tarjetas y secciones'],['deviceOptionPanelColorLabel','Fondo de paneles emergentes del piano'],['deviceHeadingBackgroundColorLabel','Fondo de encabezados'],['deviceHeadingTextColorLabel','Letras de encabezados'],['deviceOfflineCardBackgroundColorLabel','Fondo del cuadro de sonidos descargados'],['deviceOfflineCardTextColorLabel','Letras del cuadro de sonidos descargados'],['deviceTextColorLabel','Color del texto general'],['deviceLineColorLabel','Color de bordes y líneas']].forEach(([id,label])=>{if($(id))$(id).textContent=`${label} · ${suffix}`;});
+    updateDeviceSettingsPreview();
+  });
+  $('deviceTheme').addEventListener('change',event=>{setDeviceTheme(event.target.value);populateDeviceSettingsForm();updateDeviceSettingsPreview();});
+  $('deviceMasterVolume').addEventListener('input',event=>{setMasterVolume(event.target.value);deviceSettings.masterVolume=Number(event.target.value);$('deviceMasterVolumeValue').textContent=`${event.target.value}%`;saveDeviceSettings();updateDeviceSettingsPreview();});
+  $('deviceLayerEnabled').addEventListener('change',event=>{setStringsLayerEnabled(event.target.checked);deviceSettings.layerEnabled=state.stringsLayerEnabled;saveDeviceSettings();updateDeviceSettingsPreview();});
+  $('deviceLayerVolume').addEventListener('input',event=>{setStringsLayerVolume(event.target.value);deviceSettings.layerVolume=Number(event.target.value);$('deviceLayerVolumeValue').textContent=`${event.target.value}%`;saveDeviceSettings();updateDeviceSettingsPreview();});
+  $('deviceFallingStyle').addEventListener('change',event=>{setFallingNotesStyle(event.target.value);deviceSettings.fallingStyle=fallingNotesStyle;saveDeviceSettings();updateDeviceSettingsPreview();});
+  $('deviceGlowEnabled').addEventListener('change',event=>{fxGlow=event.target.checked;deviceSettings.fxGlow=fxGlow;try{localStorage.setItem('yhwh_piano_fx_glow',fxGlow?'1':'0');}catch(_){}updateDeviceSettingsPreview();saveDeviceSettings();});
+  $('deviceBarFlowEnabled').addEventListener('change',event=>{fallingFlowEnabled=event.target.checked;deviceSettings.barFlow=fallingFlowEnabled;try{localStorage.setItem('yhwh_piano_bar_flow',fallingFlowEnabled?'1':'0');}catch(_){}updateDeviceSettingsPreview();saveDeviceSettings();});
+  $('deviceKeyLightEnabled').addEventListener('change',event=>{lightKeys=event.target.checked;deviceSettings.lightKeys=lightKeys;document.body.classList.toggle('keys-fill-off',!lightKeys);try{localStorage.setItem('yhwh_piano_light_keys',lightKeys?'1':'0');}catch(_){}updateDeviceSettingsPreview();saveDeviceSettings();});
+  $('deviceNoteNotation').addEventListener('change',event=>{
+    deviceSettings.noteNotation=event.target.value==='latino'?'latino':'americano';
+    const notation=$('keyboardNotation');if(notation){notation.value=deviceSettings.noteNotation;notation.dispatchEvent(new Event('change',{bubbles:true}));}
+    if($('devicePreviewNote'))$('devicePreviewNote').textContent=fallingNoteName(60);saveDeviceSettings();updateDeviceSettingsPreview();
+  });
+  $('deviceBackgroundImage').addEventListener('change',event=>{
+    const file=event.target.files?.[0];if(!file)return;
+    if(!file.type.startsWith('image/')){$('deviceBackgroundStatus').textContent='Elige una imagen.';return;}
+    if(file.size>20*1024*1024){$('deviceBackgroundStatus').textContent='Elige una imagen de menos de 20 MB.';event.target.value='';return;}
+    $('deviceBackgroundStatus').textContent='Preparando la imagen para que cargue también en móvil…';
+    (async()=>{try{
+      let bitmap;if(typeof createImageBitmap==='function'){try{bitmap=await createImageBitmap(file);}catch(_){}}
+      if(!bitmap)bitmap=await new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),image=new Image();image.onload=()=>{URL.revokeObjectURL(url);resolve(image);};image.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('No se pudo leer la imagen'));};image.src=url;});
+      const scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+      const context=canvas.getContext('2d');context.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
+      deviceSettings.backgroundImage=canvas.toDataURL('image/jpeg',.72);$('deviceBackgroundStatus').textContent='Imagen suavizada y guardada para el recuadro del piano en este dispositivo.';saveDeviceSettings();updateDeviceSettingsPreview();
+    }catch(_){$('deviceBackgroundStatus').textContent='No se pudo preparar la imagen. Prueba con otra foto.';}})();
+  });
+  $('removeDeviceBackground').onclick=()=>{deviceSettings.backgroundImage='';$('deviceBackgroundImage').value='';$('deviceBackgroundStatus').textContent='Se quitó la imagen de fondo.';saveDeviceSettings();updateDeviceSettingsPreview();};
+  $('resetDeviceSettings').onclick=()=>{
+    deviceSettings={...DEVICE_SETTINGS_DEFAULTS,...DEVICE_THEME_PALETTES.light,paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},theme:'light',headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',mobileHeadingSize:18,homeButtonHeight:46,backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,noteNotation:'americano',noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,melodyColor:'#90dd4a',bassColor:'#bb82ef',masterVolume:100,layerEnabled:false,layerVolume:70,fallingStyle:'bars',fxGlow:false,barFlow:false,lightKeys:true};
+    state.keyColor=deviceSettings.melodyColor;state.bassColor=deviceSettings.bassColor;state.notation='americano';
+    fxGlow=false;fallingFlowEnabled=false;lightKeys=true;
+    try{localStorage.setItem('yhwh_piano_key_color',state.keyColor);localStorage.setItem('yhwh_piano_bass_color',state.bassColor);localStorage.setItem('yhwh_piano_note_labels','americano');localStorage.setItem('yhwh_piano_fx_glow','0');localStorage.setItem('yhwh_piano_bar_flow','0');localStorage.setItem('yhwh_piano_light_keys','1');}catch(_){}
+    setMasterVolume(100);setStringsLayerEnabled(false);setStringsLayerVolume(70);setFallingNotesStyle('bars');setDeviceTheme('light');
+    $('keyboardNotation').value='americano';$('keyboardNotation').dispatchEvent(new Event('change',{bubbles:true}));renderKeyboard();updateVisualOptions();applyDeviceCustomization();populateDeviceSettingsForm();saveDeviceSettings();
+  };
+  new MutationObserver(()=>{
+    const theme=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
+    if(deviceSettings.theme!==theme){deviceSettings.theme=theme;applyDeviceCustomization();saveDeviceSettings();const picker=$('deviceTheme');if(picker)picker.value=theme;if(!$('deviceSettingsScreen').classList.contains('hidden'))populateDeviceSettingsForm();}
+  }).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+}
+
 renderKeyboard();
 bindInterface();
+initializeDeviceSettings();
 updateAdminControls();
 renderRecentSongs();
 renderLists();
 initializeSplash();
-window.addEventListener('load',()=>{if(navigator.onLine)downloadOfflineAudio();},{once:true});
+window.addEventListener('load',()=>{downloadOfflineAudio();},{once:true});
 window.addEventListener('beforeunload',event=>{if(state.melodyDirty){event.preventDefault();event.returnValue='';}});
 initializeFirebase();
 // Sin zoom del navegador en iPhone: iOS ignora user-scalable=no, por eso se bloquea tambien aqui.
@@ -3522,12 +4010,14 @@ async function runPrefetch(list){
     let used='';
     try{const estimate=await navigator.storage.estimate();used=` Espacio usado por la app: ${Math.round(estimate.usage/1048576)} MB.`;}catch(_){}
     status.textContent=(prefetchCancel?'Descarga cancelada.':failedTotal?`Terminó con ${failedTotal} sonidos que no se pudieron descargar. Puedes volver a intentarlo.`:'Listo. Los sonidos quedaron guardados en este dispositivo.')+used;
+    navigator.serviceWorker?.controller?.postMessage({type:'GET_AUDIO_CACHE_STATUS'});
+    refreshHomeAudioStatus(homeAudioCacheStatus.cached,homeAudioCacheStatus.total,false);
   }finally{
     prefetchRunning=false;prefetchCancel=false;buttons.forEach((button,index)=>{button.textContent=labels[index];});
   }
 }
 function initPrefetchUI(){
-  const host=document.querySelector('#instrumentSettingsScreen .instrument-screen-main');
+  const host=$('deviceInstrumentLibraryHost');
   if(!host||$('prefetchBlock'))return;
   const block=document.createElement('section');
   block.id='prefetchBlock';block.className='instrument-config-card prefetch-library';

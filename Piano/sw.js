@@ -1,10 +1,14 @@
-const CACHE='yhwh-piano-v149';
+const CACHE='yhwh-piano-v168';
 const AUDIO_CACHE='yhwh-piano-audio-v2';
 const FILES=['./','./index.html','./piano.css','./piano-studio.css','./piano-synthesia.css','./piano.js','./instrument-maps.js','./manifest.json','./offline-audio.json','./icon.svg','./icon-512.png','./apple-touch-icon.png','./audio/040.wav','./audio/041.wav','./audio/042.wav','./audio/043.wav','./audio/044.wav','./audio/045.wav','./audio/046.wav','./audio/047.wav','./audio/048.wav','./audio/049.wav','./audio/050.wav','./audio/051.wav','./audio/052.wav','./audio/053.wav','./audio/054.wav','./audio/055.wav','./audio/056.wav','../canciones-adoracion.js','../canciones-jubilo.js'];
 let audioDownloadInProgress=false;
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('yhwh-piano-')&&key!==CACHE&&key!==AUDIO_CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('message',event=>{
+  if(event.data?.type==='GET_AUDIO_CACHE_STATUS'){
+    event.waitUntil((async()=>{try{const cache=await caches.open(AUDIO_CACHE),manifestUrl=new URL('./offline-audio.json',self.registration.scope),response=await fetch(manifestUrl,{cache:'no-cache'}).catch(()=>caches.match(manifestUrl)),files=response?.ok?await response.json():[],cached=await Promise.all(files.map(url=>cache.match(url)));event.source?.postMessage({type:'AUDIO_CACHE_STATUS',cached:cached.filter(Boolean).length,total:files.length});}catch(error){console.warn('No se pudo leer el estado de los sonidos guardados:',error);}})());
+    return;
+  }
   if(event.data?.type!=='CACHE_ALL_AUDIO')return;
   event.waitUntil((async()=>{
     const report=async(type,extra={})=>{const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});windows.forEach(client=>client.postMessage({type,...extra}));};
@@ -25,7 +29,7 @@ self.addEventListener('message',event=>{
             if(!cached){const audio=await fetch(url,{cache:'reload'});if(!audio.ok)throw new Error(`HTTP ${audio.status}`);await cache.put(url,audio);}
           }catch(error){failed++;console.warn('No se pudo guardar audio para uso sin conexión:',url,error);}
           done++;
-          if(done%4===0||done===files.length)await report('AUDIO_CACHE_PROGRESS',{done,total:files.length});
+          if(done%4===0||done===files.length){const cachedUrls=new Set((await cache.keys()).map(request=>request.url)),cached=files.reduce((count,url)=>count+(cachedUrls.has(new URL(url,self.registration.scope).href)?1:0),0);await report('AUDIO_CACHE_PROGRESS',{done,total:files.length,cached});}
         }
       };
       await Promise.all(Array.from({length:4},worker));

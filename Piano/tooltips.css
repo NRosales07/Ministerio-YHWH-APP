@@ -1,0 +1,198 @@
+/* tooltips.css — Tooltips enriquecidos · Ministerio YHWH
+   Tema claro: azul petróleo profundo · Tema oscuro: índigo con acento dorado. */
+
+.yhwh-tip {
+  --tip-bg: #0f2a3b;
+  --tip-fg: #f3f9fc;
+  --tip-muted: #a8c4d3;
+  --tip-accent: #7fd0f2;
+  --tip-border: #ffffff26;
+  --tip-chip: #ffffff1a;
+  --tip-on: #7be0a0;
+  --tip-off: #9db2be;
+
+  position: fixed;
+  inset: auto;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  overflow: visible;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 16px));
+  color: var(--tip-fg);
+  text-align: left;
+  pointer-events: none;
+  z-index: 2147483000;
+
+  opacity: 0;
+  transform: translate(var(--sx, 0), var(--sy, 6px)) scale(.97);
+  transition: opacity .14s ease, transform .16s cubic-bezier(.2, .8, .3, 1);
+}
+
+[data-theme="dark"] .yhwh-tip {
+  --tip-bg: #26264f;
+  --tip-fg: #f1eef8;
+  --tip-muted: #b9b6d0;
+  --tip-accent: #e8c97a;
+  --tip-border: #e8c97a40;
+  --tip-chip: #e8c97a1f;
+}
+
+/* Navegadores sin Popover API: se muestra/oculta con una clase. */
+.yhwh-tip[data-fallback]:not(.is-mounted) { display: none; }
+
+.yhwh-tip.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.yhwh-tip-card {
+  position: relative;
+  box-sizing: border-box;
+  padding: 9px 12px 10px;
+  border: 1px solid var(--tip-border);
+  border-radius: 12px;
+  background: var(--tip-bg);
+  color: var(--tip-fg);
+  font: 500 13px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .005em;
+  overflow-wrap: anywhere;
+  box-shadow:
+    0 12px 28px -10px #02121d99,
+    0 3px 8px #02121d4d,
+    inset 0 1px 0 #ffffff14;
+  -webkit-backdrop-filter: blur(10px) saturate(1.25);
+  backdrop-filter: blur(10px) saturate(1.25);
+}
+
+.yhwh-tip-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.yhwh-tip-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .01em;
+}
+
+.yhwh-tip-state {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px 1px 6px;
+  border-radius: 999px;
+  background: var(--tip-chip);
+  color: var(--tip-off);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.yhwh-tip-state::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.yhwh-tip-state[data-on="true"] { color: var(--tip-on); }
+.yhwh-tip-state[data-on="true"]::before { box-shadow: 0 0 0 3px #7be0a02e; }
+
+.yhwh-tip-desc {
+  margin-top: 3px;
+  color: var(--tip-muted);
+  font-size: 12px;
+  font-weight: 450;
+  line-height: 1.4;
+}
+
+.yhwh-tip-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--tip-border);
+  font-size: 11px;
+  color: var(--tip-muted);
+}
+
+.yhwh-tip-foot kbd {
+  min-width: 18px;
+  padding: 1px 6px;
+  border: 1px solid var(--tip-border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--tip-chip);
+  color: var(--tip-accent);
+  font: 700 10.5px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-align: center;
+}
+
+.yhwh-tip-hint { color: var(--tip-muted); font-style: italic; }
+
+/* Flecha: un cuadrado girado que cubre el borde de la tarjeta. */
+.yhwh-tip-arrow {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--tip-bg);
+  border: 1px solid var(--tip-border);
+  transform: rotate(45deg);
+}
+
+.yhwh-tip[data-place="top"] .yhwh-tip-arrow {
+  bottom: -5px; left: var(--ax, 50%); margin-left: -5px;
+  border-top-color: transparent; border-left-color: transparent;
+}
+.yhwh-tip[data-place="bottom"] .yhwh-tip-arrow {
+  top: -5px; left: var(--ax, 50%); margin-left: -5px;
+  border-bottom-color: transparent; border-right-color: transparent;
+}
+.yhwh-tip[data-place="left"] .yhwh-tip-arrow {
+  right: -5px; top: var(--ay, 50%); margin-top: -5px;
+  border-bottom-color: transparent; border-left-color: transparent;
+}
+.yhwh-tip[data-place="right"] .yhwh-tip-arrow {
+  left: -5px; top: var(--ay, 50%); margin-top: -5px;
+  border-top-color: transparent; border-right-color: transparent;
+}
+
+/* Táctil: letra más grande y sin menú de iOS al mantener pulsado. */
+@media (pointer: coarse) {
+  .yhwh-tip { max-width: min(280px, calc(100vw - 20px)); }
+  .yhwh-tip-card { padding: 11px 14px 12px; font-size: 14px; border-radius: 14px; }
+  .yhwh-tip-title { font-size: 14px; }
+  .yhwh-tip-desc { font-size: 13px; }
+}
+
+button[data-tip],
+summary[data-tip],
+[role="button"][data-tip] {
+  -webkit-touch-callout: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yhwh-tip { transition: opacity .01s linear; transform: none; }
+}
+
+@media (forced-colors: active) {
+  .yhwh-tip-card, .yhwh-tip-arrow {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+}
