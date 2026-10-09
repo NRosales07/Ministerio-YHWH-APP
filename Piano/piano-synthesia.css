@@ -111,7 +111,7 @@ body.player-active #player { position: relative; display: flex!important; flex: 
 .notation-button { border: 1px solid #ffffff48; border-radius: 4px; background: #f2f8fa; color: #0878a8; font-size: .85rem; font-weight: 750; }
 .performance-layout { display: flex; flex: 1; flex-direction: column; min-height: 0; background: #252629; }
 .note-canvas { --stage-key-width: 40px; position: relative; flex: 1 1 auto; min-height: 70px; overflow: hidden; background: linear-gradient(180deg,#292a2d,#242528); touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-.canvas-grid { position: absolute; inset: 0; contain: strict; pointer-events: none; background-image: linear-gradient(to right, #ffffff2c 1px,transparent 1px),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: var(--stage-key-width) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0; opacity: .85; }
+.canvas-grid { position: absolute; inset: 0; contain: strict; pointer-events: none; background-image: linear-gradient(to right, #ffffff2c 1px,transparent 1px),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: calc(var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width)) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0; opacity: .85; }
 .falling-notes-canvas { position: absolute; z-index: 1; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
 .canvas-readouts { position: absolute; z-index: 2; top: 15px; left: calc(64px + env(safe-area-inset-left)); right: calc(12px + env(safe-area-inset-right)); display: flex; align-items: center; gap: 11px; min-height: 32px; color: #edf2f4; font-size: .78rem; text-shadow: 0 1px 3px #000; }
 .canvas-readouts #playerLabel { color: #dbeaf0; font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
@@ -1780,8 +1780,7 @@ html body.keys-edge.keys-fill-off #player .piano-panel .black.playing,
 html body.keys-edge.keys-fill-off #player .piano-panel .black.bass-playing { background: linear-gradient(90deg,#393a3b,#050607 80%) !important; }
 
 /* ===== Botones de reproducción del móvil: estado "en uso" visible en fondo claro y oscuro =====
-   Reproduciendo, Sustain activo, Ver notas abierto y Grabando se marcan con fondo ámbar, texto oscuro,
-   anillo y un puntito. También hay respuesta inmediata al tocar (:active). */
+   Reproduciendo, Sustain activo, Ver notas abierto y Grabando se marcan con fondo ámbar y anillo. */
 html body #player#player#player .mobile-player-controls button.is-on,
 html body #player#player#player .mobile-player-controls button#sustainBtn[aria-pressed="true"],
 html body #player#player#player .mobile-player-controls button#recordBtn.active,
@@ -1798,13 +1797,6 @@ html[data-theme="dark"] body #player#player#player .mobile-player-controls butto
 html[data-theme="dark"] body.melody-playing #player#player#player .mobile-player-controls button#playMelody {
   background: linear-gradient(180deg, #ffd166, #f0a500) !important; color: #2a1b00 !important;
   border-color: #ffe39a !important; outline-color: #ffe39a !important;
-}
-html body #player .mobile-player-controls button.is-on::after,
-html body #player .mobile-player-controls button#sustainBtn[aria-pressed="true"]::after,
-html body #player .mobile-player-controls button#recordBtn.active::after,
-html body.melody-playing #player .mobile-player-controls button#playMelody::after {
-  content: ""; position: absolute; top: 4px; right: 5px; width: 7px; height: 7px; border-radius: 50%;
-  background: #2a1b00; box-shadow: 0 0 0 1.5px #fff9; pointer-events: none;
 }
 html body #player#player#player .mobile-player-controls button:active {
   transform: scale(.94) !important; filter: brightness(1.18) !important; transition: none !important;
@@ -2276,6 +2268,51 @@ html[data-theme="dark"] .instrument-voice-directions{background:#1b1b2e!importan
 .instrument-sound-toggle:focus-visible,.instrument-card-play:focus-visible{outline:2px solid currentColor;outline-offset:-2px}
 .instrument-help-dialog{position:fixed;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(450px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:19px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);box-shadow:0 16px 50px #0008}
 .instrument-help-dialog::backdrop{background:#071722a8;backdrop-filter:blur(3px)}
+
+/* Biblioteca para descargar sonidos por seccion */
+.instrument-screen-main{overflow-y:auto!important;overscroll-behavior:contain!important}
+.prefetch-library{flex:0 0 auto;width:min(980px,100%);margin:0 0 12px;padding:14px;background:var(--panel);color:var(--text);border-color:var(--line);box-shadow:0 2px 8px #0002}
+.prefetch-library-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.prefetch-library-heading h2{margin:0;font-size:1rem}
+.prefetch-library-heading p{max-width:660px;margin:4px 0 0;color:var(--muted);font-size:.76rem;line-height:1.4}
+.prefetch-library-tools{display:flex;flex-wrap:wrap;gap:6px}
+.prefetch-library-tools button{min-height:31px;padding:4px 9px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--text);font:inherit;font-size:.72rem;cursor:pointer}
+.prefetch-catalog{display:grid;gap:10px;padding-top:10px}
+.prefetch-category{overflow:hidden;border:1px solid var(--line);border-radius:7px;background:var(--panel2)}
+.prefetch-category>header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--gold) 12%,var(--panel))}
+.prefetch-category h3{margin:0;font-size:.86rem}
+.prefetch-category>header label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.68rem;cursor:pointer}
+.prefetch-category input{accent-color:var(--gold)}
+.prefetch-instrument-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.prefetch-instrument{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:54px;padding:6px 10px;border-bottom:1px solid var(--line);cursor:pointer}
+.prefetch-instrument:nth-child(odd){border-right:1px solid var(--line)}
+.prefetch-instrument:nth-last-child(-n+2){border-bottom:0}
+.prefetch-instrument input{width:16px;height:16px;margin:0}
+.prefetch-instrument-info{display:grid;gap:3px;min-width:0}
+.prefetch-instrument-info strong{overflow:hidden;font-size:.77rem;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.prefetch-instrument-info small,.prefetch-instrument-size small{color:var(--muted);font-size:.64rem}
+.prefetch-instrument-size{display:grid;justify-items:end;gap:1px;font-size:.76rem;font-weight:650;white-space:nowrap}
+.prefetch-library-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:11px;color:var(--muted);font-size:.74rem}
+.prefetch-library-footer .mode-screen-continue{min-height:34px;padding:5px 12px;border:0;border-radius:5px;background:var(--gold);color:#fff;font:inherit;font-weight:650;cursor:pointer}
+.prefetch-status{display:block;min-height:1.2em;margin-top:7px;color:var(--muted);font-size:.72rem;line-height:1.4}
+html[data-theme="dark"] .prefetch-library{background:#1b1b2e;color:#e8e6f0;border-color:#383653}
+html[data-theme="dark"] .prefetch-category{background:#202039;border-color:#383653}
+html[data-theme="dark"] .prefetch-category>header{background:#292947;border-color:#383653}
+html[data-theme="dark"] .prefetch-instrument{border-color:#383653}
+html[data-theme="dark"] .prefetch-library-tools button{background:#292947;color:#e8e6f0;border-color:#514777}
+@media(max-width:680px){
+ .instrument-screen-main{padding:10px 7px 14px!important;gap:10px!important}
+ .prefetch-library{padding:10px}
+ .prefetch-library-heading{display:grid;gap:8px}
+ .prefetch-library-tools{justify-content:flex-start}
+ .prefetch-instrument-grid{grid-template-columns:minmax(0,1fr)}
+ .prefetch-instrument:nth-child(odd){border-right:0}
+ .prefetch-instrument:nth-last-child(2){border-bottom:1px solid var(--line)}
+ .prefetch-instrument:last-child{border-bottom:0}
+ .prefetch-instrument{min-height:48px;padding:6px 8px}
+ .prefetch-library-footer{align-items:stretch;flex-direction:column}
+ .prefetch-library-footer .mode-screen-continue{width:100%}
+}
 .instrument-help-dialog form{display:flex;justify-content:flex-end;margin:-4px -4px 8px}
 .instrument-help-dialog form button{min-height:32px;padding:4px 10px}
 .instrument-help-dialog h2{margin:5px 0 12px;font-size:1.08rem}
@@ -3549,4 +3586,111 @@ html[data-theme="dark"] #instrumentMenu .instrument-picker-layer-switch{color:#e
     padding-left:max(12px,env(safe-area-inset-left,0px))!important;
     padding-right:max(12px,env(safe-area-inset-right,0px))!important;
   }
+}
+
+/* La biblioteca de descargas requiere desplazamiento vertical en pantallas cortas. */
+#instrumentSettingsScreen .instrument-screen-main{overflow-y:auto!important;overflow-x:hidden!important;align-items:center!important}
+@media(max-width:680px){#instrumentSettingsScreen .instrument-screen-main{overflow-y:auto!important;padding:8px 6px 14px!important}}
+
+/* Separacion y paleta coherente para la biblioteca. */
+#prefetchBlock{gap:14px!important;padding:16px!important;background:color-mix(in srgb,var(--gold) 5%,var(--panel))!important;border-color:color-mix(in srgb,var(--gold) 45%,var(--line))!important}
+#prefetchBlock .prefetch-library-heading{position:static!important;top:auto!important;z-index:auto!important;height:auto!important;min-height:0!important;margin:0!important;padding:12px 14px!important;border:1px solid var(--line)!important;border-radius:8px!important;background:var(--panel2)!important;color:var(--text)!important;box-shadow:none!important;backdrop-filter:none!important}
+#prefetchBlock .prefetch-library-heading h2{margin:0 0 5px!important;color:var(--text)!important}
+#prefetchBlock .prefetch-library-heading p{margin:0!important;line-height:1.5!important}
+#prefetchBlock .prefetch-category{background:var(--panel)!important;border-color:var(--line)!important}
+#prefetchBlock .prefetch-category>header{position:static!important;top:auto!important;z-index:auto!important;height:auto!important;min-height:0!important;margin:0!important;padding:10px 13px!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:color-mix(in srgb,var(--gold) 12%,var(--panel2))!important;color:var(--text)!important;box-shadow:none!important;backdrop-filter:none!important}
+#prefetchBlock .prefetch-category h3{margin:0!important;color:var(--text)!important}
+#prefetchBlock .prefetch-instrument{min-height:62px;padding:9px 13px!important;background:var(--panel)!important}
+#prefetchBlock .prefetch-library-footer{gap:14px!important;padding-top:4px!important}
+#prefetchBlock .prefetch-status{margin:0!important;padding:0 2px!important}
+.manual-note-effect.is-bar{border-radius:8px!important}
+.manual-note-effect.is-drop{border-radius:7px!important}
+@media(max-width:680px){#prefetchBlock{gap:12px!important;padding:11px!important}#prefetchBlock .prefetch-library-heading{padding:11px!important}#prefetchBlock .prefetch-category>header{padding:10px!important}#prefetchBlock .prefetch-instrument{min-height:58px;padding:8px 10px!important}}
+
+/* Mezcla de instrumento principal y segunda capa en el selector. */
+#instrumentMenu .instrument-picker-targets{padding:6px;border:1px solid #a6bbc2;border-radius:10px;background:rgba(255,255,255,.42)}
+#instrumentMenu .instrument-picker-mix{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:7px 9px;border:1px solid #a6bbc2;border-radius:10px;background:rgba(255,255,255,.3)}
+#instrumentMenu .instrument-mix-control{gap:4px;padding:0 3px}
+#instrumentMenu .instrument-mix-control label{font-size:.72rem;font-weight:650}
+#instrumentMenu .instrument-picker-layer-switch{padding:0 7px}
+html[data-theme="dark"] #instrumentMenu .instrument-picker-targets,html[data-theme="dark"] #instrumentMenu .instrument-picker-mix{border-color:#393653;background:#171625;color:#eceaf6}
+@media(max-width:600px){
+  #instrumentMenu .instrument-picker-mix{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:6px}
+  #instrumentMenu .instrument-mix-control label{font-size:.64rem}
+  #instrumentMenu .instrument-mix-control:last-of-type{grid-column:1/-1}
+}
+/* Respeta notch, esquinas y zona de inicio en las pantallas posteriores a Continuar. */
+body:has(#playModeModal:not(.hidden)) #playModeModal,
+body:has(#instrumentSettingsScreen:not(.hidden)) #instrumentSettingsScreen{
+  inset:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)!important;
+  width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;
+}
+#instrumentSettingsScreen .instrument-settings-footer{padding-bottom:5px!important}
+/* Paleta legible y unificada para el zoom del teclado en tema oscuro. */
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu{
+  color-scheme:dark!important;background:#1c1c3f!important;color:#e8e6f0!important;border-color:#514777!important;
+}
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu h2,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu h2{color:#e8c97a!important}
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu p,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu p,
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu .range-custom-label,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu .range-custom-label{color:#c0bed2!important}
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu .range-presets button,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu .range-presets button{border-color:#514777!important;background:#24233e!important;color:#e8e6f0!important}
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu .range-presets button.active,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu .range-presets button.active{border-color:#e8c97a!important;background:#2f2f5c!important;color:#e8c97a!important}
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu #keyboardNavigation,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardNavigation{border-color:#514777!important;background:#24233e!important;color:#e8e6f0!important}
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu #keyboardNavigation button,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardNavigation button{border-color:#514777!important;background:#2f2f5c!important;color:#e8c97a!important;box-shadow:none!important}
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu #keyboardNavigation button:hover,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardNavigation button:hover,
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu #keyboardNavigation button:focus-visible,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardNavigation button:focus-visible{border-color:#e8c97a!important;background:#42426e!important;color:#fff!important}
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu #keyboardOctaveLabel,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardOctaveLabel{color:#e8c97a!important}
+html[data-theme="dark"] body.player-active #player #keyboardRangeMenu #keyboardZoomSlider,
+html[data-theme="dark"] body:has(#player:not(.hidden)) #player #keyboardRangeMenu #keyboardZoomSlider{accent-color:#e8c97a!important}
+/* Keep the unpressed sustain symbol legible on iPhone in dark mode. */
+@media (max-width: 900px) {
+  html[data-theme="dark"] body #player .mobile-player-controls button#sustainBtn[aria-pressed="false"] { color: #fff !important; }
+  html[data-theme="dark"] body #player .mobile-player-controls button#sustainBtn[aria-pressed="false"] small { color: #fff !important; }
+}
+
+/* Los controles laterales quedan resaltados mientras su panel está abierto. */
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button[aria-expanded="true"] {
+  background: #e8c97a !important;
+  color: #202034 !important;
+  border-color: #ffe39a !important;
+  box-shadow: 0 0 0 2px #e8c97a66 !important;
+}
+#player .stage-tool-rail #instrumentToggle .instrument-art {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+
+/* En móvil, los iconos del extremo derecho indican en amarillo qué panel está abierto. */
+@media (max-width: 900px) {
+  #player#player#player > .player-top .toolbar-actions .toolbar-icon[aria-expanded="true"],
+  #player#player#player > .player-top .toolbar-actions .toolbar-icon[aria-pressed="true"],
+  #player#player#player > .player-top .player-edit-menu[open] > summary {
+    border-color: #ffd166 !important;
+    background: #ffd16624 !important;
+    color: #ffd166 !important;
+    box-shadow: 0 0 0 1px #ffd16666 !important;
+  }
+
+  #player#player#player > .player-top .mobile-player-controls button#octaveModeToggle[aria-pressed="true"] {
+    border-color: #ffd166 !important;
+    background: linear-gradient(180deg, #ffd166, #f0a500) !important;
+    color: #2a1b00 !important;
+    box-shadow: 0 0 0 1px #ffd16688 !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0 !important;
+  }
+  #player#player#player > .player-top .mobile-player-controls button#octaveModeToggle { font-size: 10px !important; }
 }
