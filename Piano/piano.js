@@ -2141,6 +2141,19 @@ function bindCanvasGestures(){
   if(!canvas||!scroll)return;
   const IGNORE='button,input,select,textarea,summary,.stage-popover,.player-sheet,.notes-panel';
   let frame=0,pending=null;
+  // Un dedo sobre el área de notas desplaza el teclado a los lados (con inercia), sin importar el zoom.
+  let pan=null,panLocked=false,momentum=0;
+  canvas.style.touchAction='none';
+  const stopMomentum=()=>{if(momentum){cancelAnimationFrame(momentum);momentum=0;}};
+  const startMomentum=v=>{
+    let last=performance.now();
+    const step=now=>{
+      const dt=Math.min(48,now-last);last=now;
+      const before=scroll.scrollLeft;scroll.scrollLeft=before+v*dt;v*=Math.pow(.94,dt/16);
+      if(Math.abs(v)>.02&&scroll.scrollLeft!==before)momentum=requestAnimationFrame(step);else momentum=0;
+    };
+    momentum=requestAnimationFrame(step);
+  };
   const spread=()=>{const [a,b]=[...canvasPointers.values()];return{dx:Math.max(28,Math.abs(a.x-b.x)),dy:Math.max(28,Math.abs(a.y-b.y)),mid:(a.x+b.x)/2};};
   // Un solo cambio por fotograma: primero zoom/scroll y luego dibujo, para que barras y teclas no se desfasen.
   const apply=()=>{
@@ -2158,7 +2171,10 @@ function bindCanvasGestures(){
     if(event.target.closest(IGNORE)||canvasPointers.size>=2)return;
     try{canvas.setPointerCapture?.(event.pointerId);}catch(_){}
     canvasPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+    stopMomentum();
+    if(canvasPointers.size===1&&!panLocked)pan={id:event.pointerId,x:event.clientX,left:scroll.scrollLeft,lastX:event.clientX,lastT:performance.now(),v:0};
     if(canvasPointers.size===2){
+      pan=null;panLocked=true;
       keyboardBaseKeyWidth();
       const s=spread(),left=scroll.getBoundingClientRect().left;
       canvasGesture={axis:null,dx:s.dx,dy:s.dy,zoom:state.keyboardZoom,look:fallingNotesLookahead,left,anchor:scroll.scrollLeft+s.mid-left};
@@ -2167,6 +2183,14 @@ function bindCanvasGestures(){
   canvas.addEventListener('pointermove',event=>{
     if(!canvasPointers.has(event.pointerId))return;
     canvasPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+    if(pan&&pan.id===event.pointerId&&canvasPointers.size===1){
+      event.preventDefault();
+      scroll.scrollLeft=pan.left-(event.clientX-pan.x);
+      const now=performance.now(),dt=now-pan.lastT;
+      if(dt>0)pan.v=.7*pan.v+.3*((pan.lastX-event.clientX)/dt);
+      pan.lastX=event.clientX;pan.lastT=now;
+      return;
+    }
     const g=canvasGesture;if(canvasPointers.size<2||!g)return;
     event.preventDefault();
     const s=spread();
@@ -2182,7 +2206,9 @@ function bindCanvasGestures(){
   });
   const endGesture=event=>{
     if(!canvasPointers.has(event.pointerId))return;
+    if(pan&&pan.id===event.pointerId){const v=pan.v,idle=performance.now()-pan.lastT;pan=null;if(event.type==='pointerup'&&Math.abs(v)>.15&&idle<80)startMomentum(v);}
     canvasPointers.delete(event.pointerId);
+    if(!canvasPointers.size)panLocked=false;
     const g=canvasGesture;
     if(canvasPointers.size<2&&g){
       if(pending)apply();
@@ -2470,7 +2496,7 @@ function steinwayNoteName(midi) {
   };
   return candidates.reduce((best, candidate) => Math.abs(toMidi(candidate) - midi) < Math.abs(toMidi(best) - midi) ? candidate : best, candidates[0] || 'C4');
 }
-async function getInstrumentSample(midi, instrument = state.instrument) {
+async function getInstrumentSample(midi, instrument = state.instrument, prefetchOnly = false) {
   if (instrument === 'strings') { const stringsSample = await getStringsSample(midi); return { buffer: stringsSample.buffer, sampleMidi: stringsSample.sampleMidi, release: 0.5 }; }
   const spec = INSTRUMENTS[instrument];
   const vscoPatch=VSCO2_TRUMPET_PATCHES[instrument];
@@ -2496,12 +2522,14 @@ async function getInstrumentSample(midi, instrument = state.instrument) {
   const uprightLayer=uprightPatch?.folder==='vsco2-upright-piano'?`dyn${dynamicLayer+1}`:['pp','mf','f'][dynamicLayer];
   const uprightRrList=uprightRegion?(uprightPatch.folder==='vsco2-upright-piano'?[1]:[...(uprightRegion[4+dynamicLayer]||'1')].map(Number)):[];
   const rrKey=`${instrument}:${actualSampleMidi}:${intensity}`;
-  const roundRobin=(vscoPatch?.roundRobin||uprightRrList.length>1)?((state.instrumentRoundRobinCounters.get(rrKey)||0)%uprightRrList.length)+1:1;
-  if(vscoPatch?.roundRobin||uprightRrList.length>1)state.instrumentRoundRobinCounters.set(rrKey,roundRobin);
+  const roundRobinCount=vscoPatch?.roundRobin?2:uprightRrList.length;
+  const roundRobin=roundRobinCount>1?((state.instrumentRoundRobinCounters.get(rrKey)||0)%roundRobinCount)+1:1;
+  if(roundRobinCount>1)state.instrumentRoundRobinCounters.set(rrKey,roundRobin);
   const uprightRr=uprightRrList[roundRobin-1]||1;
   const key = instrument + ':' + actualSampleMidi + (isTrumpet||uprightPatch||isCustomSample ? ':' + intensity : '') + (isLayeredPiano?`:level${state.headroomVelocityLayer}${isLivingroom?`:${state.sustain?'pon':'poff'}`:''}`:'') + (vscoPatch?.roundRobin ? `:rr${roundRobin}` : uprightPatch?.folder==='vsco2-upright-nr1'?`:rr${uprightRr}`:'');
+  const loadKey=prefetchOnly?key+':prefetch':key;
   if (!state.instrumentBuffers.has(key)) {
-    let pending=state.instrumentSampleLoads.get(key);
+    let pending=state.instrumentSampleLoads.get(loadKey);
     if(!pending){
       pending=(async()=>{
         const sampleName=isVscoTrumpet?`trumpet-sus-vib-${vscoTrumpetRegion[3]}`:sample?.[3];
@@ -2522,6 +2550,11 @@ async function getInstrumentSample(midi, instrument = state.instrument) {
         const sources=cloudinaryFirst?[cloudinaryUrl,localUrl]:[localUrl];let lastError=null;
         for(const source of sources){
           try{
+            if(prefetchOnly){
+              await prefetchAudioUrl(source);
+              if(isHeadroom){const deccaName=filename.replace(' CLOSE ',' DECCA ');for(const deccaUrl of [`${CLOUDINARY_AUDIO_BASE}${deccaName.replace(/ /g,'_').split('/').map(encodeURIComponent).join('/')}`,`audio/${spec.folder}/${deccaName.split('/').map(encodeURIComponent).join('/')}`]){try{await prefetchAudioUrl(deccaUrl);break;}catch(_){}}}
+              return;
+            }
             const response=await fetchAudioCached(source);
             if(!response.ok)throw new Error(`HTTP ${response.status} al cargar ${source}`);
             const decoded=await getAudioContext().decodeAudioData(await response.arrayBuffer());
@@ -2538,9 +2571,9 @@ async function getInstrumentSample(midi, instrument = state.instrument) {
         }
         throw lastError||new Error(`No se pudo cargar la muestra ${filename}`);
       })();
-      state.instrumentSampleLoads.set(key,pending);
+      state.instrumentSampleLoads.set(loadKey,pending);
     }
-    try{await pending;}finally{state.instrumentSampleLoads.delete(key);}
+    try{await pending;}finally{state.instrumentSampleLoads.delete(loadKey);}
   }
   return { buffer: state.instrumentBuffers.get(key), sampleMidi: actualSampleMidi, release: vscoPatch?.release||uprightPatch?.release||spec.release };
 }
@@ -3356,3 +3389,98 @@ initializeSplash();
 window.addEventListener('load',()=>{if(navigator.onLine)downloadOfflineAudio();},{once:true});
 window.addEventListener('beforeunload',event=>{if(state.melodyDirty){event.preventDefault();event.returnValue='';}});
 initializeFirebase();
+// Sin zoom del navegador en iPhone: iOS ignora user-scalable=no, por eso se bloquea tambien aqui.
+(function blockBrowserZoom(){
+  ['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,event=>event.preventDefault(),{passive:false}));
+  document.addEventListener('touchmove',event=>{if(event.touches&&event.touches.length>1&&event.cancelable)event.preventDefault();},{passive:false});
+  document.documentElement.style.touchAction='manipulation';
+  if(document.body)document.body.style.touchAction='manipulation';
+})();
+
+// ---- Descarga previa de sonidos: solo guarda los archivos, no los decodifica (no gasta memoria) ----
+const prefetchSeen=new Set();
+let prefetchRunning=false,prefetchCancel=false;
+async function prefetchAudioUrl(url){
+  if(prefetchSeen.has(url))return;
+  if(url.startsWith(CLOUDINARY_AUDIO_BASE)&&'caches' in window){
+    const cache=await caches.open(AUDIO_CACHE_NAME);
+    if(!(await cache.match(url))){
+      const response=await fetch(url);
+      if(!response.ok)throw new Error(`HTTP ${response.status} al descargar ${url}`);
+      await cache.put(url,response);
+    }
+  }else{
+    const response=await fetch(url);
+    if(!response.ok)throw new Error(`HTTP ${response.status} al descargar ${url}`);
+    await response.arrayBuffer();
+  }
+  prefetchSeen.add(url);
+}
+async function prefetchInstrumentSounds(instrument,onProgress){
+  const tasks=[];
+  if(instrument==='strings'){
+    STRINGS_SAMPLE_ROOTS.forEach(sample=>tasks.push(async()=>{
+      const sources=[...(sample.cloudinaryId?[`${CLOUDINARY_AUDIO_BASE}${sample.cloudinaryId}.wav`]:[]),`audio/strings/${sample.file}`];
+      let lastError=null;
+      for(const source of sources){try{await prefetchAudioUrl(source);return;}catch(error){lastError=error;}}
+      throw lastError;
+    }));
+  }else if(INSTRUMENTS[instrument]&&instrument!=='grand-piano'){
+    const spec=INSTRUMENTS[instrument],reps=VSCO2_TRUMPET_PATCHES[instrument]?.roundRobin?2:instrument==='upright-nr1-vsco2'?3:1;
+    for(let midi=spec.first;midi<=spec.last;midi++)for(let r=0;r<reps;r++)tasks.push(()=>getInstrumentSample(midi,instrument,true));
+  }
+  const total=tasks.length;let next=0,done=0,failed=0;
+  const worker=async()=>{
+    while(!prefetchCancel&&next<tasks.length){
+      const task=tasks[next++];
+      try{await task();}catch(error){failed++;console.warn('No se pudo descargar una muestra:',error);}
+      done++;if(onProgress)onProgress(done,total);
+    }
+  };
+  await Promise.all([worker(),worker(),worker()]);
+  return {done,failed,total};
+}
+function chosenInstrumentsList(){
+  const found=new Set();
+  const add=value=>{if(value&&(INSTRUMENTS[value]||value==='strings'))found.add(value);};
+  document.querySelectorAll('#instrumentSettingsScreen select').forEach(select=>add(select.value));
+  add(state.instrument);add(state.bassInstrument);if(state.stringsLayerEnabled)add(state.layerInstrument);
+  return [...found];
+}
+async function runPrefetch(list){
+  const status=$('prefetchStatus'),buttons=[$('prefetchChosen'),$('prefetchAll')];
+  if(prefetchRunning){prefetchCancel=true;status.textContent='Cancelando…';return;}
+  if(!navigator.onLine){status.textContent='Necesitas conexión a internet para descargar.';return;}
+  list=list.filter(instrument=>instrument!=='grand-piano');
+  if(!list.length){status.textContent='Esos sonidos ya se guardan solos.';return;}
+  prefetchRunning=true;prefetchCancel=false;prefetchSeen.clear();
+  const labels=buttons.map(button=>button.textContent);buttons.forEach(button=>{button.textContent='Cancelar';});
+  let failedTotal=0;
+  try{
+    for(let index=0;index<list.length&&!prefetchCancel;index++){
+      const instrument=list[index];
+      const result=await prefetchInstrumentSounds(instrument,(done,total)=>{status.textContent=`${instrumentLabel(instrument)}: ${done}/${total} · instrumento ${index+1} de ${list.length}`;});
+      failedTotal+=result.failed;
+    }
+    let used='';
+    try{const estimate=await navigator.storage.estimate();used=` Espacio usado por la app: ${Math.round(estimate.usage/1048576)} MB.`;}catch(_){}
+    status.textContent=(prefetchCancel?'Descarga cancelada.':failedTotal?`Terminó con ${failedTotal} sonidos que no se pudieron descargar. Puedes volver a intentarlo.`:'Listo. Los sonidos quedaron guardados en este dispositivo.')+used;
+  }finally{
+    prefetchRunning=false;prefetchCancel=false;buttons.forEach((button,index)=>{button.textContent=labels[index];});
+  }
+}
+function initPrefetchUI(){
+  const host=document.querySelector('#instrumentSettingsScreen .instrument-screen-main');
+  if(!host||$('prefetchBlock'))return;
+  const block=document.createElement('section');
+  block.id='prefetchBlock';block.className='instrument-config-card';
+  block.style.cssText='margin:14px 0;padding:14px;display:flex;flex-direction:column;gap:10px';
+  block.innerHTML='<b>Descargar sonidos para tocar sin esperar</b><small>Guarda los sonidos en este dispositivo para que no tarden al abrirlos. Usa datos: mejor con Wi-Fi. Mantén la app abierta mientras descarga.</small><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="prefetchChosen" class="soft" type="button">Descargar los que uso</button><button id="prefetchAll" class="soft" type="button">Descargar todos</button></div><small id="prefetchStatus" role="status"></small>';
+  host.appendChild(block);
+  $('prefetchChosen').onclick=()=>runPrefetch(chosenInstrumentsList());
+  $('prefetchAll').onclick=()=>{
+    if(!prefetchRunning&&!confirm('Descargar todos los instrumentos puede usar mucho espacio y datos (posiblemente cientos de MB). Mejor con Wi-Fi. ¿Continuar?'))return;
+    runPrefetch([...Object.keys(INSTRUMENTS),'strings']);
+  };
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initPrefetchUI);else initPrefetchUI();
