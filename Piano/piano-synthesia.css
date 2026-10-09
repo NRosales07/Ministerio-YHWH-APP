@@ -3619,11 +3619,16 @@ html[data-theme="dark"] #instrumentMenu .instrument-picker-targets,html[data-the
   #instrumentMenu .instrument-mix-control label{font-size:.64rem}
   #instrumentMenu .instrument-mix-control:last-of-type{grid-column:1/-1}
 }
-/* Respeta notch, esquinas y zona de inicio en las pantallas posteriores a Continuar. */
+/* Cubre también las zonas seguras para ocultar la pantalla anterior; el contenido sí las respeta. */
 body:has(#playModeModal:not(.hidden)) #playModeModal,
 body:has(#instrumentSettingsScreen:not(.hidden)) #instrumentSettingsScreen{
-  inset:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)!important;
-  width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;
+  inset:0!important;
+  width:100vw!important;height:100dvh!important;min-height:0!important;max-height:none!important;
+}
+body:has(#playModeModal:not(.hidden)) #playModeModal .mode-screen-panel,
+body:has(#instrumentSettingsScreen:not(.hidden)) #instrumentSettingsScreen .mode-screen-panel{
+  box-sizing:border-box!important;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)!important;
 }
 #instrumentSettingsScreen .instrument-settings-footer{padding-bottom:5px!important}
 /* Paleta legible y unificada para el zoom del teclado en tema oscuro. */
