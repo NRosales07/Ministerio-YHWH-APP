@@ -2190,7 +2190,7 @@ html[data-theme="dark"] .mode-side-choice small,html[data-theme="dark"] .mode-ch
 html[data-theme="dark"] .mode-detail-nav button.active{background:#42426e!important;color:#e8c97a!important}
 html[data-theme="dark"] .mode-detail-content{background:#1b1b2e!important;color:#e8e6f0!important}
 html[data-theme="dark"] .mode-voice-directions select,html[data-theme="dark"] .mode-setting-row select,html[data-theme="dark"] .mode-setting-row input[type=color]{background:#11111d!important;color:#e8e6f0!important;border-color:#514777!important}
-@media(max-width:760px){
+@media(max-width:900px){
  .mode-screen-header{grid-template-columns:auto minmax(0,1fr) auto;gap:6px;padding-inline:6px}
  .mode-screen-header>.soft{min-height:30px;padding:4px 8px;font-size:.75rem}
  .mode-screen-song h1{font-size:.83rem}.mode-screen-song p{font-size:.72rem}
