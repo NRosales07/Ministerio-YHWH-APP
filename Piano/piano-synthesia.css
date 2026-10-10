@@ -3736,7 +3736,7 @@ html[data-theme="dark"] .device-settings-nav button.active{background:#2f2f5c!im
 html[data-theme="dark"] .device-settings-workspace{background:#1b1b2e!important}
 html[data-theme="dark"] .device-setting-row,html[data-theme="dark"] .device-color-grid label,html[data-theme="dark"] .device-settings-preview{background:#202039!important;border-color:#393653!important;color:#e8e6f0!important}
 html[data-theme="dark"] .device-setting-row input[type=text],html[data-theme="dark"] .device-setting-row select{background:#11111d!important;color:#e8e6f0!important;border-color:#514777!important}
-@media(max-width:760px){
+@media(max-width:900px){
  .device-settings-header{grid-template-columns:auto minmax(0,1fr) auto;gap:5px;padding-inline:7px}
  .device-settings-header h1{font-size:.95rem}
  .device-settings-header .soft{min-height:30px;padding:4px 7px;font-size:.73rem}
