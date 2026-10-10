@@ -465,7 +465,7 @@
 @media(max-width:900px) and (orientation:landscape){body.home-active header{height:48px;padding:0 12px}body.home-active main{display:flex;flex-direction:column;height:calc(100dvh - 48px);max-height:calc(100dvh - 48px);padding:5px 10px calc(5px + env(safe-area-inset-bottom));overflow:hidden}body.home-active .home-view{flex:1;min-height:0;height:100%;margin:0;padding:9px;border-radius:14px}body.home-active .home-content{width:100%;max-width:720px}.home-branding{margin-bottom:10px}.home-note{width:36px;height:36px;margin-bottom:4px;font-size:22px;border-radius:11px}.home-branding h1{font-size:1.35rem}.home-branding p{font-size:.82rem;margin-top:2px}.home-divider{margin:7px auto;width:42px}.home-prompt{font-size:.75rem}.home-menu-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.home-menu-card{min-height:88px;padding:8px 5px;gap:4px;border-radius:11px}.home-card-icon{width:32px;height:32px;border-radius:9px;font-size:19px}.home-menu-card b{font-size:.76rem}.home-menu-card small{display:none}}
 @media(max-width:900px) and (orientation:landscape){body.home-active header{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}body.home-active main{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}}
 @media(max-width:900px) and (orientation:landscape){.view:not(.hidden) .song-list{grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:6px}.view:not(.hidden) .song-card{min-height:46px;padding:8px 10px;border-radius:10px;gap:6px}.view:not(.hidden) .song-card b{font-size:.82rem;line-height:1.2}.view:not(.hidden) .song-card small{font-size:.69rem;margin-top:2px;line-height:1.2}.view:not(.hidden) .song-card .badge{font-size:9px;padding:4px 6px}}
-.lyrics-viewer{max-height:none!important;overflow-x:auto;overflow-y:hidden;white-space:pre;font-family:Arial,Helvetica,sans-serif;font-size:.82rem;line-height:1.4;color:var(--text);border:0;padding:4px 0 12px;margin:0;-webkit-overflow-scrolling:touch}
+.lyrics-viewer{;overflow-x:auto;overflow-y:hidden;white-space:pre;font-family:Arial,Helvetica,sans-serif;font-size:.82rem;line-height:1.4;color:var(--text);border:0;padding:4px 0 12px;margin:0;-webkit-overflow-scrolling:touch}
 .lyrics-viewer .lc,.lyrics-viewer .ll,.lyrics-viewer .ls,.lyrics-viewer .lm,.lyrics-viewer .lb{display:block;white-space:pre;font-family:Arial,Helvetica,sans-serif}
 .lyrics-viewer .lc{color:var(--gold2);font-size:.7rem;font-weight:700;line-height:1.4}
 .lyrics-viewer .ll{color:#e8e6f0;font-size:.7rem;line-height:1.4}
@@ -476,7 +476,7 @@
 .lyrics-viewer .lyrics-chord:hover,.lyrics-viewer .lyrics-chord:focus-visible{color:#fff;background:#e8c97a33;text-decoration:underline;text-underline-offset:2px;outline:none}
 .lyrics-viewer .lyrics-chord:active{color:#fff;opacity:.72}
 /* Igualar el formato del editor: mismo tamaño, interlineado, centrado de secciones y márgenes. */
-.lyrics-viewer{max-height:none!important;max-width:760px;margin:0 auto;padding:0 0 40px;overflow-x:auto;overflow-y:hidden;white-space:pre;font-family:Arial,Helvetica,sans-serif;font-size:.75rem;line-height:1.5;color:var(--text);border:0;-webkit-overflow-scrolling:touch}
+.lyrics-viewer{;max-width:760px;margin:0 auto;padding:0 0 40px;overflow-x:auto;overflow-y:hidden;white-space:pre;font-family:Arial,Helvetica,sans-serif;font-size:.75rem;line-height:1.5;color:var(--text);border:0;-webkit-overflow-scrolling:touch}
 .lyrics-viewer .lc,.lyrics-viewer .ll,.lyrics-viewer .ls,.lyrics-viewer .lm,.lyrics-viewer .lb{display:block;font-family:Arial,Helvetica,sans-serif;white-space:pre}
 .lyrics-viewer .lc{color:var(--gold2);font-size:.7rem;font-weight:bold;text-align:left;line-height:inherit}
 .lyrics-viewer .ll{color:var(--text);font-size:.7rem;text-align:left;line-height:inherit}
@@ -710,7 +710,7 @@ body.home-active .home-branding p{color:#e0946a}
 /* En móvil, las acciones siguen al piano en el flujo y nunca cubren el contenido. */
 @media(max-width:900px){
   body:has(#player:not(.hidden)) .mobile-player-controls{
-    position:static!important;inset:auto!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;
+    position:static!important;inset:auto!important;left:auto!important;;bottom:auto!important;;
     transform:none!important;width:100%!important;max-width:560px!important;margin:8px auto 10px!important;
     order:initial;z-index:auto!important
   }
@@ -746,13 +746,12 @@ body.home-active .home-branding p{color:#e0946a}
   body:has(#player:not(.hidden)) .piano-panel .transpose-controls button{min-height:26px;padding:2px 7px;font-size:10px}
   body:has(#player:not(.hidden)) .piano-panel .transpose-controls span{min-width:65px;font-size:8px}
   body:has(#player:not(.hidden)) .mobile-player-controls{
-    position:fixed!important;left:50%!important;right:auto!important;bottom:0!important;top:auto!important;transform:translateX(-50%)!important;
-    display:flex!important;flex-wrap:nowrap;justify-content:center;gap:4px;width:calc(100vw - 12px)!important;max-width:900px!important;
+    position:fixed!important;left:50%!important;right:auto!important;bottom:0!important;top:auto!important;transform:translateX(-50%)!important;;flex-wrap:nowrap;justify-content:center;gap:4px;width:calc(100vw - 12px)!important;max-width:900px!important;
     margin:0!important;padding:4px max(6px,env(safe-area-inset-left)) calc(4px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right))!important;
     min-height:0;background:#111119fa;border:1px solid #ffffff24;border-bottom:0;border-radius:11px 11px 0 0;box-shadow:0 -4px 13px #0008;z-index:100!important
   }
   body:has(#player:not(.hidden)) .mobile-player-controls button{
-    flex:1 1 0;width:auto!important;min-width:0!important;max-width:none!important;height:34px;min-height:34px;padding:2px 1px;
+    flex:1 1 0;;;;height:34px;min-height:34px;padding:2px 1px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:14px
   }
   body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:clamp(7px,1vw,9px);line-height:1;white-space:nowrap}
@@ -863,7 +862,7 @@ body.home-active .home-branding p{color:#e0946a}
     min-height:0;border:1px solid #ffffff24;border-radius:12px;background:#111119fa;box-shadow:0 3px 12px #0006;z-index:auto!important
   }
   body:has(#player:not(.hidden)) .mobile-player-controls button{
-    flex:1 1 0;width:auto!important;min-width:0!important;max-width:none!important;height:36px;min-height:36px;padding:2px 1px;
+    flex:1 1 0;;;;height:36px;min-height:36px;padding:2px 1px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:14px
   }
   body:has(#player:not(.hidden)) .mobile-player-controls button small{font-size:clamp(7px,1vw,9px);line-height:1;white-space:nowrap}
@@ -878,7 +877,7 @@ body.home-active .home-branding p{color:#e0946a}
   body:has(#player:not(.hidden)) .piano-panel{height:auto!important;min-height:0!important;max-height:none!important;flex:0 0 auto!important}
   body:has(#player:not(.hidden)) .piano-panel .piano-container{
     order:1!important;display:flex!important;flex:0 0 clamp(150px,43dvh,205px)!important;
-    width:100%;height:clamp(150px,43dvh,205px)!important;min-height:150px!important;max-height:205px;padding:0!important;overflow:hidden
+    width:100%;height:clamp(150px,43dvh,205px)!important;min-height:150px!important;max-height:205px;;overflow:hidden
   }
   body:has(#player:not(.hidden)) .piano-panel #keyboardScroll{display:block;width:100%;height:100%!important;min-height:0;overflow-x:auto;overflow-y:hidden}
   body:has(#player:not(.hidden)) .piano-panel #keyboard{height:100%!important;min-height:100%!important;align-items:stretch}

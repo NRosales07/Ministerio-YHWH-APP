@@ -95,6 +95,15 @@
   function adopt(el) {
     if (!(el instanceof Element) || el.namespaceURI !== XHTML || SKIP_TAGS.has(el.tagName)) return;
 
+    // Las teclas del piano ya muestran la nota directamente; el globo de ayuda
+    // tapa la barra y la etiqueta cuando se mantiene pulsada en móvil.
+    if (el.matches('.piano-panel .key')) {
+      el.removeAttribute('title');
+      el.removeAttribute('data-tip');
+      el.removeAttribute('data-tip-auto');
+      return;
+    }
+
     const raw = el.getAttribute('title');
     if (raw !== null) {
       const value = raw.trim();
