@@ -1,0 +1,10 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "melodias": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'rosalesjrnain07@gmail.com'"
+    }
+  }
+}
