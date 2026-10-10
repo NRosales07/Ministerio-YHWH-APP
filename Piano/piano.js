@@ -298,6 +298,7 @@ function transitionScreen(target, candidates) {
   candidates.forEach(id=>{const element=$(id);if(element&&element!==next){element.classList.add('hidden');element.classList.remove('screen-fade-out','screen-fade-in');}});
   next.classList.remove('hidden','screen-fade-out','screen-fade-in');
   document.body.classList.toggle('player-active',target==='player');
+  if(target==='player')document.body.classList.remove('playback-finished');
   document.body.classList.toggle('free-play-active',target==='player'&&state.view==='libre');
   // Switch immediately; fading exposes the document background while theme
   // specific styles are being recalculated for the newly visible section.
@@ -1597,7 +1598,10 @@ function makeFallingNotesEvents(playbackNotes,playbackChords){
     });
   });
   events.sort((a,b)=>a.start-b.start);
-  events.forEach(event=>{event.visualDuration=Math.min(event.duration,FALLING_NOTES_MAX_LOOKAHEAD*.85);});
+  const stageHeight=$('noteCanvas')?.clientHeight||0;
+  const manualTapHeight=stageHeight?Math.min(stageHeight,Math.max(20,stageHeight*.05)):0;
+  const tapBarDuration=stageHeight?manualTapHeight*Math.max(.8,fallingNotesLookahead)/stageHeight:Math.max(.8,fallingNotesLookahead)*.05;
+  events.forEach(event=>{event.visualDuration=Math.min(Math.max(event.duration,event.kind==='melody'?tapBarDuration:0),FALLING_NOTES_MAX_LOOKAHEAD*.85);});
   return events;
 }
 function rebuildFallingNotesGeometry(){
@@ -2322,6 +2326,19 @@ function updateActiveChordLabel(){
   const rootName=state.notation==='latino'?(NOTE_ROOT_LATINO[NOTE_NAMES[match.root]]||NOTE_NAMES_LATINO[match.root]):NOTE_NAMES[match.root];
   const suffix={major:'',minor:'m',dim:'dim',aug:'aug',sus2:'sus2',sus4:'sus4',dim7:'dim7','m7♭5':'m7♭5',m7:'m7','7':'7',maj7:'maj7'}[match.quality]||'';
   $('activeChordLabel').textContent=`${rootName}${suffix}`;$('activeChordLabel').classList.remove('hidden');
+}
+function chordNameForMidis(midis){
+  const pitches=[...new Set(midis.map(midi=>((Number(midi)%12)+12)%12))];
+  if(pitches.length<3)return '';
+  const qualities={'0,3,6':'dim','0,3,7':'minor','0,4,7':'major','0,4,8':'aug','0,2,7':'sus2','0,5,7':'sus4','0,3,6,9':'dim7','0,3,6,10':'m7♭5','0,3,7,10':'m7','0,4,7,10':'7','0,4,7,11':'maj7'};
+  for(const root of pitches){
+    const quality=qualities[pitches.map(pitch=>(pitch-root+12)%12).sort((a,b)=>a-b).join(',')];
+    if(!quality)continue;
+    const rootName=state.notation==='latino'?(NOTE_ROOT_LATINO[NOTE_NAMES[root]]||NOTE_NAMES_LATINO[root]):NOTE_NAMES[root];
+    const suffix={major:'',minor:'m',dim:'dim',aug:'aug',sus2:'sus2',sus4:'sus4',dim7:'dim7','m7♭5':'m7♭5',m7:'m7','7':'7',maj7:'maj7'}[quality]||'';
+    return `${rootName}${suffix}`;
+  }
+  return '';
 }
 function syncStageScroll(){
   const scroll=$('keyboardScroll');if(!scroll)return;
@@ -3212,7 +3229,7 @@ async function prepareMelodyAudio(notesToPrepare=state.notes) {
   await Promise.all([...loads,resumePromise]);
   return new Map(entries);
 }
-function schedulePlaybackNote(midi,element,duration,when,prepared,cut){
+function schedulePlaybackNote(midi,element,duration,when,prepared,cut,showReadout=true){
   if(!state.melodySoundEnabled)return;
   const context=getAudioContext(),entry=prepared.get(midi);
   if(!entry)return;
@@ -3228,7 +3245,7 @@ function schedulePlaybackNote(midi,element,duration,when,prepared,cut){
   state.activePlaybackSources.push(source);source.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==source);},{once:true});
   const stringsSource=scheduleLayerNote(context,midi,entry.strings,when,noteDuration,cut ? .35 : 1.05);
   if(stringsSource){state.activePlaybackSources.push(stringsSource);stringsSource.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==stringsSource);},{once:true});}
-  queueVisualEvent(when,()=>{
+  if(showReadout)queueVisualEvent(when,()=>{
     const readout=$('currentNote'),name=noteName(midi);
     if(readout.textContent!==name)readout.textContent=name;
     if(readout.style.opacity!=='1')readout.style.opacity='1';
@@ -3253,6 +3270,7 @@ async function playMelody() {
   const playbackGroups=playbackGroupsForCurrentSong(),playbackChords=playbackGroups.flatMap(group=>group.chords);let playbackNotes=playbackGroups.flatMap(group=>group.notes);
   if (!playbackNotes.length) { toast(state.melodyType==='voz'?'Activa al menos una voz para escucharla.':'Esta pista todavía no tiene melodía grabada.'); $('status').textContent = 'No hay notas seleccionadas para reproducir.'; return; }
   stopPlayback();
+  document.body.classList.remove('playback-finished');
   state.selectedSongChord=null;
   document.querySelectorAll('#keyboard .key.chord-selected,#lyrics .lyrics-chord.selected').forEach(element=>element.classList.remove('chord-selected','selected'));
   $('currentNote').textContent='';$('activeChordLabel').textContent='';$('activeChordLabel').classList.add('hidden');
@@ -3296,12 +3314,31 @@ async function playMelody() {
     keyboardScroll.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
   }
   const playbackSettings={instrument:state.instrument,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
+  let accompanimentChordLabelSequence=0;
   playbackGroups.forEach(group=>{
     Object.assign(state,{instrument:group.settings.instrument,stringsLayerEnabled:group.settings.layerEnabled,layerInstrument:group.settings.layerInstrument,stringsLayerVolume:group.settings.layerVolume});
     group.notes.forEach(note=>{
       const midi=Number(note.midi),key=document.querySelector(`.key[data-midi="${midi}"]`);
-      schedulePlaybackNote(midi,key,note._playbackHold,playbackStart+Math.max(0,Number(note.start)||0)/state.tempo,group.prepared,note._playbackCut);
+      schedulePlaybackNote(midi,key,note._playbackHold,playbackStart+Math.max(0,Number(note.start)||0)/state.tempo,group.prepared,note._playbackCut,group.kind==='melody');
     });
+    if(group.kind==='accompaniment'&&state.showChordNames){
+      const ordered=[...group.notes].sort((a,b)=>(Number(a.start)||0)-(Number(b.start)||0));
+      let lastStart=-Infinity;
+      ordered.forEach(note=>{
+        const start=Number(note.start)||0;
+        if(start-lastStart<.11)return;
+        const cluster=ordered.filter(candidate=>Math.abs((Number(candidate.start)||0)-start)<.11);
+        lastStart=start;
+        const chordName=chordNameForMidis(cluster.map(candidate=>candidate.midi));
+        if(!chordName)return;
+        const sequence=++accompanimentChordLabelSequence;
+        queueVisualEvent(playbackStart+Math.max(0,start)/state.tempo,()=>{
+          const label=$('activeChordLabel');label.textContent=chordName;label.classList.remove('hidden');
+          const hold=Math.max(...cluster.map(candidate=>noteHoldSeconds(candidate)))/state.tempo;
+          state.playTimers.push(setTimeout(()=>{if(sequence===accompanimentChordLabelSequence){label.textContent='';label.classList.add('hidden');}},Math.max(0,(playbackStart+start/state.tempo+hold-getAudioContext().currentTime)*1000)));
+        });
+      });
+    }
   });
   Object.assign(state,{instrument:playbackSettings.instrument,stringsLayerEnabled:playbackSettings.layerEnabled,layerInstrument:playbackSettings.layerInstrument,stringsLayerVolume:playbackSettings.layerVolume});
   const fallingEvents=makeFallingNotesEvents(playbackNotes,playbackChords),chordLights=new Map();
@@ -3316,7 +3353,7 @@ async function playMelody() {
   const end = Math.max(noteEnd, chordEnd);
   startPlaybackTimeline(playbackStart,end);
   startFallingNotes(playbackNotes,playbackChords,playbackStart,fallingEvents);
-  state.playTimers.push(setTimeout(() => { state.playing = false; setStagePlaying(false); finishFallingNotesPlayback(); if(timelineFrame)cancelAnimationFrame(timelineFrame);timelineFrame=0;timelineStartedAt=0;updatePlaybackTimeline(end,end);$('tempoControl').disabled=false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = state.playMode==='performance'?'Reproducción terminada.':'Pista terminada.'; }, end * 1000 + 500));
+  state.playTimers.push(setTimeout(() => { state.playing = false; setStagePlaying(false); document.body.classList.add('playback-finished'); finishFallingNotesPlayback(); if(timelineFrame)cancelAnimationFrame(timelineFrame);timelineFrame=0;timelineStartedAt=0;updatePlaybackTimeline(end,end);$('tempoControl').disabled=false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = state.playMode==='performance'?'Reproducción terminada.':'Pista terminada.'; }, end * 1000 + 500));
 }
 async function toggleRecord() {
   if (!state.admin) { toast('Solo Admin puede grabar.'); return; }

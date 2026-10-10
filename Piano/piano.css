@@ -3556,3 +3556,82 @@ html.device-customization-enabled body.melody-playing #player>.player-top #playM
   outline-offset:1px;
   box-shadow:inset 0 0 0 1px #fff8,0 0 9px #ffd16655 !important;
 }
+
+/* Adoración y Júbilo: contenido protegido a los lados en móvil, sin inset inferior. */
+@media (max-width:900px) {
+  body.song-list-active #songView {
+    --song-safe-left:max(14px,env(safe-area-inset-left,0px));
+    --song-safe-right:max(14px,env(safe-area-inset-right,0px));
+  }
+  body.song-list-active #songView>.song-mobile-header,
+  body.song-list-active #songView>.toolbar,
+  body.song-list-active #songView>#songList,
+  body.song-list-active #songView>.song-list-footer {
+    padding-left:var(--song-safe-left) !important;
+    padding-right:var(--song-safe-right) !important;
+  }
+}
+@media (max-width:700px) and (orientation:portrait) {
+  body.song-list-active #songView {
+    --song-safe-left:max(16px,env(safe-area-inset-left,0px));
+    --song-safe-right:max(16px,env(safe-area-inset-right,0px));
+  }
+}
+@media (max-width:900px) and (orientation:landscape) {
+  body.song-list-active #songView {
+    --song-safe-left:max(14px,env(safe-area-inset-left,0px));
+    --song-safe-right:max(20px,env(safe-area-inset-right,0px));
+  }
+}
+
+/* iPhone Safari no amplía la página al enfocar campos de texto. */
+@media (max-width:900px) {
+  input:not([type="range"]):not([type="color"]),
+  select,
+  textarea {
+    font-size:16px !important;
+  }
+}
+
+/* Controles del encabezado del piano ligeramente más compactos. */
+#player>.player-top>#backBtn {
+  flex-basis:34px !important;
+  width:34px !important;
+  min-width:34px !important;
+  height:32px !important;
+  min-height:32px !important;
+}
+#player>.player-top .mobile-player-controls button {
+  flex-basis:30px !important;
+  width:30px !important;
+  min-width:30px !important;
+  height:30px !important;
+  min-height:30px !important;
+  font-size:15px !important;
+}
+#player>.player-top .toolbar-actions .toolbar-icon,
+#player>.player-top .player-edit-menu>summary {
+  flex-basis:30px !important;
+  width:30px !important;
+  min-width:30px !important;
+  height:30px !important;
+}
+#player>.player-top .toolbar-actions .toolbar-icon .ui-icon { width:17px; height:17px; }
+#player>.player-top .stage-metronome-controls .top-tempo { height:26px; }
+#player>.player-top .stage-metronome-controls .top-tempo button {
+  flex-basis:20px;
+  width:20px;
+  min-width:20px;
+  height:23px;
+}
+#player>.player-top .stage-metronome-controls .top-tempo output { min-width:48px; }
+#player>.player-top .stage-metronome-controls .metronome-button {
+  flex-basis:27px;
+  width:27px;
+  min-width:27px;
+  max-width:27px;
+  height:26px;
+}
+body.player-active.playback-finished #player .performance-layout>#playerTimeline {
+  display:none !important;
+}
