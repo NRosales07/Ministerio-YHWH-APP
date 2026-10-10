@@ -3993,6 +3993,26 @@ html.device-customization-enabled body:has(#player:not(.hidden)) #player .settin
 html.device-customization-enabled body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen .device-settings-workspace{background:var(--device-page-color)!important}
 html.device-customization-enabled body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen :is(.mode-screen-panel,.device-settings-nav,.device-settings-preview){background:var(--device-surface-color)!important;color:var(--device-text-color)!important;border-color:var(--device-line-color)!important}
 html.device-customization-enabled body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen :is(.device-setting-row,.device-color-grid label){background:color-mix(in srgb,var(--device-surface-color) 88%,var(--device-page-color))!important;color:var(--device-text-color)!important;border-color:var(--device-line-color)!important}
+
+/* Emula un margen seguro visible en navegadores de escritorio con viewport móvil,
+   donde env(safe-area-inset-*) normalmente devuelve cero. En iPhone prevalece el inset real. */
+@media(max-width:900px){
+  body:has(#playModeModal:not(.hidden)) #playModeModal,
+  body:has(#instrumentSettingsScreen:not(.hidden)) #instrumentSettingsScreen,
+  body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen{
+    padding:max(8px,env(safe-area-inset-top,0px)) max(10px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))!important;
+  }
+  body:has(#playModeModal:not(.hidden)) #playModeModal .mode-screen-panel,
+  body:has(#instrumentSettingsScreen:not(.hidden)) #instrumentSettingsScreen .mode-screen-panel,
+  body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen .mode-screen-panel{padding:0!important}
+}
+@media(max-width:900px) and (orientation:landscape) and (max-height:600px){
+  body:has(#playModeModal:not(.hidden)) #playModeModal,
+  body:has(#instrumentSettingsScreen:not(.hidden)) #instrumentSettingsScreen,
+  body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen{
+    padding:max(8px,env(safe-area-inset-top,0px)) max(44px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(44px,env(safe-area-inset-left,0px))!important;
+  }
+}
 /* Encabezados: fondo y letras configurables por paleta clara u oscura. */
 html.device-customization-enabled body>header.app-header,
 html.device-customization-enabled #songView>.toolbar,
