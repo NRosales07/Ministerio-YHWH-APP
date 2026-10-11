@@ -24,10 +24,25 @@ const freePlayInstrumentConfig={instrument:state.instrument,layerEnabled:state.s
 state.masterVolume=Number.isFinite(SAVED_MASTER_VOLUME)?Math.max(0,Math.min(2,SAVED_MASTER_VOLUME)):1;
 const DEVICE_SETTINGS_KEY='yhwh_device_settings_v1';
 const DEVICE_THEME_PALETTES={light:{primary:'#155c9a',accent:'#8a5a08',page:'#f3f5f7',surface:'#ffffff',optionPanel:'#f8fafc',headingBackground:'#ffffff',headingText:'#1e2b38',offlineCardBackground:'#eaf2f8',offlineCardText:'#1e2b38',text:'#1e2b38',line:'#d3dde6'},dark:{primary:'#75b9ed',accent:'#f1c875',page:'#101820',surface:'#1a2632',optionPanel:'#1f2e3b',headingBackground:'#1a2632',headingText:'#eef3f7',offlineCardBackground:'#1f2e3b',offlineCardText:'#eef3f7',text:'#eef3f7',line:'#35495a'}};
-const deviceInitialTheme=safeStorageGetItem('piano_theme')==='dark'?'dark':'light';
-const DEVICE_SETTINGS_DEFAULTS={paletteVersion:2,theme:deviceInitialTheme,font:'Inter, system-ui, Arial, sans-serif',fontSize:15,headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',headingSize:26,headingHeight:58,mobileHeadingSize:18,homeButtonHeight:46,radius:12,...DEVICE_THEME_PALETTES[deviceInitialTheme],paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,brand:'Ministerio YHWH',worship:'Adoración',joy:'Júbilo',freePlay:'Reproducción libre',create:'Crear melodía',theory:'Teoría musical',noteNotation:state.notation==='latino'?'latino':'americano',noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,gridSpacing:4,melodyColor:state.keyColor,bassColor:state.bassColor,masterVolume:Math.round(state.masterVolume*100),layerEnabled:state.stringsLayerEnabled,layerVolume:state.stringsLayerVolume,fallingStyle:safeStorageGetItem('yhwh_piano_barstyle')||'bars',fxGlow:safeStorageGetItem('yhwh_piano_fx_glow')==='1',barFlow:safeStorageGetItem('yhwh_piano_bar_flow')==='1',lightKeys:safeStorageGetItem('yhwh_piano_light_keys')!=='0'};
-function readDeviceSettings(){try{const saved=JSON.parse(safeStorageGetItem(DEVICE_SETTINGS_KEY)||'{}'),theme=saved.theme==='dark'?'dark':'light',settings={...DEVICE_SETTINGS_DEFAULTS,...saved},hasCurrentPalette=saved.paletteVersion===2;settings.paletteLight=hasCurrentPalette?{...DEVICE_THEME_PALETTES.light,...saved.paletteLight}:{...DEVICE_THEME_PALETTES.light};settings.paletteDark=hasCurrentPalette?{...DEVICE_THEME_PALETTES.dark,...saved.paletteDark}:{...DEVICE_THEME_PALETTES.dark};settings.paletteVersion=2;return settings;}catch(_){return {...DEVICE_SETTINGS_DEFAULTS};}}
+const READY_COLOR_PALETTES={
+  manantial:{label:'Manantial',theme:'light',colors:{...DEVICE_THEME_PALETTES.light},melody:'#90dd4a',bass:'#bb82ef',bar2:'#a259ff',bar3:'#2f6bff',barLook:'normal',barStyle:'glass'},
+  medianoche:{label:'Medianoche',theme:'dark',colors:{primary:'#08cce8',accent:'#00e5b2',page:'#03070d',surface:'#0a111a',optionPanel:'#0d1722',headingBackground:'#07121c',headingText:'#e7fbff',offlineCardBackground:'#0d1722',offlineCardText:'#e7fbff',text:'#e7fbff',line:'#1e3d4a'},melody:'#43e8ff',bass:'#ffcd5f',bar2:'#1b9dff',bar3:'#a65cff',barLook:'duo',barStyle:'neon'},
+  aurora:{label:'Aurora',theme:'dark',colors:{primary:'#a78bfa',accent:'#5eead4',page:'#0c1020',surface:'#171b30',optionPanel:'#1b2038',headingBackground:'#171b30',headingText:'#f3efff',offlineCardBackground:'#1b2038',offlineCardText:'#f3efff',text:'#f3efff',line:'#3a355b'},melody:'#c084fc',bass:'#34d399',bar2:'#34d399',bar3:'#38bdf8',barLook:'tri',barStyle:'synesthesia'},
+  atardecer:{label:'Atardecer',theme:'light',colors:{primary:'#b84f64',accent:'#d9783f',page:'#fff5f0',surface:'#fffdfb',optionPanel:'#fff8f3',headingBackground:'#fffdfb',headingText:'#4d2930',offlineCardBackground:'#fbe8df',offlineCardText:'#4d2930',text:'#4a3333',line:'#ead2ca'},melody:'#e34f84',bass:'#ef8a38',bar2:'#f08a57',bar3:'#b94d79',barLook:'tri',barStyle:'synesthesia'},
+  bosque:{label:'Bosque',theme:'dark',colors:{primary:'#4f9b70',accent:'#d6b45e',page:'#0b1511',surface:'#14221a',optionPanel:'#192a20',headingBackground:'#14221a',headingText:'#eff8ef',offlineCardBackground:'#192a20',offlineCardText:'#eff8ef',text:'#e6f0e6',line:'#36513e'},melody:'#65d989',bass:'#e4bd5f',bar2:'#cda84f',bar3:'#2d8c5b',barLook:'duo',barStyle:'glass'},
+  contraste:{label:'Alto contraste',theme:'dark',colors:{primary:'#fff200',accent:'#00ffff',page:'#000000',surface:'#090909',optionPanel:'#111111',headingBackground:'#000000',headingText:'#ffffff',offlineCardBackground:'#090909',offlineCardText:'#ffffff',text:'#ffffff',line:'#ffffff'},melody:'#00ffff',bass:'#fff200',bar2:'#ff00ff',bar3:'#fff200',barLook:'duo',barStyle:'neon'},
+  papel:{label:'Papel',theme:'light',colors:{primary:'#765235',accent:'#a16b2d',page:'#f4eddf',surface:'#fffaf0',optionPanel:'#faf3e7',headingBackground:'#fffaf0',headingText:'#3d3024',offlineCardBackground:'#eee3cf',offlineCardText:'#3d3024',text:'#403629',line:'#d8c8ac'},melody:'#527c49',bass:'#9b6ac2',bar2:'#c18b45',bar3:'#618a58',barLook:'duo',barStyle:'glass'}
+};
+const storedThemePreference=safeStorageGetItem('piano_theme');
+const systemThemeIsDark=()=>!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+const deviceInitialThemeMode=['light','dark','system'].includes(storedThemePreference)?storedThemePreference:'light';
+const deviceInitialTheme=deviceInitialThemeMode==='system'?(systemThemeIsDark()?'dark':'light'):deviceInitialThemeMode;
+const BAR_COLOR_DEFAULTS=['#a259ff','#2f6bff'];
+const fnReadBarColor=(key,fallback)=>{try{const v=safeStorageGetItem(key);return /^#[0-9a-f]{6}$/i.test(v||'')?v:fallback;}catch(_){return fallback;}};
+const DEVICE_SETTINGS_DEFAULTS={paletteVersion:2,theme:deviceInitialTheme,themeMode:deviceInitialThemeMode,palettePreset:'manantial',font:'Inter, system-ui, Arial, sans-serif',fontSize:15,headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',headingSize:26,headingHeight:58,mobileHeadingSize:18,homeButtonHeight:46,radius:12,...DEVICE_THEME_PALETTES[deviceInitialTheme],paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,brand:'Ministerio YHWH',worship:'Adoración',joy:'Júbilo',freePlay:'Reproducción libre',create:'Crear melodía',theory:'Teoría musical',noteNotation:state.notation==='latino'?'latino':'americano',noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,gridSpacing:4,melodyColor:state.keyColor,bassColor:state.bassColor,masterVolume:Math.round(state.masterVolume*100),layerEnabled:state.stringsLayerEnabled,layerVolume:state.stringsLayerVolume,fallingStyle:safeStorageGetItem('yhwh_piano_barstyle')||'bars',fxGlow:safeStorageGetItem('yhwh_piano_fx_glow')==='1',fxStyle:(v=>v==='flow'?'gold':['fire','gold','rings','cross','bubbles','notes'].includes(v)?v:'fire')(safeStorageGetItem('yhwh_piano_fx_style')),fxIntensity:2,fxDuration:3.4,keyStyle:'classic',barLook:(v=>v==='duo'||v==='tri'?v:'normal')(safeStorageGetItem('yhwh_piano_bar_look')),barColor2:fnReadBarColor('yhwh_piano_bar_color2',BAR_COLOR_DEFAULTS[0]),barColor3:fnReadBarColor('yhwh_piano_bar_color3',BAR_COLOR_DEFAULTS[1]),barBassDiff:safeStorageGetItem('yhwh_piano_bar_bass_diff')!=='0',barStyle:'glass',barRadius:2,barOpacity:100,barColorMode:'track',barTrail:0,barAccompaniment2Color:'#ff9f43',lightKeys:safeStorageGetItem('yhwh_piano_light_keys')!=='0'};
+function readDeviceSettings(){try{const saved=JSON.parse(safeStorageGetItem(DEVICE_SETTINGS_KEY)||'{}'),themeMode=['light','dark','system'].includes(saved.themeMode)?saved.themeMode:(['light','dark','system'].includes(storedThemePreference)?storedThemePreference:saved.theme==='dark'?'dark':'light'),theme=themeMode==='system'?(systemThemeIsDark()?'dark':'light'):themeMode,settings={...DEVICE_SETTINGS_DEFAULTS,...saved,themeMode,theme,palettePreset:saved.palettePreset?(READY_COLOR_PALETTES[saved.palettePreset]?saved.palettePreset:'custom'):saved.paletteVersion===2?'custom':'manantial'},hasCurrentPalette=saved.paletteVersion===2;settings.paletteLight=hasCurrentPalette?{...DEVICE_THEME_PALETTES.light,...saved.paletteLight}:{...DEVICE_THEME_PALETTES.light};settings.paletteDark=hasCurrentPalette?{...DEVICE_THEME_PALETTES.dark,...saved.paletteDark}:{...DEVICE_THEME_PALETTES.dark};settings.paletteVersion=2;return settings;}catch(_){return {...DEVICE_SETTINGS_DEFAULTS};}}
 let deviceSettings=readDeviceSettings();
+if(READY_COLOR_PALETTES[deviceSettings.palettePreset]&&deviceSettings.iconColor?.toLowerCase()==='#ffffff'&&READY_COLOR_PALETTES[deviceSettings.palettePreset].theme==='light')deviceSettings.iconColor=deviceContrastColor(READY_COLOR_PALETTES[deviceSettings.palettePreset].colors.headingBackground);
 let instrumentPickerTarget='primary';
 let screenTransitionTimer = null;
 let selectedSongForContinue = null;
@@ -82,43 +97,56 @@ let fallingNotesLookahead = (()=>{try{const v=parseFloat(safeStorageGetItem('yhw
 const SHOW_PLAYER_TIMELINE = true; // línea de tiempo (0:00 ——— 0:00) visible; pon false para quitarla
 const perfOption=(key)=>{try{return safeStorageGetItem(key)!=='0';}catch(_){return true;}};
 let fxGlow=(()=>{try{return safeStorageGetItem('yhwh_piano_fx_glow')==='1';}catch(_){return false;}})(); // destellos y partículas al llegar a la tecla, apagados por defecto
-let fallingFlowEnabled=(()=>{try{return safeStorageGetItem('yhwh_piano_bar_flow')==='1';}catch(_){return false;}})();
+let barLook=(()=>{try{return (v=>v==='duo'||v==='tri'?v:'normal')(safeStorageGetItem('yhwh_piano_bar_look'));}catch(_){return 'normal';}})(); // color de las barras: 'normal' o 'duo' (dos colores)
+let barColor2=fnReadBarColor('yhwh_piano_bar_color2',BAR_COLOR_DEFAULTS[0]),barColor3=fnReadBarColor('yhwh_piano_bar_color3',BAR_COLOR_DEFAULTS[1]); // colores que se mezclan con el de la nota en las barras
+let barBassDiff=(()=>{try{return safeStorageGetItem('yhwh_piano_bar_bass_diff')!=='0';}catch(_){return true;}})(); // true: los bajos tienen su propio color; false: todo del color de la melodía
+let barStyle=['glass','neon','synesthesia'].includes(deviceSettings.barStyle)?deviceSettings.barStyle:'glass';
+let barRadius=Math.max(0,Math.min(12,Number(deviceSettings.barRadius??2))),barOpacity=Math.max(10,Math.min(100,Number(deviceSettings.barOpacity??100))),barTrail=Math.max(0,Math.min(100,Number(deviceSettings.barTrail??0)));
+let barColorMode=deviceSettings.barColorMode==='note'?'note':'track',barAccompaniment2Color=/^#[0-9a-f]{6}$/i.test(deviceSettings.barAccompaniment2Color||'')?deviceSettings.barAccompaniment2Color:'#ff9f43';
+let pianoKeyStyle=['flat','realistic'].includes(deviceSettings.keyStyle)?deviceSettings.keyStyle:'classic';
+const FX_STYLES=['fire','gold','rings','cross','bubbles','notes'];
+let fxStyle=deviceSettings.fxStyle==='flow'?'gold':FX_STYLES.includes(deviceSettings.fxStyle)?deviceSettings.fxStyle:'fire';
+let fxIntensity=Math.max(1,Math.min(3,Number(deviceSettings.fxIntensity)||2)),fxDuration=Math.max(1,Math.min(6,Number(deviceSettings.fxDuration)||3.4));
+const fxIntensityScale=()=>[0,.7,1,1.35][fxIntensity]||1;
 let lightKeys=perfOption('yhwh_piano_light_keys');  // encender las teclas mientras suena la melodía
 let keyEdge=(()=>{try{return safeStorageGetItem('yhwh_piano_key_edge')==='1';}catch(_){return false;}})(); // destello ligero solo en el borde de la tecla (apagado por defecto)
 let keyColorOn=perfOption('yhwh_piano_key_color_on'); // color en las teclas encendidas (apagado = gris neutro)
 // Línea luminosa (turquesa por defecto) sobre las teclas: se puede mostrar/ocultar, cambiar de color, grosor y resplandor en Ajustes.
-const NEON_EDGE_DEFAULTS={on:true,color:'#2ff3e0',thickness:3,glow:100};
+const NEON_EDGE_DEFAULTS={on:true,style:'turq',color:'#2ff3e0',thickness:3,glow:100};
 const neonEdge=(()=>{const num=(k,d,lo,hi)=>{const v=parseFloat(safeStorageGetItem(k));return v>=lo&&v<=hi?v:d;},c=safeStorageGetItem('yhwh_piano_edge_color');
-  return {on:safeStorageGetItem('yhwh_piano_edge_on')!=='0',color:/^#[0-9a-f]{6}$/i.test(c||'')?c:NEON_EDGE_DEFAULTS.color,thickness:num('yhwh_piano_edge_thickness',NEON_EDGE_DEFAULTS.thickness,1,10),glow:num('yhwh_piano_edge_glow',NEON_EDGE_DEFAULTS.glow,0,150)};})();
+  return {on:safeStorageGetItem('yhwh_piano_edge_on')!=='0',style:safeStorageGetItem('yhwh_piano_edge_style')==='flame'?'flame':'turq',color:/^#[0-9a-f]{6}$/i.test(c||'')?c:NEON_EDGE_DEFAULTS.color,thickness:num('yhwh_piano_edge_thickness',NEON_EDGE_DEFAULTS.thickness,1,10),glow:num('yhwh_piano_edge_glow',NEON_EDGE_DEFAULTS.glow,0,150)};})();
 function applyNeonEdge(){
   const m=/^#([0-9a-f]{6})$/i.exec(neonEdge.color),v=m?parseInt(m[1],16):0x2ff3e0;
   document.querySelectorAll('.neon-edge').forEach(el=>{
     el.style.setProperty('--neon-rgb',`${v>>16&255},${v>>8&255},${v&255}`);
     el.style.setProperty('--neon-thickness',neonEdge.thickness+'px');
     el.style.setProperty('--neon-glow',String(neonEdge.glow/100));
-    el.classList.toggle('is-off',!neonEdge.on);
+    el.classList.toggle('is-off',!neonEdge.on||neonEdge.style==='flame');
   });
 }
-function saveNeonEdge(){try{localStorage.setItem('yhwh_piano_edge_on',neonEdge.on?'1':'0');localStorage.setItem('yhwh_piano_edge_color',neonEdge.color);localStorage.setItem('yhwh_piano_edge_thickness',String(neonEdge.thickness));localStorage.setItem('yhwh_piano_edge_glow',String(neonEdge.glow));}catch(_){}}
+function saveNeonEdge(){try{localStorage.setItem('yhwh_piano_edge_on',neonEdge.on?'1':'0');localStorage.setItem('yhwh_piano_edge_style',neonEdge.style);localStorage.setItem('yhwh_piano_edge_color',neonEdge.color);localStorage.setItem('yhwh_piano_edge_thickness',String(neonEdge.thickness));localStorage.setItem('yhwh_piano_edge_glow',String(neonEdge.glow));}catch(_){}}
 function syncNeonEdgeControls(){
   const on=$('neonEdgeOn'),color=$('neonEdgeColor'),th=$('neonEdgeThickness'),gl=$('neonEdgeGlow');
   if(on)on.checked=neonEdge.on;if(color)color.value=neonEdge.color;
+  document.querySelectorAll('[data-edge-style]').forEach(b=>{const act=b.dataset.edgeStyle===neonEdge.style;b.classList.toggle('active',act);b.setAttribute('aria-pressed',act?'true':'false');});
+  if($('neonEdgeColorRow'))$('neonEdgeColorRow').style.display=neonEdge.style==='flame'?'none':'';
   if(th)th.value=neonEdge.thickness;if($('neonEdgeThicknessValue'))$('neonEdgeThicknessValue').textContent=neonEdge.thickness+' px';
   if(gl)gl.value=neonEdge.glow;if($('neonEdgeGlowValue'))$('neonEdgeGlowValue').textContent=neonEdge.glow+'%';
 }
 function setupNeonEdgeControls(){
-  const change=()=>{applyNeonEdge();saveNeonEdge();syncNeonEdgeControls();};
+  const change=()=>{applyNeonEdge();saveNeonEdge();syncNeonEdgeControls();fnRefreshIdleLine();};
+  document.querySelectorAll('[data-edge-style]').forEach(b=>{b.onclick=()=>{neonEdge.style=b.dataset.edgeStyle==='flame'?'flame':'turq';if(!neonEdge.on)neonEdge.on=true;change();};});
   if($('neonEdgeOn'))$('neonEdgeOn').onchange=e=>{neonEdge.on=e.target.checked;change();};
   if($('neonEdgeColor'))$('neonEdgeColor').oninput=e=>{neonEdge.color=e.target.value;applyNeonEdge();saveNeonEdge();};
   if($('neonEdgeThickness'))$('neonEdgeThickness').oninput=e=>{neonEdge.thickness=Number(e.target.value);change();};
   if($('neonEdgeGlow'))$('neonEdgeGlow').oninput=e=>{neonEdge.glow=Number(e.target.value);change();};
   if($('neonEdgeReset'))$('neonEdgeReset').onclick=()=>resetNeonEdge();
-  syncNeonEdgeControls();applyNeonEdge();
+  syncNeonEdgeControls();applyNeonEdge();fnRefreshIdleLine();
 }
 // Letra de las notas dentro de las barras: blanca con borde negro (opcional, móvil y PC).
 let noteLabelOutline=safeStorageGetItem('yhwh_piano_note_outline')==='1';
 function setNoteLabelOutline(on,save=true){noteLabelOutline=!!on;document.body.classList.toggle('note-label-outline',noteLabelOutline);const sw=$('noteLabelOutlineSwitch');if(sw)sw.checked=noteLabelOutline;if(save){try{localStorage.setItem('yhwh_piano_note_outline',noteLabelOutline?'1':'0');}catch(_){}}}
-function resetNeonEdge(){Object.assign(neonEdge,NEON_EDGE_DEFAULTS);saveNeonEdge();applyNeonEdge();syncNeonEdgeControls();}
+function resetNeonEdge(){Object.assign(neonEdge,NEON_EDGE_DEFAULTS);saveNeonEdge();applyNeonEdge();syncNeonEdgeControls();fnRefreshIdleLine();}
 let theorySequenceTimers = [];
 let offlineAudioDownloadRunning = false;
 let metronomeOn = false;
@@ -338,6 +366,15 @@ function transitionScreen(target, candidates) {
   // specific styles are being recalculated for the newly visible section.
   screenTransitionTimer=null;
 }
+function openPlayerSettingsScreen(){
+  closePlayerPopovers();
+  transitionScreen('playerSettingsScreen',['homeView','songView','createView','createTrackScreen','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen','playerSettingsScreen']);
+  settingsToggle?.setAttribute('aria-expanded','true');
+}
+function closePlayerSettingsScreen(){
+  transitionScreen('player',['homeView','songView','createView','createTrackScreen','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen','playerSettingsScreen']);
+  settingsToggle?.setAttribute('aria-expanded','false');
+}
 function confirmDiscardUnsavedMelody(){
   if(!state.melodyDirty)return true;
   if(!window.confirm('Hay cambios de la melodía que todavía no se han guardado en Firebase. ¿Quieres descartarlos?'))return false;
@@ -375,7 +412,7 @@ const GUIDED_TOUR_STEPS={
     {selector:'#keyboardRangeToggle',title:'Rango y tamaño',text:'Elige 18, 25 o 88 teclas, ajusta su tamaño y desplázate por octavas.',prepare:()=>guidedOpenPopover('keyboardRangeMenu')},
     {selector:'#keyboardNavigation',title:'Desplaza el teclado',text:'Usa las flechas para moverte por octavas y los botones para mostrar más o menos teclas.'},
     {selector:'#notationToggle',title:'Nombres de las notas',text:'Muestra etiquetas en cifrado americano, latino, por octavas o grados.',prepare:()=>guidedOpenPopover('notationMenu')},
-    {selector:'#settingsToggle',title:'Volumen y efectos',text:'Abre los ajustes del piano para controlar el volumen general, las barras y sus efectos.',prepare:()=>guidedOpenPopover('playerSettings')},
+    {selector:'#settingsToggle',title:'Volumen y efectos',text:'Abre los ajustes del piano para controlar el volumen general, las barras y sus efectos.',prepare:openPlayerSettingsScreen},
     {selector:'#masterVolume',title:'Volumen general',text:'Este control cambia el nivel de todo el piano y de sus instrumentos.'},
     {selector:'#sustainBtn',title:'Sustain',text:'Mantiene las notas sonando un poco después de soltar la tecla, como el pedal de un piano.'}
   ],
@@ -433,7 +470,7 @@ const GUIDED_TOUR_STEPS={
     {selector:'#keyboardRangeToggle',title:'Ajusta el teclado',text:'Cambia el número y tamaño de las teclas visibles y navega por octavas.',prepare:()=>guidedOpenPopover('keyboardRangeMenu')},
     {selector:'#notationToggle',title:'Elige cómo leer las notas',text:'Activa cifrado americano, latino, nombres de octava, grados u oculta las etiquetas.',prepare:()=>guidedOpenPopover('notationMenu')},
     {selector:'#keyColorToggle',title:'Color de las notas',text:'Personaliza cómo se iluminan las notas de melodía y las del bajo.'},
-    {selector:'#settingsToggle',title:'Sonido y efectos',text:'Desde Configuración ajustas volumen general, estilo de barras, destellos y otras opciones.',prepare:()=>guidedOpenPopover('playerSettings')},
+    {selector:'#settingsToggle',title:'Sonido y efectos',text:'Desde Configuración ajustas volumen general, estilo de barras, destellos y otras opciones.',prepare:openPlayerSettingsScreen},
     {selector:'#masterVolume',title:'Volumen general',text:'Sube o baja el nivel de salida de todo el piano y sus capas.'}
   ]
 };
@@ -1546,11 +1583,11 @@ function ensureFallingNotesObservers(){
     fallingNotesVisibilityBound=true;
     document.addEventListener('visibilitychange',()=>{
       if(document.hidden){if(fallingNotesFrame)cancelAnimationFrame(fallingNotesFrame);fallingNotesFrame=0;return;}
-      if((state.playing&&fallingNotesRun||fnHitBursts.length)&&!fallingNotesFrame&&fallingNotesStyle!=='off')fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+      if((state.playing&&fallingNotesRun||fnHasFx())&&!fallingNotesFrame&&fallingNotesStyle!=='off')fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
     });
   }
   if(typeof ResizeObserver==='undefined'||fallingNotesResizeObserver)return;
-  fallingNotesResizeObserver=new ResizeObserver(()=>{fallingNotesCanvasDirty=true;fallingNotesGeometry=null;keyBaseWidthCache=0;});
+  fallingNotesResizeObserver=new ResizeObserver(()=>{fallingNotesCanvasDirty=true;fallingNotesGeometry=null;keyBaseWidthCache=0;requestAnimationFrame(fnRefreshIdleLine);});
   ['noteCanvas','keyboardScroll'].forEach(id=>{const element=$(id);if(element)fallingNotesResizeObserver.observe(element);});
 }
 function resizeFallingNotesCanvas(){
@@ -1614,14 +1651,14 @@ function makeFallingNotesEvents(playbackNotes,playbackChords){
         if(note.octave&&!state.showOctaveNotes)return;
     const midi=Number(note.midi),start=Math.max(0,Number(note.start)||0)/state.tempo;
     const held=(Number(note._playbackHold)||noteHoldSeconds(note))/state.tempo;
-    if(Number.isFinite(midi)&&midi>=21&&midi<=108)events.push({midi,start,duration:Math.max(.06,held),kind:note._playbackKind==='accompaniment'?'accompaniment':'melody'});
+    if(Number.isFinite(midi)&&midi>=21&&midi<=108)events.push({midi,start,duration:Math.max(.06,held),kind:note._playbackKind==='accompaniment'?'accompaniment':'melody',track:note._playbackTrack||'melodia'});
   });
   playbackChords.forEach(chord=>{
     const start=chordStartTime(chord);if(start===null)return;
     const duration=Math.max(.06,(Number(chordSpanForPlayback(chord))||2)/state.tempo);
     chordMidiNotes(chord).forEach((midi,index)=>{
       const arpeggioOffset=(chord.arpeggio?index*.2:index*.01)/state.tempo;
-      if(Number.isFinite(midi)&&midi>=21&&midi<=108){const eventStart=start/state.tempo+arpeggioOffset,nextChord=chordStarts.find(value=>value>start/state.tempo+.001);events.push({midi,start:eventStart,duration:nextChord===undefined?duration:Math.max(.06,Math.min(duration,nextChord-eventStart-.04)),kind:'chord',chord,index});};
+      if(Number.isFinite(midi)&&midi>=21&&midi<=108){const eventStart=start/state.tempo+arpeggioOffset,nextChord=chordStarts.find(value=>value>start/state.tempo+.001);events.push({midi,start:eventStart,duration:nextChord===undefined?duration:Math.max(.06,Math.min(duration,nextChord-eventStart-.04)),kind:'chord',chord,index,track:chord._playbackTrack||'melodia'});};
     });
   });
   events.sort((a,b)=>a.start-b.start);
@@ -1642,20 +1679,29 @@ function rebuildFallingNotesGeometry(){
   if(!positions.size)return null;
   const colors=getComputedStyle($('player')||stage);
   // zoom: el zoom con el que se midió; al hacer pinch las posiciones se escalan sin tocar el DOM.
-  return {left:scrollRect.left-stageRect.left,zoom:state.keyboardZoom,positions,melodyColor:colors.getPropertyValue('--melody-note-color').trim()||'#29b6e6',chordColor:colors.getPropertyValue('--bass-note-color').trim()||'#bb82ef'};
+  return {left:scrollRect.left-stageRect.left,zoom:state.keyboardZoom,positions,melodyColor:colors.getPropertyValue('--melody-note-color').trim()||'#29b6e6',chordColor:colors.getPropertyValue('--bass-note-color').trim()||'#bb82ef',accompaniment2Color:barAccompaniment2Color};
+}
+const BAR_NOTE_PALETTE=['#ef4444','#f97316','#f59e0b','#eab308','#84cc16','#22c55e','#14b8a6','#06b6d4','#3b82f6','#6366f1','#8b5cf6','#d946ef'];
+function fnFallingEventColor(event,geometry){
+  if(barColorMode==='note')return BAR_NOTE_PALETTE[((event.midi%12)+12)%12];
+  if(event.track==='acompanamiento2')return geometry.accompaniment2Color;
+  const accompaniment=event.kind==='chord'||event.kind==='accompaniment'||event.track==='acompanamiento1';
+  return accompaniment&&barBassDiff?geometry.chordColor:geometry.melodyColor;
 }
 function clearFallingNotesCanvas(){
   const info=fallingNotesCanvasInfo;
   if(info){info.context.clearRect(0,0,info.width,info.height);info.context.globalAlpha=1;}
-  fnHits.length=0;fnHitBursts.length=0;
+  fnHits.length=0;fnHitBursts.length=0;fnGoldReset();
+  fnDrawIdleLine();
 }
 function stopFallingNotes(){
   if(fallingNotesFrame)cancelAnimationFrame(fallingNotesFrame);
   fallingNotesFrame=0;fallingNotesRun=null;fallingNotesLastFrame=0;clearFallingNotesCanvas();
+  if(fnFlameWanted()&&fallingNotesCanvasInfo&&!state.playing)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
 }
 function finishFallingNotesPlayback(){
   fallingNotesRun=null;fallingNotesLastFrame=0;
-  if(fnHitBursts.length){
+  if(fnHasFx()){
     if(!fallingNotesFrame&&!document.hidden&&fallingNotesStyle!=='off')fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
   }else stopFallingNotes();
 }
@@ -1696,28 +1742,37 @@ function fnGlassFill(ctx,color,width){
 }
 // Barra tipo cristal: cápsula translúcida, borde claro y un reflejo vertical.
 function fnDrawGlassBar(ctx,x,top,w,h,color,chord){
-  const t=fnTone(color),r=Math.min(2,w/2,h/2);
+  const t=fnTone(color),r=Math.min(barRadius,w/2,h/2);
   ctx.save();ctx.translate(x,top);
-  ctx.globalAlpha=chord?.82:1;fnRoundRect(ctx,0,0,w,h,r);ctx.fillStyle=fnGlassFill(ctx,color,w);ctx.fill();
-  if(w>=6){ctx.lineWidth=1.2;ctx.strokeStyle=t.rim;ctx.stroke();}
-  if(w>=8&&h>=16){const inset=Math.min(5,h*.2),sw=Math.max(1.5,w*.15);ctx.globalAlpha=chord?.2:.32;ctx.fillStyle='#ffffff';fnRoundRect(ctx,w*.22,inset,sw,h-inset*2,Math.min(1,sw/2));ctx.fill();}
+  ctx.globalAlpha=(chord?.82:1)*barOpacity/100;fnRoundRect(ctx,0,0,w,h,r);ctx.fillStyle=fnGlassFill(ctx,color,w);ctx.fill();
+  if(w>=8&&h>=16){const inset=Math.min(5,h*.2),sw=Math.max(1.5,w*.15);ctx.globalAlpha=(chord?.2:.32)*barOpacity/100;ctx.fillStyle='#ffffff';fnRoundRect(ctx,w*.22,inset,sw,h-inset*2,Math.min(1,sw/2));ctx.fill();}
   ctx.restore();
+}
+function fnDrawNeonBar(ctx,x,top,w,h,color,chord,gradient){
+  const tone=fnTone(color),radius=Math.min(barRadius,w/2,h/2),stroke= Math.max(1,Math.min(3,w*.12));
+  ctx.save();ctx.globalAlpha=(chord?.82:1)*barOpacity/100;ctx.lineWidth=stroke;ctx.strokeStyle=gradient||color;ctx.shadowColor=tone.rgba(.9);ctx.shadowBlur=Math.max(4,stroke*3);
+  fnRoundRect(ctx,x+stroke/2,top+stroke/2,Math.max(1,w-stroke),Math.max(1,h-stroke),radius);ctx.stroke();
+  ctx.shadowBlur=0;ctx.globalAlpha*=.55;ctx.lineWidth=Math.max(1,stroke*.45);ctx.strokeStyle='#ffffff';fnRoundRect(ctx,x+stroke,top+stroke,Math.max(1,w-stroke*2),Math.max(1,h-stroke*2),Math.max(0,radius-stroke/2));ctx.stroke();ctx.restore();
+}
+function fnDrawSynesthesiaBar(ctx,x,top,w,h,color,chord,gradient){
+  const tone=fnTone(color),radius=Math.min(barRadius,w/2,h/2);ctx.save();ctx.globalAlpha=(chord?.82:1)*barOpacity/100;
+  fnRoundRect(ctx,x,top,w,h,radius);ctx.clip();const fill=gradient||ctx.createLinearGradient(x,top,x,top+h);
+  if(!gradient){fill.addColorStop(0,tone.light(.58,.96));fill.addColorStop(.42,tone.light(.12,.94));fill.addColorStop(1,tone.rgba(.92));}
+  ctx.fillStyle=fill;ctx.fillRect(x,top,w,h);ctx.globalAlpha*=.25;ctx.fillStyle='#fff';ctx.fillRect(x,top,w,Math.max(2,h*.08));ctx.restore();
+}
+function fnDrawBarTrail(ctx,x,top,w,h,color){
+  if(barTrail<=0)return;const trailHeight=Math.min(100,Math.max(12,h*.28))*barTrail/100,tone=fnTone(color),gradient=ctx.createLinearGradient(0,top-trailHeight,0,top);
+  gradient.addColorStop(0,tone.rgba(0));gradient.addColorStop(1,tone.rgba(.38*barOpacity/100));ctx.save();ctx.fillStyle=gradient;ctx.fillRect(x,top-trailHeight,w,trailHeight);ctx.restore();
+}
+function fnDrawFallingBar(ctx,x,top,w,h,color,chord,baseline){
+  const gradient=barLook==='normal'?null:fnDuoGradient(ctx,color,baseline,barLook==='tri');
+  if(barStyle==='neon')fnDrawNeonBar(ctx,x,top,w,h,color,chord,gradient);
+  else if(barStyle==='synesthesia')fnDrawSynesthesiaBar(ctx,x,top,w,h,color,chord,gradient);
+  else if(gradient){ctx.save();ctx.globalAlpha=(chord?.82:1)*barOpacity/100;fnRoundRect(ctx,x,top,w,h,Math.min(barRadius,w/2,h/2));ctx.fillStyle=gradient;ctx.fill();ctx.restore();}
+  else fnDrawGlassBar(ctx,x,top,w,h,color,chord);
+  fnDrawBarTrail(ctx,x,top,w,h,color);
 }
 function fnRand(n){const v=Math.sin(n*12.9898)*43758.5453;return v-Math.floor(v);}
-function fnDrawMoltenBarFlow(ctx,event,index,x,top,width,height,bottom,elapsed,color){
-  if(!fallingFlowEnabled||height<4)return;
-  const t=fnTone(color);
-  ctx.save();fnRoundRect(ctx,x,top,width,height,Math.min(2,width/2,height/2));ctx.clip();ctx.globalCompositeOperation='screen';
-  const base=ctx.createLinearGradient(x,top,x+width,top);
-  base.addColorStop(0,t.flowBase0);base.addColorStop(.2,t.flowBase1);base.addColorStop(.52,t.flowBase2);base.addColorStop(1,t.flowBase3);
-  ctx.globalAlpha=.72;ctx.fillStyle=base;ctx.fillRect(x,top,width,height);
-  // Una cinta de luz del mismo color sube por dentro de la barra.
-  const span=Math.max(34,height*2.2),travel=Math.max(24,height*1.2),phase=((elapsed*height*1.333+event.midi*11+event.start*31+index*17)%travel+travel)%travel,tail=bottom+span*.55-phase;
-  const flow=ctx.createLinearGradient(0,tail-span,0,tail);
-  flow.addColorStop(0,t.f0);flow.addColorStop(.24,t.f1);flow.addColorStop(.43,t.f2);flow.addColorStop(.54,t.f3);flow.addColorStop(.7,t.f4);flow.addColorStop(1,t.f0);
-  ctx.globalAlpha=.58;ctx.fillStyle=flow;ctx.fillRect(x,top,width,height);
-  ctx.restore();
-}
 // Duración total del fuego (antes 1,5 s): las llamas siguen igual de rápidas y después quedan brasas y humo.
 const FN_BURST_SECONDS=3.4,FN_BURST_K=FN_BURST_SECONDS/1.5;
 // Sprite blando (centro casi blanco, halo del color) reutilizado por las llamas, chispas y hilos de humo.
@@ -1735,7 +1790,7 @@ function fnSprite(color,crisp){
 // Movimiento irregular y suave (varias ondas mezcladas), entre -1 y 1: da el aspecto desordenado del fuego.
 function fnTurb(seed,p){return Math.sin(p*5.3+seed*17.1)*.5+Math.sin(p*11.7+seed*7.3)*.3+Math.sin(p*23.1+seed*3.9)*.2;}
 function fnDrawMoltenHitBurst(ctx,hit,baseline,reducedMotion,load){
-  const tt=hit.t*FN_BURST_K,life=Math.max(0,1-tt),soft=fnSprite(hit.color),dot=fnSprite(hit.color,true);
+  const tt=hit.t*(hit.duration||FN_BURST_SECONDS)/1.5,life=Math.max(0,1-hit.t),soft=fnSprite(hit.color),dot=fnSprite(hit.color,true),intensity=hit.intensity||1;
   const kw=Math.max(6,hit.keyWidth||hit.barWidth/.72),half=kw/2;
   ctx.save();ctx.globalCompositeOperation='screen';
   // Luz de la tecla: del ancho exacto de la tecla y tenue.
@@ -1746,7 +1801,7 @@ function fnDrawMoltenHitBurst(ctx,hit,baseline,reducedMotion,load){
       const core=kw*1.4;ctx.globalAlpha=life*.28;ctx.drawImage(soft,hit.center-core/2,baseline-7-core/2,core,core);
       ctx.restore();
     }
-    const q=load>12?.4:load>8?.6:load>5?.8:1,flameN=Math.max(3,Math.round(8*q)),sparkN=Math.max(6,Math.round(20*q)),wispN=Math.max(6,Math.round(22*q)),emberN=Math.max(5,Math.round(18*q)),hazeN=Math.max(1,Math.round(3*q));
+    const q=(load>12?.4:load>8?.6:load>5?.8:1)*intensity,flameN=Math.max(3,Math.round(8*q)),sparkN=Math.max(6,Math.round(20*q)),wispN=Math.max(6,Math.round(22*q)),emberN=Math.max(5,Math.round(18*q)),hazeN=Math.max(1,Math.round(3*q));
     const lean=(fnRand(hit.index*7.3+1)-.5)*kw*2.2,flick=hit.t*70*FN_BURST_K;
     ctx.globalCompositeOperation='lighter';
     if(tt<1){
@@ -1797,6 +1852,173 @@ function fnDrawMoltenHitBurst(ctx,hit,baseline,reducedMotion,load){
   }
   ctx.restore();
 }
+// Efecto "Chispas doradas": cinta de chispas que sube al tocar cada nota (la línea del piano es una opción aparte).
+const FN_GOLD='#ffc21a',FN_FX_SECONDS={gold:1.9};
+// Línea de brasa: línea fina y casi recta con una ligera curva que ondula hacia la derecha, con resplandor cálido que también avanza a la derecha.
+const fnFlameGrad=new Map();let fnFlameH=new Float32Array(0),fnSmokeSprite=null;
+function fnFlameGradient(ctx,baseline,tall,glow){
+  const key=(glow?'g':'f')+baseline+'|'+tall;let g=fnFlameGrad.get(key);
+  if(!g){if(fnFlameGrad.size>12)fnFlameGrad.clear();g=ctx.createLinearGradient(0,baseline,0,baseline-tall);
+    if(glow){g.addColorStop(0,'rgba(255,150,60,.6)');g.addColorStop(.16,'rgba(235,105,35,.26)');g.addColorStop(.55,'rgba(200,75,25,.07)');g.addColorStop(1,'rgba(180,60,20,0)');}
+    else{g.addColorStop(0,'rgba(255,224,170,.95)');g.addColorStop(.35,'rgba(255,160,70,.7)');g.addColorStop(1,'rgba(255,110,30,0)');}
+    fnFlameGrad.set(key,g);}
+  return g;
+}
+// Mancha blanda y tenue para el humo (se crea una sola vez y se reutiliza escalada).
+function fnSmoke(){
+  if(fnSmokeSprite)return fnSmokeSprite;
+  const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d'),g=x.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,175,105,.85)');g.addColorStop(.45,'rgba(225,125,65,.38)');g.addColorStop(1,'rgba(180,80,30,0)');
+  x.fillStyle=g;x.fillRect(0,0,64,64);return fnSmokeSprite=c;
+}
+function fnDrawFlameLine(ctx,width,baseline,timestamp,still){
+  const tm=still?1.7:timestamp/1000,sc=Math.max(.45,neonEdge.thickness/3),gl=neonEdge.glow/100;
+  const step=Math.max(5,width/200),n=Math.max(2,Math.ceil(width/step));
+  if(fnFlameH.length<n+1)fnFlameH=new Float32Array(n+1);
+  const hs=fnFlameH;
+  // Línea casi recta: una curva suave que viaja a la derecha y un temblor muy pequeño.
+  for(let i=0;i<=n;i++){
+    const x=i*step,wave=Math.sin(x*.011-tm*1.1)*.5+Math.sin(x*.027-tm*1.9+1.3)*.3+1,
+      fine=fnTurb(x*.02-tm*.3,tm*2.4-x*.004)*.5+.5;
+    hs[i]=(1.4+wave*1.3+fine*1.5)*sc;
+  }
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  if(gl>0){const tall=Math.round(34*Math.max(.8,Math.sqrt(sc)));ctx.globalAlpha=Math.min(1,.85*gl);ctx.fillStyle=fnFlameGradient(ctx,baseline,tall,true);ctx.fillRect(0,baseline-tall,width,tall);}
+  // Resplandor que se desplaza: zonas más brillantes y más altas que avanzan a la derecha por encima de la línea.
+  if(gl>0){
+    const tall=Math.round(54*Math.max(.8,Math.sqrt(sc))),seg=Math.max(6,Math.round(width/150)),n2=Math.ceil(width/seg);
+    ctx.fillStyle=fnFlameGradient(ctx,baseline,tall,true);
+    for(let i=0;i<n2;i++){
+      const x0=Math.round(i*seg),x1=Math.min(Math.round(width),Math.round((i+1)*seg)),x=(x0+x1)/2,
+        w1=Math.sin(x*.0068-tm*1.5)*.5+.5,w2=Math.sin(x*.0029-tm*.8+2)*.5+.5,v=w1*w2;
+      if(x1>x0){ctx.globalAlpha=Math.min(1,gl)*v*v*.7;ctx.fillRect(x0,baseline-tall,x1-x0,tall);}
+    }
+  }
+  const tall=Math.round(7*sc)+4;
+  ctx.globalAlpha=1;ctx.fillStyle=fnFlameGradient(ctx,baseline,tall,false);
+  ctx.beginPath();ctx.moveTo(0,baseline+1);
+  for(let i=0;i<=n;i++)ctx.lineTo(Math.min(width,i*step),baseline-hs[i]);
+  ctx.lineTo(width,baseline+1);ctx.closePath();ctx.fill();
+  // Hilo brillante, casi blanco, en el borde de las teclas.
+  ctx.beginPath();
+  for(let i=0;i<=n;i++){const x=Math.min(width,i*step),y=baseline-1.6-hs[i]*.45;if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);}
+  ctx.strokeStyle='rgb(255,140,50)';ctx.lineWidth=Math.max(5,7*Math.sqrt(sc));ctx.globalAlpha=.22;ctx.stroke();
+  ctx.strokeStyle='rgb(255,178,92)';ctx.lineWidth=Math.max(2.4,3.2*Math.sqrt(sc));ctx.globalAlpha=.95;ctx.stroke();
+  ctx.strokeStyle='rgb(255,238,208)';ctx.lineWidth=Math.max(1,1.4*Math.sqrt(sc));ctx.globalAlpha=.95;ctx.stroke();
+  ctx.restore();
+}
+// Dibuja la línea de llama quieta cuando el canvas está en reposo (sin reproducir ni efectos).
+function fnDrawIdleLine(){
+  const info=fallingNotesCanvasInfo;
+  if(!info||!neonEdge.on||neonEdge.style!=='flame')return;
+  fnDrawFlameLine(info.context,info.width,info.height,0,true);info.context.globalAlpha=1;
+}
+function fnRefreshIdleLine(){
+  if(typeof ensureFallingNotesObservers==='function')ensureFallingNotesObservers();
+  if(fallingNotesFrame||document.hidden)return;
+  if(!resizeFallingNotesCanvas())return;
+  clearFallingNotesCanvas();
+  if(fnFlameWanted()&&!state.playing)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+}
+// Barras de varios colores: el color de la nota abajo (cerca del teclado) y los colores elegidos hacia arriba.
+const fnDuoGradCache=new Map();
+function fnDuoGradient(ctx,color,baseline,tri){
+  const key=color+'|'+baseline+'|'+(tri?barColor2+barColor3:barColor2);let g=fnDuoGradCache.get(key);
+  if(!g){
+    if(fnDuoGradCache.size>24)fnDuoGradCache.clear();
+    g=ctx.createLinearGradient(0,0,0,baseline);
+    if(tri){g.addColorStop(0,barColor3);g.addColorStop(.5,barColor2);}else g.addColorStop(0,barColor2);
+    g.addColorStop(1,color);fnDuoGradCache.set(key,g);
+  }
+  return g;
+}
+function fnDrawDuoBar(ctx,x,top,w,h,color,chord,baseline,tri){
+  const t=fnTone(color),r=Math.min(3,w/2,h/2),a=chord?.85:1;
+  ctx.save();ctx.globalAlpha=a;fnRoundRect(ctx,x,top,w,h,r);ctx.fillStyle=fnDuoGradient(ctx,color,baseline,tri);ctx.fill();
+  ctx.restore();
+}
+const FN_GP_MAX=240,fnGp={n:0,x:new Float32Array(FN_GP_MAX),age:new Float32Array(FN_GP_MAX),life:new Float32Array(FN_GP_MAX),rise:new Float32Array(FN_GP_MAX),amp:new Float32Array(FN_GP_MAX),omega:new Float32Array(FN_GP_MAX),phase:new Float32Array(FN_GP_MAX),size:new Float32Array(FN_GP_MAX),drift:new Float32Array(FN_GP_MAX)},fnGoldHolds=[];let fnGoldLast=0;
+function fnFlameWanted(){return neonEdge.on&&neonEdge.style==='flame'&&!document.hidden&&fallingNotesStyle!=='off';}
+let fnIdleLast=0;
+function fnHasFx(){return fnHitBursts.length>0||fnGp.n>0||fnGoldHolds.length>0||fnFlameWanted();}
+function fnGoldReset(){fnGp.n=0;fnGoldHolds.length=0;fnGoldLast=0;}
+// Una nota que suena va soltando chispas mientras dura: cuanto más se sostiene, más salen. Suben dando vueltas hacia los lados.
+function fnGoldEmit(cx,kw,count){
+  for(let k=0;k<count&&fnGp.n<FN_GP_MAX;k++){
+    const i=fnGp.n++;
+    fnGp.x[i]=cx+(Math.random()-.5)*kw*.7;fnGp.age[i]=0;fnGp.life[i]=.9+Math.random()*.9;fnGp.rise[i]=90+Math.random()*170;
+    fnGp.amp[i]=kw*(.35+Math.random()*1.5);fnGp.omega[i]=(4+Math.random()*6)*(Math.random()<.5?-1:1);fnGp.phase[i]=Math.random()*6.2832;
+    fnGp.size[i]=1.3+Math.random()*2.2;fnGp.drift[i]=(Math.random()-.5)*kw*1.2;
+  }
+}
+function fnGoldStep(ctx,dt,baseline){
+  if(!fnGp.n)return;
+  const dot=fnSprite(FN_GOLD,true);ctx.save();ctx.globalCompositeOperation='lighter';
+  for(let i=fnGp.n-1;i>=0;i--){
+    const age=fnGp.age[i]+dt,life=fnGp.life[i];
+    if(age>=life){const last=--fnGp.n;if(i!==last){for(const key of ['x','age','life','rise','amp','omega','phase','size','drift'])fnGp[key][i]=fnGp[key][last];}continue;}
+    fnGp.age[i]=age;
+    const f=age/life,swirl=fnGp.amp[i]*(.25+.75*f),a=fnGp.phase[i]+fnGp.omega[i]*age;
+    const x=fnGp.x[i]+Math.sin(a)*swirl+fnGp.drift[i]*age,y=baseline-4-fnGp.rise[i]*(1-Math.exp(-age*1.6))+Math.cos(a)*swirl*.35;
+    const d=fnGp.size[i]*3.2*(1-f*.4);
+    ctx.globalAlpha=Math.min(1,age*14)*Math.pow(1-f,.8)*(.7+.3*Math.sin(a*2+i));
+    ctx.drawImage(dot,x-d/2,y-d/2,d,d);
+  }
+  ctx.restore();
+}
+// Ráfaga al empezar la nota: destello en la tecla, cinta de chispas y chispas sueltas (después siguen saliendo del emisor continuo).
+function fnDrawGoldSparkBurst(ctx,hit,baseline,reducedMotion,load){
+  const life=Math.max(0,1-hit.t),soft=fnSprite(FN_GOLD),dot=fnSprite(FN_GOLD,true);
+  const kw=Math.max(6,hit.keyWidth||hit.barWidth/.72),half=kw/2,cx=hit.center;
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  // Destello en la tecla y columna de luz tenue.
+  const fw=kw*3.2;ctx.globalAlpha=Math.pow(life,1.6)*.85;ctx.drawImage(soft,cx-fw/2,baseline-fw/2,fw,fw);
+  ctx.fillStyle=fnGlow(ctx,FN_GOLD,baseline);ctx.globalAlpha=life*.35;ctx.fillRect(cx-half,baseline-88,kw,88);
+  if(!reducedMotion){
+    const q=(load>12?.4:load>8?.6:load>5?.8:1)*(hit.intensity||1),ribbonN=Math.max(8,Math.round(26*q)),strayN=Math.max(4,Math.round(14*q));
+    const lean=(fnRand(hit.index*7.3+1)-.5)*kw*3,rise=150+fnRand(hit.index*3.1+2)*110,flick=hit.t*60;
+    // Cinta de chispas que sube serpenteando.
+    for(let i=0;i<ribbonN;i++){
+      const s=fnRand(hit.index*53+i*11+1),s2=fnRand(hit.index*29+i*7+5),delay=s2*.3,span=Math.min(.45+s*.4,1-delay),p=(hit.t-delay)/span;
+      if(p<=0||p>=1)continue;
+      const e=1-Math.pow(1-p,1.8),x=cx+lean*e+Math.sin(p*5+hit.index*1.7+i*.05)*kw*(.5+e*1.1)+(s-.5)*kw*.9,y=baseline-4-e*rise*(.6+s*.4);
+      const d=(1.2+s*1.6)*(1-p*.5)*3.4;
+      ctx.globalAlpha=Math.min(1,p*10)*Math.pow(1-p,.8)*(.7+.3*Math.sin(flick+i*5));
+      ctx.drawImage(dot,x-d/2,y-d/2,d,d);
+    }
+    // Chispas sueltas que se abren a los lados y caen un poco.
+    for(let i=0;i<strayN;i++){
+      const s=fnRand(hit.index*97+i*13+3),s2=fnRand(hit.index*31+i*19+9),delay=s2*.35,span=Math.min(.5+s*.4,1-delay),p=(hit.t-delay)/span;
+      if(p<=0||p>=1)continue;
+      const e=1-Math.pow(1-p,2.2),x=cx+(s-.5)*kw*5*e+lean*p,y=baseline-6-e*(40+s2*90)+p*p*16,d=(.8+s*1)*(1-p*.3)*3;
+      ctx.globalAlpha=Math.min(1,p*12)*Math.pow(1-p,.7)*(.6+.4*Math.sin(flick*.8+i*7));
+      ctx.drawImage(dot,x-d/2,y-d/2,d,d);
+    }
+  }
+  ctx.restore();
+}
+function fnDrawRingBurst(ctx,hit,baseline,reducedMotion){
+  const life=1-hit.t,intensity=hit.intensity||1,cx=hit.center,cy=baseline-2,kw=hit.keyWidth||hit.barWidth/.72;
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  for(let ring=0;ring<3;ring++){const p=Math.max(0,Math.min(1,hit.t*1.35-ring*.2));if(p<=0)continue;const radius=kw*(.18+p*(reducedMotion?1.2:2.4)),alpha=life*(1-p*.5)*(.65*intensity);ctx.globalAlpha=Math.min(.9,alpha);ctx.strokeStyle=hit.color;ctx.lineWidth=Math.max(1,kw*.075*(1-p*.55)*intensity);ctx.beginPath();ctx.ellipse(cx,cy,radius,radius*.42,0,0,Math.PI*2);ctx.stroke();}
+  ctx.restore();
+}
+function fnDrawCrossBurst(ctx,hit,baseline,reducedMotion){
+  const life=1-hit.t,intensity=hit.intensity||1,cx=hit.center,cy=baseline-4,kw=hit.keyWidth||hit.barWidth/.72,reach=kw*(.45+hit.t*(reducedMotion?1:2.2));
+  ctx.save();ctx.globalCompositeOperation='lighter';ctx.translate(cx,cy);ctx.rotate(-.35);ctx.globalAlpha=life*.85;ctx.strokeStyle=hit.color;ctx.lineCap='round';ctx.lineWidth=Math.max(1,kw*.08);
+  for(let ray=0;ray<4;ray++){const angle=ray*Math.PI/2;ctx.save();ctx.rotate(angle);ctx.beginPath();ctx.moveTo(-reach,0);ctx.lineTo(reach,0);ctx.stroke();ctx.restore();}
+  ctx.globalAlpha=life*.9;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,Math.max(1,kw*.11*intensity),0,Math.PI*2);ctx.fill();ctx.restore();
+}
+function fnDrawBubbleBurst(ctx,hit,baseline,reducedMotion){
+  const life=1-hit.t,intensity=hit.intensity||1,kw=hit.keyWidth||hit.barWidth/.72,count=Math.round(10*intensity);ctx.save();ctx.globalCompositeOperation='lighter';
+  for(let i=0;i<count;i++){const seed=hit.index*31+i*17+3,delay=fnRand(seed)*.32,span=1-delay,p=(hit.t-delay)/span;if(p<=0||p>=1)continue;const size=kw*(.08+fnRand(seed+4)*.2)*(1-p*.35),x=hit.center+(fnRand(seed+1)-.5)*kw*(.8+p*1.4)+Math.sin(p*5+i)*kw*.06,y=baseline-5-p*(reducedMotion?40:100+fnRand(seed+2)*95),alpha=life*(1-p*.35);ctx.globalAlpha=alpha*.72;ctx.fillStyle=hit.color;ctx.beginPath();ctx.arc(x,y,size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=alpha;ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=Math.max(1,size*.13);ctx.beginPath();ctx.arc(x-size*.17,y-size*.17,size*.7,Math.PI*1.05,Math.PI*1.75);ctx.stroke();}
+  ctx.restore();
+}
+function fnDrawNoteBurst(ctx,hit,baseline,reducedMotion){
+  const life=1-hit.t,intensity=hit.intensity||1,kw=hit.keyWidth||hit.barWidth/.72,symbols=['♪','♫','♬','♩'];ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`${Math.max(16,kw*.72*intensity)}px Georgia,serif`;ctx.shadowColor=hit.color;ctx.shadowBlur=12;ctx.fillStyle=hit.color;
+  for(let i=0;i<3;i++){const seed=hit.index*19+i*13+1,delay=fnRand(seed)*.22,p=(hit.t-delay)/(1-delay);if(p<0||p>1)continue;const x=hit.center+(fnRand(seed+2)-.5)*kw*(.7+p),y=baseline-8-p*(reducedMotion?24:100+fnRand(seed+3)*80);ctx.globalAlpha=life*(.82-i*.1);ctx.fillText(symbols[(hit.index+i)%symbols.length],x,y);}
+  ctx.restore();
+}
 // Medidor de rendimiento opcional: se activa con ?perf=1 en la URL o manteniendo pulsada la línea de tiempo 0,7 s.
 const perfProbe={on:false,el:null,last:0,since:0,frames:0,slow:0,worst:0,drawSum:0,drawMax:0,tickSum:0,tickMax:0,tickN:0,longTasks:0,observer:null};
 function perfProbeEnable(on){
@@ -1832,10 +2054,12 @@ function perfProbeReport(now){
 function drawFallingNotesFrameInner(timestamp){
   const run=fallingNotesRun,playbackActive=!!(state.playing&&run);
   if(document.hidden){fallingNotesFrame=0;return;}
-  if(!playbackActive&&!fnHitBursts.length){stopFallingNotes();return;}
+  if(!playbackActive&&!fnHasFx()){stopFallingNotes();return;}
+  if(!playbackActive&&!fnHitBursts.length&&!fnGp.n&&!fnGoldHolds.length&&timestamp-fnIdleLast<30){fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);return;}
+  fnIdleLast=timestamp;
   fallingNotesLastFrame=timestamp;
   if(pinchFlush)pinchFlush();
-  if(fallingNotesCanvasDirty&&!resizeFallingNotesCanvas()){fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);return;}
+  if(fallingNotesCanvasDirty&&!resizeFallingNotesCanvas()){if(playbackActive)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);else fallingNotesFrame=0;return;}
   const info=fallingNotesCanvasInfo,scroll=$('keyboardScroll');
   if(!info||playbackActive&&!scroll){stopFallingNotes();return;}
   if(!fallingNotesGeometry)fallingNotesGeometry=rebuildFallingNotesGeometry();
@@ -1859,6 +2083,7 @@ function drawFallingNotesFrameInner(timestamp){
     }
   }
   const hits=fnHits;hits.length=0;
+  const nowTs=(typeof timestamp==='number'&&timestamp>0)?timestamp:performance.now(),gdt=fnGoldLast?Math.min(.05,Math.max(0,(nowTs-fnGoldLast)/1000)):.016,gRate=fnGp.n>170?14:fnGp.n>110?24:40;
   ctx.clearRect(0,0,width,height);
   if(playbackActive){
   const scrollLeft=scroll.scrollLeft,zoomScale=state.keyboardZoom/geometry.zoom;
@@ -1870,38 +2095,48 @@ function drawFallingNotesFrameInner(timestamp){
     if(style==='melody'&&(event.kind==='chord'||event.kind==='accompaniment'))continue;
     const key=geometry.positions.get(event.midi);if(!key)continue;
     const keyWidth=key.width*zoomScale,center=geometry.left+key.center*zoomScale-scrollLeft;
-    const barWidth=Math.max(3,Math.min(keyWidth-2,keyWidth*.72)),barHeight=Math.max(7,event.visualDuration*pps);
+    const desiredWidth=barStyle==='synesthesia'?keyWidth*1.12:keyWidth*.72,barWidth=Math.max(3,Math.min(keyWidth+18,desiredWidth)),barHeight=Math.max(7,event.visualDuration*pps);
     const age=elapsed-event.start,isChord=event.kind==='chord'||event.kind==='accompaniment';
     if(fxGlow&&age>=0&&!event.moltenBurstStarted){
       event.moltenBurstStarted=true;
-      if(center>-40&&center<width+40)fnHitBursts.push({index,center,barWidth,keyWidth,color:isChord?geometry.chordColor:geometry.melodyColor,at:event.start,clock:'song'});
+      if(center>-40&&center<width+40)fnHitBursts.push({index,center,barWidth,keyWidth,color:fnFallingEventColor(event,geometry),at:event.start,clock:'song',fx:fxStyle,duration:fxDuration,intensity:fxIntensityScale()});
     }
+    if(fxGlow&&fxStyle==='gold'&&!calm&&!practiceRun&&age>=0&&age<=event.visualDuration&&center>-40&&center<width+40){event.gpAcc=(event.gpAcc||0)+gRate*gdt*fxIntensityScale();const gn=event.gpAcc|0;if(gn>0){event.gpAcc-=gn;fnGoldEmit(center,keyWidth,gn);}}
     if(elapsed>event.start+event.visualDuration+(style==='drops'&&fxGlow ? .5 : 0))continue;
     if(style==='drops'){
       const dw=Math.max(5,Math.min(barWidth,16)),dh=dw*1.4,dBottom=Math.min(baseline,baseline-(event.start-elapsed)*pps);
       if(age>.05&&!practiceRun)continue;
       if(dBottom<0||center<-dw||center>width+dw)continue;
-      ctx.fillStyle=isChord?geometry.chordColor:geometry.melodyColor;ctx.globalAlpha=isChord?.8:.95;
+      ctx.fillStyle=fnFallingEventColor(event,geometry);ctx.globalAlpha=(isChord?.8:.95)*barOpacity/100;
        fnRoundRect(ctx,center-dw/2,dBottom-dh,dw,dh,dw/2);ctx.fill();drawFallingNoteTag(ctx,event.midi,center,baseline-9,width,height);
       continue;
     }
     const front=baseline-(event.start-elapsed)*pps,bottom=Math.min(front,baseline),top=front-barHeight,x=center-barWidth/2,h=bottom-top;
     if(h<=0||x+barWidth<0||x>width||top>height||bottom<0)continue;
-    const chord=event.kind==='chord'||event.kind==='accompaniment',barColor=chord?geometry.chordColor:geometry.melodyColor;
-     fnDrawGlassBar(ctx,x,top,barWidth,h,barColor,chord);
-     fnDrawMoltenBarFlow(ctx,event,index,x,top,barWidth,h,bottom,elapsed,barColor);
+    const chord=event.kind==='chord'||event.kind==='accompaniment',barColor=fnFallingEventColor(event,geometry);
+    fnDrawFallingBar(ctx,x,top,barWidth,h,barColor,chord&&barBassDiff,baseline);
      drawFallingNoteTag(ctx,event.midi,center,Math.min(bottom-7,baseline-9),width,height);
   }
   }
   for(let i=fnHitBursts.length-1;i>=0;i--){
-    const burst=fnHitBursts[i],burstElapsed=burst.clock==='wall'?timestamp/1000-burst.at:elapsed-burst.at,t=burstElapsed/FN_BURST_SECONDS;
+    const burst=fnHitBursts[i],burstElapsed=burst.clock==='wall'?timestamp/1000-burst.at:elapsed-burst.at,t=burstElapsed/(burst.duration||FN_FX_SECONDS[burst.fx]||FN_BURST_SECONDS);
     if(t>=1){fnHitBursts.splice(i,1);continue;}
     if(t<0)continue;
     hits.push({...burst,t});
   }
-  const burstLoad=hits.length;for(const hit of hits)fnDrawMoltenHitBurst(ctx,hit,baseline,calm,burstLoad);
+  const burstLoad=hits.length;let goldLevel=0;
+  for(const hit of hits){if(hit.fx==='gold'){goldLevel=Math.max(goldLevel,1-hit.t);fnDrawGoldSparkBurst(ctx,hit,baseline,calm,burstLoad);}else if(hit.fx==='rings')fnDrawRingBurst(ctx,hit,baseline,calm);else if(hit.fx==='cross')fnDrawCrossBurst(ctx,hit,baseline,calm);else if(hit.fx==='bubbles')fnDrawBubbleBurst(ctx,hit,baseline,calm);else if(hit.fx==='notes')fnDrawNoteBurst(ctx,hit,baseline,calm);else fnDrawMoltenHitBurst(ctx,hit,baseline,calm,burstLoad);}
+  if(fxGlow&&fxStyle==='gold'){
+    for(let i=fnGoldHolds.length-1;i>=0;i--){
+      const hold=fnGoldHolds[i];if(!hold.active||nowTs-hold.since>20000){fnGoldHolds.splice(i,1);continue;}
+      if(!calm){hold.acc+=gRate*gdt*fxIntensityScale();const gn=hold.acc|0;if(gn>0){hold.acc-=gn;fnGoldEmit(hold.center,hold.kw,gn);}}
+    }
+    if(!calm)fnGoldStep(ctx,gdt,baseline);
+  }else if(fnGp.n||fnGoldHolds.length)fnGoldReset();
+  if(neonEdge.on&&neonEdge.style==='flame')fnDrawFlameLine(ctx,width,baseline+2,timestamp,calm);
+  fnGoldLast=nowTs;
   ctx.globalAlpha=1;
-  if(playbackActive&&elapsed<=run.end+look||fnHitBursts.length)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
+  if(playbackActive&&elapsed<=run.end+look||fnHasFx())fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
   else stopFallingNotes();
 }
 function drawFallingNotesFrame(timestamp){
@@ -1921,6 +2156,7 @@ function startFallingNotes(playbackNotes,playbackChords,startAt,prebuiltEvents){
   const end=events.reduce((last,event)=>Math.max(last,event.start+event.visualDuration),0);
   fallingNotesRun={events,startAt,maxVisibleDuration,end,calm:!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)};
   resetPlaybackClock();fallingNotesGeometry=rebuildFallingNotesGeometry();fallingNotesLastFrame=0;
+  if(fallingNotesFrame)cancelAnimationFrame(fallingNotesFrame);fallingNotesFrame=0;
   if(!document.hidden&&fallingNotesStyle!=='off')fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
 }
 function showSongIntro(autoPlay=false,playMode='listen'){
@@ -2063,26 +2299,31 @@ function updateVisualOptions(){
   $('showBarNotes').checked=state.showBarNotes;$('showOctaveNotes').checked=state.showOctaveNotes;
   $('notationToggle').textContent={ninguno:'∅',octavas:'8va',americano:'C',latino:'La',movil:'Do',grados:'1',simple:'C'}[state.notation]||'C';
 }
+function fxNoteColor(midi){if(barColorMode==='note')return BAR_NOTE_PALETTE[((midi%12)+12)%12];return barBassDiff&&midi<=48?state.bassColor:state.keyColor;}
 function showManualNoteEffect(midi,key){
   if(fallingNotesStyle==='off'||!key)return;
   if(!key.closest('.piano-panel'))key=document.querySelector(`.piano-panel .key[data-midi="${midi}"]`);
   if(!key)return;
   const stage=$('noteCanvas'),stageRect=stage?.getBoundingClientRect(),keyRect=key.getBoundingClientRect();if(!stageRect||!keyRect)return;
-  const effect=document.createElement('span');effect.className=`manual-note-effect ${fallingNotesStyle==='drops'?'is-drop':'is-bar'}${fallingFlowEnabled?' has-fire':''}`;
+  const effect=document.createElement('span');effect.className=`manual-note-effect ${fallingNotesStyle==='drops'?'is-drop':'is-bar'}${barLook==='duo'?' is-duo':barLook==='tri'?' is-tri':''}${barStyle==='neon'?' is-neon':barStyle==='synesthesia'?' is-synesthesia':''}`;
   if(state.showBarNotes){const label=document.createElement('span');label.className='manual-note-label';label.textContent=fallingNoteName(midi);effect.appendChild(label);}
   const isDrop=fallingNotesStyle==='drops';
-  const barWidth=Math.max(4,Math.min(keyRect.width-2,keyRect.width*.78)),effectWidth=isDrop?Math.max(5,Math.min(barWidth,16)):barWidth;
+  const barWidth=Math.max(4,Math.min(keyRect.width+18,keyRect.width*(barStyle==='synesthesia'?1.12:.78))),effectWidth=isDrop?Math.max(5,Math.min(barWidth,16)):barWidth;
   effect.style.width=`${effectWidth}px`;
+  effect.style.opacity=String(barOpacity/100);
   if(isDrop)effect.style.height=`${effectWidth*1.4}px`;
-  effect.style.setProperty('--note-fx-color',midi<=48?state.bassColor:state.keyColor);
+  effect.style.setProperty('--note-fx-color',fxNoteColor(midi));
+  if(barLook!=='normal'){effect.style.setProperty('--note-fx-color2',barColor2);effect.style.setProperty('--note-fx-color3',barColor3);}
   effect.style.left=`${keyRect.left-stageRect.left+keyRect.width/2}px`;
   stage.appendChild(effect);
+  let gHold=null;
   if(fxGlow){
     ensureFallingNotesObservers();
     const canvasReady=fallingNotesCanvasInfo&&!fallingNotesCanvasDirty||resizeFallingNotesCanvas();
     if(canvasReady){
       const center=keyRect.left-stageRect.left+keyRect.width/2,at=performance.now()/1000,index=++fnManualHitIndex;
-      fnHitBursts.push({index,center,barWidth,keyWidth:keyRect.width,color:midi<=48?state.bassColor:state.keyColor,at,clock:'wall'});
+      fnHitBursts.push({index,center,barWidth,keyWidth:keyRect.width,color:fxNoteColor(midi),at,clock:'wall',fx:fxStyle,duration:fxDuration,intensity:fxIntensityScale()});
+      if(fxStyle==='gold'){gHold={center,kw:keyRect.width,active:true,acc:0,since:performance.now()};fnGoldHolds.push(gHold);}
       if(!fallingNotesFrame)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
     }
   }
@@ -2091,16 +2332,16 @@ function showManualNoteEffect(midi,key){
   const grow=now=>{
     if(releasedAt===null){
       const rise=Math.min(maxRise,Math.max(minimumTapRise,(now-started)/1000*speed));
-      effect.style.setProperty('--manual-rise',`${rise}px`);effect.style.setProperty('--manual-offset','0px');effect.style.opacity='1';
+      effect.style.setProperty('--manual-rise',`${rise}px`);effect.style.setProperty('--manual-offset','0px');effect.style.opacity=String(barOpacity/100);
       if(rise<maxRise)frame=requestAnimationFrame(grow);else frame=0;
       return;
     }
     const offset=Math.max(0,(now-releasedAt)/1000*speed),fadeProgress=Math.max(0,Math.min(1,(offset-stage.clientHeight)/Math.max(1,exitDistance-stage.clientHeight)));
-    effect.style.setProperty('--manual-rise',`${heldRise}px`);effect.style.setProperty('--manual-offset',`${offset}px`);effect.style.opacity=String(1-fadeProgress);
+    effect.style.setProperty('--manual-rise',`${heldRise}px`);effect.style.setProperty('--manual-offset',`${offset}px`);effect.style.opacity=String(barOpacity/100*(1-fadeProgress));
     if(offset<exitDistance)frame=requestAnimationFrame(grow);else{frame=0;effect.remove();}
   };
   frame=requestAnimationFrame(grow);
-  const finish=()=>{if(releasedAt!==null)return;releasedAt=performance.now();heldRise=Math.min(maxRise,Math.max(minimumTapRise,(releasedAt-started)/1000*speed));effect.classList.add('is-released');if(!frame)frame=requestAnimationFrame(grow);};
+  const finish=()=>{if(releasedAt!==null)return;releasedAt=performance.now();if(gHold)gHold.active=false;heldRise=Math.min(maxRise,Math.max(minimumTapRise,(releasedAt-started)/1000*speed));effect.classList.add('is-released');if(!frame)frame=requestAnimationFrame(grow);};
   return finish;
 }
 function chordDisplayName(chord) {
@@ -2587,12 +2828,12 @@ function buildNotationButtons(){
 function syncNotationButtons(){
   document.querySelectorAll('#notationOptions [data-notation]').forEach(button=>{const on=button.dataset.notation===state.notation;button.classList.toggle('active',on);button.setAttribute('aria-pressed',String(on));});
 }
-const playerPopoverIds=['instrumentMenu','colorMenu','keyboardRangeMenu','notationMenu','lyricsPanel','playerSettings','keyTransposePopover'];
+const playerPopoverIds=['instrumentMenu','colorMenu','keyboardRangeMenu','notationMenu','lyricsPanel','keyTransposePopover'];
 function closePlayerPopovers(except=''){
   if(except!=='chordEditorPanel')chordEditorOpen=false;
   playerPopoverIds.forEach(id=>{if(id!==except)$(id)?.classList.add('hidden');});
   if(except!=='chordEditorPanel')$('chordEditorPanel')?.classList.add('hidden');
-  [['instrumentToggle','instrumentMenu'],['keyColorToggle','colorMenu'],['keyboardRangeToggle','keyboardRangeMenu'],['notationToggle','notationMenu'],['chordsViewToggle','lyricsPanel'],['settingsToggle','playerSettings'],['activeKeyName','keyTransposePopover']].forEach(([button,panel])=>$(button)?.setAttribute('aria-expanded',String(panel===except)));
+  [['instrumentToggle','instrumentMenu'],['keyColorToggle','colorMenu'],['keyboardRangeToggle','keyboardRangeMenu'],['notationToggle','notationMenu'],['chordsViewToggle','lyricsPanel'],['activeKeyName','keyTransposePopover']].forEach(([button,panel])=>$(button)?.setAttribute('aria-expanded',String(panel===except)));
 }
 function togglePlayerPopover(id){
   const panel=$(id),willOpen=panel.classList.contains('hidden');closePlayerPopovers(willOpen?id:'');
@@ -2637,6 +2878,177 @@ function initFallingStyleSetting(){
   if(switches)switches.insertAdjacentElement('afterend',block);else sheet.appendChild(block);
   block.addEventListener('click',event=>{const button=event.target.closest('[data-fall-style]');if(button)setFallingNotesStyle(button.dataset.fallStyle);});
   syncFallingStyleButtons();
+}
+function syncFxStyleButtons(){
+  document.querySelectorAll('[data-fx-style]').forEach(button=>{const on=button.dataset.fxStyle===fxStyle;button.classList.toggle('active',on);button.setAttribute('aria-pressed',on?'true':'false');});
+  if($('deviceFxStyle'))$('deviceFxStyle').value=fxStyle;
+  [['deviceFxIntensity',fxIntensity],['fxIntensityInput',fxIntensity],['deviceFxDuration',fxDuration],['fxDurationInput',fxDuration]].forEach(([id,value])=>{const control=$(id);if(control)control.value=String(value);});
+  [['deviceFxIntensityValue',['','Suave','Normal','Intenso'][fxIntensity]],['fxIntensityValue',['','Suave','Normal','Intenso'][fxIntensity]],['deviceFxDurationValue',`${fxDuration.toFixed(1)} s`],['fxDurationValue',`${fxDuration.toFixed(1)} s`]].forEach(([id,value])=>{const output=$(id);if(output)output.textContent=value;});
+}
+function setFxStyle(value){
+  fxStyle=FX_STYLES.includes(value)?value:'fire';
+  if(typeof deviceSettings==='object'){deviceSettings.fxStyle=fxStyle;saveDeviceSettings();}
+  try{localStorage.setItem('yhwh_piano_fx_style',fxStyle);}catch(_){}
+  syncFxStyleButtons();updateDeviceSettingsPreview();
+}
+function setFxIntensity(value){fxIntensity=Math.max(1,Math.min(3,Math.round(Number(value)||2)));deviceSettings.fxIntensity=fxIntensity;syncFxStyleButtons();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
+function setFxDuration(value){fxDuration=Math.max(1,Math.min(6,Number(value)||3.4));deviceSettings.fxDuration=fxDuration;syncFxStyleButtons();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
+// Acción del usuario: si los destellos estaban apagados se encienden, para que el efecto elegido se vea de inmediato.
+function chooseFxStyle(value){
+  setFxStyle(value);
+  if(!fxGlow){
+    fxGlow=true;deviceSettings.fxGlow=true;try{localStorage.setItem('yhwh_piano_fx_glow','1');}catch(_){}
+    ['fxGlowSwitch','deviceGlowEnabled'].forEach(id=>{const control=$(id);if(control)control.checked=true;});
+    updateDeviceSettingsPreview();saveDeviceSettings();
+  }
+}
+const FX_STYLE_OPTIONS=[['fire','Fuego','Llamas y chispas del color de la nota'],['gold','Chispas doradas','Una cinta de chispas que sube al tocar'],['rings','Ondas','Anillos que se expanden desde la tecla'],['cross','Destellos en cruz','Brillos cortos con forma de cruz'],['bubbles','Burbujas','Burbujas translúcidas que flotan hacia arriba'],['notes','Notas flotantes','Símbolos musicales que ascienden']];
+function initFxStyleSetting(){
+  const sheet=$('playerSettings');if(!sheet||$('fxStyleBlock'))return;
+  const block=document.createElement('div');block.id='fxStyleBlock';block.className='settings-block';
+  block.innerHTML='<h3>Efecto al tocar</h3><div class="range-presets" role="group" aria-label="Estilo del efecto al tocar">'+FX_STYLE_OPTIONS.map(option=>`<button type="button" data-fx-style="${option[0]}"><span>${option[1]}</span><small style="display:block;margin-top:2px;font-size:.68rem;font-weight:400;opacity:.75">${option[2]}</small></button>`).join('')+'</div><label class="fx-control-row">Intensidad <output id="fxIntensityValue"></output><input id="fxIntensityInput" type="range" min="1" max="3" step="1"></label><label class="fx-control-row">Duración <output id="fxDurationValue"></output><input id="fxDurationInput" type="range" min="1" max="6" step="0.5"></label>';
+  const anchor=$('fallingStyleBlock');
+  if(anchor)anchor.insertAdjacentElement('afterend',block);else sheet.appendChild(block);
+  block.addEventListener('click',event=>{const button=event.target.closest('[data-fx-style]');if(button)chooseFxStyle(button.dataset.fxStyle);});
+  block.addEventListener('input',event=>{if(event.target.id==='fxIntensityInput')setFxIntensity(event.target.value);else if(event.target.id==='fxDurationInput')setFxDuration(event.target.value);});
+  syncFxStyleButtons();
+}
+function syncBarLookButtons(){
+  document.querySelectorAll('[data-bar-look]').forEach(button=>{const on=button.dataset.barLook===barLook;button.classList.toggle('active',on);button.setAttribute('aria-pressed',on?'true':'false');});
+  if($('deviceBarLook'))$('deviceBarLook').value=barLook;
+  [['barColor2Input',barColor2],['barColor3Input',barColor3],['deviceBarColor2',barColor2],['deviceBarColor3',barColor3]].forEach(([id,value])=>{const input=$(id);if(input)input.value=value;});
+  if($('barBassDiffInput'))$('barBassDiffInput').checked=barBassDiff;if($('deviceBarBassDiff'))$('deviceBarBassDiff').checked=barBassDiff;
+  const pickers=$('barColorPickers');if(pickers){pickers.style.display=barLook==='normal'?'none':'flex';const third=$('barColor3Label');if(third)third.style.display=barLook==='tri'?'':'none';}
+}
+function setBarLook(value){
+  barLook=value==='duo'||value==='tri'?value:'normal';
+  if(typeof deviceSettings==='object'){deviceSettings.barLook=barLook;saveDeviceSettings();}
+  try{localStorage.setItem('yhwh_piano_bar_look',barLook);}catch(_){}
+  syncBarLookButtons();
+}
+function setBarBassDiff(value){
+  barBassDiff=!!value;
+  if(typeof deviceSettings==='object'){deviceSettings.barBassDiff=barBassDiff;scheduleDeviceSettingsSave();}
+  try{localStorage.setItem('yhwh_piano_bar_bass_diff',barBassDiff?'1':'0');}catch(_){}
+  syncBarLookButtons();
+}
+// Elige el 2.º o 3.º color con el que se mezcla el color de la nota en las barras.
+function setBarColor(which,value){
+  if(!/^#[0-9a-f]{6}$/i.test(value||''))return;
+  if(which===3)barColor3=value;else barColor2=value;
+  fnDuoGradCache.clear();
+  if(typeof deviceSettings==='object'){deviceSettings[which===3?'barColor3':'barColor2']=value;scheduleDeviceSettingsSave();}
+  try{localStorage.setItem(which===3?'yhwh_piano_bar_color3':'yhwh_piano_bar_color2',value);}catch(_){}
+  syncBarLookButtons();
+}
+function applyBarAppearanceVars(){
+  const root=document.documentElement;root.style.setProperty('--manual-bar-radius',`${barRadius}px`);root.style.setProperty('--manual-bar-opacity',String(barOpacity/100));root.style.setProperty('--manual-bar-trail',`${barTrail*.9}px`);root.style.setProperty('--manual-bar-accompaniment2-color',barAccompaniment2Color);
+}
+function syncBarAppearanceControls(){
+  document.querySelectorAll('[data-bar-appearance]').forEach(button=>{const active=button.dataset.barAppearance===barStyle;button.classList.toggle('active',active);button.setAttribute('aria-pressed',active?'true':'false');});
+  const values={deviceBarAppearance:barStyle,barAppearanceInput:barStyle,deviceBarRadius:barRadius,barRadiusInput:barRadius,deviceBarOpacity:barOpacity,barOpacityInput:barOpacity,deviceBarColorMode:barColorMode,barColorModeInput:barColorMode,deviceBarAccompaniment2Color:barAccompaniment2Color,barAccompaniment2ColorInput:barAccompaniment2Color,deviceBarTrail:barTrail,barTrailInput:barTrail};
+  Object.entries(values).forEach(([id,value])=>{const input=$(id);if(input)input.value=String(value);});
+  [['deviceBarRadiusValue',`${barRadius} px`],['barRadiusValue',`${barRadius} px`],['deviceBarOpacityValue',`${barOpacity}%`],['barOpacityValue',`${barOpacity}%`],['deviceBarTrailValue',`${barTrail}%`],['barTrailValue',`${barTrail}%`]].forEach(([id,value])=>{const output=$(id);if(output)output.textContent=value;});
+  applyBarAppearanceVars();
+}
+function setBarAppearance(value){barStyle=['glass','neon','synesthesia'].includes(value)?value:'glass';deviceSettings.barStyle=barStyle;syncBarAppearanceControls();updateDeviceSettingsPreview();saveDeviceSettings();}
+function setBarRadius(value){barRadius=Math.max(0,Math.min(12,Number(value)||0));deviceSettings.barRadius=barRadius;syncBarAppearanceControls();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
+function setBarOpacity(value){barOpacity=Math.max(10,Math.min(100,Number(value)||10));deviceSettings.barOpacity=barOpacity;syncBarAppearanceControls();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
+function setBarTrail(value){barTrail=Math.max(0,Math.min(100,Number(value)||0));deviceSettings.barTrail=barTrail;syncBarAppearanceControls();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
+function setBarColorMode(value){barColorMode=value==='note'?'note':'track';deviceSettings.barColorMode=barColorMode;syncBarAppearanceControls();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
+function setBarAccompaniment2Color(value){if(!/^#[0-9a-f]{6}$/i.test(value||''))return;barAccompaniment2Color=value;deviceSettings.barAccompaniment2Color=value;syncBarAppearanceControls();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
+const BAR_APPEARANCE_OPTIONS=[['glass','Cristal','Relleno translúcido con reflejo'],['neon','Neón','Contorno luminoso'],['synesthesia','Sinestesia','Degradado vertical y barras más anchas']];
+function initBarAppearanceSetting(){
+  const sheet=$('playerSettings');if(!sheet||$('barAppearanceBlock'))return;
+  const block=document.createElement('div');block.id='barAppearanceBlock';block.className='settings-block';
+  block.innerHTML='<h3>Diseño de las barras</h3><div class="range-presets" role="group" aria-label="Diseño de las barras">'+BAR_APPEARANCE_OPTIONS.map(option=>`<button type="button" data-bar-appearance="${option[0]}"><span>${option[1]}</span><small style="display:block;margin-top:2px;font-size:.68rem;font-weight:400;opacity:.75">${option[2]}</small></button>`).join('')+'</div><label class="bar-control-row">Redondeo <output id="barRadiusValue"></output><input id="barRadiusInput" type="range" min="0" max="12" step="1"></label><label class="bar-control-row">Opacidad <output id="barOpacityValue"></output><input id="barOpacityInput" type="range" min="10" max="100" step="5"></label><label class="bar-control-row">Rastro <output id="barTrailValue"></output><input id="barTrailInput" type="range" min="0" max="100" step="5"></label><label class="bar-control-row">Color por <select id="barColorModeInput"><option value="track">Pista o mano</option><option value="note">Nota musical</option></select></label><label class="bar-control-row">Color de acompañamiento 2 <input id="barAccompaniment2ColorInput" type="color"></label>';
+  const anchor=$('barLookBlock')||$('fxStyleBlock')||$('fallingStyleBlock');if(anchor)anchor.insertAdjacentElement('afterend',block);else sheet.appendChild(block);
+  block.addEventListener('click',event=>{const button=event.target.closest('[data-bar-appearance]');if(button)setBarAppearance(button.dataset.barAppearance);});
+  block.addEventListener('input',event=>{const el=event.target;if(el.id==='barRadiusInput')setBarRadius(el.value);else if(el.id==='barOpacityInput')setBarOpacity(el.value);else if(el.id==='barTrailInput')setBarTrail(el.value);else if(el.id==='barAccompaniment2ColorInput')setBarAccompaniment2Color(el.value);});
+  block.addEventListener('change',event=>{if(event.target.id==='barColorModeInput')setBarColorMode(event.target.value);});syncBarAppearanceControls();
+}
+const BAR_LOOK_OPTIONS=[['normal','Normal','Barra de cristal del color elegido'],['duo','Dos colores','El color de la nota mezclado con el que elijas'],['tri','Tres colores','El color de la nota con otros dos que elijas']];
+const KEY_STYLE_OPTIONS=[['classic','Clásico','Teclas blancas con degradado y negras con sombra'],['flat','Plano / minimalista','Superficies lisas y bordes finos'],['realistic','Realista','Tonos cálidos de marfil y ébano']];
+function syncPianoKeyStyleControls(){
+  document.documentElement.dataset.pianoKeyStyle=pianoKeyStyle;
+  if($('deviceKeyStyle'))$('deviceKeyStyle').value=pianoKeyStyle;
+  document.querySelectorAll('.settings-preview-keyboard').forEach(preview=>preview.dataset.keyStyle=pianoKeyStyle);
+  document.querySelectorAll('[data-key-style]').forEach(button=>{const active=button.dataset.keyStyle===pianoKeyStyle;button.classList.toggle('active',active);button.setAttribute('aria-pressed',active?'true':'false');});
+}
+function setPianoKeyStyle(value){pianoKeyStyle=['flat','realistic'].includes(value)?value:'classic';deviceSettings.keyStyle=pianoKeyStyle;syncPianoKeyStyleControls();saveDeviceSettings();updateDeviceSettingsPreview();}
+function initPianoKeyStyleSetting(){
+  const sheet=$('playerSettings');if(!sheet||$('keyStyleBlock'))return;
+  const block=document.createElement('div');block.id='keyStyleBlock';block.className='settings-block';
+  block.innerHTML='<h3>Estilo de las teclas</h3><div class="range-presets" role="group" aria-label="Estilo de las teclas">'+KEY_STYLE_OPTIONS.map(option=>`<button type="button" data-key-style="${option[0]}"><span>${option[1]}</span><small style="display:block;margin-top:2px;font-size:.68rem;font-weight:400;opacity:.75">${option[2]}</small></button>`).join('')+'</div>';
+  const anchor=$('barAppearanceBlock')||$('barLookBlock')||$('fallingStyleBlock');if(anchor)anchor.insertAdjacentElement('afterend',block);else sheet.appendChild(block);
+  block.addEventListener('click',event=>{const button=event.target.closest('[data-key-style]');if(button)setPianoKeyStyle(button.dataset.keyStyle);});syncPianoKeyStyleControls();
+}
+function initBarLookSetting(){
+  const sheet=$('playerSettings');if(!sheet||$('barLookBlock'))return;
+  const block=document.createElement('div');block.id='barLookBlock';block.className='settings-block';
+  block.innerHTML='<h3>Color de las barras</h3><div class="range-presets" role="group" aria-label="Color de las barras">'+BAR_LOOK_OPTIONS.map(option=>`<button type="button" data-bar-look="${option[0]}"><span>${option[1]}</span><small style="display:block;margin-top:2px;font-size:.68rem;font-weight:400;opacity:.75">${option[2]}</small></button>`).join('')+'</div><div id="barColorPickers" style="display:none;gap:14px;flex-wrap:wrap;margin:6px 0 2px"><label style="display:flex;align-items:center;gap:6px;font-size:.8rem">Segundo color <input id="barColor2Input" type="color"></label><label id="barColor3Label" style="display:flex;align-items:center;gap:6px;font-size:.8rem">Tercer color <input id="barColor3Input" type="color"></label></div><label style="display:flex;align-items:center;gap:8px;margin:8px 0 2px;font-size:.85rem"><input id="barBassDiffInput" type="checkbox"> Bajos con otro color</label>';
+  const anchor=$('fxStyleBlock')||$('fallingStyleBlock');
+  if(anchor)anchor.insertAdjacentElement('afterend',block);else sheet.appendChild(block);
+  block.addEventListener('click',event=>{const button=event.target.closest('[data-bar-look]');if(button)setBarLook(button.dataset.barLook);});
+  block.addEventListener('input',event=>{if(event.target.id==='barColor2Input')setBarColor(2,event.target.value);else if(event.target.id==='barColor3Input')setBarColor(3,event.target.value);});
+  block.addEventListener('change',event=>{if(event.target.id==='barBassDiffInput')setBarBassDiff(event.target.checked);});
+  syncBarLookButtons();
+}
+function initializePlayerSettingsPage(){
+  const page=$('playerSettings');if(!page||page.dataset.pageReady==='true')return;
+  page.dataset.pageReady='true';page.classList.add('player-settings-page');page.removeAttribute('role');page.removeAttribute('aria-modal');
+  const screen=document.createElement('section');screen.id='playerSettingsScreen';screen.className='mode-screen player-config-screen hidden';screen.setAttribute('aria-label','Configuración del piano');
+  const screenPanel=document.createElement('div');screenPanel.className='mode-screen-panel player-config-panel';
+  page.parentNode.insertBefore(screen,page);page.classList.remove('hidden');screen.append(screenPanel);screenPanel.append(page);
+  $('player')?.after(screen);
+  const heading=page.querySelector('.sheet-heading');
+  if(heading){heading.querySelector('small').textContent='AJUSTES DEL ESCENARIO';heading.querySelector('h2').textContent='Configuración del piano';}
+  const tabs=[['bars','Diseño de barras'],['piano','Piano y teclas'],['sound','Efectos y sonido'],['playback','Reproducción']];
+  const nav=document.createElement('nav');nav.className='player-settings-tabs';nav.setAttribute('aria-label','Secciones de configuración del piano');
+  const layout=document.createElement('div');layout.className='player-settings-layout';
+  const content=document.createElement('main');content.className='player-settings-content';
+  const preview=document.createElement('aside');preview.className='player-settings-preview';preview.setAttribute('aria-live','polite');
+  const panels={};
+  tabs.forEach(([id,label],index)=>{
+    const button=document.createElement('button');button.type='button';button.dataset.playerSettingsTab=id;button.textContent=label;button.setAttribute('aria-controls',`playerSettings${id}`);button.setAttribute('aria-selected',String(index===0));if(index===0)button.classList.add('active');nav.append(button);
+    const panel=document.createElement('section');panel.id=`playerSettings${id}`;panel.className='player-settings-tab-panel';panel.dataset.playerSettingsPanel=id;panel.setAttribute('aria-label',label);if(index)panel.classList.add('hidden');
+    const title=document.createElement('h3');title.textContent=label;panel.append(title);panels[id]=panel;content.append(panel);
+    button.addEventListener('click',()=>{
+      nav.querySelectorAll('button').forEach(item=>{const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active));});
+      Object.entries(panels).forEach(([key,item])=>item.classList.toggle('hidden',key!==id));
+      preview.querySelectorAll('[data-player-preview]').forEach(item=>item.classList.toggle('hidden',item.dataset.playerPreview!==id));
+    });
+  });
+  preview.innerHTML='<h3>Vista previa</h3><section class="player-settings-preview-card" data-player-preview="bars"><small>Barras que caen</small><div class="settings-preview-stage"><i class="preview-fall-bar bar-a">Do</i><i class="preview-fall-bar bar-b">Mi</i><i class="preview-fall-bar bar-c">Sol</i><div class="settings-preview-keys"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div></div><p>El diseño y los colores se aplican al escenario del piano.</p></section><section class="player-settings-preview-card hidden" data-player-preview="piano"><small>Estilo de teclas</small><div class="settings-preview-keyboard" data-key-style="classic"><div class="preview-white-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="preview-black-keys"><b></b><b></b><b></b><b></b><b></b></div></div><p>Vista del teclado con el estilo seleccionado.</p></section><section class="player-settings-preview-card hidden" data-player-preview="sound"><small>Efectos al tocar</small><div class="settings-preview-effects"><span>♫</span><i></i><i></i><i></i></div><p>Elige el efecto y ajusta su intensidad y duración.</p></section><section class="player-settings-preview-card hidden" data-player-preview="playback"><small>Sonido y reproducción</small><div class="settings-preview-volume"><span>♪</span><i></i></div><p>Volumen, tempo, metrónomo y mezcla de voces.</p></section>';
+  const syncPreview=()=>{
+    const stage=preview.querySelector('.settings-preview-stage'),bars=[...preview.querySelectorAll('.preview-fall-bar')];
+    if(stage){
+      stage.dataset.flow=fallingNotesStyle;stage.dataset.appearance=barStyle;stage.dataset.colorMode=barColorMode;stage.dataset.look=barLook;
+      stage.style.setProperty('--preview-melody',state.keyColor);stage.style.setProperty('--preview-bass',state.bassColor);stage.style.setProperty('--preview-accent',barAccompaniment2Color);stage.style.setProperty('--preview-color2',barColor2);stage.style.setProperty('--preview-color3',barColor3);stage.style.setProperty('--preview-opacity',String(barOpacity/100));stage.style.setProperty('--preview-radius',`${barRadius}px`);stage.style.setProperty('--preview-trail',`${Math.round(barTrail*.45)}px`);
+      const labels=$('showBarNotes')?.checked!==false,octaves=$('showOctaveNotes')?.checked;bars.forEach((bar,index)=>{bar.textContent=labels?`${['Do','Mi','Sol','La','Re'][index]}${octaves?`${index+3}`:''}`:'';bar.dataset.kind=index===0?'melody':index===1?'bass':'accompaniment';});
+    }
+    const keyboard=preview.querySelector('.settings-preview-keyboard');
+    if(keyboard){keyboard.dataset.keyStyle=pianoKeyStyle;keyboard.dataset.colorOn=$('keyColorOnSwitch')?.checked===false?'off':'on';keyboard.dataset.fill=$('lightKeysSwitch')?.checked===false?'off':'on';keyboard.dataset.edge=$('keyEdgeSwitch')?.checked?'on':'off';keyboard.dataset.line=neonEdge.style;keyboard.dataset.lineOn=neonEdge.on?'on':'off';keyboard.style.setProperty('--preview-key-color',state.keyColor);keyboard.style.setProperty('--preview-edge-color',neonEdge.color);keyboard.style.setProperty('--preview-line-size',`${neonEdge.thickness}px`);keyboard.style.setProperty('--preview-line-glow',String(neonEdge.glow/100));keyboard.querySelectorAll('i').forEach((key,index)=>key.classList.toggle('is-playing',[0,3,5].includes(index)));}
+    const effect=preview.querySelector('.settings-preview-effects');
+    if(effect){effect.dataset.style=fxStyle;effect.dataset.enabled=fxGlow?'on':'off';effect.dataset.intensity=String(fxIntensity);effect.style.setProperty('--preview-effect-duration',`${fxDuration}s`);const glyph={fire:'🔥',gold:'✦',rings:'◉',cross:'✣',bubbles:'◌',notes:'♫'}[fxStyle]||'♫';effect.querySelector('span').textContent=glyph;}
+    const volume=preview.querySelector('.settings-preview-volume');
+    if(volume){const pct=Math.max(0,Math.min(100,Number($('masterVolume')?.value??state.masterVolume*100)/2)),tempo=Number($('tempoControl')?.value||100),bpm=$('metronomeBpm')?.value||'100',voices=[...page.querySelectorAll('.voice-switch input')].filter(input=>input.checked).length;volume.style.setProperty('--preview-volume',`${pct}%`);volume.style.setProperty('--preview-tempo',`${tempo}%`);volume.style.setProperty('--preview-bpm',bpm);volume.style.setProperty('--preview-beat-duration',`${Math.max(.45,1.6/(tempo/100))}s`);volume.dataset.metronome=bpm;volume.dataset.meter=$('metronomeMeter')?.value||'4';volume.dataset.voices=voices;const readout=volume.querySelector('.preview-playback-readout');if(readout)readout.textContent=`Volumen ${Math.round(pct)}% · Tempo ${tempo}% · Metrónomo ${bpm} BPM · ${voices} voces activas`;}
+  };
+  preview.querySelector('.settings-preview-volume')?.insertAdjacentHTML('beforeend','<small class="preview-playback-readout"></small><div class="preview-meter"><i></i><i></i><i></i><i></i><i></i><i></i></div>');
+  page.addEventListener('input',syncPreview);page.addEventListener('change',syncPreview);page.addEventListener('click',()=>requestAnimationFrame(syncPreview));
+  const addSwitch=(label,tab)=>{let group=panels[tab].querySelector('.settings-switches');if(!group){group=document.createElement('div');group.className='settings-switches';panels[tab].append(group);}group.append(label);};
+  const switchRoot=page.querySelector('.settings-switches');
+  if(switchRoot){[...switchRoot.querySelectorAll('label')].forEach(label=>{const id=label.querySelector('input')?.id,tab=['showBarNotes','noteLabelOutlineSwitch','showOctaveNotes'].includes(id)?'bars':['lightKeysSwitch','keyColorOnSwitch','keyEdgeSwitch','darkModeSwitch'].includes(id)?'piano':id==='fxGlowSwitch'?'sound':'piano';addSwitch(label,tab);});switchRoot.remove();}
+  const move=(selector,tab)=>{const node=page.querySelector(selector);if(node)panels[tab].append(node);};
+  ['#fallingStyleBlock','#barLookBlock','#barAppearanceBlock'].forEach(selector=>move(selector,'bars'));
+  ['#keyStyleBlock','.neon-edge-settings'].forEach(selector=>move(selector,'piano'));
+  ['#fxStyleBlock','.master-volume-block','.voice-settings','.audio-license'].forEach(selector=>move(selector,'sound'));
+  page.querySelectorAll('.settings-block').forEach(block=>{if(!block.closest('.player-settings-tab-panel'))panels.playback.append(block);});
+  move('.audio-license','sound');
+  const quick=page.querySelector('.mobile-quick-settings')?.closest('.settings-block');if(quick)panels.playback.append(quick);
+  const remaining=[...page.children].filter(node=>node!==heading&&node!==nav&&node!==layout);remaining.forEach(node=>{if(node!==switchRoot)panels.playback.append(node);});
+  layout.append(nav,preview,content);page.append(heading,layout);
+  syncPreview();
 }
 function setFallingNotesLookahead(value){fallingNotesLookahead=Math.min(FALLING_NOTES_MAX_LOOKAHEAD,Math.max(.8,value));}
 function bindCanvasGestures(){
@@ -3386,7 +3798,7 @@ function playbackGroupsForCurrentSong(){
   return groups;
 }
 async function playMelody() {
-  const playbackGroups=playbackGroupsForCurrentSong(),playbackChords=playbackGroups.flatMap(group=>group.chords);let playbackNotes=playbackGroups.flatMap(group=>group.notes);
+  const playbackGroups=playbackGroupsForCurrentSong(),playbackChords=playbackGroups.flatMap(group=>group.chords.map(chord=>({...chord,_playbackTrack:group.type})));let playbackNotes=playbackGroups.flatMap(group=>group.notes);
   if (!playbackNotes.length) { toast(state.melodyType==='voz'?'Activa al menos una voz para escucharla.':'Esta pista todavía no tiene melodía grabada.'); $('status').textContent = 'No hay notas seleccionadas para reproducir.'; return; }
   stopPlayback();
   document.body.classList.remove('playback-finished');
@@ -3402,7 +3814,7 @@ async function playMelody() {
     try{
       for(const group of playbackGroups){
         Object.assign(state,{instrument:group.settings.instrument,stringsLayerEnabled:group.settings.layerEnabled,layerInstrument:group.settings.layerInstrument,stringsLayerVolume:group.settings.layerVolume});
-        group.notes=group.notes.map(note=>({...note,_playbackHold:noteHoldSeconds(note),_playbackCut:noteWasCut(note),_playbackKind:group.kind}));
+        group.notes=group.notes.map(note=>({...note,_playbackHold:noteHoldSeconds(note),_playbackCut:noteWasCut(note),_playbackKind:group.kind,_playbackTrack:group.type}));
         group.prepared=await prepareMelodyAudio(group.notes);
       }
     }finally{Object.assign(state,{instrument:original.instrument,stringsLayerEnabled:original.layerEnabled,layerInstrument:original.layerInstrument,stringsLayerVolume:original.layerVolume});}
@@ -3818,8 +4230,8 @@ function bindInterface() {
   $('keyboardRangeToggle').onclick=()=>togglePlayerPopover('keyboardRangeMenu');
   $('notationToggle').onclick=()=>{togglePlayerPopover('notationMenu');$('keyboardNotation').value=state.notation;syncNotationButtons();};
   $('chordsViewToggle').onclick=toggleLyricsPanel;
-  $('settingsToggle').onclick=()=>togglePlayerPopover('playerSettings');
-  $('closeSettings').onclick=()=>closePlayerPopovers();
+  $('settingsToggle').onclick=openPlayerSettingsScreen;
+  $('closeSettings').onclick=closePlayerSettingsScreen;
   $('closeChordEditor').onclick=()=>{chordEditorOpen=false;closePlayerPopovers();};
   $('closeNotes').onclick=()=>{$('notesPanel').dataset.open='';updateVisualOptions();};
   $('keyColorPicker').value=state.keyColor;
@@ -3848,7 +4260,7 @@ function bindInterface() {
     strip.addEventListener('pointerdown',()=>{cancelPress();pressTimer=setTimeout(()=>{pressTimer=0;perfProbeEnable(!perfProbe.on);try{localStorage.setItem('yhwh_perf',perfProbe.on?'1':'0');}catch(_){}},700);},{passive:true});
     ['pointerup','pointercancel','pointerleave'].forEach(type=>strip.addEventListener(type,cancelPress,{passive:true}));}}
   {const tempoBox=document.querySelector('.stage-metronome-controls'),playGroup=document.querySelector('.player-playback-group');if(tempoBox&&playGroup&&tempoBox.parentElement!==playGroup)playGroup.appendChild(tempoBox);}
-  initFallingStyleSetting();
+  initFallingStyleSetting();initFxStyleSetting();initBarLookSetting();initBarAppearanceSetting();initPianoKeyStyleSetting();initializePlayerSettingsPage();
   bindCanvasGestures();
   document.addEventListener('pointerdown',event=>{if(!event.target.closest('.stage-popover,.player-sheet,.toolbar-icon,.top-tempo,.stage-tool-rail'))closePlayerPopovers();});
   registerExtraInstrumentOptions();
@@ -4070,21 +4482,39 @@ function initializeFirebase() {
 let deviceSettingsSaveTimer=0;
 function scheduleDeviceSettingsSave(){clearTimeout(deviceSettingsSaveTimer);deviceSettingsSaveTimer=setTimeout(()=>{deviceSettingsSaveTimer=0;saveDeviceSettings();},350);}
 function saveDeviceSettings(){if(deviceSettingsSaveTimer){clearTimeout(deviceSettingsSaveTimer);deviceSettingsSaveTimer=0;}try{localStorage.setItem(DEVICE_SETTINGS_KEY,JSON.stringify(deviceSettings));}catch(_){$('deviceBackgroundStatus')&&($('deviceBackgroundStatus').textContent='No hay espacio para guardar la personalización en este dispositivo.');}}
-function setDeviceTheme(theme){
-  const next=theme==='dark'?'dark':'light';deviceSettings.theme=next;
-  if(deviceSettings.theme==='dark')document.documentElement.setAttribute('data-theme','dark');else document.documentElement.removeAttribute('data-theme');
-  try{localStorage.setItem('piano_theme',deviceSettings.theme);}catch(_){}
-  const dark=deviceSettings.theme==='dark';
+function syncThemeToggleButtons(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
   ['themeToggle','songThemeToggle','createThemeToggle'].forEach(id=>{const button=$(id);if(button){button.textContent=dark?'☀️':'🌙';button.setAttribute('aria-label',dark?'Cambiar a modo claro':'Cambiar a modo oscuro');button.title=dark?'Modo claro':'Modo oscuro';}});
-  const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=dark?'#101820':'#155c9a';
+}
+function setDeviceTheme(themeMode){
+  const mode=['light','dark','system'].includes(themeMode)?themeMode:'light',next=mode==='system'?(systemThemeIsDark()?'dark':'light'):mode;deviceSettings.themeMode=mode;deviceSettings.theme=next;
+  if(deviceSettings.theme==='dark')document.documentElement.setAttribute('data-theme','dark');else document.documentElement.removeAttribute('data-theme');
+  try{localStorage.setItem('piano_theme',mode);}catch(_){}
+  syncThemeToggleButtons();
+  if($('deviceTheme'))$('deviceTheme').value=mode;
   applyDeviceCustomization();saveDeviceSettings();
+}
+function deviceContrastColor(hex){
+  const match=/^#([0-9a-f]{6})$/i.exec(hex||'');if(!match)return '#ffffff';
+  const channels=[0,2,4].map(index=>parseInt(match[1].slice(index,index+2),16)/255).map(value=>value<=.04045?value/12.92:((value+.055)/1.055)**2.4);
+  return .2126*channels[0]+.7152*channels[1]+.0722*channels[2]>.42?'#10202c':'#ffffff';
+}
+function applyReadyColorPalette(id){
+  const preset=READY_COLOR_PALETTES[id];if(!preset)return;
+  const paletteKey=preset.theme==='dark'?'paletteDark':'paletteLight';deviceSettings[paletteKey]={...preset.colors};deviceSettings.palettePreset=id;
+  deviceSettings.iconColor=deviceContrastColor(preset.colors.headingBackground||preset.colors.primary);
+  deviceSettings.melodyColor=preset.melody;deviceSettings.bassColor=preset.bass;state.keyColor=preset.melody;state.bassColor=preset.bass;
+  try{localStorage.setItem('yhwh_piano_key_color',state.keyColor);localStorage.setItem('yhwh_piano_bass_color',state.bassColor);}catch(_){}
+  setBarColor(2,preset.bar2);setBarColor(3,preset.bar3);setBarLook(preset.barLook);setBarAppearance(preset.barStyle);
+  setDeviceTheme(preset.theme);updateVisualOptions();populateDeviceSettingsForm();updateDeviceSettingsPreview();saveDeviceSettings();
 }
 function applyDeviceCustomization(){
   const palette=deviceSettings[deviceSettings.theme==='dark'?'paletteDark':'paletteLight']||DEVICE_THEME_PALETTES[deviceSettings.theme==='dark'?'dark':'light'];
   Object.assign(deviceSettings,palette);
   deviceSettings.headingColor=deviceSettings.headingText||deviceSettings.headingColor;
-  const root=document.documentElement;root.classList.add('device-customization-enabled');
+  const root=document.documentElement;root.classList.add('device-customization-enabled');root.dataset.pianoKeyStyle=pianoKeyStyle;
   const css={
+    '--device-primary-color':deviceSettings.primary,'--device-primary-text':deviceContrastColor(deviceSettings.primary),
     '--gold':deviceSettings.primary,'--gold2':deviceSettings.accent,'--bg':deviceSettings.page,'--panel':deviceSettings.surface,
     '--panel2':`color-mix(in srgb, ${deviceSettings.surface} 84%, ${deviceSettings.primary})`,'--line':deviceSettings.line,'--text':deviceSettings.text,
     '--muted':`color-mix(in srgb, ${deviceSettings.text} 65%, transparent)`,'--device-page-color':deviceSettings.page,'--device-surface-color':deviceSettings.surface,
@@ -4094,6 +4524,7 @@ function applyDeviceCustomization(){
     '--device-melody-color':deviceSettings.melodyColor,'--device-bass-color':deviceSettings.bassColor
   };
   Object.entries(css).forEach(([name,value])=>root.style.setProperty(name,value));
+  const themeColorMeta=document.querySelector('meta[name="theme-color"]');if(themeColorMeta)themeColorMeta.content=deviceSettings.page;
   const base=Number.parseFloat(getComputedStyle(document.querySelector('#noteCanvas')||document.body).getPropertyValue('--stage-key-width'))||40;
   const gridSpacing=Math.max(1,Math.min(12,Number(deviceSettings.gridSpacing)||4)),gridSize=`calc(${Array(gridSpacing).fill(`var(--stage-key-width, ${base}px)`).join(' + ')})`;
   root.style.setProperty('--device-grid-spacing',gridSize);
@@ -4111,6 +4542,7 @@ function applyDeviceCustomization(){
   const preview=$('devicePreviewCard');if(preview){preview.style.fontFamily=deviceSettings.font;preview.style.fontSize=`${deviceSettings.fontSize}px`;preview.style.borderRadius=`${deviceSettings.radius}px`;preview.style.color=deviceSettings.text;preview.style.backgroundColor=deviceSettings.surface;preview.style.backgroundImage=`linear-gradient(145deg,${deviceSettings.surface},${deviceSettings.page})`;}
   if($('devicePreviewHeading')){$('devicePreviewHeading').style.color=deviceSettings.headingText||deviceSettings.headingColor;$('devicePreviewHeading').style.background=deviceSettings.headingBackground||deviceSettings.primary;$('devicePreviewHeading').style.padding='7px 10px';$('devicePreviewHeading').style.borderRadius='7px';$('devicePreviewHeading').style.fontFamily=deviceSettings.headingFont;$('devicePreviewHeading').style.fontSize=`${deviceSettings.headingSize}px`;}
   if($('devicePreviewIcon'))$('devicePreviewIcon').style.color=deviceSettings.iconColor;
+  const previewKeys=$('devicePianoPreview')?.querySelector('.device-piano-preview-keys');if(previewKeys)previewKeys.dataset.keyStyle=pianoKeyStyle;
   if($('devicePreviewButton')){$('devicePreviewButton').style.background=deviceSettings.primary;$('devicePreviewButton').style.borderRadius=`${deviceSettings.radius}px`;}
   ['devicePreviewNote','devicePreviewPianoNote'].forEach(id=>{const note=$(id);if(note){note.textContent=fallingNoteName(60);note.style.color=deviceSettings.noteLabelColor||'#111111';note.style.fontSize=`${deviceSettings.noteLabelSize}px`;}});
   const keyLabelPreview=$('devicePreviewKeyLabel');if(keyLabelPreview){keyLabelPreview.style.color=deviceSettings.keyLabelColor;keyLabelPreview.style.fontSize=`${deviceSettings.keyLabelSize}px`;}
@@ -4118,7 +4550,7 @@ function applyDeviceCustomization(){
   const previewBg=$('devicePianoPreview')?.querySelector('.device-piano-preview-bg');if(previewBg){previewBg.style.backgroundImage=deviceSettings.backgroundImage?`url("${deviceSettings.backgroundImage}")`:'none';previewBg.style.filter=`blur(${deviceSettings.pianoImageBlur||0}px)`;previewBg.style.opacity=String(Number(deviceSettings.pianoImageOpacity??34)/100);}
   const previewBar=$('devicePreviewPianoNote')?.parentElement;if(previewBar){previewBar.style.background=deviceSettings.melodyColor;previewBar.style.color=deviceSettings.noteLabelColor||'#111111';}
   const soundBar=$('devicePreviewStyle');if(soundBar)soundBar.textContent=({bars:'Barras completas',melody:'Solo melodía',drops:'Gotas',off:'Sin barras'})[fallingNotesStyle]||'Barras completas';
-  if($('devicePreviewEffects'))$('devicePreviewEffects').textContent=fxGlow||fallingFlowEnabled?'Efectos activados':'Efectos apagados';
+  if($('devicePreviewEffects'))$('devicePreviewEffects').textContent=fxGlow?`Efectos activados · ${FX_STYLE_OPTIONS.find(option=>option[0]===fxStyle)?.[1]||'Fuego'} · ${['','Suave','Normal','Intenso'][fxIntensity]} · ${fxDuration.toFixed(1)} s`:'Efectos apagados';
   const volumeMeter=$('devicePreviewVolume')?.querySelector('i');if(volumeMeter)volumeMeter.style.width=`${Math.max(0,Math.min(100,state.masterVolume*50))}%`;
   const textPreview={devicePreviewBrandText:deviceSettings.brand,devicePreviewWorship:deviceSettings.worship,devicePreviewJoy:deviceSettings.joy,devicePreviewFreePlay:deviceSettings.freePlay};Object.entries(textPreview).forEach(([id,value])=>{if($(id))$(id).textContent=value;});
 }
@@ -4137,9 +4569,16 @@ function populateDeviceSettingsForm(){
   const palette=deviceSettings[deviceSettings.theme==='dark'?'paletteDark':'paletteLight']||DEVICE_THEME_PALETTES.light;
   const paletteLabel=deviceSettings.theme==='dark'?'tema oscuro':'tema claro';
   [['devicePrimaryColorLabel','Color principal de la app'],['deviceAccentColorLabel','Color de acento'],['devicePageColorLabel','Fondo general de la app'],['deviceSurfaceColorLabel','Fondo de tarjetas y secciones'],['deviceOptionPanelColorLabel','Fondo de paneles emergentes del piano'],['deviceHeadingBackgroundColorLabel','Fondo de encabezados'],['deviceHeadingTextColorLabel','Letras de encabezados'],['deviceOfflineCardBackgroundColorLabel','Fondo del cuadro de sonidos descargados'],['deviceOfflineCardTextColorLabel','Letras del cuadro de sonidos descargados'],['deviceTextColorLabel','Color del texto general'],['deviceLineColorLabel','Color de bordes y líneas']].forEach(([id,label])=>{if($(id))$(id).textContent=`${label} · ${paletteLabel}`;});
-  const values={deviceTheme:deviceSettings.theme,devicePaletteTheme:deviceSettings.theme,deviceFont:deviceSettings.font,deviceFontSize:deviceSettings.fontSize,deviceHeadingFont:deviceSettings.headingFont,deviceIconColor:deviceSettings.iconColor,deviceHeadingSize:deviceSettings.headingSize,deviceHeadingHeight:deviceSettings.headingHeight||58,deviceHomeButtonHeight:deviceSettings.homeButtonHeight,deviceRadius:deviceSettings.radius,devicePrimaryColor:palette.primary,deviceAccentColor:palette.accent,devicePageColor:palette.page,deviceSurfaceColor:palette.surface,deviceOptionPanelColor:palette.optionPanel||palette.surface,deviceHeadingBackgroundColor:palette.headingBackground||palette.primary,deviceHeadingTextColor:palette.headingText||'#ffffff',deviceOfflineCardBackgroundColor:palette.offlineCardBackground||palette.surface,deviceOfflineCardTextColor:palette.offlineCardText||palette.text,deviceTextColor:palette.text,deviceLineColor:palette.line,devicePianoImageBlur:deviceSettings.pianoImageBlur,devicePianoImageOpacity:deviceSettings.pianoImageOpacity,deviceBrandText:deviceSettings.brand,deviceWorshipText:deviceSettings.worship,deviceJoyText:deviceSettings.joy,deviceFreePlayText:deviceSettings.freePlay,deviceCreateText:deviceSettings.create,deviceTheoryText:deviceSettings.theory,deviceNoteNotation:deviceSettings.noteNotation,deviceNoteLabelSize:deviceSettings.noteLabelSize,deviceNoteLabelColor:deviceSettings.noteLabelColor,deviceKeyLabelColor:deviceSettings.keyLabelColor,deviceKeyLabelSize:deviceSettings.keyLabelSize,deviceOctaveLabelColor:deviceSettings.octaveLabelColor,deviceOctaveLabelSize:deviceSettings.octaveLabelSize,deviceGridSpacing:deviceSettings.gridSpacing,deviceMelodyColor:deviceSettings.melodyColor,deviceBassColor:deviceSettings.bassColor,deviceMasterVolume:Math.round(state.masterVolume*100),deviceLayerVolume:state.stringsLayerVolume,deviceFallingStyle:fallingNotesStyle};
+  const values={deviceTheme:deviceSettings.themeMode||deviceSettings.theme,devicePalettePreset:deviceSettings.palettePreset||'custom',devicePaletteTheme:deviceSettings.theme,deviceFont:deviceSettings.font,deviceFontSize:deviceSettings.fontSize,deviceHeadingFont:deviceSettings.headingFont,deviceIconColor:deviceSettings.iconColor,deviceHeadingSize:deviceSettings.headingSize,deviceHeadingHeight:deviceSettings.headingHeight||58,deviceHomeButtonHeight:deviceSettings.homeButtonHeight,deviceRadius:deviceSettings.radius,devicePrimaryColor:palette.primary,deviceAccentColor:palette.accent,devicePageColor:palette.page,deviceSurfaceColor:palette.surface,deviceOptionPanelColor:palette.optionPanel||palette.surface,deviceHeadingBackgroundColor:palette.headingBackground||palette.primary,deviceHeadingTextColor:palette.headingText||'#ffffff',deviceOfflineCardBackgroundColor:palette.offlineCardBackground||palette.surface,deviceOfflineCardTextColor:palette.offlineCardText||palette.text,deviceTextColor:palette.text,deviceLineColor:palette.line,devicePianoImageBlur:deviceSettings.pianoImageBlur,devicePianoImageOpacity:deviceSettings.pianoImageOpacity,deviceBrandText:deviceSettings.brand,deviceWorshipText:deviceSettings.worship,deviceJoyText:deviceSettings.joy,deviceFreePlayText:deviceSettings.freePlay,deviceCreateText:deviceSettings.create,deviceTheoryText:deviceSettings.theory,deviceNoteNotation:deviceSettings.noteNotation,deviceNoteLabelSize:deviceSettings.noteLabelSize,deviceNoteLabelColor:deviceSettings.noteLabelColor,deviceKeyLabelColor:deviceSettings.keyLabelColor,deviceKeyLabelSize:deviceSettings.keyLabelSize,deviceOctaveLabelColor:deviceSettings.octaveLabelColor,deviceOctaveLabelSize:deviceSettings.octaveLabelSize,deviceGridSpacing:deviceSettings.gridSpacing,deviceMelodyColor:deviceSettings.melodyColor,deviceBassColor:deviceSettings.bassColor,deviceMasterVolume:Math.round(state.masterVolume*100),deviceLayerVolume:state.stringsLayerVolume,deviceFallingStyle:fallingNotesStyle};
   Object.entries(values).forEach(([id,value])=>{const control=$(id);if(control)control.value=String(value);});
-  [['deviceLayerEnabled',state.stringsLayerEnabled],['deviceGlowEnabled',fxGlow],['deviceBarFlowEnabled',fallingFlowEnabled],['deviceKeyLightEnabled',lightKeys]].forEach(([id,value])=>{const control=$(id);if(control)control.checked=!!value;});
+  [['deviceLayerEnabled',state.stringsLayerEnabled],['deviceGlowEnabled',fxGlow],['deviceKeyLightEnabled',lightKeys]].forEach(([id,value])=>{const control=$(id);if(control)control.checked=!!value;});
+  syncFxStyleButtons();
+  syncPianoKeyStyleControls();
+  if($('deviceBarLook'))$('deviceBarLook').value=barLook;
+  if($('deviceBarColor2'))$('deviceBarColor2').value=barColor2;
+  if($('deviceBarColor3'))$('deviceBarColor3').value=barColor3;
+  if($('deviceBarBassDiff'))$('deviceBarBassDiff').checked=barBassDiff;
+  syncBarAppearanceControls();
   const file=$('deviceBackgroundImage');if(file)file.value='';
   if($('deviceBackgroundStatus'))$('deviceBackgroundStatus').textContent=deviceSettings.backgroundImage?'Imagen del piano guardada en este dispositivo.':'';
   const outputs={deviceFontSizeValue:`${deviceSettings.fontSize} px`,deviceHeadingSizeValue:`${deviceSettings.headingSize} px`,deviceHeadingHeightValue:`${deviceSettings.headingHeight||58} px`,deviceHomeButtonHeightValue:`${deviceSettings.homeButtonHeight} px`,deviceRadiusValue:`${deviceSettings.radius} px`,deviceNoteLabelSizeValue:`${deviceSettings.noteLabelSize} px`,deviceKeyLabelSizeValue:`${deviceSettings.keyLabelSize} px`,deviceOctaveLabelSizeValue:`${deviceSettings.octaveLabelSize} px`,deviceGridSpacingValue:`${deviceSettings.gridSpacing} teclas`,devicePianoImageBlurValue:`${deviceSettings.pianoImageBlur} px`,devicePianoImageOpacityValue:`${deviceSettings.pianoImageOpacity}%`,deviceMasterVolumeValue:`${Math.round(state.masterVolume*100)}%`,deviceLayerVolumeValue:`${state.stringsLayerVolume}%`};
@@ -4147,11 +4586,20 @@ function populateDeviceSettingsForm(){
 }
 function initializeDeviceSettings(){
   applyDeviceCustomization();populateDeviceSettingsForm();
+  window.addEventListener('yhwh-theme-change',event=>{const mode=event.detail?.theme;if(!['light','dark'].includes(mode))return;deviceSettings.themeMode=mode;deviceSettings.theme=mode;syncThemeToggleButtons();applyDeviceCustomization();saveDeviceSettings();if($('deviceTheme'))$('deviceTheme').value=mode;if(!$('deviceSettingsScreen').classList.contains('hidden'))populateDeviceSettingsForm();});
+  if(window.matchMedia){const systemTheme=window.matchMedia('(prefers-color-scheme: dark)'),applySystemTheme=()=>{if(deviceSettings.themeMode!=='system')return;const next=systemTheme.matches?'dark':'light';if(deviceSettings.theme===next)return;deviceSettings.theme=next;syncThemeToggleButtons();applyDeviceCustomization();saveDeviceSettings();if($('deviceSettingsScreen')&&!$('deviceSettingsScreen').classList.contains('hidden'))populateDeviceSettingsForm();};if(systemTheme.addEventListener)systemTheme.addEventListener('change',applySystemTheme);else if(systemTheme.addListener)systemTheme.addListener(applySystemTheme);}
   const syncPreviewVisibility=tab=>{const hidden=tab==='library';$('deviceSettingsPreview')?.classList.toggle('hidden',hidden);document.querySelector('.device-settings-workspace')?.classList.toggle('without-preview',hidden);};
-  const open=()=>{deviceSettings.theme=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';saveDeviceSettings();populateDeviceSettingsForm();syncPreviewVisibility(document.querySelector('[data-device-tab].active')?.dataset.deviceTab);transitionScreen('deviceSettingsScreen',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen']);queueGuidedTour('configuracion');};
+  let returnScreen='homeView';
+  const showSettings=(tab,from)=>{
+    returnScreen=from;deviceSettings.theme=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';saveDeviceSettings();populateDeviceSettingsForm();
+    const tabButton=document.querySelector(`[data-device-tab="${tab}"]`);if(tabButton)tabButton.click();
+    syncPreviewVisibility(tab);transitionScreen('deviceSettingsScreen',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen']);
+  };
+  const open=()=>{showSettings('appearance','homeView');queueGuidedTour('configuracion');};
   $('deviceSettingsBtn').onclick=open;
+  $('settingsToggle').onclick=openPlayerSettingsScreen;
   $('replayQuickGuide')?.addEventListener('click',replayQuickGuide);
-  $('closeDeviceSettings').onclick=()=>transitionScreen('homeView',['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen']);
+  $('closeDeviceSettings').onclick=()=>transitionScreen(returnScreen,['homeView','songView','createView','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen']);
   document.querySelectorAll('[data-device-tab]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-device-tab]').forEach(item=>{const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active));});
     document.querySelectorAll('[data-device-panel]').forEach(panel=>panel.classList.toggle('hidden',panel.dataset.devicePanel!==button.dataset.deviceTab));
@@ -4164,7 +4612,7 @@ function initializeDeviceSettings(){
   const outputIds={fontSize:'deviceFontSizeValue',headingSize:'deviceHeadingSizeValue',headingHeight:'deviceHeadingHeightValue',homeButtonHeight:'deviceHomeButtonHeightValue',radius:'deviceRadiusValue',noteLabelSize:'deviceNoteLabelSizeValue',keyLabelSize:'deviceKeyLabelSizeValue',octaveLabelSize:'deviceOctaveLabelSizeValue',gridSpacing:'deviceGridSpacingValue',pianoImageBlur:'devicePianoImageBlurValue',pianoImageOpacity:'devicePianoImageOpacityValue'};
   Object.entries(bindings).forEach(([id,key])=>{const control=$(id);if(!control)return;const syncSetting=persist=>{
     const value=['fontSize','headingSize','headingHeight','homeButtonHeight','radius','noteLabelSize','keyLabelSize','octaveLabelSize','gridSpacing','pianoImageBlur','pianoImageOpacity'].includes(key)?Number(control.value):control.value;
-    if(paletteKeys.has(key)){const paletteName=$('devicePaletteTheme').value==='dark'?'paletteDark':'paletteLight';deviceSettings[paletteName]={...deviceSettings[paletteName],[key]:value};if((paletteName==='paletteDark')===(deviceSettings.theme==='dark'))deviceSettings[key]=value;}
+    if(paletteKeys.has(key)){const paletteName=$('devicePaletteTheme').value==='dark'?'paletteDark':'paletteLight';deviceSettings[paletteName]={...deviceSettings[paletteName],[key]:value};if((paletteName==='paletteDark')===(deviceSettings.theme==='dark'))deviceSettings[key]=value;deviceSettings.palettePreset='custom';if($('devicePalettePreset'))$('devicePalettePreset').value='custom';}
     else deviceSettings[key]=value;
     if(outputIds[key]&&$(outputIds[key]))$(outputIds[key]).textContent=`${value}${key==='gridSpacing'?' teclas':key==='pianoImageOpacity'?'%':' px'}`;
     if(key==='melodyColor'){state.keyColor=value;try{localStorage.setItem('yhwh_piano_key_color',value);}catch(_){}updateVisualOptions();}
@@ -4187,18 +4635,32 @@ function initializeDeviceSettings(){
     updateDeviceSettingsPreview();
   });
   $('deviceTheme').addEventListener('change',event=>{setDeviceTheme(event.target.value);populateDeviceSettingsForm();updateDeviceSettingsPreview();});
+  $('devicePalettePreset').addEventListener('change',event=>{if(event.target.value!=='custom')applyReadyColorPalette(event.target.value);});
   $('deviceMasterVolume').addEventListener('input',event=>{setMasterVolume(event.target.value);deviceSettings.masterVolume=Number(event.target.value);$('deviceMasterVolumeValue').textContent=`${event.target.value}%`;scheduleDeviceSettingsSave();updateDeviceSettingsPreview();});
   $('deviceLayerEnabled').addEventListener('change',event=>{setStringsLayerEnabled(event.target.checked);deviceSettings.layerEnabled=state.stringsLayerEnabled;saveDeviceSettings();updateDeviceSettingsPreview();});
   $('deviceLayerVolume').addEventListener('input',event=>{setStringsLayerVolume(event.target.value);deviceSettings.layerVolume=Number(event.target.value);$('deviceLayerVolumeValue').textContent=`${event.target.value}%`;scheduleDeviceSettingsSave();updateDeviceSettingsPreview();});
   $('deviceFallingStyle').addEventListener('change',event=>{setFallingNotesStyle(event.target.value);deviceSettings.fallingStyle=fallingNotesStyle;saveDeviceSettings();updateDeviceSettingsPreview();});
+  if($('deviceBarBassDiff'))$('deviceBarBassDiff').addEventListener('change',event=>setBarBassDiff(event.target.checked));
+  if($('deviceBarAppearance'))$('deviceBarAppearance').addEventListener('change',event=>setBarAppearance(event.target.value));
+  if($('deviceBarRadius'))$('deviceBarRadius').addEventListener('input',event=>setBarRadius(event.target.value));
+  if($('deviceBarOpacity'))$('deviceBarOpacity').addEventListener('input',event=>setBarOpacity(event.target.value));
+  if($('deviceBarTrail'))$('deviceBarTrail').addEventListener('input',event=>setBarTrail(event.target.value));
+  if($('deviceBarColorMode'))$('deviceBarColorMode').addEventListener('change',event=>setBarColorMode(event.target.value));
+  if($('deviceBarAccompaniment2Color'))$('deviceBarAccompaniment2Color').addEventListener('input',event=>setBarAccompaniment2Color(event.target.value));
+  if($('deviceBarColor2'))$('deviceBarColor2').addEventListener('input',event=>setBarColor(2,event.target.value));
+  if($('deviceBarColor3'))$('deviceBarColor3').addEventListener('input',event=>setBarColor(3,event.target.value));
+  if($('deviceBarLook'))$('deviceBarLook').addEventListener('change',event=>{setBarLook(event.target.value);updateDeviceSettingsPreview();});
+  if($('deviceFxStyle'))$('deviceFxStyle').addEventListener('change',event=>{chooseFxStyle(event.target.value);updateDeviceSettingsPreview();});
+  if($('deviceFxIntensity'))$('deviceFxIntensity').addEventListener('input',event=>setFxIntensity(event.target.value));
+  if($('deviceFxDuration'))$('deviceFxDuration').addEventListener('input',event=>setFxDuration(event.target.value));
   $('deviceGlowEnabled').addEventListener('change',event=>{fxGlow=event.target.checked;deviceSettings.fxGlow=fxGlow;try{localStorage.setItem('yhwh_piano_fx_glow',fxGlow?'1':'0');}catch(_){}updateDeviceSettingsPreview();saveDeviceSettings();});
-  $('deviceBarFlowEnabled').addEventListener('change',event=>{fallingFlowEnabled=event.target.checked;deviceSettings.barFlow=fallingFlowEnabled;try{localStorage.setItem('yhwh_piano_bar_flow',fallingFlowEnabled?'1':'0');}catch(_){}updateDeviceSettingsPreview();saveDeviceSettings();});
   $('deviceKeyLightEnabled').addEventListener('change',event=>{lightKeys=event.target.checked;deviceSettings.lightKeys=lightKeys;document.body.classList.toggle('keys-fill-off',!lightKeys);try{localStorage.setItem('yhwh_piano_light_keys',lightKeys?'1':'0');}catch(_){}updateDeviceSettingsPreview();saveDeviceSettings();});
   $('deviceNoteNotation').addEventListener('change',event=>{
     deviceSettings.noteNotation=event.target.value==='latino'?'latino':'americano';
     const notation=$('keyboardNotation');if(notation){notation.value=deviceSettings.noteNotation;notation.dispatchEvent(new Event('change',{bubbles:true}));}
     if($('devicePreviewNote'))$('devicePreviewNote').textContent=fallingNoteName(60);saveDeviceSettings();updateDeviceSettingsPreview();
   });
+  if($('deviceKeyStyle'))$('deviceKeyStyle').addEventListener('change',event=>setPianoKeyStyle(event.target.value));
   $('deviceBackgroundImage').addEventListener('change',event=>{
     const file=event.target.files?.[0];if(!file)return;
     if(!file.type.startsWith('image/')){$('deviceBackgroundStatus').textContent='Elige una imagen.';return;}
@@ -4214,16 +4676,16 @@ function initializeDeviceSettings(){
   });
   $('removeDeviceBackground').onclick=()=>{deviceSettings.backgroundImage='';$('deviceBackgroundImage').value='';$('deviceBackgroundStatus').textContent='Se quitó la imagen de fondo.';saveDeviceSettings();updateDeviceSettingsPreview();};
   $('resetDeviceSettings').onclick=()=>{
-    deviceSettings={...DEVICE_SETTINGS_DEFAULTS,...DEVICE_THEME_PALETTES.light,paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},theme:'light',headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',headingHeight:58,mobileHeadingSize:18,homeButtonHeight:46,backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,noteNotation:'americano',noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,melodyColor:'#90dd4a',bassColor:'#bb82ef',masterVolume:100,layerEnabled:false,layerVolume:70,fallingStyle:'bars',fxGlow:false,barFlow:false,lightKeys:true};
+    deviceSettings={...DEVICE_SETTINGS_DEFAULTS,...DEVICE_THEME_PALETTES.light,paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},theme:'light',headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',headingHeight:58,mobileHeadingSize:18,homeButtonHeight:46,backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,noteNotation:'americano',noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,melodyColor:'#90dd4a',bassColor:'#bb82ef',masterVolume:100,layerEnabled:false,layerVolume:70,fallingStyle:'bars',fxGlow:false,fxStyle:'fire',barLook:'normal',barColor2:BAR_COLOR_DEFAULTS[0],barColor3:BAR_COLOR_DEFAULTS[1],barBassDiff:true,lightKeys:true};
     state.keyColor=deviceSettings.melodyColor;state.bassColor=deviceSettings.bassColor;state.notation='americano';
-    fxGlow=false;fallingFlowEnabled=false;lightKeys=true;resetNeonEdge();setNoteLabelOutline(false);
-    try{localStorage.setItem('yhwh_piano_key_color',state.keyColor);localStorage.setItem('yhwh_piano_bass_color',state.bassColor);localStorage.setItem('yhwh_piano_note_labels','americano');localStorage.setItem('yhwh_piano_fx_glow','0');localStorage.setItem('yhwh_piano_bar_flow','0');localStorage.setItem('yhwh_piano_light_keys','1');}catch(_){}
-    setMasterVolume(100);setStringsLayerEnabled(false);setStringsLayerVolume(70);setFallingNotesStyle('bars');setDeviceTheme('light');
+    fxGlow=false;lightKeys=true;resetNeonEdge();setNoteLabelOutline(false);
+    try{localStorage.setItem('yhwh_piano_key_color',state.keyColor);localStorage.setItem('yhwh_piano_bass_color',state.bassColor);localStorage.setItem('yhwh_piano_note_labels','americano');localStorage.setItem('yhwh_piano_fx_glow','0');localStorage.setItem('yhwh_piano_light_keys','1');}catch(_){}
+    setMasterVolume(100);setStringsLayerEnabled(false);setStringsLayerVolume(70);setFallingNotesStyle('bars');setFxStyle('fire');setFxIntensity(2);setFxDuration(3.4);setPianoKeyStyle('classic');setBarLook('normal');setBarColor(2,BAR_COLOR_DEFAULTS[0]);setBarColor(3,BAR_COLOR_DEFAULTS[1]);setBarBassDiff(true);setBarAppearance('glass');setBarRadius(2);setBarOpacity(100);setBarTrail(0);setBarColorMode('track');setBarAccompaniment2Color('#ff9f43');setDeviceTheme('light');
     $('keyboardNotation').value='americano';$('keyboardNotation').dispatchEvent(new Event('change',{bubbles:true}));renderKeyboard();updateVisualOptions();applyDeviceCustomization();populateDeviceSettingsForm();saveDeviceSettings();
   };
   new MutationObserver(()=>{
     const theme=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
-    if(deviceSettings.theme!==theme){deviceSettings.theme=theme;applyDeviceCustomization();saveDeviceSettings();const picker=$('deviceTheme');if(picker)picker.value=theme;if(!$('deviceSettingsScreen').classList.contains('hidden'))populateDeviceSettingsForm();}
+    if(deviceSettings.theme!==theme){deviceSettings.theme=theme;applyDeviceCustomization();saveDeviceSettings();const picker=$('deviceTheme');if(picker)picker.value=deviceSettings.themeMode||theme;if(!$('deviceSettingsScreen').classList.contains('hidden'))populateDeviceSettingsForm();}
   }).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 }
 

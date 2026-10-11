@@ -1104,13 +1104,13 @@ html body.melody-playing #player #noteCanvas .canvas-readouts > .stage-tool-rail
   border-color: transparent; background: transparent; box-shadow: none; pointer-events: none;
 }
 /* Indicadores en pares: instrumento + nota; color + acorde. */
-#player#player#player #noteCanvas .canvas-readouts > .stage-tool-rail {
+html body.player-active #player #noteCanvas .canvas-readouts > .stage-tool-rail {
   display:grid; grid-template-columns:29px max-content; grid-template-rows:29px 29px auto;
   align-items:center; justify-items:center; gap:4px; width:max-content; max-width:calc(100% - 16px);
 }
-#player#player#player #noteCanvas .stage-tool-rail .instrument-note-pair { display:contents; }
-#player#player#player #noteCanvas .stage-tool-rail #instrumentToggle { grid-column:1; grid-row:1; }
-#player#player#player #noteCanvas .stage-tool-rail #currentNote {
+html body.player-active #player #noteCanvas .stage-tool-rail .instrument-note-pair { display:contents; }
+html body.player-active #player #noteCanvas .stage-tool-rail #instrumentToggle { grid-column:1; grid-row:1; }
+html body.player-active #player #noteCanvas .stage-tool-rail #currentNote {
   position:static; top:auto; left:auto; grid-column:2; grid-row:1; display:inline-flex;
   min-width:36px; height:26px; align-items:center; justify-content:center; margin:0; padding:0 7px;
   border:1px solid color-mix(in srgb,var(--melody-note-color,var(--pressed-key-color)) 72%,#fff);
@@ -1118,9 +1118,9 @@ html body.melody-playing #player #noteCanvas .canvas-readouts > .stage-tool-rail
   color:var(--melody-note-ink,#17323b); font-size:.82rem; font-weight:800; line-height:1; letter-spacing:.025em;
   text-shadow:none; box-shadow:0 2px 8px color-mix(in srgb,var(--melody-note-color,var(--pressed-key-color)) 32%,transparent); white-space:nowrap;
 }
-#player#player#player #noteCanvas .stage-tool-rail #currentNote:empty { display:none; }
-#player#player#player #noteCanvas .stage-tool-rail #keyColorToggle { grid-column:1; grid-row:2; }
-#player#player#player #noteCanvas .canvas-readouts > .stage-tool-rail > #activeChordLabel {
+html body.player-active #player #noteCanvas .stage-tool-rail #currentNote:empty { display:none; }
+html body.player-active #player #noteCanvas .stage-tool-rail #keyColorToggle { grid-column:1; grid-row:2; }
+html body.player-active #player #noteCanvas .canvas-readouts > .stage-tool-rail > #activeChordLabel {
   position:static; top:auto; right:auto; bottom:auto; left:auto; transform:none; grid-column:2; grid-row:2;
   display:inline-flex; min-width:30px; height:25px; align-items:center; justify-content:center; margin:0; padding:0 7px;
   border:1px solid color-mix(in srgb,var(--bass-note-color,#bb82ef) 76%,#fff); border-radius:8px;
@@ -1155,22 +1155,22 @@ html body.keys-edge.keys-fill-off #player .piano-panel .black.bass-playing { bac
 
 /* ===== Botones de reproducción del móvil: estado "en uso" visible en fondo claro y oscuro =====
    Reproduciendo, Sustain activo, Ver notas abierto y Grabando se marcan con fondo ámbar y anillo. */
-html body #player#player#player .mobile-player-controls button.is-on,
-html body #player#player#player .mobile-player-controls button#sustainBtn[aria-pressed="true"],
-html body.melody-playing #player#player#player .mobile-player-controls button#playMelody {
+html body.player-active #player .mobile-player-controls button.is-on,
+html body.player-active #player .mobile-player-controls button#sustainBtn[aria-pressed="true"],
+html body.melody-playing #player .mobile-player-controls button#playMelody {
   position: relative;
   background: linear-gradient(180deg, #ffd166, #f0a500);
   border-color: #b97800; color: #2a1b00;
   outline: 2px solid #ffd166; outline-offset: 1px;
   box-shadow: inset 0 0 0 1px #fff8;
 }
-html[data-theme="dark"] body #player#player#player .mobile-player-controls button.is-on,
-html[data-theme="dark"] body #player#player#player .mobile-player-controls button#sustainBtn[aria-pressed="true"],
-html[data-theme="dark"] body.melody-playing #player#player#player .mobile-player-controls button#playMelody {
+html[data-theme="dark"] body.player-active #player .mobile-player-controls button.is-on,
+html[data-theme="dark"] body.player-active #player .mobile-player-controls button#sustainBtn[aria-pressed="true"],
+html[data-theme="dark"] body.melody-playing #player .mobile-player-controls button#playMelody {
   background: linear-gradient(180deg, #ffd166, #f0a500); color: #2a1b00;
   border-color: #ffe39a; outline-color: #ffe39a;
 }
-html body #player#player#player .mobile-player-controls button:active {
+html body.player-active #player .mobile-player-controls button:active {
   transform: scale(.94); filter: brightness(1.18); transition: none;
 }
 
@@ -1292,45 +1292,45 @@ body.song-list-active #songView>.toolbar .song-filters::-webkit-scrollbar{displa
 body.song-list-active #songView>.toolbar .song-filters button{flex:0 0 auto;min-height:30px;padding:4px 10px;border:1px solid #aebdc2;border-radius:4px;background:#e3e9eb;color:#3e4d52;font-size:.73rem;white-space:nowrap}
 body.song-list-active #songView>.toolbar .song-filters button.active{border-color:#1388b8;background:#c5e3ee;color:#075f83;box-shadow:inset 0 0 0 1px #1388b833}
 /* Fallback por visibilidad de sección: al entrar a canciones, escapar del marco centrado. */
-body:has(> main > #songView:not(.hidden)){display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;overflow:hidden;background:#303030}
-body:has(> main > #songView:not(.hidden))>header,body:has(> main > #songView:not(.hidden))>main>#connection{display:none}
-body:has(> main > #songView:not(.hidden))>main{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;max-height:none;max-width:none;margin:0;padding:0;overflow:hidden;background:#303030}
-body:has(> main > #songView:not(.hidden))>main>#songView{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100%;min-width:0;min-height:0;max-width:none;margin:0;padding:0;overflow:hidden;border:0;border-radius:0;background:#303030;box-shadow:none}
-body:has(> main > #songView:not(.hidden)) #songView>.song-mobile-header{height:44px;min-height:44px;flex-basis:44px;padding:0 8px;border-radius:0}
-body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview{display:grid;grid-template-columns:34px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 9px;align-items:stretch;gap:0 9px;height:100%}
+body:has(> main > :where(#songView:not(.hidden))){display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;overflow:hidden;background:#303030}
+body:has(> main > :where(#songView:not(.hidden)))>header,body:has(> main > :where(#songView:not(.hidden)))>main>#connection{display:none}
+body:has(> main > :where(#songView:not(.hidden)))>main{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;max-height:none;max-width:none;margin:0;padding:0;overflow:hidden;background:#303030}
+body:has(> main > :where(#songView:not(.hidden)))>main>#songView{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100%;min-width:0;min-height:0;max-width:none;margin:0;padding:0;overflow:hidden;border:0;border-radius:0;background:#303030;box-shadow:none}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.song-mobile-header{height:44px;min-height:44px;flex-basis:44px;padding:0 8px;border-radius:0}
+body:has(> main > :where(#songView:not(.hidden))) #songView .selected-audio-preview{display:grid;grid-template-columns:34px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 9px;align-items:stretch;gap:0 9px;height:100%}
 
 
-body:has(> main > #songView:not(.hidden)) #songView .preview-track{grid-row:2;height:8px;background:#f4f8fa;box-shadow:0 0 0 1px #064365}
-body:has(> main > #songView:not(.hidden)) #songView .preview-track i{background:#ffdf62;box-shadow:0 0 5px #ffdf62b8}
-body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters{display:flex;flex:1 1 auto;min-width:0;overflow-x:auto}
-body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters button{flex:0 0 auto;min-height:30px;padding:4px 10px;border:1px solid #aebdc2;border-radius:4px;background:#e3e9eb;color:#3e4d52;font-size:.73rem;white-space:nowrap}
-body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters button.active{border-color:#1388b8;background:#c5e3ee;color:#075f83}
-body:has(> main > #songView:not(.hidden)) #songView>#songList{display:block;flex:1 1 0;width:100%;min-height:0;margin:0;padding:0;overflow-x:hidden;overflow-y:auto}
-body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable{display:flex;width:100%;min-height:39px;margin:0;padding:0;border:0;border-bottom:1px solid #9e9e9e;border-radius:0;background:#eee;box-shadow:none}
+body:has(> main > :where(#songView:not(.hidden))) #songView .preview-track{grid-row:2;height:8px;background:#f4f8fa;box-shadow:0 0 0 1px #064365}
+body:has(> main > :where(#songView:not(.hidden))) #songView .preview-track i{background:#ffdf62;box-shadow:0 0 5px #ffdf62b8}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters{display:flex;flex:1 1 auto;min-width:0;overflow-x:auto}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button{flex:0 0 auto;min-height:30px;padding:4px 10px;border:1px solid #aebdc2;border-radius:4px;background:#e3e9eb;color:#3e4d52;font-size:.73rem;white-space:nowrap}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button.active{border-color:#1388b8;background:#c5e3ee;color:#075f83}
+body:has(> main > :where(#songView:not(.hidden))) #songView>#songList{display:block;flex:1 1 0;width:100%;min-height:0;margin:0;padding:0;overflow-x:hidden;overflow-y:auto}
+body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable{display:flex;width:100%;min-height:39px;margin:0;padding:0;border:0;border-bottom:1px solid #9e9e9e;border-radius:0;background:#eee;box-shadow:none}
 /* Ajuste fino del reproductor del encabezado: compacto y alineado con su barra */
-body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview{position:relative;top:-4px;display:grid;flex:0 1 min(390px,calc(100vw - 190px));grid-template-columns:23px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 7px;gap:0 7px;width:min(390px,calc(100vw - 190px));max-width:390px;height:34px;margin:0 auto;padding:0 8px;border:0}
-body:has(> main > #songView:not(.hidden)) #songView .selected-audio-preview>button{grid-column:1;grid-row:1 / 3;align-self:center;justify-self:center;width:30px;height:30px;min-height:30px;margin:0;padding:0;transform:none;line-height:1}
-body:has(> main > #songView:not(.hidden)) #songView .selected-audio-meta{grid-column:2;grid-row:1 / 3;display:grid;grid-template-rows:minmax(0,1fr) 9px;align-self:stretch;gap:2px;height:100%;margin:0}
-body:has(> main > #songView:not(.hidden)) #songView #selectedSongLabel{font-size:.67rem;line-height:1}
-body:has(> main > #songView:not(.hidden)) #songView .preview-track{height:5px}
+body:has(> main > :where(#songView:not(.hidden))) #songView .selected-audio-preview{position:relative;top:-4px;display:grid;flex:0 1 min(390px,calc(100vw - 190px));grid-template-columns:23px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 7px;gap:0 7px;width:min(390px,calc(100vw - 190px));max-width:390px;height:34px;margin:0 auto;padding:0 8px;border:0}
+body:has(> main > :where(#songView:not(.hidden))) #songView .selected-audio-preview>button{grid-column:1;grid-row:1 / 3;align-self:center;justify-self:center;width:30px;height:30px;min-height:30px;margin:0;padding:0;transform:none;line-height:1}
+body:has(> main > :where(#songView:not(.hidden))) #songView .selected-audio-meta{grid-column:2;grid-row:1 / 3;display:grid;grid-template-rows:minmax(0,1fr) 9px;align-self:stretch;gap:2px;height:100%;margin:0}
+body:has(> main > :where(#songView:not(.hidden))) #songView #selectedSongLabel{font-size:.67rem;line-height:1}
+body:has(> main > :where(#songView:not(.hidden))) #songView .preview-track{height:5px}
 /* Selección visible y acceso al modo oscuro desde la pantalla de canciones */
-body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable.selected{background:#91d5ef;box-shadow:inset 0 0 0 2px #59b2d4}
-body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable.selected .song-card-main{background:transparent}
-body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-theme-toggle{display:grid;flex:0 0 34px;width:34px;height:34px;min-height:34px;place-items:center;padding:0;border:1px solid #c1c1c1;border-radius:6px;background:#f8f8f8;color:#37474f;font-size:1rem;cursor:pointer}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar{background:#20212a;border-color:#3a3b46}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters button{border-color:#555665;background:#30313c;color:#e1e2ea}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-filters button.active{border-color:#58bce4;background:#17435a;color:#d7f3ff}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar #search{border-color:#555665;background-color:#292a34;color:#f1f1f5}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.toolbar .song-theme-toggle{border-color:#555665;background:#30313c;color:#ffe28a}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>#songList{background:#202126;scrollbar-color:#62636c #292a30}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable,html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable:nth-child(even){border-color:#42434b;background:#292a30}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable:hover{background:#343943}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-selectable.selected{background:#17445b;box-shadow:inset 0 0 0 2px #55b8df}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-card-main,html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-info b{color:#f0f0f3}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-info small{color:#b7b8c2}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-key{border:1px solid #494a56;background:#343540;color:#dcecf2}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songList .song-chip{border-color:#50515c;background:#353640;color:#d8d9e1}
-html[data-theme="dark"] body:has(> main > #songView:not(.hidden)) #songView>.song-list-footer{border-color:#42434b;background:#20212a;color:#c7c8d0}
+body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable.selected{background:#91d5ef;box-shadow:inset 0 0 0 2px #59b2d4}
+body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable.selected .song-card-main{background:transparent}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-theme-toggle{display:grid;flex:0 0 34px;width:34px;height:34px;min-height:34px;place-items:center;padding:0;border:1px solid #c1c1c1;border-radius:6px;background:#f8f8f8;color:#37474f;font-size:1rem;cursor:pointer}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar{background:#20212a;border-color:#3a3b46}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button{border-color:#555665;background:#30313c;color:#e1e2ea}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button.active{border-color:#58bce4;background:#17435a;color:#d7f3ff}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar #search{border-color:#555665;background-color:#292a34;color:#f1f1f5}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-theme-toggle{border-color:#555665;background:#30313c;color:#ffe28a}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>#songList{background:#202126;scrollbar-color:#62636c #292a30}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable,html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable:nth-child(even){border-color:#42434b;background:#292a30}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable:hover{background:#343943}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable.selected{background:#17445b;box-shadow:inset 0 0 0 2px #55b8df}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-main,html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-info b{color:#f0f0f3}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-info small{color:#b7b8c2}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-key{border:1px solid #494a56;background:#343540;color:#dcecf2}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-chip{border-color:#50515c;background:#353640;color:#d8d9e1}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.song-list-footer{border-color:#42434b;background:#20212a;color:#c7c8d0}
 /* Catálogo de crear/editar: misma pantalla completa y misma lista vertical */
 body.create-list-active,body.create-list-active{display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;overflow:hidden;background:#303030}
 body.create-list-active>header,body.create-list-active>main>#connection{display:none}
@@ -2260,7 +2260,7 @@ html.device-customization-enabled .mode-screen-panel{border-radius:var(--device-
 html.device-customization-enabled input:not([type="range"]):not([type="color"]):not([type="checkbox"]),html.device-customization-enabled select,html.device-customization-enabled textarea{border-color:var(--device-line-color);border-radius:calc(var(--device-radius) * .6);background-color:var(--device-surface-color);color:var(--device-text-color)}
 html.device-customization-enabled .mode-screen-header,html.device-customization-enabled .mode-section-title{background:var(--gold)}
 html.device-customization-enabled .canvas-grid{background-size:var(--device-grid-spacing) 100%,100% 100%}
-html.device-customization-enabled .manual-note-effect.is-bar{border-radius:8px}
+html.device-customization-enabled{--manual-bar-radius:8px}
 html.device-customization-enabled .manual-note-effect.is-drop .manual-note-label{bottom:50%;font-size:min(10px,var(--device-note-label-size,12px));transform:translate(-50%,50%)}
 html.device-customization-enabled body h1{font-family:var(--device-heading-font);color:var(--device-heading-color);font-size:var(--device-heading-size)}
 html.device-customization-enabled body h2{font-family:var(--device-heading-font);color:var(--device-heading-color);font-size:calc(var(--device-heading-size) * .72)}
@@ -2913,25 +2913,25 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 input,select,textarea,.toolbar input,.modal input,.theory-root-picker select,.theory-mode-picker select,.chord-editor-fields select{background:var(--surface-soft);color:var(--text);border:1px solid var(--line)}
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:.85}
 input:focus,select:focus,textarea:focus,.toolbar input:focus,.modal input:focus{border-color:var(--primary);outline:none}
-#player#player#player,#player#player#player .performance-layout{color:var(--stage-text)}
-#player#player#player>.player-top{background:var(--stage-raised);color:var(--stage-text);border-color:var(--stage-line);box-shadow:0 5px 18px #0003}
-#player#player#player>.player-top .mobile-player-controls button,#player#player#player>.player-top .toolbar-actions .toolbar-icon{background:#213444;color:#edf4f8;border-color:#435969}
-#player#player#player>.player-top .mobile-player-controls #playMelody{background:var(--primary);color:#10202c}
-#player#player#player .performance-layout>.note-canvas{background:var(--stage-bg);border-color:var(--stage-line)}
-#player#player#player .performance-layout>.note-canvas .canvas-readouts>.stage-tool-rail,#player#player#player .performance-layout>.note-canvas .canvas-readouts>.stage-metronome-controls,#player#player#player .performance-layout>.note-canvas .canvas-readouts>#activeKeyName{background:#17232d;border-color:#3b5060;color:var(--stage-text)}
-#player#player#player .performance-layout>.note-canvas .canvas-readouts>.stage-tool-rail button{background:#233746;border-color:#435969;color:#eef3f7}
-#player#player#player .piano-panel{background:var(--surface);border-color:var(--line);color:var(--text)}
-#player#player#player .chord-preview{background:var(--surface);border-color:var(--line);color:var(--text)}
-#player#player#player .chord,#player#player#player .theory-note{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 32%,var(--line));color:var(--text)}
-#player#player#player .lyrics{color:var(--text);border-color:var(--line)}
-#player#player#player .player-controls button{background:var(--surface-raised);border-color:var(--line);color:var(--text)}
-#player#player#player .player-controls #playMelody,#player#player#player .player-controls #recordBtn{background:var(--primary);color:#fff;border-color:var(--primary)}
-#player#player#player .player-controls #deleteBtn{background:color-mix(in srgb,var(--danger) 12%,var(--surface));border-color:color-mix(in srgb,var(--danger) 45%,var(--line));color:var(--danger)}
-#player#player#player .status{background:var(--surface-soft);border-color:var(--line);color:var(--muted)}
-#player#player#player .piano .white{background:linear-gradient(110deg,#fff,#e9eef2);color:#283541;border-color:#c5d0d8}
-#player#player#player .piano .black{background:linear-gradient(100deg,#34434e,#101820 70%);color:#f4f7fa}
-#player#player#player .piano .white.playing{background:#f5e3ae;border-color:#d4a94e}
-#player#player#player .piano .black.playing{background:#8b6520;border-color:#d8b45f}
+html body.player-active #player,html body.player-active #player .performance-layout{color:var(--stage-text)}
+html body.player-active #player>.player-top{background:var(--stage-raised);color:var(--stage-text);border-color:var(--stage-line);box-shadow:0 5px 18px #0003}
+html body.player-active #player>.player-top .mobile-player-controls button,html body.player-active #player>.player-top .toolbar-actions .toolbar-icon{background:#213444;color:#edf4f8;border-color:#435969}
+html body.player-active #player>.player-top .mobile-player-controls #playMelody{background:var(--primary);color:#10202c}
+html body.player-active #player .performance-layout>.note-canvas{background:var(--stage-bg);border-color:var(--stage-line)}
+html body.player-active #player .performance-layout>.note-canvas .canvas-readouts>.stage-tool-rail,html body.player-active #player .performance-layout>.note-canvas .canvas-readouts>.stage-metronome-controls,html body.player-active #player .performance-layout>.note-canvas .canvas-readouts>#activeKeyName{background:#17232d;border-color:#3b5060;color:var(--stage-text)}
+html body.player-active #player .performance-layout>.note-canvas .canvas-readouts>.stage-tool-rail button{background:#233746;border-color:#435969;color:#eef3f7}
+html body.player-active #player .piano-panel{background:var(--surface);border-color:var(--line);color:var(--text)}
+html body.player-active #player .chord-preview{background:var(--surface);border-color:var(--line);color:var(--text)}
+html body.player-active #player .chord,html body.player-active #player .theory-note{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 32%,var(--line));color:var(--text)}
+html body.player-active #player .lyrics{color:var(--text);border-color:var(--line)}
+html body.player-active #player .player-controls button{background:var(--surface-raised);border-color:var(--line);color:var(--text)}
+html body.player-active #player .player-controls #playMelody,html body.player-active #player .player-controls #recordBtn{background:var(--primary);color:#fff;border-color:var(--primary)}
+html body.player-active #player .player-controls #deleteBtn{background:color-mix(in srgb,var(--danger) 12%,var(--surface));border-color:color-mix(in srgb,var(--danger) 45%,var(--line));color:var(--danger)}
+html body.player-active #player .status{background:var(--surface-soft);border-color:var(--line);color:var(--muted)}
+html body.player-active #player .piano .white{background:linear-gradient(110deg,#fff,#e9eef2);color:#283541;border-color:#c5d0d8}
+html body.player-active #player .piano .black{background:linear-gradient(100deg,#34434e,#101820 70%);color:#f4f7fa}
+html body.player-active #player .piano .white.playing{background:#f5e3ae;border-color:#d4a94e}
+html body.player-active #player .piano .black.playing{background:#8b6520;border-color:#d8b45f}
 .piano-panel .octave-marker{color:var(--accent);text-shadow:none}
 .theory-tabs .theory-tab{background:var(--surface-raised);color:var(--text);border-color:var(--line)}
 .theory-panel,.theory-preview,.theory-chord-card,.theory-key-card,.theory-interval-card,.theory-root-picker,.theory-mode-picker{background:var(--surface);border-color:var(--line);color:var(--text)}
@@ -2975,7 +2975,7 @@ input:focus,select:focus,textarea:focus,.toolbar input:focus,.modal input:focus{
 /* Pantallas internas y splash respetan el mismo tema; el escenario conserva contraste para tocar. */
 :root{--splash-bg:radial-gradient(ellipse at 50% 35%,#fff 0,#eaf0f5 72%);--splash-fg:#1e2b38;--splash-title:#155c9a;--splash-accent:#9b7026;--splash-muted:#596b7c}
 html[data-theme="dark"]{--splash-bg:radial-gradient(ellipse at 50% 30%,#243b4d 0,#101820 72%);--splash-fg:#eef3f7;--splash-title:#f1c875;--splash-accent:#a4d2f3;--splash-muted:#d4dee6}
-body.player-active #player#player#player .performance-layout{background:var(--stage-bg)}
+html body.player-active #player .performance-layout{background:var(--stage-bg)}
 .create-track-panel,.device-settings-panel,.player-sheet,.stage-popover{background:var(--surface);border-color:var(--line);color:var(--text);box-shadow:var(--shadow)}
 .stage-popover h2,.stage-popover h3,.player-sheet h2,.player-sheet h3{color:var(--text)}
 .splash-screen,.splash{background:var(--splash-bg);color:var(--splash-fg)}
@@ -2993,8 +2993,8 @@ html[data-theme="dark"] button.gold,html[data-theme="dark"] .gold,
 html[data-theme="dark"] .player-controls .gold,html[data-theme="dark"] .chord-editor-actions .gold,
 html[data-theme="dark"] #splashScreen .btn-entrar-splash,
 html[data-theme="dark"] .instrument-card-play,
-html[data-theme="dark"] #player#player#player .player-controls #playMelody,
-html[data-theme="dark"] #player#player#player .player-controls #recordBtn{color:#10202c}
+html[data-theme="dark"] body.player-active #player .player-controls #playMelody,
+html[data-theme="dark"] body.player-active #player .player-controls #recordBtn{color:#10202c}
 html[data-theme="dark"] #splashScreen .btn-entrar-splash{background:linear-gradient(135deg,#f1c875,#d6a642)}
 html body.player-active #player .performance-layout>.piano-panel{border-top-color:var(--primary)} html[data-theme="dark"] .device-settings-nav button.active{color:#10202c}
 
@@ -3184,7 +3184,7 @@ html body.player-active #player .performance-layout>.piano-panel{border-top-colo
 }
 
 /* Keep the global menu header out of the piano on every device and at every width. */
-body.player-active > header.app-header { display:none !important; }
+body.player-active > header.app-header { display:none; }
 
 /* Extra-short landscape viewports, including phones whose CSS width exceeds 900px. */
 @media (orientation: landscape) and (max-height: 600px) {
@@ -3195,7 +3195,7 @@ body.player-active > header.app-header { display:none !important; }
   #homeView.home-view,#songView,#createView,#theoryView { flex:1 1 auto; width:100%; min-height:0; }
   #homeView .home-layout { grid-template-columns:minmax(0,1.15fr) minmax(180px,.85fr); grid-template-rows:minmax(0,1fr); height:100%; min-height:0; }
   #homeView .home-actions { display:grid; min-height:0; grid-template-columns:repeat(2,minmax(0,1fr)); align-content:start; align-self:stretch; gap:5px; }
-  html.device-customization-enabled body.home-active #homeView .home-action { min-height:min(var(--device-mobile-menu-button-height,46px),11dvh) !important; }
+  html.device-customization-enabled body.home-active #homeView .home-action { min-height:min(var(--device-mobile-menu-button-height,46px),11dvh); }
   #homeView .home-action,#homeView .home-action:nth-of-type(n) { grid-column:1/-1; min-height:min(var(--device-mobile-menu-button-height,46px),8dvh); grid-template-columns:minmax(0,1fr); padding:3px 7px; }
   #homeView .home-action-icon { display:none; }
   #homeView .home-action b { font-size:.67rem; }
@@ -3243,25 +3243,25 @@ body.player-active > header.app-header { display:none !important; }
   body.player-active #player .player-sheet:not(.hidden),
   body.player-active #player .notes-panel:not(.hidden),
   body.player-active #player #liveTheoryDock:not(.hidden) {
-    position: fixed !important;
-    z-index: 80 !important;
-    top: calc(48px + env(safe-area-inset-top, 0px)) !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: 50% !important;
+    position: fixed;
+    z-index: 80;
+    top: calc(48px + env(safe-area-inset-top, 0px));
+    right: auto;
+    bottom: auto;
+    left: 50%;
     transform: translateX(-50%);
-    width: min(420px, calc(100vw - 16px)) !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    max-height: calc(100dvh - 58px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
+    width: min(420px, calc(100vw - 16px));
+    min-width: 0;
+    max-width: none;
+    max-height: calc(100dvh - 58px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    overflow-x: hidden;
+    overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     box-sizing: border-box;
   }
   body.player-active #player .stage-popover:not(.hidden) {
-    padding: 8px !important;
+    padding: 8px;
     border-width: 3px;
     border-radius: 10px;
   }
@@ -3275,7 +3275,7 @@ body.player-active > header.app-header { display:none !important; }
   body.player-active #player .range-presets { gap: 4px; margin: 6px 0; }
   body.player-active #player .range-presets button { min-height: 33px; padding: 4px 7px; font-size: .7rem; }
   body.player-active #player .range-custom-label { font-size: .68rem; }
-  body.player-active #player .player-sheet:not(.hidden) { padding: 9px !important; }
+  body.player-active #player .player-sheet:not(.hidden) { padding: 9px; }
   body.player-active #player .sheet-heading { margin-bottom: 6px; }
   body.player-active #player .settings-switches label { min-height: 38px; padding: 5px 7px; }
   body.player-active #player .settings-block { margin-top: 7px; padding-top: 6px; }
@@ -3296,14 +3296,14 @@ body.player-active > header.app-header { display:none !important; }
   body.player-active #player #instrumentMenu .instrument-options { max-height:clamp(105px,34dvh,155px); }
   body.player-active #player #instrumentMenu .instrument-option { min-height:34px; gap:6px; padding:3px 6px; font-size:.67rem; }
   body.player-active #player #instrumentMenu .instrument-option .instrument-icon { flex-basis:25px; width:25px; height:25px; border-radius:6px; font-size:1.05rem; }
-  body.player-active #player #liveTheoryDock:not(.hidden) { gap: 5px; padding: 8px !important; }
+  body.player-active #player #liveTheoryDock:not(.hidden) { gap: 5px; padding: 8px; }
   body.player-active #player #liveTheoryDock .live-theory-modes button { min-height: 27px; padding: 3px 6px; font-size: .68rem; }
   body.player-active #player #liveTheoryDock .live-theory-controls { gap: 5px; }
   body.player-active #player #liveTheoryDock .live-theory-controls select { min-height: 29px; font-size: .68rem; }
   body.player-active #player #liveTheoryDock .live-theory-explanation p { font-size: .66rem; }
   body.player-active #player #instrumentMenu:not(.hidden) {
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
 
@@ -3312,18 +3312,18 @@ body.player-active > header.app-header { display:none !important; }
   body.player-active #player .player-sheet:not(.hidden),
   body.player-active #player .notes-panel:not(.hidden),
   body.player-active #player #liveTheoryDock:not(.hidden) {
-    position:fixed !important;
-    z-index:80 !important;
-    top:calc(52px + env(safe-area-inset-top,0px)) !important;
-    right:max(8px,env(safe-area-inset-right,0px)) !important;
-    bottom:auto !important;
-    left:max(8px,env(safe-area-inset-left,0px)) !important;
-    width:auto !important;
-    min-width:0 !important;
-    max-width:none !important;
-    max-height:calc(100dvh - 62px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) !important;
-    overflow-x:hidden !important;
-    overflow-y:auto !important;
+    position:fixed;
+    z-index:80;
+    top:calc(52px + env(safe-area-inset-top,0px));
+    right:max(8px,env(safe-area-inset-right,0px));
+    bottom:auto;
+    left:max(8px,env(safe-area-inset-left,0px));
+    width:auto;
+    min-width:0;
+    max-width:none;
+    max-height:calc(100dvh - 62px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+    overflow-x:hidden;
+    overflow-y:auto;
     overscroll-behavior:contain;
     -webkit-overflow-scrolling:touch;
     box-sizing:border-box;
@@ -3333,36 +3333,36 @@ body.player-active > header.app-header { display:none !important; }
 }
 
 /* Ajustes del escenario solicitados para escritorio y móvil. */
-#player #status.player-status { display:none !important; }
+#player #status.player-status { display:none; }
 #player #theoryLiveToggle,
-#player #liveTheoryPlayKey { display:none !important; }
+#player #liveTheoryPlayKey { display:none; }
 #player .performance-layout > .note-canvas {
-  background:#000 !important;
+  background:#000;
 }
 #player .performance-layout > .note-canvas.has-device-background .device-piano-background {
-  display:block !important;
+  display:block;
 }
 /* Al reproducir, la línea de tiempo ocupa la franja del encabezado. */
 body.player-active.melody-playing #player > .player-top {
-  display:none !important;
+  display:none;
 }
 body.player-active.melody-playing #player .performance-layout > #playerTimeline {
-  visibility:visible !important;
-  top:0 !important;
-  z-index:25 !important;
+  visibility:visible;
+  top:0;
+  z-index:25;
 }
 /* Durante la reproducción, las notas ocupan la columna que dejan los iconos. */
-html body.melody-playing #player#player#player #noteCanvas .canvas-readouts > .stage-tool-rail {
-  grid-template-columns:max-content !important;
+html body.melody-playing #player #noteCanvas .canvas-readouts > .stage-tool-rail {
+  grid-template-columns:max-content;
   width:max-content;
 }
-html body.melody-playing #player#player#player #noteCanvas .stage-tool-rail #currentNote {
-  grid-column:1 !important;
-  grid-row:1 !important;
+html body.melody-playing #player #noteCanvas .stage-tool-rail #currentNote {
+  grid-column:1;
+  grid-row:1;
 }
-html body.melody-playing #player#player#player #noteCanvas .canvas-readouts > .stage-tool-rail > #activeChordLabel {
-  grid-column:1 !important;
-  grid-row:2 !important;
+html body.melody-playing #player #noteCanvas .canvas-readouts > .stage-tool-rail > #activeChordLabel {
+  grid-column:1;
+  grid-row:2;
 }
 
 /* En escritorio, abre cada panel como una tarjeta centrada y ordenada. */
@@ -3370,22 +3370,22 @@ html body.melody-playing #player#player#player #noteCanvas .canvas-readouts > .s
   body.player-active #player .stage-popover:not(.hidden),
   body.player-active #player .player-sheet:not(.hidden),
   body.player-active #player .notes-panel:not(.hidden) {
-    position:fixed !important;
-    z-index:80 !important;
-    top:50% !important;
-    right:auto !important;
-    bottom:auto !important;
-    left:50% !important;
+    position:fixed;
+    z-index:80;
+    top:50%;
+    right:auto;
+    bottom:auto;
+    left:50%;
     transform:translate(-50%,-50%);
-    max-height:calc(100dvh - 48px) !important;
-    overflow-x:hidden !important;
-    overflow-y:auto !important;
+    max-height:calc(100dvh - 48px);
+    overflow-x:hidden;
+    overflow-y:auto;
     overscroll-behavior:contain;
     box-sizing:border-box;
   }
   body.player-active #player .lyrics-popover:not(.hidden) {
-    width:min(620px,calc(100vw - 32px)) !important;
-    max-height:calc(100dvh - 48px) !important;
+    width:min(620px,calc(100vw - 32px));
+    max-height:calc(100dvh - 48px);
   }
   body.player-active #player #instrumentMenu:not(.hidden)::before { display:none; }
 }
@@ -3393,20 +3393,20 @@ html body.melody-playing #player#player#player #noteCanvas .canvas-readouts > .s
 /* La personalización debe llegar a los botones reales del inicio y al panel
    de sonidos, también después de aplicar los estilos del tema. */
 html.device-customization-enabled body.home-active #homeView .home-action {
-  border-radius:var(--device-radius,12px) !important;
+  border-radius:var(--device-radius,12px);
 }
 html.device-customization-enabled body.home-active #homeView .home-info-card {
-  background:var(--device-offline-card-background,var(--device-surface-color)) !important;
-  color:var(--device-offline-card-text,var(--device-text-color)) !important;
-  border-color:var(--device-line-color) !important;
+  background:var(--device-offline-card-background,var(--device-surface-color));
+  color:var(--device-offline-card-text,var(--device-text-color));
+  border-color:var(--device-line-color);
 }
 html.device-customization-enabled body.home-active #homeView .home-info-card :is(b,p) {
-  color:var(--device-offline-card-text,var(--device-text-color)) !important;
+  color:var(--device-offline-card-text,var(--device-text-color));
 }
 
 @media (max-width:700px) {
   html.device-customization-enabled body.home-active #homeView .home-action {
-    min-height:var(--device-mobile-menu-button-height,46px) !important;
+    min-height:var(--device-mobile-menu-button-height,46px);
   }
   body.home-active > header.app-header {
     align-items:start;
@@ -3417,7 +3417,7 @@ html.device-customization-enabled body.home-active #homeView .home-info-card :is
 }
 @media (max-width:900px) and (orientation:landscape) {
   html.device-customization-enabled body.home-active #homeView .home-action {
-    min-height:var(--device-mobile-menu-button-height,46px) !important;
+    min-height:var(--device-mobile-menu-button-height,46px);
   }
   body.home-active > header.app-header {
     align-items:start;
@@ -3429,116 +3429,236 @@ html.device-customization-enabled body.home-active #homeView .home-info-card :is
 
 /* Encabezados consistentes y configurables en todas las pantallas. */
 html.device-customization-enabled :is(body>header.app-header,#songView>.song-mobile-header,#createView>.create-mobile-header,#theoryView>.theory-header,#playModeModal .mode-screen-header,#playModeModal .mode-section-title,#instrumentSettingsScreen .instrument-screen-header,#deviceSettingsScreen .device-settings-header) {
-  border-color:var(--device-line-color) !important;
+  border-color:var(--device-line-color);
 }
 html.device-customization-enabled body>header.app-header {
-  height:var(--device-heading-height,58px) !important;
-  min-height:var(--device-heading-height,58px) !important;
+  height:var(--device-heading-height,58px);
+  min-height:var(--device-heading-height,58px);
 }
 html.device-customization-enabled :is(#songView>.song-mobile-header,#createView>.create-mobile-header,#theoryView>.theory-header) {
-  height:var(--device-heading-height,58px) !important;
-  min-height:var(--device-heading-height,58px) !important;
-  flex-basis:var(--device-heading-height,58px) !important;
+  height:var(--device-heading-height,58px);
+  min-height:var(--device-heading-height,58px);
+  flex-basis:var(--device-heading-height,58px);
 }
 html.device-customization-enabled :is(#playModeModal .mode-screen-header,#playModeModal .mode-section-title,#instrumentSettingsScreen .instrument-screen-header,#deviceSettingsScreen .device-settings-header) {
-  height:var(--device-heading-height,58px) !important;
-  min-height:var(--device-heading-height,58px) !important;
-  flex-basis:var(--device-heading-height,58px) !important;
+  height:var(--device-heading-height,58px);
+  min-height:var(--device-heading-height,58px);
+  flex-basis:var(--device-heading-height,58px);
 }
 html.device-customization-enabled :is(body>header.app-header .brand-home b,#songView>.song-mobile-header h1,#createView>.create-mobile-header h1,#theoryView>.theory-header h1,#playModeModal .mode-screen-header h1,#playModeModal .mode-section-title,#instrumentSettingsScreen .instrument-screen-header h1,#deviceSettingsScreen .device-settings-header h1) {
-  font-size:var(--device-heading-size,26px) !important;
+  font-size:var(--device-heading-size,26px);
   line-height:1.1;
 }
 html.device-customization-enabled body>header.app-header .brand-home b {
-  font-size:var(--device-heading-size,26px) !important;
+  font-size:var(--device-heading-size,26px);
 }
 html.device-customization-enabled body.song-list-active #songView>.song-mobile-header {
-  background:var(--device-heading-background) !important;
-  color:var(--device-heading-text) !important;
+  background:var(--device-heading-background);
+  color:var(--device-heading-text);
 }
 html.device-customization-enabled body.song-list-active #songView>.song-mobile-header>#continueSongBtn {
-  border:1px solid transparent !important;
-  background:linear-gradient(135deg,var(--primary),var(--primary-strong)) !important;
-  color:#fff !important;
-  font-weight:750 !important;
-  box-shadow:0 5px 14px color-mix(in srgb,var(--primary) 20%,transparent) !important;
+  border:1px solid transparent;
+  background:linear-gradient(135deg,var(--primary),var(--primary-strong));
+  color:#fff;
+  font-weight:750;
+  box-shadow:0 5px 14px color-mix(in srgb,var(--primary) 20%,transparent);
 }
 html.device-customization-enabled :is(body>header.app-header,#songView>.song-mobile-header,#createView>.create-mobile-header,#theoryView>.theory-header,#playModeModal .mode-screen-header,#playModeModal .mode-section-title,#instrumentSettingsScreen .instrument-screen-header,#deviceSettingsScreen .device-settings-header) {
-  border-bottom-color:var(--device-line-color) !important;
+  border-bottom-color:var(--device-line-color);
 }
 @media (max-width:700px) {
   html.device-customization-enabled body>header.app-header {
-    height:calc(var(--device-heading-height,58px) + env(safe-area-inset-top,0px)) !important;
-    min-height:calc(var(--device-heading-height,58px) + env(safe-area-inset-top,0px)) !important;
+    height:calc(var(--device-heading-height,58px) + env(safe-area-inset-top,0px));
+    min-height:calc(var(--device-heading-height,58px) + env(safe-area-inset-top,0px));
   }
   body.home-active > header.app-header .header-actions { transform:translateY(3px); }
 }
 @media (max-width:900px) and (orientation:landscape) {
   html.device-customization-enabled body>header.app-header {
-    height:calc(var(--device-heading-height,58px) + env(safe-area-inset-top,0px)) !important;
-    min-height:calc(var(--device-heading-height,58px) + env(safe-area-inset-top,0px)) !important;
+    height:calc(var(--device-heading-height,58px) + env(safe-area-inset-top,0px));
+    min-height:calc(var(--device-heading-height,58px) + env(safe-area-inset-top,0px));
   }
   body.home-active > header.app-header .header-actions { transform:translateY(3px); }
 }
 
 /* El reproductor previo comparte el fondo del encabezado de selección. */
 html.device-customization-enabled body.song-list-active #songView .selected-audio-preview {
-  background:var(--device-heading-background) !important;
-  color:var(--device-heading-text) !important;
-  border-color:color-mix(in srgb,var(--device-heading-text) 24%,transparent) !important;
+  background:var(--device-heading-background);
+  color:var(--device-heading-text);
+  border-color:color-mix(in srgb,var(--device-heading-text) 24%,transparent);
 }
 html.device-customization-enabled body.song-list-active #songView .selected-audio-meta,
 html.device-customization-enabled body.song-list-active #songView #selectedSongLabel {
-  color:var(--device-heading-text) !important;
+  color:var(--device-heading-text);
 }
 html.device-customization-enabled body.song-list-active #songView .preview-track {
-  background:color-mix(in srgb,var(--device-heading-text) 30%,var(--device-heading-background)) !important;
+  background:color-mix(in srgb,var(--device-heading-text) 30%,var(--device-heading-background));
 }
 html.device-customization-enabled body.song-list-active #songView .preview-track i {
-  background:var(--device-heading-text) !important;
+  background:var(--device-heading-text);
 }
 /* Continuar conserva el dorado del botón de Crear melodía incluso deshabilitado. */
 html.device-customization-enabled body.song-list-active #songView>#song-mobile-header #continueSongBtn,
 html.device-customization-enabled body.song-list-active #songView>.song-mobile-header>#continueSongBtn {
-  border:1px solid transparent !important;
-  border-radius:999px !important;
-  background:linear-gradient(135deg,#c9a84c,#e8c97a) !important;
-  color:#1c1c3f !important;
-  font-weight:750 !important;
-  opacity:1 !important;
-  box-shadow:0 4px 12px #c9a84c35 !important;
+  border:1px solid transparent;
+  border-radius:999px;
+  background:linear-gradient(135deg,#c9a84c,#e8c97a);
+  color:#1c1c3f;
+  font-weight:750;
+  opacity:1;
+  box-shadow:0 4px 12px #c9a84c35;
 }
 html.device-customization-enabled body.song-list-active #songView>.song-mobile-header>#continueSongBtn:disabled {
-  opacity:1 !important;
+  opacity:1;
 }
 
 /* Centra verticalmente Tema y Admin en el encabezado de inicio móvil. */
 @media (max-width:900px) {
   body.home-active > header.app-header .header-actions {
-    align-self:center !important;
-    align-items:center !important;
-    transform:none !important;
+    align-self:center;
+    align-items:center;
+    transform:none;
   }
 }
 
 /* El inicio y la barra del piano usan el color elegido para encabezados. */
 html.device-customization-enabled body>header.app-header,
 html.device-customization-enabled body.player-active #player>.player-top {
-  background:var(--device-heading-background) !important;
-  color:var(--device-heading-text) !important;
-  border-color:var(--device-line-color) !important;
+  background:var(--device-heading-background);
+  color:var(--device-heading-text);
+  border-color:var(--device-line-color);
+}
+
+/* Las pantallas de selección también siguen la paleta personalizada. */
+html.device-customization-enabled body.song-list-active,
+html.device-customization-enabled body:has(> main > :where(#songView:not(.hidden))),
+html.device-customization-enabled body:has(> main > :where(#songView:not(.hidden)))>main {
+  background:var(--device-page-color,var(--bg));
+}
+html.device-customization-enabled body.song-list-active>main>#songView,
+html.device-customization-enabled body:has(> main > :where(#songView:not(.hidden)))>main>#songView {
+  background:var(--device-page-color,var(--bg));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled body.song-list-active #songView>.song-mobile-header {
+  background:var(--device-heading-background,var(--device-surface-color,var(--panel)));
+  color:var(--device-heading-text,var(--device-text-color,var(--text)));
+}
+html.device-customization-enabled body.song-list-active #songView>.song-mobile-header>.home-back,
+html.device-customization-enabled body.song-list-active #songView>.song-mobile-header>#continueSongBtn {
+  border-color:color-mix(in srgb,var(--device-heading-text,var(--text)) 28%,transparent);
+  background:var(--device-primary-color,var(--gold));
+  color:var(--device-primary-text,#fff);
+}
+html.device-customization-enabled body.song-list-active #songView>.toolbar {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-option-panel-color,var(--surface-soft));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled body.song-list-active #songView>.toolbar h1,
+html.device-customization-enabled body.song-list-active #songView>.toolbar small,
+html.device-customization-enabled body.song-list-active #songList .song-card-main,
+html.device-customization-enabled body.song-list-active #songList .song-info b,
+html.device-customization-enabled body.song-list-active #songList .song-info small {
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled body.song-list-active #songView>.toolbar #search {
+  border-color:var(--device-line-color,var(--line));
+  background-color:var(--device-surface-color,var(--panel));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled body.song-list-active #songView>#songList {
+  background:var(--device-page-color,var(--bg));
+  scrollbar-color:var(--device-primary-color,var(--gold)) var(--device-page-color,var(--bg));
+}
+html.device-customization-enabled body.song-list-active #songList .song-card-selectable,
+html.device-customization-enabled body.song-list-active #songList .song-card-selectable:nth-child(even) {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-surface-color,var(--panel));
+}
+html.device-customization-enabled body.song-list-active #songList .song-card-selectable:hover {
+  background:var(--device-option-panel-color,var(--surface-soft));
+}
+html.device-customization-enabled body.song-list-active #songList .song-card-selectable.selected {
+  background:color-mix(in srgb,var(--device-primary-color,var(--gold)) 22%,var(--device-surface-color,var(--panel)));
+  box-shadow:inset 0 0 0 1px var(--device-primary-color,var(--gold));
+}
+html.device-customization-enabled body.song-list-active #songList .song-key,
+html.device-customization-enabled body.song-list-active #songList .song-chip {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-option-panel-color,var(--surface-soft));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled body.song-list-active #songView>.song-list-footer {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-surface-color,var(--panel));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled body.song-list-active #songView>.toolbar .song-filters button,
+html.device-customization-enabled body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-surface-color,var(--panel));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled body.song-list-active #songView>.toolbar .song-filters button.active,
+html.device-customization-enabled body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button.active {
+  border-color:var(--device-primary-color,var(--gold));
+  background:var(--device-primary-color,var(--gold));
+  color:var(--device-primary-text,#fff);
+}
+html.device-customization-enabled body.song-list-active .admin-home-entry {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-primary-color,var(--gold));
+  color:var(--device-primary-text,#fff);
+}
+
+html.device-customization-enabled #playModeModal .mode-screen-panel,
+html.device-customization-enabled #playModeModal .mode-detail-content {
+  background:var(--device-surface-color,var(--panel));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled #playModeModal .mode-screen-header,
+html.device-customization-enabled #playModeModal .mode-section-title {
+  background:var(--device-heading-background,var(--device-primary-color,var(--gold)));
+  color:var(--device-heading-text,var(--text));
+}
+html.device-customization-enabled #playModeModal .mode-side-choice,
+html.device-customization-enabled #playModeModal .mode-score-box,
+html.device-customization-enabled #playModeModal .mode-detail-nav,
+html.device-customization-enabled #playModeModal .mode-detail-nav button {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-option-panel-color,var(--surface-soft));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled #playModeModal .mode-side-choice small,
+html.device-customization-enabled #playModeModal .mode-choice-card>small,
+html.device-customization-enabled #playModeModal .mode-score-box>span {
+  color:color-mix(in srgb,var(--device-text-color,var(--text)) 72%,transparent);
+}
+html.device-customization-enabled #playModeModal .mode-side-choice.active,
+html.device-customization-enabled #playModeModal .mode-choice-card.active .mode-score-box,
+html.device-customization-enabled #playModeModal .mode-detail-nav button.active {
+  border-color:var(--device-primary-color,var(--gold));
+  background:color-mix(in srgb,var(--device-primary-color,var(--gold)) 22%,var(--device-option-panel-color,var(--surface-soft)));
+  color:var(--device-text-color,var(--text));
+  outline-color:var(--device-primary-color,var(--gold));
+}
+html.device-customization-enabled #playModeModal .mode-screen-continue {
+  border-color:var(--device-primary-color,var(--gold));
+  background:var(--device-primary-color,var(--gold));
+  color:var(--device-primary-text,#fff);
 }
 html.device-customization-enabled body.player-active #player>.player-top {
-  height:var(--device-heading-height,58px) !important;
-  min-height:var(--device-heading-height,58px) !important;
-  flex-basis:var(--device-heading-height,58px) !important;
+  height:var(--device-heading-height,58px);
+  min-height:var(--device-heading-height,58px);
+  flex-basis:var(--device-heading-height,58px);
 }
 @media (max-width:900px) {
   html.device-customization-enabled body.player-active #player>.player-top {
-    height:clamp(36px,calc(var(--device-heading-height,58px) - 16px),64px) !important;
-    min-height:clamp(36px,calc(var(--device-heading-height,58px) - 16px),64px) !important;
-    flex-basis:clamp(36px,calc(var(--device-heading-height,58px) - 16px),64px) !important;
-    padding-bottom:0 !important;
+    height:clamp(36px,calc(var(--device-heading-height,58px) - 16px),64px);
+    min-height:clamp(36px,calc(var(--device-heading-height,58px) - 16px),64px);
+    flex-basis:clamp(36px,calc(var(--device-heading-height,58px) - 16px),64px);
+    padding-bottom:0;
   }
 }
 
@@ -3549,12 +3669,12 @@ html.device-customization-enabled body.player-active #player>.player-top .stage-
 html.device-customization-enabled body.player-active #player>.player-top .player-edit-menu[open]>summary,
 html.device-customization-enabled body.player-active #player .stage-tool-rail button[aria-expanded="true"],
 html.device-customization-enabled body.melody-playing #player>.player-top #playMelody {
-  border-color:#ffe39a !important;
-  background:linear-gradient(180deg,#ffd166,#f0a500) !important;
-  color:#2a1b00 !important;
-  outline:1px solid #ffe39a !important;
+  border-color:#ffe39a;
+  background:linear-gradient(180deg,#ffd166,#f0a500);
+  color:#2a1b00;
+  outline:1px solid #ffe39a;
   outline-offset:1px;
-  box-shadow:inset 0 0 0 1px #fff8,0 0 9px #ffd16655 !important;
+  box-shadow:inset 0 0 0 1px #fff8,0 0 9px #ffd16655;
 }
 
 /* Adoración y Júbilo: contenido protegido a los lados en móvil, sin inset inferior. */
@@ -3567,8 +3687,8 @@ html.device-customization-enabled body.melody-playing #player>.player-top #playM
   body.song-list-active #songView>.toolbar,
   body.song-list-active #songView>#songList,
   body.song-list-active #songView>.song-list-footer {
-    padding-left:var(--song-safe-left) !important;
-    padding-right:var(--song-safe-right) !important;
+    padding-left:var(--song-safe-left);
+    padding-right:var(--song-safe-right);
   }
 }
 @media (max-width:700px) and (orientation:portrait) {
@@ -3589,32 +3709,32 @@ html.device-customization-enabled body.melody-playing #player>.player-top #playM
   input:not([type="range"]):not([type="color"]),
   select,
   textarea {
-    font-size:16px !important;
+    font-size:16px;
   }
 }
 
 /* Controles del encabezado del piano ligeramente más compactos. */
 #player>.player-top>#backBtn {
-  flex-basis:34px !important;
-  width:34px !important;
-  min-width:34px !important;
-  height:32px !important;
-  min-height:32px !important;
+  flex-basis:34px;
+  width:34px;
+  min-width:34px;
+  height:32px;
+  min-height:32px;
 }
 #player>.player-top .mobile-player-controls button {
-  flex-basis:30px !important;
-  width:30px !important;
-  min-width:30px !important;
-  height:30px !important;
-  min-height:30px !important;
-  font-size:15px !important;
+  flex-basis:30px;
+  width:30px;
+  min-width:30px;
+  height:30px;
+  min-height:30px;
+  font-size:15px;
 }
 #player>.player-top .toolbar-actions .toolbar-icon,
 #player>.player-top .player-edit-menu>summary {
-  flex-basis:30px !important;
-  width:30px !important;
-  min-width:30px !important;
-  height:30px !important;
+  flex-basis:30px;
+  width:30px;
+  min-width:30px;
+  height:30px;
 }
 #player>.player-top .toolbar-actions .toolbar-icon .ui-icon { width:17px; height:17px; }
 #player>.player-top .stage-metronome-controls .top-tempo { height:26px; }
@@ -3633,12 +3753,12 @@ html.device-customization-enabled body.melody-playing #player>.player-top #playM
   height:26px;
 }
 body.player-active.playback-finished #player .performance-layout>#playerTimeline {
-  display:none !important;
+  display:none;
 }
 
 /* ===== Estilo neón: borde del piano, barras de cristal y fuego ===== */
 .note-canvas{--neon-rgb:47,243,224}
-html body #player .note-canvas>.canvas-grid{background-image:linear-gradient(to right,#ffffff2c 1px,transparent 1px)!important}
+html body #player .note-canvas>.canvas-grid{background-image:linear-gradient(to right,#ffffff2c 1px,transparent 1px)}
 .neon-edge{--neon-thickness:3px;--neon-glow:1;position:absolute;left:0;right:0;bottom:0;height:58px;z-index:1;pointer-events:none;contain:strict;
   background:linear-gradient(to top,rgba(var(--neon-rgb),calc(.4*var(--neon-glow))),rgba(var(--neon-rgb),calc(.14*var(--neon-glow))) 38%,rgba(var(--neon-rgb),0))}
 .neon-edge.is-off{display:none}
@@ -3651,10 +3771,388 @@ html body #player .note-canvas>.canvas-grid{background-image:linear-gradient(to 
 .neon-edge-settings .neon-row input[type="color"]{width:44px;height:32px;padding:0;border:1px solid #8884;border-radius:8px;background:none}
 .neon-edge-settings #neonEdgeReset{margin-top:10px}
 /* Barras que suben al tocar una tecla: mismo aspecto de cristal */
-html body .manual-note-effect.is-bar{border-radius:2px!important;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--note-fx-color) 50%,#fff),color-mix(in srgb,var(--note-fx-color) 80%,transparent) 22%,color-mix(in srgb,var(--note-fx-color) 52%,transparent) 55%,color-mix(in srgb,var(--note-fx-color) 72%,transparent) 85%,color-mix(in srgb,var(--note-fx-color) 55%,#fff))!important;
-  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--note-fx-color) 50%,#fff),0 0 6px 1px color-mix(in srgb,var(--note-fx-color) 40%,transparent)!important}
+html body .manual-note-effect:is(.is-bar.is-duo,.is-bar.is-tri,.is-bar.has-fire,.is-bar){border-radius:var(--manual-bar-radius,2px);
+  background:linear-gradient(90deg,color-mix(in srgb,var(--note-fx-color) 50%,#fff),color-mix(in srgb,var(--note-fx-color) 80%,transparent) 22%,color-mix(in srgb,var(--note-fx-color) 52%,transparent) 55%,color-mix(in srgb,var(--note-fx-color) 72%,transparent) 85%,color-mix(in srgb,var(--note-fx-color) 55%,#fff));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--note-fx-color) 50%,#fff),0 0 6px 1px color-mix(in srgb,var(--note-fx-color) 40%,transparent)}
 html body .manual-note-effect.is-bar.has-fire::before{
-  background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--note-fx-color) 60%,transparent) 24%,color-mix(in srgb,var(--note-fx-color) 35%,#fff) 43%,color-mix(in srgb,var(--note-fx-color) 15%,#fff) 54%,color-mix(in srgb,var(--note-fx-color) 70%,transparent) 70%,transparent 100%)!important;background-size:100% 220%}
+  background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--note-fx-color) 60%,transparent) 24%,color-mix(in srgb,var(--note-fx-color) 35%,#fff) 43%,color-mix(in srgb,var(--note-fx-color) 15%,#fff) 54%,color-mix(in srgb,var(--note-fx-color) 70%,transparent) 70%,transparent 100%);background-size:100% 220%}
 /* Letra de las barras: blanca con borde negro (opción en Ajustes) */
-html body.note-label-outline .manual-note-effect .manual-note-label{color:#fff!important;-webkit-text-stroke:0!important;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 -1px 0 #000,0 1px 0 #000,-1px 0 0 #000,1px 0 0 #000,0 0 3px #000!important}
+html body.note-label-outline .manual-note-effect .manual-note-label{color:#fff;-webkit-text-stroke:0;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 -1px 0 #000,0 1px 0 #000,-1px 0 0 #000,1px 0 0 #000,0 0 3px #000}
+/* Barras de dos colores en las notas tocadas a mano */
+html body .manual-note-effect.is-bar.is-duo{background:linear-gradient(0deg,var(--note-fx-color),var(--note-fx-color2,var(--note-fx-color)))}
+html body .manual-note-effect.is-bar.is-tri{background:linear-gradient(0deg,var(--note-fx-color),var(--note-fx-color2,var(--note-fx-color)),var(--note-fx-color3,var(--note-fx-color)))}
+/* Sin contorno claro en las barras de las notas tocadas a mano */
+html body .manual-note-effect:is(.is-bar.is-duo,.is-bar.is-tri,.is-bar.has-fire,.is-bar){box-shadow:0 0 6px 1px color-mix(in srgb,var(--note-fx-color) 40%,transparent)}
+/* Opciones para el diseño de las barras que caen y las notas tocadas a mano. */
+.bar-control-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 10px;margin:9px 0;font-size:.85rem}
+.bar-control-row input[type="range"]{grid-column:1/-1;width:100%;accent-color:var(--accent,#18a6bd)}
+.bar-control-row input[type="color"]{width:42px;height:30px;padding:1px;border:1px solid #8886;border-radius:7px;background:transparent}
+.bar-control-row select{grid-column:1/-1;min-height:36px}
+.fx-control-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 10px;margin:9px 0;font-size:.85rem}
+.fx-control-row input[type="range"]{grid-column:1/-1;width:100%;accent-color:var(--accent,#18a6bd)}
+html body .manual-note-effect.is-bar{opacity:var(--manual-bar-opacity,.94);border-radius:var(--manual-bar-radius,2px)}
+html body .manual-note-effect.is-bar.is-neon{background:transparent;box-shadow:inset 0 0 0 1.5px var(--note-fx-color),0 0 7px 1px color-mix(in srgb,var(--note-fx-color) 75%,transparent)}
+html body .manual-note-effect.is-bar.is-neon.is-duo{background:linear-gradient(0deg,transparent,transparent);box-shadow:inset 0 0 0 1.5px var(--note-fx-color),0 0 7px 1px color-mix(in srgb,var(--note-fx-color) 75%,transparent)}
+html body .manual-note-effect.is-bar.is-neon.is-tri{background:linear-gradient(0deg,transparent,transparent)}
+html body .manual-note-effect.is-bar.is-synesthesia{background:linear-gradient(180deg,color-mix(in srgb,var(--note-fx-color) 46%,white),var(--note-fx-color) 48%,color-mix(in srgb,var(--note-fx-color) 64%,black));box-shadow:0 0 5px color-mix(in srgb,var(--note-fx-color) 45%,transparent)}
+html body .manual-note-effect.is-bar::after{content:"";position:absolute;left:15%;right:15%;bottom:100%;height:var(--manual-bar-trail,0px);border-radius:inherit;background:linear-gradient(0deg,color-mix(in srgb,var(--note-fx-color) 38%,transparent),transparent);pointer-events:none}
+/* Sin borde ni sombra sobre las teclas: las líneas luminosas quedan pegadas al piano. */
+html body #player .performance-layout > .piano-panel,html body.player-active #player .performance-layout > .piano-panel{border-top:0;box-shadow:none}
+/* Estilos seleccionables para el teclado del escenario. */
+html[data-piano-key-style="flat"] body #player .piano-panel .key.white{background:#f6f7f8;border:1px solid #c1c8ce;border-radius:0;color:#26323a;box-shadow:none}
+html[data-piano-key-style="flat"] body #player .piano-panel .key.black{background:#252b31;border:1px solid #161a1e;border-radius:0 0 2px 2px;color:#f2f4f5;box-shadow:none}
+html[data-piano-key-style="flat"] body #player .piano-panel .key.playing,html[data-piano-key-style="flat"] body #player .piano-panel .key.bass-playing{box-shadow:none;filter:brightness(.96)}
+html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.white.playing{background:var(--pressed-key-color);border-color:var(--pressed-key-color)}
+html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.black.playing{background:color-mix(in srgb,var(--pressed-key-color) 78%,#171b1e);border-color:var(--pressed-key-color)}
+html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.white.bass-playing{background:var(--bass-note-color);border-color:var(--bass-note-color)}
+html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.black.bass-playing{background:color-mix(in srgb,var(--bass-note-color) 78%,#171b1e);border-color:var(--bass-note-color)}
+html[data-piano-key-style="flat"] body #player .piano-panel .key.white.active,html[data-piano-key-style="flat"] body #player .piano-panel .key.white.chord-selected{background:#e6edf0;border-color:#71858e;box-shadow:none}
+html[data-piano-key-style="flat"] body #player .piano-panel .key.black.active,html[data-piano-key-style="flat"] body #player .piano-panel .key.black.chord-selected{background:#3d4850;border-color:#101418;box-shadow:none}
+html[data-piano-key-style="realistic"] body #player .piano-panel .key.white{background:linear-gradient(100deg,#e8dfc7 0%,#fffdf4 20%,#f8f2e3 78%,#ded2b5 100%);border:1px solid #ad9e7b;border-radius:0 0 7px 7px;color:#3b3529;box-shadow:inset 0 -5px 0 #d5c9ab,0 2px 3px #0002}
+html[data-piano-key-style="realistic"] body #player .piano-panel .key.black{background:linear-gradient(100deg,#39332d 0%,#151311 44%,#080807 78%,#29251f 100%);border:1px solid #090807;border-radius:0 0 5px 5px;color:#eee7d7;box-shadow:inset 1px 0 1px #ffffff30,0 4px 6px #0008}
+html[data-piano-key-style="realistic"] body:not(.keys-no-color) #player .piano-panel .key.white.playing{background:linear-gradient(100deg,color-mix(in srgb,var(--pressed-key-color) 48%,#e8dfc7),color-mix(in srgb,var(--pressed-key-color) 55%,#fffdf4) 24%,color-mix(in srgb,var(--pressed-key-color) 45%,#f8f2e3) 78%,color-mix(in srgb,var(--pressed-key-color) 42%,#ded2b5));border-color:var(--pressed-key-color)}
+html[data-piano-key-style="realistic"] body:not(.keys-no-color) #player .piano-panel .key.black.playing{background:linear-gradient(100deg,color-mix(in srgb,var(--pressed-key-color) 48%,#39332d),color-mix(in srgb,var(--pressed-key-color) 65%,#151311) 44%,color-mix(in srgb,var(--pressed-key-color) 38%,#080807) 78%,color-mix(in srgb,var(--pressed-key-color) 42%,#29251f));border-color:var(--pressed-key-color)}
+html[data-piano-key-style="realistic"] body:not(.keys-no-color) #player .piano-panel .key.white.bass-playing{background:linear-gradient(100deg,color-mix(in srgb,var(--bass-note-color) 48%,#e8dfc7),color-mix(in srgb,var(--bass-note-color) 55%,#fffdf4) 24%,color-mix(in srgb,var(--bass-note-color) 45%,#f8f2e3) 78%,color-mix(in srgb,var(--bass-note-color) 42%,#ded2b5));border-color:var(--bass-note-color)}
+html[data-piano-key-style="realistic"] body:not(.keys-no-color) #player .piano-panel .key.black.bass-playing{background:linear-gradient(100deg,color-mix(in srgb,var(--bass-note-color) 48%,#39332d),color-mix(in srgb,var(--bass-note-color) 65%,#151311) 44%,color-mix(in srgb,var(--bass-note-color) 38%,#080807) 78%,color-mix(in srgb,var(--bass-note-color) 42%,#29251f));border-color:var(--bass-note-color)}
+html[data-piano-key-style="realistic"] body #player .piano-panel .key.white.playing,html[data-piano-key-style="realistic"] body #player .piano-panel .key.white.bass-playing{box-shadow:inset 0 -5px 0 #b8a579,0 0 12px color-mix(in srgb,var(--pressed-key-color) 60%,transparent)}
+html[data-piano-key-style="realistic"] body #player .piano-panel .key.black.playing,html[data-piano-key-style="realistic"] body #player .piano-panel .key.black.bass-playing{box-shadow:inset 1px 0 1px #ffffff30,0 0 10px color-mix(in srgb,var(--pressed-key-color) 65%,transparent)}
+.device-piano-preview-keys[data-key-style="flat"] i{background:#f6f7f8;border-right:1px solid #c1c8ce;border-radius:0;box-shadow:none}
+.device-piano-preview-keys[data-key-style="flat"] i:nth-child(2),.device-piano-preview-keys[data-key-style="flat"] i:nth-child(4),.device-piano-preview-keys[data-key-style="flat"] i:nth-child(7){background:#252b31;border:0;border-radius:0}
+.device-piano-preview-keys[data-key-style="realistic"] i{background:linear-gradient(100deg,#e8dfc7,#fffdf4 25%,#f8f2e3 78%,#ded2b5);border-right:1px solid #ad9e7b;box-shadow:inset 0 -4px 0 #d5c9ab}
+.device-piano-preview-keys[data-key-style="realistic"] i:nth-child(2),.device-piano-preview-keys[data-key-style="realistic"] i:nth-child(4),.device-piano-preview-keys[data-key-style="realistic"] i:nth-child(7){background:linear-gradient(100deg,#39332d,#151311 45%,#080807 78%,#29251f);border:0;box-shadow:0 3px 4px #0008}
+
+/* La pantalla de instrumentos toma la superficie de la paleta y reserva el primario para acciones. */
+html.device-customization-enabled #instrumentSettingsScreen .mode-screen-panel,
+html.device-customization-enabled #instrumentSettingsScreen .instrument-settings-footer {
+  background:var(--device-surface-color,var(--panel));
+  color:var(--device-text-color,var(--text));
+  border-color:var(--device-line-color,var(--line));
+}
+html.device-customization-enabled #instrumentSettingsScreen .instrument-config-card,
+html.device-customization-enabled #instrumentSettingsScreen .instrument-voice-directions {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-surface-color,var(--panel));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled #instrumentSettingsScreen .instrument-config-top,
+html.device-customization-enabled #instrumentSettingsScreen .instrument-config-bottom>* {
+  border-color:var(--device-line-color,var(--line));
+}
+html.device-customization-enabled #instrumentSettingsScreen .instrument-card-icon {
+  background:color-mix(in srgb,var(--device-primary-color,var(--gold)) 16%,var(--device-option-panel-color,var(--surface-soft)));
+  color:var(--device-primary-color,var(--gold));
+}
+html.device-customization-enabled #instrumentSettingsScreen .instrument-card-play,
+html.device-customization-enabled #instrumentSettingsScreen .instrument-voice-directions h2 {
+  color:var(--device-primary-color,var(--gold));
+}
+html.device-customization-enabled #instrumentSettingsScreen .instrument-name-field select,
+html.device-customization-enabled #instrumentSettingsScreen .track-layer-controls select {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-option-panel-color,var(--surface-soft));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled #instrumentSettingsScreen .track-layer-toggle,
+html.device-customization-enabled #instrumentSettingsScreen .track-layer-controls {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-option-panel-color,var(--surface-soft));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled #instrumentSettingsScreen .track-layer-toggle input,
+html.device-customization-enabled #instrumentSettingsScreen input[type="range"] {
+  accent-color:var(--device-primary-color,var(--gold));
+}
+html.device-customization-enabled #instrumentSettingsScreen .instrument-settings-footer>.soft {
+  border-color:var(--device-line-color,var(--line));
+  background:var(--device-option-panel-color,var(--surface-soft));
+  color:var(--device-text-color,var(--text));
+}
+html.device-customization-enabled #instrumentSettingsScreen .instrument-settings-footer .mode-screen-continue,
+html.device-customization-enabled #instrumentSettingsScreen .instrument-header-actions .soft {
+  border-color:var(--device-primary-color,var(--gold));
+  background:var(--device-primary-color,var(--gold));
+  color:var(--device-primary-text,#fff);
+}
+
+/* Centra el reproductor entre los bordes de la pantalla, aunque los botones laterales midan distinto. */
+body.song-list-active #songView>.song-mobile-header { position:relative; }
+body.song-list-active #songView .selected-audio-preview {
+  position:absolute;
+  left:50%;
+  width:min(390px,calc(100% - 190px));
+  min-width:110px;
+  margin:0;
+  transform:translateX(-50%);
+  z-index:1;
+}
+body.song-list-active #songView>.song-mobile-header>.home-back,
+body.song-list-active #songView>.song-mobile-header>#continueSongBtn { position:relative; z-index:2; }
+
+html.device-customization-enabled #player>.player-top .toolbar-icon,
+html.device-customization-enabled #player>.player-top .toolbar-icon .ui-icon {
+  color:var(--device-icon-color,var(--device-heading-text,var(--text)));
+}
+/* En las paletas claras, los controles del reproductor conservan contraste con su propio fondo. */
+html.device-customization-enabled body.player-active #player>.player-top .mobile-player-controls button,
+html.device-customization-enabled body.player-active #player>.player-top .toolbar-actions .toolbar-icon,
+html.device-customization-enabled body.player-active #player>.player-top .toolbar-actions .toolbar-icon .ui-icon,
+html.device-customization-enabled body.player-active #player>.player-top .player-edit-menu>summary {
+  color:#f4f8fb;
+}
+html.device-customization-enabled body.player-active #player>.player-top>#backBtn,
+html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .top-tempo button,
+html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .top-tempo output,
+html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .metronome-button {
+  color:var(--device-heading-text,var(--device-text-color,var(--text)));
+}
+html.device-customization-enabled body.song-list-active #songView .selected-audio-preview>button,
+html.device-customization-enabled body.song-list-active #songView .selected-audio-preview.is-playing>button {
+  color:var(--device-heading-text,var(--device-text-color,var(--text)));
+}
+body.song-list-active #songView .selected-audio-preview>button {
+  grid-column:1;
+  grid-row:1 / 3;
+  align-self:center;
+  justify-self:center;
+}
+
+/* Configuración del piano como pantalla propia, separada de los ajustes generales del dispositivo. */
+#playerSettings.player-settings-page {
+  position:static;
+  display:flex;
+  flex:1 1 auto;
+  flex-direction:column;
+  width:100%;
+  height:100%;
+  min-height:0;
+  max-height:none;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--device-text-color,var(--text));
+  box-shadow:none;
+}
+#playerSettings.player-settings-page .sheet-heading {
+  flex:0 0 auto;
+  min-height:62px;
+  margin:0;
+  padding:8px max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left));
+  border-bottom:1px solid var(--device-line-color,var(--line));
+  background:var(--device-heading-background,var(--device-surface-color,var(--panel)));
+  color:var(--device-heading-text,var(--device-text-color,var(--text)));
+}
+#playerSettings.player-settings-page .sheet-heading small { color:inherit; opacity:.72; }
+#playerSettings.player-settings-page .sheet-heading h2 { margin:2px 0 0; color:inherit; font-size:1.1rem; }
+#playerSettings.player-settings-page .sheet-close {
+  width:40px;height:40px;border-color:var(--device-line-color,var(--line));
+  background:var(--device-option-panel-color,var(--panel));color:var(--device-text-color,var(--text));
+}
+.player-settings-layout {
+  display:grid;
+  flex:1 1 auto;
+  grid-template-columns:190px minmax(0,1fr) 280px;
+  grid-template-areas:"tabs content preview";
+  gap:0;
+  min-height:0;
+}
+.player-settings-tabs {
+  grid-area:tabs;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  min-height:0;
+  padding:14px 10px;
+  overflow:auto;
+  border-right:1px solid var(--device-line-color,var(--line));
+  background:var(--device-surface-color,var(--panel));
+}
+.player-settings-tabs button {
+  min-height:44px;
+  padding:9px 11px;
+  border:1px solid transparent;
+  border-radius:10px;
+  background:transparent;
+  color:var(--device-text-color,var(--text));
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.player-settings-tabs button:hover { background:var(--device-option-panel-color,var(--surface-soft)); }
+.player-settings-tabs button.active {
+  border-color:color-mix(in srgb,var(--device-primary-color,var(--gold)) 55%,var(--device-line-color,var(--line)));
+  background:color-mix(in srgb,var(--device-primary-color,var(--gold)) 16%,var(--device-surface-color,var(--panel)));
+  color:var(--device-text-color,var(--text));
+  font-weight:700;
+}
+.player-settings-content {
+  grid-area:content;
+  min-width:0;
+  min-height:0;
+  padding:clamp(16px,2.5vw,30px);
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+.player-settings-tab-panel { width:min(900px,100%); margin:0 auto; }
+.player-settings-tab-panel>h3 { margin:0 0 14px; color:var(--device-heading-text,var(--device-text-color,var(--text))); font-size:1.12rem; }
+.player-settings-tab-panel>.settings-block:first-of-type { margin-top:0; }
+.player-settings-preview {
+  grid-area:preview;
+  min-width:0;
+  padding:18px 14px;
+  overflow:auto;
+  border-left:1px solid var(--device-line-color,var(--line));
+  background:var(--device-surface-color,var(--panel));
+}
+.player-settings-preview>h3 { margin:0 0 12px; color:var(--device-heading-text,var(--device-text-color,var(--text))); font-size:.95rem; }
+.player-settings-preview-card {
+  overflow:hidden;
+  padding:13px;
+  border:1px solid var(--device-line-color,var(--line));
+  border-radius:14px;
+  background:var(--device-option-panel-color,var(--surface-soft));
+  color:var(--device-text-color,var(--text));
+}
+.player-settings-preview-card>small { display:block; margin-bottom:10px; color:var(--device-text-color,var(--text)); font-weight:700; }
+.player-settings-preview-card>p { margin:10px 0 0; color:var(--device-text-color,var(--text)); font-size:.73rem; line-height:1.4; opacity:.76; }
+.settings-preview-stage {
+  position:relative;
+  height:180px;
+  overflow:hidden;
+  border:1px solid var(--device-line-color,var(--line));
+  border-radius:10px;
+  background:linear-gradient(180deg,var(--device-page-color,var(--bg)) 0 73%,var(--device-surface-color,var(--panel)) 73%);
+}
+.settings-preview-stage:before { position:absolute;inset:0 0 27%;content:"";background:repeating-linear-gradient(90deg,transparent 0 calc(14.28% - 1px),color-mix(in srgb,var(--device-line-color,var(--line)) 60%,transparent) calc(14.28% - 1px) 14.28%); }
+.preview-fall-bar { position:absolute;top:12px;display:grid;place-items:center;width:19px;height:54%;border-radius:var(--manual-bar-radius,2px);background:var(--melody-note-color,#90dd4a);color:#10202c;font-size:.56rem;font-style:normal;font-weight:700;box-shadow:0 0 8px color-mix(in srgb,var(--melody-note-color,#90dd4a) 45%,transparent); }
+.preview-fall-bar.bar-a { left:19%; }
+.preview-fall-bar.bar-b { left:49%;top:29px;background:var(--bass-note-color,#bb82ef); }
+.preview-fall-bar.bar-c { left:75%;top:2px;background:var(--device-primary-color,var(--gold)); }
+.settings-preview-keys { position:absolute;right:0;bottom:0;left:0;display:flex;height:27%; }
+.settings-preview-keys b { flex:1;border-right:1px solid var(--device-line-color,var(--line));background:var(--device-surface-color,var(--panel)); }
+.settings-preview-keys b:nth-child(2),.settings-preview-keys b:nth-child(4),.settings-preview-keys b:nth-child(7) { background:var(--device-page-color,var(--bg)); }
+.settings-preview-keyboard { display:flex;height:104px;padding:0 5px 5px;border:1px solid var(--device-line-color,var(--line));border-radius:9px;background:var(--device-page-color,var(--bg)); }
+.settings-preview-keyboard i { flex:1;border-right:1px solid #9aa3aa;border-radius:0 0 4px 4px;background:linear-gradient(#fff,#e6e8eb); }
+.settings-preview-keyboard i:nth-child(2),.settings-preview-keyboard i:nth-child(4),.settings-preview-keyboard i:nth-child(7) { height:65%;border:0;border-radius:0 0 3px 3px;background:#202a32; }
+.settings-preview-keyboard[data-key-style="flat"] i { border-radius:0;background:#f6f7f8;box-shadow:none; }
+.settings-preview-keyboard[data-key-style="flat"] i:nth-child(2),.settings-preview-keyboard[data-key-style="flat"] i:nth-child(4),.settings-preview-keyboard[data-key-style="flat"] i:nth-child(7) { background:#252b31; }
+.settings-preview-keyboard[data-key-style="realistic"] i { background:linear-gradient(100deg,#e8dfc7,#fffdf4 25%,#f8f2e3 78%,#ded2b5); }
+.settings-preview-keyboard[data-key-style="realistic"] i:nth-child(2),.settings-preview-keyboard[data-key-style="realistic"] i:nth-child(4),.settings-preview-keyboard[data-key-style="realistic"] i:nth-child(7) { background:linear-gradient(100deg,#39332d,#151311 45%,#080807 78%,#29251f); }
+.settings-preview-effects { position:relative;display:grid;place-items:center;height:132px;overflow:hidden;border:1px solid var(--device-line-color,var(--line));border-radius:10px;background:var(--device-page-color,var(--bg)); }
+.settings-preview-effects span { z-index:1;color:var(--device-primary-color,var(--gold));font-size:2.5rem; }
+.settings-preview-effects i { position:absolute;width:40px;height:40px;border:2px solid var(--device-primary-color,var(--gold));border-radius:50%;opacity:.55; }
+.settings-preview-effects i:nth-of-type(2) { width:72px;height:72px;opacity:.32; }
+.settings-preview-effects i:nth-of-type(3) { width:104px;height:104px;opacity:.18; }
+.settings-preview-volume { display:flex;align-items:center;gap:12px;height:132px;padding:20px;border:1px solid var(--device-line-color,var(--line));border-radius:10px;background:var(--device-page-color,var(--bg)); }
+.settings-preview-volume span { color:var(--device-primary-color,var(--gold));font-size:2rem; }
+.settings-preview-volume i { flex:1;height:9px;border-radius:9px;background:linear-gradient(90deg,var(--device-primary-color,var(--gold)) 72%,var(--device-line-color,var(--line)) 72%); }
+@media (max-width:760px) {
+  .player-settings-layout { grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"tabs" "preview" "content"; }
+  .player-settings-tabs { flex-direction:row;gap:4px;padding:7px 10px;overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid var(--device-line-color,var(--line)); }
+  .player-settings-tabs button { flex:0 0 auto;min-height:38px;padding:7px 10px;font-size:.78rem;white-space:nowrap; }
+  .player-settings-preview { padding:8px 12px;border-left:0;border-bottom:1px solid var(--device-line-color,var(--line)); }
+  .player-settings-preview>h3 { display:none; }
+  .player-settings-preview-card { display:grid;grid-template-columns:minmax(100px,34%) minmax(0,1fr);grid-template-rows:auto 1fr;gap:0 10px;padding:8px 10px; }
+  .player-settings-preview-card>small { grid-column:1/-1;margin-bottom:5px;font-size:.72rem; }
+  .player-settings-preview-card>p { align-self:center;margin:0;font-size:.68rem; }
+  .settings-preview-stage { grid-row:2;height:76px; }
+  .settings-preview-keyboard,.settings-preview-effects,.settings-preview-volume { grid-row:2;height:76px; }
+  .player-settings-content { padding:12px 12px calc(18px + env(safe-area-inset-bottom)); }
+}
+
+/* Piano settings is a navigable screen, sharing the app's full-screen and safe-area layout. */
+#playerSettingsScreen.player-config-screen { z-index:1200; background:var(--device-page-color,var(--bg)); }
+#playerSettingsScreen .player-config-panel { display:flex; flex-direction:column; width:100%; height:100%; min-height:0; padding:0; overflow:hidden; border:0; border-radius:0; background:var(--device-page-color,var(--bg)); color:var(--device-text-color,var(--text)); box-shadow:none; }
+#playerSettingsScreen #playerSettings.player-settings-page { position:static; inset:auto; z-index:auto; display:flex; flex:1 1 auto; flex-direction:column; width:100%; height:100%; min-height:0; max-height:none; margin:0; padding:0; overflow:hidden; border:0; border-radius:0; background:transparent; color:inherit; box-shadow:none; }
+@media (max-width:700px) {
+  #playerSettingsScreen .player-config-panel { height:100dvh; padding:env(safe-area-inset-top,0px) var(--mobile-gutter-right) var(--mobile-bottom) var(--mobile-gutter); }
+  #playerSettingsScreen #playerSettings.player-settings-page .sheet-heading { min-height:52px; padding:6px 0; }
+}
+/* Previews react to the active piano settings. */
+.settings-preview-stage { --preview-melody:var(--melody-note-color,#90dd4a); --preview-bass:var(--bass-note-color,#bb82ef); --preview-accent:#ff9f43; --preview-opacity:1; --preview-radius:2px; --preview-trail:0px; }
+.settings-preview-stage .preview-fall-bar { opacity:var(--preview-opacity); border-radius:var(--preview-radius); transition:all .18s ease; }
+.settings-preview-stage .preview-fall-bar[data-kind="melody"] { background:var(--preview-melody); }
+.settings-preview-stage .preview-fall-bar[data-kind="bass"] { background:var(--preview-bass); }
+.settings-preview-stage .preview-fall-bar[data-kind="accompaniment"] { background:var(--preview-accent); }
+.settings-preview-stage .preview-fall-bar:after { position:absolute;top:100%;left:15%;width:70%;height:var(--preview-trail);content:"";background:linear-gradient(var(--preview-melody),transparent);opacity:.45; }
+.settings-preview-stage[data-flow="melody"] .preview-fall-bar[data-kind="bass"],.settings-preview-stage[data-flow="melody"] .preview-fall-bar[data-kind="accompaniment"],.settings-preview-stage[data-flow="off"] .preview-fall-bar { opacity:0; }
+.settings-preview-stage[data-flow="drops"] .preview-fall-bar { width:24px;height:24px;top:25%;border-radius:50% 50% 50% 0;transform:rotate(-45deg); }
+.settings-preview-stage[data-flow="drops"] .preview-fall-bar:first-letter { transform:rotate(45deg); }
+.settings-preview-stage[data-appearance="neon"] .preview-fall-bar { border:2px solid currentColor;background:transparent;box-shadow:0 0 12px currentColor,inset 0 0 8px currentColor;color:var(--preview-melody); }
+.settings-preview-stage[data-appearance="synesthesia"] .preview-fall-bar { width:25px;background:linear-gradient(180deg,color-mix(in srgb,var(--preview-melody) 45%,white),var(--preview-melody) 60%,color-mix(in srgb,var(--preview-melody) 65%,black)); }
+.settings-preview-stage[data-look="duo"] .preview-fall-bar[data-kind="melody"],.settings-preview-stage[data-look="tri"] .preview-fall-bar[data-kind="melody"] { background:linear-gradient(180deg,var(--preview-melody),var(--preview-color2)); }
+.settings-preview-stage[data-look="tri"] .preview-fall-bar[data-kind="bass"] { background:linear-gradient(180deg,var(--preview-bass),var(--preview-color3)); }
+.settings-preview-stage[data-color-mode="note"] .preview-fall-bar[data-kind="melody"] { background:linear-gradient(180deg,#fa5252,#ffca3a,#8ac926,#1982c4,#6a4c93); }
+.settings-preview-keys b { transition:background .2s ease; }
+.settings-preview-keyboard { position:relative; overflow:hidden; --preview-key-color:#90dd4a; --preview-edge-color:#2ff3e0; }
+.settings-preview-keyboard i { position:relative;transition:background .2s ease,box-shadow .2s ease; }
+.settings-preview-keyboard i.is-playing { z-index:1;background:var(--preview-key-color);box-shadow:inset 0 0 14px color-mix(in srgb,var(--preview-key-color) 60%,white),0 0 12px var(--preview-key-color); }
+.settings-preview-keyboard[data-key-style="flat"] i { background:#f5f6f7; }
+.settings-preview-keyboard[data-key-style="flat"] i:nth-child(2),.settings-preview-keyboard[data-key-style="flat"] i:nth-child(4),.settings-preview-keyboard[data-key-style="flat"] i:nth-child(7) { background:#252b31; }
+.settings-preview-keyboard[data-key-style="realistic"] i { background:linear-gradient(100deg,#d4c6a6,#fffdf4 25%,#f8f2e3 78%,#c6b697);box-shadow:inset 1px 0 #fff8,inset -1px 0 #786a53; }
+.settings-preview-keyboard[data-key-style="realistic"] i:nth-child(2),.settings-preview-keyboard[data-key-style="realistic"] i:nth-child(4),.settings-preview-keyboard[data-key-style="realistic"] i:nth-child(7) { background:linear-gradient(100deg,#39332d,#151311 45%,#080807 78%,#29251f); }
+.settings-preview-keyboard[data-fill="off"][data-key-style="classic"] i.is-playing { background:#aab1b8;box-shadow:inset 0 0 8px #fff8; }
+.settings-preview-keyboard[data-color-on="off"] i.is-playing { background:#aab1b8; }
+.settings-preview-keyboard[data-edge="on"] i.is-playing { outline:2px solid var(--preview-edge-color);outline-offset:-2px; }
+.settings-preview-keyboard:after { position:absolute;right:5px;bottom:2px;left:5px;height:var(--preview-line-size,3px);content:"";border-radius:8px;background:var(--preview-edge-color);opacity:var(--preview-line-glow,1);box-shadow:0 0 10px 3px color-mix(in srgb,var(--preview-edge-color) 80%,transparent); }
+.settings-preview-keyboard[data-line="flame"]:after { background:linear-gradient(90deg,#ff4d22,#ffcf48,#ff5524);box-shadow:0 0 14px 4px #ff6a2a; }
+.settings-preview-keyboard[data-line-on="off"]:after { display:none; }
+.settings-preview-effects { --preview-effect-duration:3.4s; }
+.settings-preview-effects i { animation:preview-effect-pulse var(--preview-effect-duration) ease-out infinite; }
+.settings-preview-effects[data-style="fire"] i { border-color:#ff702e;border-radius:45% 55% 60% 40%;background:radial-gradient(ellipse at bottom,#ffb43b88,transparent 70%);filter:drop-shadow(0 0 6px #ff642e); }
+.settings-preview-effects[data-style="gold"] i { border-color:#ffd166;border-radius:50%;box-shadow:0 0 10px #ffd166; }
+.settings-preview-effects[data-style="cross"] i { width:72px;height:3px;border:0;border-radius:2px;background:#ffe27a;box-shadow:0 0 8px #ffe27a; }
+.settings-preview-effects[data-style="cross"] i:nth-of-type(2) { transform:rotate(90deg); }
+.settings-preview-effects[data-style="cross"] i:nth-of-type(3) { transform:rotate(45deg); }
+.settings-preview-effects[data-style="bubbles"] i { border-color:#82dfff;background:#82dfff33;box-shadow:inset -4px -5px 10px #fff6; }
+.settings-preview-effects[data-style="notes"] i { width:auto;height:auto;border:0; }
+.settings-preview-effects[data-enabled="off"] i { display:none; }
+.settings-preview-effects[data-intensity="1"] i { opacity:.18; }
+.settings-preview-effects[data-intensity="3"] i { opacity:.85;filter:drop-shadow(0 0 8px currentColor); }
+@keyframes preview-effect-pulse { 0%{transform:scale(.35) translateY(18px);opacity:.12} 55%{opacity:.65} 100%{transform:scale(1.25) translateY(-10px);opacity:.08} }
+.settings-preview-volume { position:relative;flex-wrap:wrap;align-content:center; }
+.settings-preview-volume>i { background:linear-gradient(90deg,var(--device-primary-color,var(--gold)) var(--preview-volume,50%),var(--device-line-color,var(--line)) var(--preview-volume,50%)); }
+.preview-playback-readout { flex-basis:100%;color:var(--device-text-color,var(--text));font-size:.68rem; }
+.preview-meter { display:flex;align-items:end;gap:4px;width:100%;height:28px; }
+.preview-meter i { flex:1;height:35%;border-radius:3px 3px 0 0;background:var(--device-primary-color,var(--gold));animation:preview-meter-bounce var(--preview-beat-duration,1s) ease-in-out infinite alternate; }
+.preview-meter i:nth-child(2n) { height:70%;animation-delay:-.4s; }
+.preview-meter i:nth-child(3n) { height:48%;animation-delay:-.7s; }
+.settings-preview-volume[data-meter="3"] .preview-meter i:nth-child(n+4),.settings-preview-volume[data-meter="2"] .preview-meter i:nth-child(n+3) { opacity:.2; }
+@keyframes preview-meter-bounce { to{transform:scaleY(.35);opacity:.45} }
+@media (prefers-reduced-motion:reduce) { .settings-preview-effects i,.preview-meter i { animation:none; } }.settings-preview-stage[data-appearance="neon"] .preview-fall-bar[data-kind="bass"] { color:var(--preview-bass); }
+.settings-preview-stage[data-appearance="neon"] .preview-fall-bar[data-kind="accompaniment"] { color:var(--preview-accent); }
+.settings-preview-stage[data-appearance="synesthesia"] .preview-fall-bar[data-kind="bass"] { background:linear-gradient(180deg,color-mix(in srgb,var(--preview-bass) 45%,white),var(--preview-bass) 60%,color-mix(in srgb,var(--preview-bass) 65%,black)); }
+.settings-preview-stage[data-appearance="synesthesia"] .preview-fall-bar[data-kind="accompaniment"] { background:linear-gradient(180deg,color-mix(in srgb,var(--preview-accent) 45%,white),var(--preview-accent) 60%,color-mix(in srgb,var(--preview-accent) 65%,black)); }
+.settings-preview-effects[data-style="notes"] i:before { content:"♪";color:#ffe27a;font-size:1.2rem;font-style:normal; }
+/* A compact, layered octave keeps the key proportions recognizable at every preview size. */
+.settings-preview-keyboard { display:block; width:100%; height:auto; min-height:0; max-height:none; aspect-ratio:2.55 / 1; padding:0; overflow:hidden; border-radius:8px; background:#101820; }
+.settings-preview-keyboard .preview-white-keys { position:absolute;inset:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr)); }
+.settings-preview-keyboard .preview-white-keys i { position:relative;display:block;min-width:0;height:100%;border:0;border-right:1px solid #aeb8bf;border-radius:0 0 4px 4px;background:linear-gradient(90deg,#e5e9ec,#fff 30%,#f8fafb 82%,#d9dfe3);box-shadow:inset 0 -3px 0 #c8d0d5; }
+.settings-preview-keyboard .preview-white-keys i:first-child { border-radius:6px 0 0 4px; }
+.settings-preview-keyboard .preview-white-keys i:last-child { border-right:0;border-radius:0 6px 4px 0; }
+.settings-preview-keyboard .preview-black-keys { position:absolute;inset:0;pointer-events:none; }
+.settings-preview-keyboard .preview-black-keys b { position:absolute;top:0;width:7.5%;height:62%;border:1px solid #080c0f;border-top:0;border-radius:0 0 4px 4px;background:linear-gradient(90deg,#10171c,#303a40 28%,#101619 74%,#050809);box-shadow:0 3px 4px #0009; }
+.settings-preview-keyboard .preview-black-keys b:nth-child(1) { left:10.8%; }
+.settings-preview-keyboard .preview-black-keys b:nth-child(2) { left:25.1%; }
+.settings-preview-keyboard .preview-black-keys b:nth-child(3) { left:53.7%; }
+.settings-preview-keyboard .preview-black-keys b:nth-child(4) { left:68%; }
+.settings-preview-keyboard .preview-black-keys b:nth-child(5) { left:82.3%; }
+.settings-preview-keyboard[data-key-style="flat"] .preview-white-keys i { border-right:1px solid #b8c0c5;border-radius:0;background:#f5f6f7;box-shadow:none; }
+.settings-preview-keyboard[data-key-style="flat"] .preview-black-keys b { border:0;border-radius:0 0 2px 2px;background:#252b31;box-shadow:none; }
+.settings-preview-keyboard[data-key-style="realistic"] .preview-white-keys i { background:linear-gradient(100deg,#d1c4a8 0%,#fffdf4 24%,#f8f2e3 76%,#c4b698 100%);box-shadow:inset 1px 0 #fff9,inset -1px 0 #74654c,inset 0 -4px 0 #b9aa8c; }
+.settings-preview-keyboard[data-key-style="realistic"] .preview-black-keys b { background:linear-gradient(100deg,#39332d,#151311 45%,#080807 78%,#29251f);box-shadow:0 3px 4px #000a; }
+.settings-preview-keyboard .preview-white-keys i.is-playing { z-index:1;background:var(--preview-key-color);box-shadow:inset 0 0 12px color-mix(in srgb,var(--preview-key-color) 55%,white),0 0 8px color-mix(in srgb,var(--preview-key-color) 75%,transparent); }
+.settings-preview-keyboard[data-fill="off"] .preview-white-keys i.is-playing,.settings-preview-keyboard[data-color-on="off"] .preview-white-keys i.is-playing { background:#aab1b8; }
+.settings-preview-keyboard[data-edge="on"] .preview-white-keys i.is-playing { outline:2px solid var(--preview-edge-color);outline-offset:-3px; }
+.settings-preview-keyboard:after { z-index:3;right:0;bottom:0;left:0;height:var(--preview-line-size,3px);border-radius:0; }
+/* Keep the octave visible even when the preview card uses a compact grid. */
+#playerSettingsScreen .settings-preview-keyboard { position:relative;display:block;flex:none;width:100%;height:96px;min-height:96px;max-height:none;aspect-ratio:auto;overflow:hidden;background:#f4f6f7; }
+#playerSettingsScreen .settings-preview-keyboard .preview-white-keys { position:absolute;z-index:1;inset:0;display:grid;width:100%;height:100%;min-height:0;grid-template-columns:repeat(7,minmax(0,1fr));visibility:visible; }
+#playerSettingsScreen .settings-preview-keyboard .preview-white-keys i { display:block;visibility:visible;width:auto;height:100%;min-height:0;opacity:1; }
+#playerSettingsScreen .settings-preview-keyboard .preview-black-keys { position:absolute;z-index:2;inset:0;display:block;width:100%;height:100%;visibility:visible; }
+#playerSettingsScreen .settings-preview-keyboard .preview-black-keys b { display:block;visibility:visible; }
+@media (max-width:760px) {
+  #playerSettingsScreen .settings-preview-keyboard { height:76px;min-height:76px; }
+}

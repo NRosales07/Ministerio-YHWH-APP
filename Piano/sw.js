@@ -1,4 +1,4 @@
-const CACHE='yhwh-piano-v192';
+const CACHE='yhwh-piano-v193';
 const AUDIO_CACHE='yhwh-piano-audio-v2';
 const FILES=['./','./index.html','./piano.css','./piano.js','./tooltips.js','./instrument-maps.js','./manifest.json','./offline-audio.json','./iconos-piano-yhwh/web/icon.svg','./iconos-piano-yhwh/web/icon-512.png','./iconos-piano-yhwh/web/apple-touch-icon.png','./iconos-piano-yhwh/web/favicon.ico','./iconos-piano-yhwh/web/favicon-32.png','./iconos-piano-yhwh/web/favicon-16.png','./iconos-piano-yhwh/web/icon-192.png','./iconos-piano-yhwh/web/icon-maskable-192.png','./iconos-piano-yhwh/web/icon-maskable-512.png','./audio/040.wav','./audio/041.wav','./audio/042.wav','./audio/043.wav','./audio/044.wav','./audio/045.wav','./audio/046.wav','./audio/047.wav','./audio/048.wav','./audio/049.wav','./audio/050.wav','./audio/051.wav','./audio/052.wav','./audio/053.wav','./audio/054.wav','./audio/055.wav','./audio/056.wav','../canciones-adoracion.js','../canciones-jubilo.js'];
 let audioDownloadInProgress=false;
