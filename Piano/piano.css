@@ -3635,3 +3635,26 @@ html.device-customization-enabled body.melody-playing #player>.player-top #playM
 body.player-active.playback-finished #player .performance-layout>#playerTimeline {
   display:none !important;
 }
+
+/* ===== Estilo neón: borde del piano, barras de cristal y fuego ===== */
+.note-canvas{--neon-rgb:47,243,224}
+html body #player .note-canvas>.canvas-grid{background-image:linear-gradient(to right,#ffffff2c 1px,transparent 1px)!important}
+.neon-edge{--neon-thickness:3px;--neon-glow:1;position:absolute;left:0;right:0;bottom:0;height:58px;z-index:1;pointer-events:none;contain:strict;
+  background:linear-gradient(to top,rgba(var(--neon-rgb),calc(.4*var(--neon-glow))),rgba(var(--neon-rgb),calc(.14*var(--neon-glow))) 38%,rgba(var(--neon-rgb),0))}
+.neon-edge.is-off{display:none}
+.neon-edge::after{content:"";position:absolute;left:0;right:0;bottom:0;height:var(--neon-thickness);
+  background:linear-gradient(90deg,rgba(var(--neon-rgb),0),rgba(var(--neon-rgb),.95) 5%,color-mix(in srgb,rgb(var(--neon-rgb)) 14%,#fff) 50%,rgba(var(--neon-rgb),.95) 95%,rgba(var(--neon-rgb),0));
+  box-shadow:0 -2px 7px 1px rgba(var(--neon-rgb),calc(.9*var(--neon-glow))),0 -6px 18px 3px rgba(var(--neon-rgb),calc(.5*var(--neon-glow)))}
+/* Ajustes de la línea del piano */
+.neon-edge-settings .neon-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0}
+.neon-edge-settings .neon-row small{display:block;opacity:.7;font-size:.78em}
+.neon-edge-settings .neon-row input[type="color"]{width:44px;height:32px;padding:0;border:1px solid #8884;border-radius:8px;background:none}
+.neon-edge-settings #neonEdgeReset{margin-top:10px}
+/* Barras que suben al tocar una tecla: mismo aspecto de cristal */
+html body .manual-note-effect.is-bar{border-radius:2px!important;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--note-fx-color) 50%,#fff),color-mix(in srgb,var(--note-fx-color) 80%,transparent) 22%,color-mix(in srgb,var(--note-fx-color) 52%,transparent) 55%,color-mix(in srgb,var(--note-fx-color) 72%,transparent) 85%,color-mix(in srgb,var(--note-fx-color) 55%,#fff))!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--note-fx-color) 50%,#fff),0 0 6px 1px color-mix(in srgb,var(--note-fx-color) 40%,transparent)!important}
+html body .manual-note-effect.is-bar.has-fire::before{
+  background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--note-fx-color) 60%,transparent) 24%,color-mix(in srgb,var(--note-fx-color) 35%,#fff) 43%,color-mix(in srgb,var(--note-fx-color) 15%,#fff) 54%,color-mix(in srgb,var(--note-fx-color) 70%,transparent) 70%,transparent 100%)!important;background-size:100% 220%}
+/* Letra de las barras: blanca con borde negro (opción en Ajustes) */
+html body.note-label-outline .manual-note-effect .manual-note-label{color:#fff!important;-webkit-text-stroke:0!important;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 -1px 0 #000,0 1px 0 #000,-1px 0 0 #000,1px 0 0 #000,0 0 3px #000!important}
