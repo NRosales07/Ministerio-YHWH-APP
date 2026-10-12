@@ -1,0 +1,7 @@
+Drum Pad sample provenance
+
+Samples in this folder are a subset of the CC0 samples from Sonic Pi, originally obtained from Freesound.org. The source repository identifies each bundled sample as CC0 1.0 Universal Public Domain Dedication and records links to original uploads:
+https://github.com/samblenny/web-midi-drumkit/blob/main/LICENSES/LICENSE_SAMPLES.md
+https://github.com/samblenny/web-midi-drumkit/blob/main/samples/README.md
+
+This app uses drum_heavy_kick, drum_snare_hard, drum_snare_soft, drum_cymbal_closed, drum_cymbal_open, drum_cymbal_soft, drum_splash_hard, and drum_tom_mid_hard.
