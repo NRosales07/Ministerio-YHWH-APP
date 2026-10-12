@@ -1,0 +1,8 @@
+MuldjordKit acoustic drum samples — curated subset for YHWH Piano Drum Pad.
+
+Original MuldjordKit drum recordings by Lars Muldjord (DrumGizmo.org), licensed under Creative Commons Attribution 4.0 International (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/ .
+This SFZ/FLAC version was assembled for the FreePats project by Roberto (FreePats), based on the original kit. Source: https://github.com/freepats/muldjordkit .
+
+Attribution: “Drum samples provided by DrumGizmo.org.”
+
+This app contains a selected subset of the samples, renamed by pad and used as individual one-shot sounds. The source kit contains more samples, velocity layers, and round robins that are not included here. The included LICENSE-CC-BY-4.0.txt contains the license text.

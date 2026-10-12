@@ -3248,8 +3248,11 @@ const DRUM_PAD_SOUNDS=[
   {id:'crash',label:'Crash',file:'drum_splash_hard.flac',key:'d'},
   {id:'tom',label:'Tom',file:'drum_tom_mid_hard.flac',key:'f'}
 ];
+const MULDJORD_PAD_FILES={kick:'kick.flac',snare:'snare.flac',snareSoft:'snare-soft.flac',hatClosed:'hat-closed.flac',hatOpen:'hat-open.flac',ride:'ride.flac',crash:'crash.flac',tom:'tom.flac'};
+const MULDJORD_PAD_GAIN={snare:1.55,snareSoft:1.55,hatClosed:1.8};
+let selectedDrumPadKit=safeStorageGetItem('yhwh_drum_pad_kit_v1')==='muldjord'?'muldjord':'electronic';
 const DRUM_PAD_DEFAULT_KEY='yhwh_drum_pad_pattern_default_v1';
-let drumPadBuffers=new Map(),drumPadLoadPromise=null,drumPadPattern={bpm:metronomeBpm,bars:2,events:[]},drumPadReturnScreen='homeView',drumPadContextSong=null,drumPadReturnFocus=null,drumPadResumeMetronome=false;
+let drumPadBuffersByKit=new Map(),drumPadLoadPromises=new Map(),drumPadPattern={bpm:metronomeBpm,bars:2,events:[]},drumPadReturnScreen='homeView',drumPadContextSong=null,drumPadReturnFocus=null,drumPadResumeMetronome=false;
 let drumPadRecording=false,drumPadRecordingPreviousPattern=null,drumPadRecordStart=0,drumPadRecordBpm=100,drumPadRecordTimer=0,drumPadPlaybackTimer=0,drumPadNextLoopAt=0,drumPadRecordLoopTimer=0,drumPadRecordLoopAt=0,drumPadSources=[],drumPadCountInSources=[];
 function drumPadSongKey(song=state.song){return song?`yhwh_drum_pad_pattern_${song.category}_${encodeURIComponent(String(song.song.id))}_v1`:DRUM_PAD_DEFAULT_KEY;}
 function readDrumPadPattern(song=state.song){
@@ -3305,15 +3308,16 @@ async function publishSongDrums(context,pattern){
   }catch(error){console.warn('No se pudo publicar la batería',error);if(status)status.textContent=`No se pudo publicar la batería${error?.code?` (${error.code})`:''}. Quedó guardada en este teléfono; revisa la conexión o las reglas de Firebase.`;}
 }
 async function loadDrumPadBuffers(){
-  if(drumPadBuffers.size===DRUM_PAD_SOUNDS.length)return drumPadBuffers;
-  if(drumPadLoadPromise)return drumPadLoadPromise;
+  const kit=selectedDrumPadKit;
+  if(drumPadBuffersByKit.get(kit)?.size===DRUM_PAD_SOUNDS.length)return drumPadBuffersByKit.get(kit);
+  if(drumPadLoadPromises.has(kit))return drumPadLoadPromises.get(kit);
   const context=getAudioContext(),resume=resumeAudioContext(context);
-  drumPadLoadPromise=Promise.all(DRUM_PAD_SOUNDS.map(async sound=>{const response=await fetch(`audio/drum-pad/${sound.file}`);if(!response.ok)throw new Error(`No se pudo cargar ${sound.label}`);const buffer=await context.decodeAudioData(await response.arrayBuffer());return [sound.id,buffer];})).then(entries=>{drumPadBuffers=new Map(entries);return drumPadBuffers;}).finally(()=>{drumPadLoadPromise=null;});
-  await Promise.all([drumPadLoadPromise,resume]);return drumPadBuffers;
+  const promise=Promise.all(DRUM_PAD_SOUNDS.map(async sound=>{const file=kit==='muldjord'?`audio/drum-pad/muldjord/${MULDJORD_PAD_FILES[sound.id]}`:`audio/drum-pad/${sound.file}`;const response=await fetch(file);if(!response.ok)throw new Error(`No se pudo cargar ${sound.label}`);const buffer=await context.decodeAudioData(await response.arrayBuffer());return [sound.id,buffer];})).then(entries=>{const buffers=new Map(entries);drumPadBuffersByKit.set(kit,buffers);return buffers;}).finally(()=>drumPadLoadPromises.delete(kit));
+  drumPadLoadPromises.set(kit,promise);await Promise.all([promise,resume]);return drumPadBuffersByKit.get(kit);
 }
 function scheduleDrumPadHit(pad,when,trackPlayback=false){
-  const buffer=drumPadBuffers.get(pad);if(!buffer)return null;
-  const context=getAudioContext(),source=context.createBufferSource(),gain=context.createGain();source.buffer=buffer;gain.gain.setValueAtTime(.82,when);source.connect(gain);gain.connect(getMasterGain(context));source.start(Math.max(context.currentTime,when));
+  const buffer=drumPadBuffersByKit.get(selectedDrumPadKit)?.get(pad);if(!buffer)return null;
+  const context=getAudioContext(),source=context.createBufferSource(),gain=context.createGain(),padGain=selectedDrumPadKit==='muldjord'?(MULDJORD_PAD_GAIN[pad]||1):1;source.buffer=buffer;gain.gain.setValueAtTime(Math.min(1.35,.82*padGain),when);source.connect(gain);gain.connect(getMasterGain(context));source.start(Math.max(context.currentTime,when));
   const target=trackPlayback?state.activePlaybackSources:drumPadSources;target.push(source);source.addEventListener('ended',()=>{const index=target.indexOf(source);if(index>=0)target.splice(index,1);},{once:true});return source;
 }
 async function triggerDrumPad(pad){
@@ -3367,7 +3371,7 @@ function stopDrumPadPlayback(){
 }
 function stopDrumPadRecordPlayback(){if(drumPadRecordLoopTimer){clearInterval(drumPadRecordLoopTimer);drumPadRecordLoopTimer=0;}drumPadRecordLoopAt=0;drumPadSources.forEach(source=>{try{source.stop();}catch(_){}});drumPadSources=[];}
 function startDrumPadRecordPlayback(pattern,startAt,duration=Infinity){
-  stopDrumPadRecordPlayback();if(!pattern?.events?.length||!drumPadBuffers.size)return;
+  stopDrumPadRecordPlayback();if(!pattern?.events?.length||!drumPadBuffersByKit.get(selectedDrumPadKit)?.size)return;
   const context=getAudioContext(),bpm=Number(pattern.bpm)||metronomeBpm,tempo=Math.max(.5,Number(state.tempo)||1),beatSeconds=60/bpm/tempo,loopSeconds=pattern.bars*4*beatSeconds;
   drumPadRecordLoopAt=startAt;
   drumPadRecordLoopTimer=setInterval(()=>{const now=context.currentTime;while((drumPadRecordLoopAt-startAt)<duration&&drumPadRecordLoopAt<now+.16){for(const event of pattern.events){const when=drumPadRecordLoopAt+event.beat*beatSeconds;if(when-startAt<duration)scheduleDrumPadHit(event.pad,when);}drumPadRecordLoopAt+=loopSeconds;}},25);
@@ -3377,7 +3381,7 @@ function openDrumPadScreen(){
   const playerVisible=$('player')&&!$('player').classList.contains('hidden');if(state.recording){toast('Detén la grabación del piano antes de abrir el Drum Pad.');return;}
   drumPadReturnFocus=document.activeElement;drumPadReturnScreen=playerVisible?'player':'homeView';drumPadContextSong=playerVisible?state.song:null;drumPadResumeMetronome=playerVisible&&metronomeOn;
   stopPlayback();stopMetronome();stopDrumPadPlayback();drumPadPattern=readDrumPadEditable(drumPadContextSong);
-  updateDrumPadSongLabel();renderDrumPadGrid();$('drumPadBpm').value=String(drumPadPattern.bpm);$('drumPadBars').value=String(drumPadPattern.bars);setMetronomeBpm(drumPadPattern.bpm,true);
+  updateDrumPadSongLabel();$('drumPadKit').value=selectedDrumPadKit;renderDrumPadGrid();$('drumPadBpm').value=String(drumPadPattern.bpm);$('drumPadBars').value=String(drumPadPattern.bars);setMetronomeBpm(drumPadPattern.bpm,true);
   const status=$('drumPadPatternStatus');if(status)status.textContent=drumPadPattern.events.length?`Patrón listo · ${drumPadPattern.events.length} golpes · ${drumPadPattern.bars} compases.`:'Toca los cuadros para probar los sonidos.';
   transitionScreen('drumPadScreen',['homeView','songView','createView','createTrackScreen','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen','playerSettingsScreen','drumPadScreen']);window.scrollTo(0,0);setTimeout(()=>document.querySelector('#drumPadScreen [data-drum-pad]')?.focus({preventScroll:true}),0);
   syncDrumPadSongToggle();
@@ -3426,7 +3430,7 @@ async function playDrumPadPattern(){
   const status=$('drumPadPatternStatus');if(status)status.textContent=`Reproduciendo en bucle · ${bpm} BPM`;
 }
 function scheduleSongDrumPattern(pattern,startAt,duration){
-  if(!pattern?.events?.length||!drumPadBuffers.size)return;const bpm=Number(pattern.bpm)||metronomeBpm,beatSeconds=60/bpm,loopBeats=pattern.bars*4,loopSeconds=loopBeats*beatSeconds,stateTempo=Math.max(.5,Number(state.tempo)||1);
+  if(!pattern?.events?.length||!drumPadBuffersByKit.get(selectedDrumPadKit)?.size)return;const bpm=Number(pattern.bpm)||metronomeBpm,beatSeconds=60/bpm,loopBeats=pattern.bars*4,loopSeconds=loopBeats*beatSeconds,stateTempo=Math.max(.5,Number(state.tempo)||1);
   for(let loopStart=0;loopStart/stateTempo<duration;loopStart+=loopSeconds){for(const event of pattern.events){const offset=(loopStart+event.beat*beatSeconds)/stateTempo;if(offset<duration)scheduleDrumPadHit(event.pad,startAt+offset,true);}}
 }
 function setMasterVolume(percent){
@@ -4315,6 +4319,13 @@ function bindInterface() {
   $('freePlayBtn').onclick = openFreePlay;
   $('drumPadHomeBtn').onclick=openDrumPadScreen;
   $('drumPadOpen').onclick=openDrumPadScreen;
+  $('drumPadKit').addEventListener('change',event=>{
+    if(drumPadRecording){event.target.value=selectedDrumPadKit;toast('Detén la grabación antes de cambiar los sonidos.');return;}
+    stopDrumPadPlayback();selectedDrumPadKit=event.target.value==='muldjord'?'muldjord':'electronic';
+    try{localStorage.setItem('yhwh_drum_pad_kit_v1',selectedDrumPadKit);}catch(_){}
+    const status=$('drumPadPatternStatus');if(status)status.textContent=selectedDrumPadKit==='muldjord'?'Cargando sonidos acústicos…':'Cargando sonidos electrónicos…';
+    void loadDrumPadBuffers().then(()=>{if(status)status.textContent=`Sonidos ${selectedDrumPadKit==='muldjord'?'acústicos':'electrónicos'} listos.`;}).catch(error=>{console.warn('No se pudieron cargar los sonidos seleccionados:',error);if(status)status.textContent='No se pudieron cargar estos sonidos. Puedes elegir la otra batería e intentarlo de nuevo.';toast('No se pudieron cargar los sonidos de batería.');});
+  });
   $('closeDrumPad').onclick=closeDrumPadScreen;
   const drumPadGrid=document.querySelector('.drum-pad-grid');drumPadGrid.addEventListener('pointerdown',event=>{const pad=event.target.closest('[data-drum-pad]');if(pad)void triggerDrumPad(pad.dataset.drumPad);});drumPadGrid.addEventListener('click',event=>{if(event.detail!==0)return;const pad=event.target.closest('[data-drum-pad]');if(pad)void triggerDrumPad(pad.dataset.drumPad);});
   $('drumPadBpm').addEventListener('change',event=>{const bpm=Math.min(240,Math.max(40,Math.round(Number(event.target.value)||100)));event.target.value=String(bpm);setMetronomeBpm(bpm,true);drumPadPattern.bpm=bpm;});
