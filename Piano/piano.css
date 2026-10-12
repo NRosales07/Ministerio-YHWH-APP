@@ -4282,3 +4282,22 @@ html[data-piano-key-style="realistic"] body.keys-fill-off #player .piano-panel .
 .playback-count-in strong{display:grid;width:clamp(92px,22vw,168px);aspect-ratio:1;place-items:center;border:2px solid color-mix(in srgb,var(--primary,#2abbd1) 78%,white);border-radius:50%;background:color-mix(in srgb,var(--stage-bg,#07131b) 76%,transparent);color:#fff;font-size:clamp(4.5rem,16vw,8rem);font-weight:900;line-height:1;text-shadow:0 0 26px color-mix(in srgb,var(--primary,#2abbd1) 80%,transparent);box-shadow:0 0 36px color-mix(in srgb,var(--primary,#2abbd1) 35%,transparent);backdrop-filter:blur(4px);animation:playback-count-pop .16s ease-out}
 @keyframes playback-count-pop{from{opacity:.35;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.playback-count-in strong{animation:none}}
+
+/* Drum Pad: interruptor por alabanza y cuadrícula de pasos. */
+.drum-pad-song-toggle{display:flex;align-items:flex-start;gap:10px;margin:0 0 14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);cursor:pointer}
+.drum-pad-song-toggle.hidden{display:none}
+.drum-pad-song-toggle input{width:20px;height:20px;margin-top:2px;accent-color:var(--gold);flex:none}
+.drum-pad-song-toggle b{display:block;font-size:.9rem}.drum-pad-song-toggle small{display:block;margin-top:2px;color:var(--muted);font-size:.78rem;line-height:1.4}
+.drum-step-section{margin-top:20px}
+.drum-step-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.drum-step-head h2{margin:0;font-size:1rem}
+.drum-step-head button{min-height:36px;padding:6px 12px;border-radius:8px;font:inherit;font-size:.8rem;font-weight:650;cursor:pointer}
+.drum-step-grid{--drum-steps:32;overflow-x:auto;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);-webkit-overflow-scrolling:touch}
+.drum-step-grid.is-recording{opacity:.55;pointer-events:none}
+.drum-step-row{display:grid;grid-template-columns:104px repeat(var(--drum-steps),minmax(22px,1fr));gap:3px;align-items:center;min-width:calc(104px + var(--drum-steps) * 25px);margin-bottom:3px}
+.drum-step-label{position:sticky;left:0;z-index:1;padding-right:6px;background:var(--panel2);color:var(--muted);font-size:.74rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drum-step{height:30px;padding:0;border:1px solid var(--line);border-radius:5px;background:var(--panel);cursor:pointer;touch-action:manipulation}
+.drum-step.beat-start{border-left-color:color-mix(in srgb,var(--muted) 70%,var(--line))}
+.drum-step.bar-start{margin-left:5px;border-left:2px solid var(--gold)}
+.drum-step.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px color-mix(in srgb,var(--gold) 45%,transparent)}
+.drum-step:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+@media(max-width:700px){.drum-step{height:34px}.drum-step-row{grid-template-columns:84px repeat(var(--drum-steps),24px);min-width:calc(84px + var(--drum-steps) * 27px)}}
