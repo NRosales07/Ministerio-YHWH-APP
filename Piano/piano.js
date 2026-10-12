@@ -318,8 +318,8 @@ function renderLists() {
 
   const query = $('createSearch').value;
   const allSongs = [
-    ...songsFor('adoracion').filter(song => !hasCompleteCreateSet('adoracion',song.id) && matches(song, query)).map(song => ({ song, category: 'adoracion' })),
-    ...songsFor('jubilo').filter(song => !hasCompleteCreateSet('jubilo',song.id) && matches(song, query)).map(song => ({ song, category: 'jubilo' }))
+    ...songsFor('adoracion').filter(song => matches(song, query)).map(song => ({ song, category: 'adoracion' })),
+    ...songsFor('jubilo').filter(song => matches(song, query)).map(song => ({ song, category: 'jubilo' }))
   ];
   const createResults = [
     ...allSongs.filter(item => item.category === 'adoracion').slice(0, 40),
@@ -327,7 +327,7 @@ function renderLists() {
   ];
   if($('createCount'))$('createCount').textContent = `${allSongs.length} disponibles`;
   if($('createFooterCount'))$('createFooterCount').textContent=`${allSongs.length} ${allSongs.length===1?'alabanza disponible':'alabanzas disponibles'}`;
-  if($('createPermissionHint'))$('createPermissionHint').textContent=state.admin?'La alabanza permanece en la lista hasta que guardes melodía y los dos acompañamientos.':'Solo Admin puede grabar pistas. Las alabanzas con las tres pistas completas no aparecen aquí.';
+  if($('createPermissionHint'))$('createPermissionHint').textContent=state.admin?'Busca una alabanza para grabar, reemplazar o eliminar una pista guardada.':'Solo Admin puede grabar, reemplazar o eliminar pistas.';
   const createGroup = (cat, label) => {
     const items = createResults.filter(item => item.category === cat);
     if (!items.length) return '';
@@ -338,7 +338,7 @@ function renderLists() {
     ? createGroup('adoracion', 'Adoración') + createGroup('jubilo', 'Júbilo') + (allSongs.length > createResults.length ? '<div class="empty">Se muestran hasta 40 de cada sección. Escribe el nombre en Buscar para encontrar otra alabanza.</div>' : '')
     : (songsFor('adoracion').length+songsFor('jubilo').length===0
       ? '<div class="empty">No se cargaron las canciones. Comprueba que canciones-adoracion.js y canciones-jubilo.js estén disponibles.</div>'
-      : '<div class="empty">No hay alabanzas pendientes de grabar que coincidan. Cuando una tenga melodía y los dos acompañamientos guardados, dejará de aparecer aquí.</div>');
+      : '<div class="empty">No hay alabanzas que coincidan con la búsqueda.</div>');
 
   document.querySelectorAll('#createList [data-song-id]').forEach(card => {
     card.onclick = () => {
