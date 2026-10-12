@@ -1382,12 +1382,20 @@ function instrumentTrackConfig(category,id,type){
   const track=trackFor(category,id,type)||{};
   const newTrack=['melodia','acompanamiento1','acompanamiento2'].includes(type);
   const instrument=saved.instrument||track.instrument||(type==='acompanamiento1'?state.bassInstrument:state.instrument);
-  return {instrument,intensity:['very-soft','soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:saved.layerInstrument||track.layerInstrument||(newTrack?'strings':state.layerInstrument),layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
+  return {instrument,intensity:['very-soft','soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',octaveShift:[-24,-12,0,12,24].includes(Number(saved.octaveShift))?Number(saved.octaveShift):0,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:saved.layerInstrument||track.layerInstrument||(newTrack?'strings':state.layerInstrument),layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
+}
+function shiftRecordedTrackNotes(notes,octaveShift){
+  const shift=Number(octaveShift)||0;
+  return notes.map(note=>({...note,midi:Number(note.midi)+shift})).filter(note=>Number.isFinite(note.midi)&&note.midi>=0&&note.midi<=127);
+}
+function shiftRecordedTrackChords(chords,octaveShift){
+  const shift=Number(octaveShift)||0;
+  return shift?chords.map(chord=>({...chord,octave:(Number(chord.octave)||0)+shift})):chords;
 }
 function syncSongTrackSettingsForm(type=$('songSettingsTrack')?.value||selectedCreateTrack){
   if(!selectedCreateSong)return;
   const {category,song}=selectedCreateSong,config=instrumentTrackConfig(category,song.id,type);
-  $('songTrackInstrument').value=config.instrument;$('songTrackIntensity').value=config.intensity||'strong';$('songTrackLayerEnabled').checked=config.layerEnabled;
+  $('songTrackInstrument').value=config.instrument;$('songTrackIntensity').value=config.intensity||'strong';$('songTrackOctaveShift').value=String(config.octaveShift||0);$('songTrackLayerEnabled').checked=config.layerEnabled;
   $('songTrackLayerInstrument').value=config.layerInstrument;$('songTrackLayerVolume').value=String(config.layerVolume);
   $('songTrackLayerVolumeValue').textContent=`${config.layerVolume}%`;
   $('songTrackLayerInstrument').disabled=!config.layerEnabled;$('songTrackLayerVolume').disabled=!config.layerEnabled;
@@ -1397,7 +1405,7 @@ async function saveSongTrackSettings(){
   if(!selectedCreateSong)return;
   const {song,category}=selectedCreateSong,type=$('songSettingsTrack').value;
   const current=instrumentTrackConfig(category,song.id,type);
-  const config={instrument:$('songTrackInstrument').value||current.instrument,intensity:$('songTrackIntensity').value||current.intensity,layerEnabled:$('songTrackLayerEnabled').checked,layerInstrument:$('songTrackLayerInstrument').value||current.layerInstrument,layerVolume:Math.max(0,Math.min(200,Number($('songTrackLayerVolume').value)||0))};
+  const config={instrument:$('songTrackInstrument').value||current.instrument,intensity:$('songTrackIntensity').value||current.intensity,octaveShift:Number($('songTrackOctaveShift').value)||0,layerEnabled:$('songTrackLayerEnabled').checked,layerInstrument:$('songTrackLayerInstrument').value||current.layerInstrument,layerVolume:Math.max(0,Math.min(200,Number($('songTrackLayerVolume').value)||0))};
   const record=melodyFor(category,song.id)||{},tracks=melodyTracks(record);
   tracks.trackSettings={...tracks.trackSettings,[type]:config};
   const stored=serializeMelodyTracks(record,tracks);
@@ -1436,6 +1444,7 @@ function syncModeScreen(){
     if(enabled)enabled.checked=!!config.layerEnabled;if(volume){volume.value=String(config.layerVolume);volume.disabled=!config.layerEnabled;}if(output)output.textContent=`${config.layerVolume}%`;
     if(layerInstrument)layerInstrument.disabled=!config.layerEnabled;
     const intensity=document.querySelector(`[data-track-intensity="${type}"]`);if(intensity)intensity.value=config.intensity||'strong';
+    const octave=document.querySelector(`[data-track-octave="${type}"]`);if(octave)octave.value=String(config.octaveShift||0);
   });
   selectPlayMode('listen');showModeScreenTab('instructions');
   const track=selectedSongForContinue&&(['introduccion','melodia','acompanamiento1','acompanamiento2','voz'].map(type=>trackFor(selectedSongForContinue.category,selectedSongForContinue.song.id,type)).find(item=>item?.notas?.length));
@@ -4046,16 +4055,16 @@ function schedulePlaybackNote(midi,element,duration,when,prepared,cut,showReadou
   if(element)queueKeyLight(when,element,['playing'],(stopAt+release-when)*1000);
 }
 function playbackGroupsForCurrentSong(){
-  const currentSettings={instrument:state.instrument,intensity:state.trumpetIntensity||'strong',layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
-  if(state.playMode!=='performance'||!state.song)return [{type:state.melodyType,kind:'melody',notes:notesForCurrentMix(),chords:state.voiceMix.acordes?state.chords:[],settings:currentSettings}];
+  const currentSettings=state.song&&['melodia','acompanamiento1','acompanamiento2'].includes(state.melodyType)?instrumentTrackConfig(state.song.category,state.song.song.id,state.melodyType):{instrument:state.instrument,intensity:state.trumpetIntensity||'strong',octaveShift:0,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
+  if(state.playMode!=='performance'||!state.song)return [{type:state.melodyType,kind:'melody',notes:shiftRecordedTrackNotes(notesForCurrentMix(),currentSettings.octaveShift),chords:shiftRecordedTrackChords(state.voiceMix.acordes?state.chords:[],currentSettings.octaveShift),settings:currentSettings}];
   const record=melodyFor(state.song.category,state.song.song.id)||{},tracks=melodyTracks(record);
   const mainType=['melodia','voz','introduccion'].find(type=>tracks[type]?.notas?.length)||null;
   const types=[...(mainType?[mainType]:[]),'acompanamiento1','acompanamiento2'];
   const groups=[];
   types.forEach(type=>{
     const track=tracks[type];if(!track?.notas?.length)return;
-    const isMain=type===mainType,notes=isMain&&type===state.melodyType?notesForCurrentMix():notesForTrackPlayback(track.notas,type);
-    groups.push({type,kind:isMain?'melody':'accompaniment',notes,chords:isMain?(state.voiceMix.acordes?(track.acordes||[]):[]):(track.acordes||[]),settings:instrumentTrackConfig(state.song.category,state.song.song.id,type)});
+    const isMain=type===mainType,settings=instrumentTrackConfig(state.song.category,state.song.song.id,type),notes=isMain&&type===state.melodyType?notesForCurrentMix():notesForTrackPlayback(track.notas,type);
+    groups.push({type,kind:isMain?'melody':'accompaniment',notes:shiftRecordedTrackNotes(notes,settings.octaveShift),chords:shiftRecordedTrackChords(isMain?(state.voiceMix.acordes?(track.acordes||[]):[]):(track.acordes||[]),settings.octaveShift),settings});
   });
   return groups;
 }
@@ -4241,7 +4250,8 @@ async function saveMelody() {
   };
   try {
     const source=melodyFor(category,song.id),tracks=melodyTracks(source);tracks[state.melodyType]=payload;
-    tracks.trackSettings={...tracks.trackSettings,[state.melodyType]:{instrument:state.instrument,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume}};
+    const savedSettings=instrumentTrackConfig(category,song.id,state.melodyType);
+    tracks.trackSettings={...tracks.trackSettings,[state.melodyType]:{...savedSettings,instrument:state.instrument,intensity:state.trumpetIntensity||savedSettings.intensity,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume}};
     const storedRecord=serializeMelodyTracks(source,tracks);
     await state.set(state.ref(state.db, `melodias/${category}/${song.id}`), storedRecord);
     state.melodies[category] ||= {};
@@ -4387,6 +4397,7 @@ function bindInterface() {
   $('songSettingsTrack').onchange=()=>{selectedCreateTrack=$('songSettingsTrack').value;syncSongTrackSettingsForm(selectedCreateTrack);};
   $('songTrackInstrument').onchange=saveSongTrackSettings;
   $('songTrackIntensity').onchange=saveSongTrackSettings;
+  $('songTrackOctaveShift').onchange=saveSongTrackSettings;
   $('songTrackLayerEnabled').onchange=saveSongTrackSettings;
   $('songTrackLayerInstrument').onchange=saveSongTrackSettings;
   $('songTrackLayerVolume').oninput=()=>{$('songTrackLayerVolumeValue').textContent=`${$('songTrackLayerVolume').value}%`;if(selectedCreateSong&&$('songSettingsTrack').value===state.melodyType)applySongTrackInstrument({...instrumentTrackConfig(selectedCreateSong.category,selectedCreateSong.song.id,state.melodyType),layerEnabled:$('songTrackLayerEnabled').checked,layerInstrument:$('songTrackLayerInstrument').value,layerVolume:Number($('songTrackLayerVolume').value)});};
@@ -4416,6 +4427,10 @@ function bindInterface() {
     const type=event.currentTarget.dataset.trackIntensity,intensity=event.currentTarget.value;
     if(selectedSongForContinue)saveVisibleTrackSettings(type,{intensity});
     else if(!state.song){try{localStorage.setItem(`yhwh_intensity_${type}`,intensity);}catch(_){}}
+  }));
+  document.querySelectorAll('[data-track-octave]').forEach(select=>select.addEventListener('change',event=>{
+    const type=event.currentTarget.dataset.trackOctave,octaveShift=Number(event.currentTarget.value)||0;
+    if(selectedSongForContinue)saveVisibleTrackSettings(type,{octaveShift});
   }));
   ['melodia','acompanamiento1','acompanamiento2'].forEach(type=>{
     const prefix=`mode_${type}_`;
@@ -5060,6 +5075,9 @@ async function prefetchInstrumentSounds(instrument,onProgress){
 const DOWNLOAD_CATALOG=[
   {section:'Pianos',items:[
     ['steinway-grand','Steinway de cola',164,16.15],['headroom-piano','Headroom · Yamaha C3',312,148.99],['splendid-grand','Splendid Grand Piano',234,73.30],['livingroom-upright-micro','LivingRoom Upright Micro',141,101.75],['maestro-concert-grand','Maestro Concert Grand · Yamaha CF-3',820,256.07],['salamander-grand','Salamander Grand · Yamaha C5',145,331.44],['upright-piano-vsco2','Upright Piano · VSCO 2',69,241.89],['upright-nr1-vsco2','Upright No. 1 · VSCO 2',79,147.89]
+  ]},
+  {section:'Bajos',items:[
+    ['growlybass-clean','Bajo eléctrico · Growlybass',224,170.17],['fashionbass-clean','Bajo eléctrico · Fashionbass Clean',285,315.40]
   ]},
   {section:'Cuerdas',items:[
     ['strings','Ensemble de cuerdas · VSCO 2',13,21.99],['solo-violin','Violín solista · VSCO 2',33,70.92],['sigex-strings','Ensemble de violines · Signal Experiments',17,2.22],['bigcat-cello','Cello solista · Bigcat',17,126.46]
