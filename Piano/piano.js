@@ -8,14 +8,14 @@ const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 
 const NOTE_NAMES_LATINO = ['Do', 'Do♯', 'Re', 'Re♯', 'Mi', 'Fa', 'Fa♯', 'Sol', 'Sol♯', 'La', 'La♯', 'Si'];
 const NOTE_ROOT_LATINO = { C:'Do', D:'Re', E:'Mi', F:'Fa', G:'Sol', A:'La', B:'Si' };
 const UPRIGHT_INSTRUMENT_IDS=['upright-piano-vsco2','upright-nr1-vsco2'];
-const NEW_INSTRUMENT_IDS=['sigex-strings','sigex-brass','mtg-solo-sax','church-organ','bigcat-cello','vibraphone'];
+const NEW_INSTRUMENT_IDS=['sigex-strings','sigex-brass','mtg-solo-sax','church-organ','bigcat-cello','vibraphone','growlybass-clean'];
 const LAST_HEARD_STORAGE_KEY = 'yhwh_last_heard_song';
 const SAVED_MASTER_VOLUME_RAW = safeStorageGetItem('yhwh_piano_master_volume');
 const SAVED_MASTER_VOLUME = SAVED_MASTER_VOLUME_RAW===null?1:Number(SAVED_MASTER_VOLUME_RAW);
 const state = {
   view: 'home', category: 'adoracion', song: null, melodyType:'introduccion', voiceMix:{principal:true,segunda:false,tercera:false,acordes:true}, voiceDirection:{segunda:safeStorageGetItem('yhwh_voice_second_direction')==='up'?'up':'down',tercera:safeStorageGetItem('yhwh_voice_third_direction')==='up'?'up':'down'}, pendingSong:null, pendingPurpose:'listen', admin: false, selectedSongChord:null, theoryChord: { root:'C', quality:'major' }, theoryCircleChord: null, theoryCircleIndex:0, theoryCircleMinor:false, theoryCircleChords:null, theoryScale:'major', theoryInterval:7, theoryPianoIntervals:null, theoryPianoMode:'chord',
   melodies: readMelodyCache(), melodyDirty:false, recording: false, recordingGuidePlaying:false, recordGuideNotes:[], recordGuideType:'', recordStart: 0, notes: [], chords: [], chordTarget: null, melodySoundEnabled:safeStorageGetItem('yhwh_melody_sound_enabled')!=='0', bassSoundEnabled:safeStorageGetItem('yhwh_bass_sound_enabled')!=='0', stringsLayerEnabled:safeStorageGetItem('yhwh_piano_strings_enabled')==='1', stringsLayerVolume:(()=>{const value=safeStorageGetItem('yhwh_piano_strings_volume');return value===null?70:Math.min(200,Math.max(0,Number.isFinite(Number(value))?Number(value):70));})(), stringsLayerAttackMs:(()=>{const value=safeStorageGetItem('yhwh_piano_strings_attack_ms');return value===null?10:Math.min(200,Math.max(0,Number.isFinite(Number(value))?Number(value):10));})(),
-  buffers: new Map(), instrumentBuffers: new Map(), stringsBuffers:new Map(), sampleLoads:new Map(), instrumentSampleLoads:new Map(), stringsSampleLoads:new Map(), instrumentRoundRobinCounters:new Map(), instrument: ['steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','strings','solo-violin','distorted-guitar',...UPRIGHT_INSTRUMENT_IDS,...NEW_INSTRUMENT_IDS].includes(safeStorageGetItem('yhwh_piano_instrument')) ? safeStorageGetItem('yhwh_piano_instrument') : 'grand-piano', layerInstrument: ['grand-piano','steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','solo-violin','distorted-guitar',...UPRIGHT_INSTRUMENT_IDS,...NEW_INSTRUMENT_IDS].includes(safeStorageGetItem('yhwh_piano_layer_instrument')) ? safeStorageGetItem('yhwh_piano_layer_instrument') : 'strings', bassInstrument: ['grand-piano','steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','strings','solo-violin','distorted-guitar',...UPRIGHT_INSTRUMENT_IDS,...NEW_INSTRUMENT_IDS].includes(safeStorageGetItem('yhwh_piano_bass_instrument')) ? safeStorageGetItem('yhwh_piano_bass_instrument') : 'grand-piano', trumpetIntensity: ['soft','medium','strong'].includes(safeStorageGetItem('yhwh_piano_trumpet_intensity')) ? safeStorageGetItem('yhwh_piano_trumpet_intensity') : 'strong', headroomVelocityLayer:Math.min(5,Math.max(1,Number(safeStorageGetItem('yhwh_piano_headroom_layer'))||3)), sustain: safeStorageGetItem('yhwh_piano_sustain') === '1', octaveDoubling:safeStorageGetItem('yhwh_piano_octave_doubling')==='1', tempo:Math.min(1.5,Math.max(.5,Number(safeStorageGetItem('yhwh_piano_tempo'))||1)), playing: false, playTimers: [], activePlaybackSources:[], activePointers: new Map(), playbackPreparing:false, keyboardOctaveMidi:60, keyboardZoom:Math.min(1.8,Math.max(0.17,Number(safeStorageGetItem('yhwh_piano_keyboard_zoom'))||1)), transpose: 0, originalTonic: 'C', songTonic: null,
+  buffers: new Map(), instrumentBuffers: new Map(), stringsBuffers:new Map(), sampleLoads:new Map(), instrumentSampleLoads:new Map(), stringsSampleLoads:new Map(), instrumentRoundRobinCounters:new Map(), instrument: ['steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','strings','solo-violin','distorted-guitar',...UPRIGHT_INSTRUMENT_IDS,...NEW_INSTRUMENT_IDS].includes(safeStorageGetItem('yhwh_piano_instrument')) ? safeStorageGetItem('yhwh_piano_instrument') : 'grand-piano', layerInstrument: ['grand-piano','steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','solo-violin','distorted-guitar',...UPRIGHT_INSTRUMENT_IDS,...NEW_INSTRUMENT_IDS].includes(safeStorageGetItem('yhwh_piano_layer_instrument')) ? safeStorageGetItem('yhwh_piano_layer_instrument') : 'strings', bassInstrument: ['grand-piano','steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','strings','solo-violin','distorted-guitar',...UPRIGHT_INSTRUMENT_IDS,...NEW_INSTRUMENT_IDS].includes(safeStorageGetItem('yhwh_piano_bass_instrument')) ? safeStorageGetItem('yhwh_piano_bass_instrument') : 'grand-piano', trumpetIntensity: ['soft','medium','strong','very-strong'].includes(safeStorageGetItem('yhwh_piano_trumpet_intensity')) ? safeStorageGetItem('yhwh_piano_trumpet_intensity') : 'strong', headroomVelocityLayer:Math.min(5,Math.max(1,Number(safeStorageGetItem('yhwh_piano_headroom_layer'))||3)), sustain: safeStorageGetItem('yhwh_piano_sustain') === '1', octaveDoubling:safeStorageGetItem('yhwh_piano_octave_doubling')==='1', tempo:Math.min(1.5,Math.max(.5,Number(safeStorageGetItem('yhwh_piano_tempo'))||1)), playing: false, playTimers: [], activePlaybackSources:[], activePointers: new Map(), playbackPreparing:false, keyboardOctaveMidi:60, keyboardZoom:Math.min(1.8,Math.max(0.17,Number(safeStorageGetItem('yhwh_piano_keyboard_zoom'))||1)), transpose: 0, originalTonic: 'C', songTonic: null,
   notation: ['ninguno','octavas','americano','latino','movil','grados','simple'].includes(safeStorageGetItem('yhwh_piano_note_labels')) ? safeStorageGetItem('yhwh_piano_note_labels') : (safeStorageGetItem('yhwh_cifrado_latino') === '1' ? 'latino' : 'americano'), showChordNames:true, showBarNotes:safeStorageGetItem('yhwh_piano_show_bar_notes')!=='0', keyColor:/^#[0-9a-f]{6}$/i.test(safeStorageGetItem('yhwh_piano_key_color')||'')?safeStorageGetItem('yhwh_piano_key_color'):'#90dd4a', bassColor:/^#[0-9a-f]{6}$/i.test(safeStorageGetItem('yhwh_piano_bass_color')||'')?safeStorageGetItem('yhwh_piano_bass_color'):'#bb82ef', lastMidi: null, db: null, auth: null,
   ref: null, set: null, onValue: null, signIn: null, signOut: null, authListener: null
 };
@@ -1382,12 +1382,12 @@ function instrumentTrackConfig(category,id,type){
   const track=trackFor(category,id,type)||{};
   const newTrack=['melodia','acompanamiento1','acompanamiento2'].includes(type);
   const instrument=saved.instrument||track.instrument||(type==='acompanamiento1'?state.bassInstrument:state.instrument);
-  return {instrument,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:saved.layerInstrument||track.layerInstrument||(newTrack?'strings':state.layerInstrument),layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
+  return {instrument,intensity:['soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:saved.layerInstrument||track.layerInstrument||(newTrack?'strings':state.layerInstrument),layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
 }
 function syncSongTrackSettingsForm(type=$('songSettingsTrack')?.value||selectedCreateTrack){
   if(!selectedCreateSong)return;
   const {category,song}=selectedCreateSong,config=instrumentTrackConfig(category,song.id,type);
-  $('songTrackInstrument').value=config.instrument;$('songTrackLayerEnabled').checked=config.layerEnabled;
+  $('songTrackInstrument').value=config.instrument;$('songTrackIntensity').value=config.intensity||'strong';$('songTrackLayerEnabled').checked=config.layerEnabled;
   $('songTrackLayerInstrument').value=config.layerInstrument;$('songTrackLayerVolume').value=String(config.layerVolume);
   $('songTrackLayerVolumeValue').textContent=`${config.layerVolume}%`;
   $('songTrackLayerInstrument').disabled=!config.layerEnabled;$('songTrackLayerVolume').disabled=!config.layerEnabled;
@@ -1397,7 +1397,7 @@ async function saveSongTrackSettings(){
   if(!selectedCreateSong)return;
   const {song,category}=selectedCreateSong,type=$('songSettingsTrack').value;
   const current=instrumentTrackConfig(category,song.id,type);
-  const config={instrument:$('songTrackInstrument').value||current.instrument,layerEnabled:$('songTrackLayerEnabled').checked,layerInstrument:$('songTrackLayerInstrument').value||current.layerInstrument,layerVolume:Math.max(0,Math.min(200,Number($('songTrackLayerVolume').value)||0))};
+  const config={instrument:$('songTrackInstrument').value||current.instrument,intensity:$('songTrackIntensity').value||current.intensity,layerEnabled:$('songTrackLayerEnabled').checked,layerInstrument:$('songTrackLayerInstrument').value||current.layerInstrument,layerVolume:Math.max(0,Math.min(200,Number($('songTrackLayerVolume').value)||0))};
   const record=melodyFor(category,song.id)||{},tracks=melodyTracks(record);
   tracks.trackSettings={...tracks.trackSettings,[type]:config};
   const stored=serializeMelodyTracks(record,tracks);
@@ -1411,7 +1411,7 @@ async function saveSongTrackSettings(){
   renderLists();
 }
 function applySongTrackInstrument(config){
-  state.instrument=config.instrument;state.layerInstrument=config.layerInstrument;state.stringsLayerEnabled=!!config.layerEnabled;state.stringsLayerVolume=config.layerVolume;
+  state.instrument=config.instrument;state.trumpetIntensity=config.intensity||'strong';state.headroomVelocityLayer=state.trumpetIntensity==='soft'?1:state.trumpetIntensity==='medium'?3:state.trumpetIntensity==='strong'?4:5;if(config.instrument==='livingroom-upright-micro'&&state.headroomVelocityLayer>2)state.headroomVelocityLayer=2;state.layerInstrument=config.layerInstrument;state.stringsLayerEnabled=!!config.layerEnabled;state.stringsLayerVolume=config.layerVolume;
   if($('instrumentSelect'))$('instrumentSelect').value=state.instrument;
   syncDynamicLayerControl(state.instrument);syncPianoLayerControl(state.instrument);syncInstrumentButtons();syncStringsLayerControls();if(audioContext)updateStringsLayerGain();
   primeAudioForInstrument(state.instrument);if(state.stringsLayerEnabled)primeStringsLayer();
@@ -1428,13 +1428,14 @@ function syncModeScreen(){
   if(third&&source){third.innerHTML=source.innerHTML;third.value=selectedSongForContinue?instrumentTrackConfig(selectedSongForContinue.category,selectedSongForContinue.song.id,'acompanamiento2').instrument:source.value;}
   const trackControlIds={melodia:'modeMelodyInstrument',acompanamiento1:'modeBassInstrument',acompanamiento2:'modeAccompaniment2Instrument'};
   ['melodia','acompanamiento1','acompanamiento2'].forEach(type=>{
-    const config=selectedSongForContinue?instrumentTrackConfig(selectedSongForContinue.category,selectedSongForContinue.song.id,type):{instrument:state.instrument,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
+    const config=selectedSongForContinue?instrumentTrackConfig(selectedSongForContinue.category,selectedSongForContinue.song.id,type):{instrument:state.instrument,intensity:safeStorageGetItem(`yhwh_intensity_${type}`)||'strong',layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
     const instrumentControl=$(trackControlIds[type]);if(instrumentControl)instrumentControl.value=config.instrument;
     const prefix=`mode_${type}_`,layerInstrument=$(prefix+'layerInstrument'),optionsSource=$('instrumentSelect');
     if(layerInstrument&&optionsSource){layerInstrument.innerHTML=optionsSource.innerHTML;layerInstrument.value=config.layerInstrument;}
     const enabled=$(prefix+'layerEnabled'),volume=$(prefix+'layerVolume'),output=$(prefix+'layerVolumeValue');
     if(enabled)enabled.checked=!!config.layerEnabled;if(volume){volume.value=String(config.layerVolume);volume.disabled=!config.layerEnabled;}if(output)output.textContent=`${config.layerVolume}%`;
     if(layerInstrument)layerInstrument.disabled=!config.layerEnabled;
+    const intensity=document.querySelector(`[data-track-intensity="${type}"]`);if(intensity)intensity.value=config.intensity||'strong';
   });
   selectPlayMode('listen');showModeScreenTab('instructions');
   const track=selectedSongForContinue&&(['introduccion','melodia','acompanamiento1','acompanamiento2','voz'].map(type=>trackFor(selectedSongForContinue.category,selectedSongForContinue.song.id,type)).find(item=>item?.notas?.length));
@@ -1687,9 +1688,10 @@ function rebuildFallingNotesGeometry(){
 }
 const BAR_NOTE_PALETTE=['#ef4444','#f97316','#f59e0b','#eab308','#84cc16','#22c55e','#14b8a6','#06b6d4','#3b82f6','#6366f1','#8b5cf6','#d946ef'];
 function fnFallingEventColor(event,geometry){
-  if(barColorMode==='note')return BAR_NOTE_PALETTE[((event.midi%12)+12)%12];
+  if(event.track==='acompanamiento1')return geometry.chordColor;
   if(event.track==='acompanamiento2')return geometry.accompaniment2Color;
-  const accompaniment=event.kind==='chord'||event.kind==='accompaniment'||event.track==='acompanamiento1';
+  if(barColorMode==='note')return BAR_NOTE_PALETTE[((event.midi%12)+12)%12];
+  const accompaniment=event.kind==='chord'||event.kind==='accompaniment';
   return accompaniment&&barBassDiff?geometry.chordColor:geometry.melodyColor;
 }
 function clearFallingNotesCanvas(){
@@ -1768,14 +1770,14 @@ function fnDrawBarTrail(ctx,x,top,w,h,color){
   if(barTrail<=0)return;const trailHeight=Math.min(100,Math.max(12,h*.28))*barTrail/100,tone=fnTone(color),gradient=ctx.createLinearGradient(0,top-trailHeight,0,top);
   gradient.addColorStop(0,tone.rgba(0));gradient.addColorStop(1,tone.rgba(.38*barOpacity/100));ctx.save();ctx.fillStyle=gradient;ctx.fillRect(x,top-trailHeight,w,trailHeight);ctx.restore();
 }
-function fnDrawFallingBar(ctx,x,top,w,h,color,chord,baseline){
-  const gradient=barLook==='normal'?null:fnDuoGradient(ctx,color,baseline,barLook==='tri');
-  if(barStyle==='solid'){ctx.save();ctx.globalAlpha=(chord?.82:1)*barOpacity/100;ctx.fillStyle=gradient||color;ctx.fillRect(x,top,w,h);ctx.restore();}
+function fnDrawFallingBar(ctx,x,top,w,h,color,chord,baseline,solidTrack=false){
+  const gradient=!solidTrack&&barLook!=='normal'?fnDuoGradient(ctx,color,baseline,barLook==='tri'):null;
+  if(solidTrack||barStyle==='solid'){ctx.save();ctx.globalAlpha=(chord?.82:1)*barOpacity/100;ctx.fillStyle=solidTrack?color:(gradient||color);ctx.fillRect(x,top,w,h);ctx.restore();}
   else if(barStyle==='neon')fnDrawNeonBar(ctx,x,top,w,h,color,chord,gradient);
   else if(barStyle==='synesthesia')fnDrawSynesthesiaBar(ctx,x,top,w,h,color,chord,gradient);
   else if(gradient){ctx.save();ctx.globalAlpha=(chord?.82:1)*barOpacity/100;fnRoundRect(ctx,x,top,w,h,Math.min(barRadius,w/2,h/2));ctx.fillStyle=gradient;ctx.fill();ctx.restore();}
   else fnDrawGlassBar(ctx,x,top,w,h,color,chord);
-  if(barStyle!=='solid')fnDrawBarTrail(ctx,x,top,w,h,color);
+  if(!solidTrack&&barStyle!=='solid')fnDrawBarTrail(ctx,x,top,w,h,color);
 }
 function fnRand(n){const v=Math.sin(n*12.9898)*43758.5453;return v-Math.floor(v);}
 // Duración total del fuego (antes 1,5 s): las llamas siguen igual de rápidas y después quedan brasas y humo.
@@ -2113,7 +2115,7 @@ function drawFallingNotesFrameInner(timestamp){
     const front=baseline-(event.start-elapsed)*pps,bottom=Math.min(front,baseline),top=front-barHeight,x=center-barWidth/2,h=bottom-top;
     if(h<=0||x+barWidth<0||x>width||top>height||bottom<0)continue;
     const chord=event.kind==='chord'||event.kind==='accompaniment',barColor=fnFallingEventColor(event,geometry);
-    fnDrawFallingBar(ctx,x,top,barWidth,h,barColor,chord&&barBassDiff,baseline);
+    fnDrawFallingBar(ctx,x,top,barWidth,h,barColor,chord&&barBassDiff,baseline,event.track==='acompanamiento1'||event.track==='acompanamiento2');
      drawFallingNoteTag(ctx,event.midi,center,Math.min(bottom-7,baseline-9),width,height);
   }
   }
@@ -2411,6 +2413,11 @@ function cutAtNextNote(list){
   });
   return sorted;
 }
+function notesForTrackPlayback(list,trackType=state.melodyType){
+  const sorted=list.map(note=>({...note})).sort((a,b)=>(Number(a.start)||0)-(Number(b.start)||0));
+  if(['acompanamiento1','acompanamiento2'].includes(trackType))return sorted.map(note=>({...note,cutAt:undefined}));
+  return cutAtNextNote(sorted);
+}
 function noteHoldSeconds(note){
   // Trompeta: solo el toque, sin alargar con sustain. Los demás respetan el sustain.
   const base=(Number(note.duration)||.32)*(isTrumpetInstrument(state.instrument)?1:(state.sustain?2.4:1));
@@ -2423,7 +2430,7 @@ function noteWasCut(note){
 }
 function notesForCurrentMix(){
   const parts=generatedVoiceParts(),selected=[];
-  if(state.voiceMix.principal)selected.push(...cutAtNextNote(state.notes));
+  if(state.voiceMix.principal)selected.push(...notesForTrackPlayback(state.notes,state.melodyType));
   if(state.voiceMix.segunda)selected.push(...cutAtNextNote(parts.segunda.filter(Boolean)));
   if(state.voiceMix.tercera)selected.push(...cutAtNextNote(parts.tercera.filter(Boolean)));
   return selected.sort((a,b)=>Number(a.start)-Number(b.start));
@@ -2750,7 +2757,7 @@ function buildInstrumentButtons(){
   browser.append(targetBar,mixControls);
   const categories=document.createElement('div');categories.className='instrument-categories';categories.setAttribute('role','tablist');categories.setAttribute('aria-label','Familia de instrumentos');
   const panels=document.createElement('div');panels.className='instrument-category-panels';
-  const groups=[{id:'piano',name:'Piano',instruments:['grand-piano','steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','upright-piano-vsco2','upright-nr1-vsco2']},{id:'brass',name:'Vientos',instruments:['trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','sigex-brass','mtg-solo-sax']},{id:'strings',name:'Strings',instruments:['strings','solo-violin','sigex-strings','bigcat-cello']},{id:'guitar',name:'Guitarra',instruments:['distorted-guitar']},{id:'organ',name:'Órgano',instruments:['church-organ']},{id:'percussion',name:'Percusión',instruments:['vibraphone']}];
+  const groups=[{id:'piano',name:'Piano',instruments:['grand-piano','steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','upright-piano-vsco2','upright-nr1-vsco2']},{id:'bass',name:'Bajo',instruments:['growlybass-clean']},{id:'brass',name:'Vientos',instruments:['trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','sigex-brass','mtg-solo-sax']},{id:'strings',name:'Strings',instruments:['strings','solo-violin','sigex-strings','bigcat-cello']},{id:'guitar',name:'Guitarra',instruments:['distorted-guitar']},{id:'organ',name:'Órgano',instruments:['church-organ']},{id:'percussion',name:'Percusión',instruments:['vibraphone']}];
   groups.forEach((group,index)=>{
     const tab=document.createElement('button');tab.type='button';tab.className='instrument-category-tab';tab.id=`instrument-tab-${group.id}`;tab.textContent=group.name;tab.setAttribute('role','tab');tab.setAttribute('aria-controls',`instrument-panel-${group.id}`);tab.setAttribute('aria-selected',String(index===0));
     const panel=document.createElement('div');panel.id=`instrument-panel-${group.id}`;panel.className='instrument-category-panel';panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby',tab.id);panel.hidden=index!==0;
@@ -2795,12 +2802,13 @@ function syncInstrumentButtons(){
   const selected=instrumentPickerTarget==='layer'?state.layerInstrument:state.instrument;
   document.querySelectorAll('#instrumentMenu [data-instrument]').forEach(button=>{const on=button.dataset.instrument===selected;button.classList.toggle('active',on);button.setAttribute('aria-checked',String(on));});
   document.querySelectorAll('#instrumentMenu .instrument-picker-target').forEach((button,index)=>{const active=index===(instrumentPickerTarget==='layer'?1:0);button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
-  const group=['sigex-brass','mtg-solo-sax',...Object.keys(VSCO2_TRUMPET_PATCHES),'trumpet-real','trumpet-vsco2-sus-vib'].includes(selected)?'brass':['strings','solo-violin','sigex-strings','bigcat-cello'].includes(selected)?'strings':selected==='distorted-guitar'?'guitar':selected==='church-organ'?'organ':selected==='vibraphone'?'percussion':'piano';
+  const group=['sigex-brass','mtg-solo-sax',...Object.keys(VSCO2_TRUMPET_PATCHES),'trumpet-real','trumpet-vsco2-sus-vib'].includes(selected)?'brass':['strings','solo-violin','sigex-strings','bigcat-cello'].includes(selected)?'strings':selected==='distorted-guitar'?'guitar':selected==='church-organ'?'organ':selected==='vibraphone'?'percussion':selected==='growlybass-clean'?'bass':'piano';
   const tab=$(`instrument-tab-${group}`),panel=$(`instrument-panel-${group}`);
   if(tab&&panel){document.querySelectorAll('#instrumentMenu [role="tab"]').forEach(item=>item.setAttribute('aria-selected',String(item===tab)));document.querySelectorAll('#instrumentMenu [role="tabpanel"]').forEach(item=>item.hidden=item!==panel);}
 }
 function instrumentIllustration(instrument,suffix=''){
   const id=`${instrument}${suffix}`.replace(/[^a-z0-9]/gi,'');
+  if(instrument==='growlybass-clean')return `<svg class="instrument-art" viewBox="0 0 64 64"><defs><linearGradient id="bass${id}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f0bb69"/><stop offset=".5" stop-color="#b96e2e"/><stop offset="1" stop-color="#633518"/></linearGradient></defs><path d="M41 7 47 9 45 27 51 32 51 42 45 47 44 56 36 60 29 56 27 49 20 46 17 39 21 32 28 29 30 10 36 8 37 30 34 36 31 40 38 44 42 39 39 35 36 32Z" fill="url(#bass${id})" stroke="#432313" stroke-width="2"/><path d="M34 8 32 40 39 58" fill="none" stroke="#f9e2b2" stroke-width="1.3"/><path d="M26 39h18M26 43h18M28 47h14" stroke="#432313" stroke-width="1.2"/><circle cx="35" cy="38" r="2" fill="#f7ecd1"/><path d="M31 13h11m-12 4h11m-12 4h11" stroke="#f7ecd1" stroke-width=".8"/></svg>`;
   if(['strings','solo-violin','sigex-strings','bigcat-cello'].includes(instrument))return `<svg class="instrument-art" viewBox="0 0 64 64"><defs><linearGradient id="violin${id}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd27a"/><stop offset=".48" stop-color="#b85b22"/><stop offset="1" stop-color="#5e2416"/></linearGradient></defs><path d="M29 6 35 8 36 18 42 23 48 29 45 35 40 38 38 44 36 57 31 60 28 56 26 44 23 38 17 35 14 29 20 23 26 18Z" fill="url(#violin${id})" stroke="#502318" stroke-width="2"/><path d="M31 4 33 4 34 20 31 28 34 36 32 59" fill="none" stroke="#f6d18a" stroke-width="1.8"/><path d="M25 28q-4 3 0 6m14-6q4 3 0 6M28 38l8 0M27 44l9 0" fill="none" stroke="#542519" stroke-width="1.7"/><path d="M5 57 56 7" fill="none" stroke="#d9b47b" stroke-width="2.4"/><circle cx="32" cy="31" r="1.6" fill="#f5d68e"/></svg>`;
   if(instrument==='church-organ')return `<svg class="instrument-art" viewBox="0 0 64 64"><defs><linearGradient id="organ${id}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ddb97b"/><stop offset="1" stop-color="#684225"/></linearGradient></defs><path d="M10 56V18h9v38M23 56V8h10v48M37 56V14h8v42M49 56V24h6v32" fill="url(#organ${id})" stroke="#442c1b" stroke-width="2"/><path d="M7 57h51M13 23h3m10-9h3m11 10h3m9 5h2" stroke="#fff0c0" stroke-width="2"/><path d="M19 46h28v10H19z" fill="#f7f0dc" stroke="#553a26" stroke-width="1.5"/><path d="M24 46v10m6-10v10m6-10v10m6-10v10" stroke="#554437"/></svg>`;
   if(instrument==='vibraphone')return `<svg class="instrument-art" viewBox="0 0 64 64"><defs><linearGradient id="vibes${id}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f7d27b"/><stop offset="1" stop-color="#a66e24"/></linearGradient></defs><path d="M9 15h46M13 15v20m8-20v25m8-25v30m8-30v27m8-27v22m8-22v16" stroke="url(#vibes${id})" stroke-width="5" stroke-linecap="round"/><path d="M7 36h50M13 36l-4 17m42-17 4 17M10 53h44M20 39v12m24-12v12" fill="none" stroke="#5e4830" stroke-width="2.5"/><path d="m5 9 19 13m35-13L40 22" stroke="#d1b17d" stroke-width="2"/><circle cx="24" cy="23" r="2" fill="#f6e0aa"/><circle cx="40" cy="23" r="2" fill="#f6e0aa"/></svg>`;
@@ -3043,7 +3051,7 @@ function initializePlayerSettingsPage(){
       preview.querySelectorAll('[data-player-preview]').forEach(item=>item.classList.toggle('hidden',item.dataset.playerPreview!==id));
     });
   });
-  preview.innerHTML='<h3>Vista previa</h3><section class="player-settings-preview-card" data-player-preview="bars"><small>Barras que caen</small><div class="settings-preview-stage"><i class="preview-fall-bar bar-a">Do</i><i class="preview-fall-bar bar-b">Mi</i><i class="preview-fall-bar bar-c">Sol</i><div class="settings-preview-keys"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div></div><p>El diseño y los colores se aplican al escenario del piano.</p></section><section class="player-settings-preview-card hidden" data-player-preview="piano"><small>Estilo de teclas</small><div class="settings-preview-keyboard" data-key-style="classic"><div class="preview-white-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="preview-black-keys"><b></b><b></b><b></b><b></b><b></b></div></div><p>Vista del teclado con el estilo seleccionado.</p></section><section class="player-settings-preview-card hidden" data-player-preview="sound"><small>Efectos al tocar</small><div class="settings-preview-effects"><span>♫</span><i></i><i></i><i></i></div><p>Elige el efecto y ajusta su intensidad y duración.</p></section><section class="player-settings-preview-card hidden" data-player-preview="playback"><small>Sonido y reproducción</small><div class="settings-preview-volume"><span>♪</span><i></i></div><p>Volumen, tempo, metrónomo y mezcla de voces.</p></section>';
+  preview.innerHTML='<h3>Vista previa</h3><section class="player-settings-preview-card" data-player-preview="bars"><small>Barras que caen</small><div class="settings-preview-stage"><i class="preview-fall-bar bar-a">Do</i><i class="preview-fall-bar bar-b">Mi</i><i class="preview-fall-bar bar-c">Sol</i><div class="settings-preview-keys"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div></div><p>La melodía conserva su estilo; los acompañamientos usan colores sólidos propios.</p></section><section class="player-settings-preview-card hidden" data-player-preview="piano"><small>Estilo de teclas</small><div class="settings-preview-keyboard" data-key-style="classic"><div class="preview-white-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="preview-black-keys"><b></b><b></b><b></b><b></b><b></b></div></div><p>Vista del teclado con el estilo seleccionado.</p></section><section class="player-settings-preview-card hidden" data-player-preview="sound"><small>Efectos al tocar</small><div class="settings-preview-effects"><span>♫</span><i></i><i></i><i></i></div><p>Elige el efecto y ajusta su intensidad y duración.</p></section><section class="player-settings-preview-card hidden" data-player-preview="playback"><small>Sonido y reproducción</small><div class="settings-preview-volume"><span>♪</span><i></i></div><p>Volumen, tempo, metrónomo y mezcla de voces.</p></section>';
   const syncPreview=()=>{
     const stage=preview.querySelector('.settings-preview-stage'),bars=[...preview.querySelectorAll('.preview-fall-bar')];
     if(stage){
@@ -3570,9 +3578,8 @@ function setStringsLayerEnabled(enabled){
   if(state.stringsLayerEnabled){void resumeAudioContext(getAudioContext()).catch(()=>{});getStringsLayerGain();primeStringsLayer();}
 }
 function isTrumpetInstrument(instrument){return instrument==='trumpet-real'||instrument==='trumpet-vsco2-sus-vib'||Object.hasOwn(VSCO2_TRUMPET_PATCHES,instrument);}
-function usesDynamicLayers(instrument){return isTrumpetInstrument(instrument)||Boolean(VSCO2_UPRIGHT_PATCHES[instrument])||['solo-violin','distorted-guitar'].includes(instrument);}
-function syncDynamicLayerControl(instrument=state.instrument){const setting=$('trumpetIntensitySetting'),select=$('trumpetIntensity'),label=setting?.querySelector('label');if(!setting||!select)return;const custom=['solo-violin','distorted-guitar'].includes(instrument);setting.classList.toggle('hidden',!usesDynamicLayers(instrument));if(label)label.textContent=custom?'Intensidad':'Dinámica';if(custom){select.innerHTML='<option value="soft">Suave</option><option value="strong">Fuerte</option>';if(!['soft','strong'].includes(state.trumpetIntensity))state.trumpetIntensity='strong';}else{select.innerHTML='<option value="soft">Suave</option><option value="medium">Media</option><option value="strong">Fuerte</option>';}select.value=state.trumpetIntensity;}
-function instrumentLabel(instrument){return {...Object.fromEntries(EXTRA_INSTRUMENTS.map(item=>[item.id,item.label])),'solo-violin':'Violín solista','distorted-guitar':'Guitarra eléctrica distorsionada','grand-piano':'Grand Piano','steinway-grand':'Steinway de cola','headroom-piano':'Headroom · Yamaha C3','splendid-grand':'Splendid Grand Piano','livingroom-upright-micro':'LivingRoom Upright Micro','maestro-concert-grand':'Maestro Concert Grand · Yamaha CF-3','salamander-grand':'Salamander Grand Piano · Yamaha C5','upright-piano-vsco2':'Vertical VSCO · Upright Piano','upright-nr1-vsco2':'Vertical VSCO · Upright No. 1','trumpet-real':'Trompeta real','trumpet-vsco2-sus-vib':'Trompeta VSCO · Vibrato','trumpet-vsco2-sus':'Trompeta VSCO · Sostenida','trumpet-vsco2-stac':'Trompeta VSCO · Staccato','trumpet-vsco2-harmon-mute-sus':'Trompeta VSCO · Sordina Harmon','trumpet-vsco2-straight-mute-sus':'Trompeta VSCO · Sordina Straight','strings':'Strings'}[instrument]||'Grand Piano';}
+function usesDynamicLayers(instrument){return isTrumpetInstrument(instrument)||Boolean(VSCO2_UPRIGHT_PATCHES[instrument])||['solo-violin','distorted-guitar','growlybass-clean'].includes(instrument);}
+function syncDynamicLayerControl(instrument=state.instrument){const setting=$('trumpetIntensitySetting'),select=$('trumpetIntensity'),label=setting?.querySelector('label');if(!setting||!select)return;const custom=['solo-violin','distorted-guitar'].includes(instrument),growlybass=instrument==='growlybass-clean';setting.classList.toggle('hidden',!usesDynamicLayers(instrument));if(label)label.textContent=growlybass?'Intensidad del bajo':custom?'Intensidad':'Dinámica';if(growlybass){select.innerHTML='<option value="soft">Muy suave</option><option value="medium">Suave</option><option value="strong">Fuerte</option><option value="very-strong">Muy fuerte</option>';}else if(custom){select.innerHTML='<option value="soft">Suave</option><option value="strong">Fuerte</option>';if(!['soft','strong'].includes(state.trumpetIntensity))state.trumpetIntensity='strong';}else{select.innerHTML='<option value="soft">Suave</option><option value="medium">Media</option><option value="strong">Fuerte</option>';if(!['soft','medium','strong'].includes(state.trumpetIntensity))state.trumpetIntensity='strong';}select.value=state.trumpetIntensity;}function instrumentLabel(instrument){return {...Object.fromEntries(EXTRA_INSTRUMENTS.map(item=>[item.id,item.label])),'solo-violin':'Violín solista','distorted-guitar':'Guitarra eléctrica distorsionada','grand-piano':'Grand Piano','steinway-grand':'Steinway de cola','headroom-piano':'Headroom · Yamaha C3','splendid-grand':'Splendid Grand Piano','livingroom-upright-micro':'LivingRoom Upright Micro','maestro-concert-grand':'Maestro Concert Grand · Yamaha CF-3','salamander-grand':'Salamander Grand Piano · Yamaha C5','upright-piano-vsco2':'Vertical VSCO · Upright Piano','upright-nr1-vsco2':'Vertical VSCO · Upright No. 1','trumpet-real':'Trompeta real','trumpet-vsco2-sus-vib':'Trompeta VSCO · Vibrato','trumpet-vsco2-sus':'Trompeta VSCO · Sostenida','trumpet-vsco2-stac':'Trompeta VSCO · Staccato','trumpet-vsco2-harmon-mute-sus':'Trompeta VSCO · Sordina Harmon','trumpet-vsco2-straight-mute-sus':'Trompeta VSCO · Sordina Straight','strings':'Strings'}[instrument]||'Grand Piano';}
 function syncPianoLayerControl(instrument=state.instrument){
   const setting=$('headroomIntensitySetting'),select=$('headroomIntensity'),label=$('headroomIntensityLabel');if(!setting||!select)return;
   const options=instrument==='livingroom-upright-micro'?[['1','Suave'],['2','Fuerte']]:instrument==='splendid-grand'?[['1','Muy suave'],['2','Suave'],['3','Media'],['4','Fuerte'],['5','Muy fuerte']]:[['1','Muy suave'],['2','Suave'],['3','Media'],['4','Fuerte'],['5','Muy fuerte']];
@@ -3685,17 +3692,18 @@ async function getInstrumentSample(midi, instrument = state.instrument, prefetch
   const sampleMidi = customRoot ? customRoot.midi : instrument === 'trumpet-real' ? trumpetRoots.reduce((best, root) => Math.abs(root - midi) < Math.abs(best - midi) ? root : best, trumpetRoots[0]) : isVscoTrumpet ? vscoTrumpetRegion[2] : vscoPatch ? vscoPatchRegion[2] : sample ? sample[2] : Math.max(spec.first, Math.min(spec.last, Math.round((midi - spec.first) / spec.step) * spec.step + spec.first));
   const actualSampleMidi = instrument === 'steinway-grand' ? steinwayMidi(steinwayNoteName(midi)) : sampleMidi;
   const intensity=state.trumpetIntensity;
+  const isGrowlybass=instrument==='growlybass-clean';
   const dynamicLayer=intensity==='soft'?0:intensity==='medium'?1:2;
   const sampleLayer=intensity==='soft'?'soft':vscoPatch?.roundRobin&&intensity==='medium'?'medium':'strong';
   const uprightRegion=uprightPatch?.regions.find(item=>item[2]===actualSampleMidi);
   const uprightLayer=uprightPatch?.folder==='vsco2-upright-piano'?`dyn${dynamicLayer+1}`:['pp','mf','f'][dynamicLayer];
   const uprightRrList=uprightRegion?(uprightPatch.folder==='vsco2-upright-piano'?[1]:[...(uprightRegion[4+dynamicLayer]||'1')].map(Number)):[];
   const rrKey=`${instrument}:${actualSampleMidi}:${intensity}`;
-  const roundRobinCount=vscoPatch?.roundRobin?2:uprightRrList.length;
+  const roundRobinCount=isGrowlybass?4:vscoPatch?.roundRobin?2:uprightRrList.length;
   const roundRobin=roundRobinCount>1?((state.instrumentRoundRobinCounters.get(rrKey)||0)%roundRobinCount)+1:1;
   if(roundRobinCount>1)state.instrumentRoundRobinCounters.set(rrKey,roundRobin);
   const uprightRr=uprightRrList[roundRobin-1]||1;
-  const key = instrument + ':' + actualSampleMidi + (isTrumpet||uprightPatch||isCustomSample ? ':' + intensity : '') + (isLayeredPiano?`:level${state.headroomVelocityLayer}${isLivingroom?`:${state.sustain?'pon':'poff'}`:''}`:'') + (vscoPatch?.roundRobin ? `:rr${roundRobin}` : uprightPatch?.folder==='vsco2-upright-nr1'?`:rr${uprightRr}`:'');
+  const key = instrument + ':' + actualSampleMidi + (isTrumpet||uprightPatch||isCustomSample||isGrowlybass ? ':' + intensity : '') + (isLayeredPiano?`:level${state.headroomVelocityLayer}${isLivingroom?`:${state.sustain?'pon':'poff'}`:''}`:'') + (isGrowlybass||vscoPatch?.roundRobin ? `:rr${roundRobin}` : uprightPatch?.folder==='vsco2-upright-nr1'?`:rr${uprightRr}`:'');
   const loadKey=prefetchOnly?key+':prefetch':key;
   if (!state.instrumentBuffers.has(key)) {
     let pending=state.instrumentSampleLoads.get(loadKey);
@@ -3711,14 +3719,16 @@ async function getInstrumentSample(midi, instrument = state.instrument, prefetch
         const customLayer=isSoloViolin?(intensity==='soft'?'soft':'forte'):isDistortedGuitar?(intensity==='soft'&&customRoot.soft?'soft':'full'):null;
         const customFilename=isSoloViolin?`solo-violin-${customRoot.note}-${customLayer}.wav`:isDistortedGuitar?`distorted-guitar-${customRoot.note}-${customLayer}.flac`:null;
         const cloudinaryHosted=Boolean(spec.cloudinaryFolder||spec.cloudinaryRoot);
-        const filename=cloudinaryHosted?sample[3]:isCustomSample?customFilename:isHeadroom?`HEADROOM PIANO LEVEL${headroomLayer} CLOSE ${headroomRoot}.flac`:isSplendid?`${sample[3]}.flac`:isMaestro?`mcg_${MAESTRO_LAYERS[state.headroomVelocityLayer-1]}_${String(actualSampleMidi).padStart(3,'0')}.flac`:isSalamander?`${sample[3]}v${SALAMANDER_LAYERS[state.headroomVelocityLayer-1]}.wav`:isLivingroom?`samples-micro-ed/${sample[3]}-${livingPedal}-${livingFileLayer}-1-free-ed.flac`:instrument==='steinway-grand'?`${STEINWAY_PREFIX}-${steinwayNoteName(actualSampleMidi)}.m4a`:instrument==='trumpet-real'?`${sampleMidi}_${trumpetLayer}_rr1.wav`:isVscoTrumpet?`${sampleName}-${intensity==='soft'?'soft':'strong'}.wav`:vscoPatch?patchFilename:uprightPatch?.folder==='vsco2-upright-piano'?`Player_${uprightLayer}_rr1_${uprightRegion[3]}.wav`:uprightPatch?`UR1_${uprightRegion[3]}_${uprightLayer}_RR${uprightRr}.wav`:sampleName?`${sampleName}vH.flac`:`pno0${sampleMidi}.mp3`;
+        const bassLayer=isGrowlybass?(intensity==='soft'?'pp':intensity==='medium'?'p':intensity==='strong'?'f':'ff'):null;
+        const filename=isGrowlybass?`${sample[3]}_${bassLayer}_rr${roundRobin}.wav`:cloudinaryHosted?sample[3]:spec.rawSamplePaths?sample[3]:isCustomSample?customFilename:isHeadroom?`HEADROOM PIANO LEVEL${headroomLayer} CLOSE ${headroomRoot}.flac`:isSplendid?`${sample[3]}.flac`:isMaestro?`mcg_${MAESTRO_LAYERS[state.headroomVelocityLayer-1]}_${String(actualSampleMidi).padStart(3,'0')}.flac`:isSalamander?`${sample[3]}v${SALAMANDER_LAYERS[state.headroomVelocityLayer-1]}.wav`:isLivingroom?`samples-micro-ed/${sample[3]}-${livingPedal}-${livingFileLayer}-1-free-ed.flac`:instrument==='steinway-grand'?`${STEINWAY_PREFIX}-${steinwayNoteName(actualSampleMidi)}.m4a`:instrument==='trumpet-real'?`${sampleMidi}_${trumpetLayer}_rr1.wav`:isVscoTrumpet?`${sampleName}-${intensity==='soft'?'soft':'strong'}.wav`:vscoPatch?patchFilename:uprightPatch?.folder==='vsco2-upright-piano'?`Player_${uprightLayer}_rr1_${uprightRegion[3]}.wav`:uprightPatch?`UR1_${uprightRegion[3]}_${uprightLayer}_RR${uprightRr}.wav`:sampleName?`${sampleName}vH.flac`:`pno0${sampleMidi}.mp3`;
         const localUrl=`audio/${spec.folder}/${filename.split('/').map(encodeURIComponent).join('/')}`;
         // Cloudinary normalizes spaces and forbidden public-ID characters (#) to underscores.
         const cloudinaryFilename=isLivingroom?filename.replace(/^samples-micro-ed\//,'').replace(/[ #]/g,'_'):isLayeredPiano||isCustomSample?filename.replace(/[ #]/g,'_'):filename;
         const cloudinaryPath=spec.cloudinaryRoot?filename.replace(/[ #]/g,'_').replace(/\.(ogg|flac)$/i,`.${spec.cloudinaryFormat||'$1'}`):spec.cloudinaryFolder?`${spec.cloudinaryFolder}/${filename}`.replace(/[ #]/g,'_').replace(/\.(ogg|flac)$/i,`.${spec.cloudinaryFormat||'$1'}`):cloudinaryFilename;
         const cloudinaryUrl=`${CLOUDINARY_AUDIO_BASE}${cloudinaryPath.split('/').map(encodeURIComponent).join('/')}`;
         const cloudinaryFirst=cloudinaryHosted||isLayeredPiano||isVscoTrumpet||Boolean(vscoPatch)||Boolean(uprightPatch)||isCustomSample;
-        const sources=cloudinaryFirst?[cloudinaryUrl,localUrl]:[localUrl];let lastError=null;
+        const growlyRootUrl=isGrowlybass?`${CLOUDINARY_AUDIO_BASE}${filename.split('/').map(encodeURIComponent).join('/')}`:null;
+        const sources=isGrowlybass?[growlyRootUrl,cloudinaryUrl]:cloudinaryFirst?[cloudinaryUrl,localUrl]:[localUrl];let lastError=null;
         for(const source of sources){
           try{
             if(prefetchOnly){
@@ -3738,7 +3748,7 @@ async function getInstrumentSample(midi, instrument = state.instrument, prefetch
               for(let channel=0;channel<mixed.numberOfChannels;channel++){const output=mixed.getChannelData(channel),close=decoded.getChannelData(Math.min(channel,decoded.numberOfChannels-1)),far=decca.getChannelData(Math.min(channel,decca.numberOfChannels-1));for(let i=0;i<length;i++)output[i]=(close[i]||0)*.67+(far[i]||0)*.33;}
               state.instrumentBuffers.set(key,mixed);
             }else state.instrumentBuffers.set(key,decoded);return;
-          }catch(error){lastError=error;if(source===cloudinaryUrl)console.warn(`Muestra de ${instrumentLabel(instrument)} no disponible en Cloudinary; se usará la copia local ${filename}.`,error);}
+          }catch(error){lastError=error;if(source===cloudinaryUrl&&!isGrowlybass)console.warn(`Muestra de ${instrumentLabel(instrument)} no disponible en Cloudinary; se usará la copia local ${filename}.`,error);}
         }
         throw lastError||new Error(`No se pudo cargar la muestra ${filename}`);
       })();
@@ -4013,8 +4023,9 @@ function schedulePlaybackNote(midi,element,duration,when,prepared,cut,showReadou
   const baseRelease=instrumentReleaseTime(state.instrument);
   const release=cut?Math.min(baseRelease,.06):baseRelease;
   const stopAt=when+noteDuration;
-  gain.gain.setValueAtTime(.0001,when);gain.gain.linearRampToValueAtTime(.88,when+instrumentAttackTime(state.instrument));
-  gain.gain.setValueAtTime(.88,stopAt);gain.gain.linearRampToValueAtTime(.0001,stopAt+release);
+  const intensityGain={soft:.58,medium:.78,strong:1,'very-strong':1.16}[state.playbackIntensity||'strong']||1,peak=.88*intensityGain;
+  gain.gain.setValueAtTime(.0001,when);gain.gain.linearRampToValueAtTime(peak,when+instrumentAttackTime(state.instrument));
+  gain.gain.setValueAtTime(peak,stopAt);gain.gain.linearRampToValueAtTime(.0001,stopAt+release);
   source.connect(gain);gain.connect(getMasterGain(context));source.start(when);source.stop(stopAt+release+.02);
   state.activePlaybackSources.push(source);source.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==source);},{once:true});
   const stringsSource=scheduleLayerNote(context,midi,entry.strings,when,noteDuration,cut ? .35 : 1.05);
@@ -4027,7 +4038,7 @@ function schedulePlaybackNote(midi,element,duration,when,prepared,cut,showReadou
   if(element)queueKeyLight(when,element,['playing'],(stopAt+release-when)*1000);
 }
 function playbackGroupsForCurrentSong(){
-  const currentSettings={instrument:state.instrument,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
+  const currentSettings={instrument:state.instrument,intensity:state.trumpetIntensity||'strong',layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
   if(state.playMode!=='performance'||!state.song)return [{type:state.melodyType,kind:'melody',notes:notesForCurrentMix(),chords:state.voiceMix.acordes?state.chords:[],settings:currentSettings}];
   const record=melodyFor(state.song.category,state.song.song.id)||{},tracks=melodyTracks(record);
   const mainType=['melodia','voz','introduccion'].find(type=>tracks[type]?.notas?.length)||null;
@@ -4035,7 +4046,7 @@ function playbackGroupsForCurrentSong(){
   const groups=[];
   types.forEach(type=>{
     const track=tracks[type];if(!track?.notas?.length)return;
-    const isMain=type===mainType,notes=isMain&&type===state.melodyType?notesForCurrentMix():cutAtNextNote(track.notas);
+    const isMain=type===mainType,notes=isMain&&type===state.melodyType?notesForCurrentMix():notesForTrackPlayback(track.notas,type);
     groups.push({type,kind:isMain?'melody':'accompaniment',notes,chords:isMain?(state.voiceMix.acordes?(track.acordes||[]):[]):(track.acordes||[]),settings:instrumentTrackConfig(state.song.category,state.song.song.id,type)});
   });
   return groups;
@@ -4054,14 +4065,15 @@ async function playMelody() {
   $('status').textContent = 'Preparando sonido…';
   state.playbackPreparing=true;
   try {
-    const original={instrument:state.instrument,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
+    const original={instrument:state.instrument,intensity:state.trumpetIntensity,headroomLayer:state.headroomVelocityLayer,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
     try{
       for(const group of playbackGroups){
-        Object.assign(state,{instrument:group.settings.instrument,stringsLayerEnabled:group.settings.layerEnabled,layerInstrument:group.settings.layerInstrument,stringsLayerVolume:group.settings.layerVolume});
+        const intensity=group.settings.intensity||'strong',pianoLayer=intensity==='soft'?1:intensity==='medium'?3:intensity==='strong'?4:5;
+        Object.assign(state,{instrument:group.settings.instrument,trumpetIntensity:intensity,headroomVelocityLayer:group.settings.instrument==='livingroom-upright-micro'?(intensity==='soft'||intensity==='medium'?1:2):pianoLayer,stringsLayerEnabled:group.settings.layerEnabled,layerInstrument:group.settings.layerInstrument,stringsLayerVolume:group.settings.layerVolume});
         group.notes=group.notes.map(note=>({...note,_playbackHold:noteHoldSeconds(note),_playbackCut:noteWasCut(note),_playbackKind:group.kind,_playbackTrack:group.type}));
         group.prepared=await prepareMelodyAudio(group.notes);
       }
-    }finally{Object.assign(state,{instrument:original.instrument,stringsLayerEnabled:original.layerEnabled,layerInstrument:original.layerInstrument,stringsLayerVolume:original.layerVolume});}
+    }finally{Object.assign(state,{instrument:original.instrument,trumpetIntensity:original.intensity,headroomVelocityLayer:original.headroomLayer,stringsLayerEnabled:original.layerEnabled,layerInstrument:original.layerInstrument,stringsLayerVolume:original.layerVolume});}
     if(drumPattern.events.length){try{await loadDrumPadBuffers();}catch(error){console.warn('Se omitió el patrón de batería porque no se pudieron cargar sus sonidos:',error);toast('La melodía seguirá sin batería; no se cargaron sus sonidos.');}}
     state.playbackPreparing=false;
   } catch (error) {
@@ -4106,7 +4118,7 @@ async function playMelody() {
     Object.assign(state,{instrument:group.settings.instrument,stringsLayerEnabled:group.settings.layerEnabled,layerInstrument:group.settings.layerInstrument,stringsLayerVolume:group.settings.layerVolume});
     group.notes.forEach(note=>{
             const midi=Number(note.midi),hideOct=note.octave&&!state.showOctaveNotes,key=hideOct?null:document.querySelector(`.key[data-midi="${midi}"]`);
-      schedulePlaybackNote(midi,key,note._playbackHold,playbackStart+Math.max(0,Number(note.start)||0)/state.tempo,group.prepared,note._playbackCut,group.kind==='melody'&&!hideOct,String(group.type).startsWith('acompanamiento')?'bass':'melody');  });
+      state.playbackIntensity=group.settings.intensity||'strong';schedulePlaybackNote(midi,key,note._playbackHold,playbackStart+Math.max(0,Number(note.start)||0)/state.tempo,group.prepared,note._playbackCut,group.kind==='melody'&&!hideOct,String(group.type).startsWith('acompanamiento')?'bass':'melody');  });
     if(group.kind==='accompaniment'&&state.showChordNames){
       const ordered=[...group.notes].sort((a,b)=>(Number(a.start)||0)-(Number(b.start)||0));
       let lastStart=-Infinity;
@@ -4359,6 +4371,7 @@ function bindInterface() {
   document.querySelectorAll('[data-mode-tab]').forEach(button=>button.onclick=()=>showModeScreenTab(button.dataset.modeTab));
   $('songSettingsTrack').onchange=()=>{selectedCreateTrack=$('songSettingsTrack').value;syncSongTrackSettingsForm(selectedCreateTrack);};
   $('songTrackInstrument').onchange=saveSongTrackSettings;
+  $('songTrackIntensity').onchange=saveSongTrackSettings;
   $('songTrackLayerEnabled').onchange=saveSongTrackSettings;
   $('songTrackLayerInstrument').onchange=saveSongTrackSettings;
   $('songTrackLayerVolume').oninput=()=>{$('songTrackLayerVolumeValue').textContent=`${$('songTrackLayerVolume').value}%`;if(selectedCreateSong&&$('songSettingsTrack').value===state.melodyType)applySongTrackInstrument({...instrumentTrackConfig(selectedCreateSong.category,selectedCreateSong.song.id,state.melodyType),layerEnabled:$('songTrackLayerEnabled').checked,layerInstrument:$('songTrackLayerInstrument').value,layerVolume:Number($('songTrackLayerVolume').value)});};
@@ -4384,6 +4397,11 @@ function bindInterface() {
   bindSongTrackInstrument('modeMelodyInstrument','melodia');
   bindSongTrackInstrument('modeBassInstrument','acompanamiento1');
   bindSongTrackInstrument('modeAccompaniment2Instrument','acompanamiento2');
+  document.querySelectorAll('[data-track-intensity]').forEach(select=>select.addEventListener('change',event=>{
+    const type=event.currentTarget.dataset.trackIntensity,intensity=event.currentTarget.value;
+    if(selectedSongForContinue)saveVisibleTrackSettings(type,{intensity});
+    else if(!state.song){try{localStorage.setItem(`yhwh_intensity_${type}`,intensity);}catch(_){}}
+  }));
   ['melodia','acompanamiento1','acompanamiento2'].forEach(type=>{
     const prefix=`mode_${type}_`;
     const enabled=$(prefix+'layerEnabled'),instrument=$(prefix+'layerInstrument'),volume=$(prefix+'layerVolume'),output=$(prefix+'layerVolumeValue');
@@ -4556,7 +4574,7 @@ function bindInterface() {
   syncDynamicLayerControl(state.instrument);
   syncPianoLayerControl();
   $('headroomIntensity').onchange=event=>{const max=state.instrument==='livingroom-upright-micro'?2:5;state.headroomVelocityLayer=Math.min(max,Math.max(1,Number(event.target.value)||3));try{localStorage.setItem('yhwh_piano_headroom_layer',String(state.headroomVelocityLayer));}catch(_){}};
-  $('trumpetIntensity').onchange = event => { state.trumpetIntensity = ['soft','medium','strong'].includes(event.target.value) ? event.target.value : 'strong'; try { localStorage.setItem('yhwh_piano_trumpet_intensity', state.trumpetIntensity); } catch (_) {} };
+  $('trumpetIntensity').onchange = event => { state.trumpetIntensity = ['soft','medium','strong','very-strong'].includes(event.target.value) ? event.target.value : 'strong'; try { localStorage.setItem('yhwh_piano_trumpet_intensity', state.trumpetIntensity); } catch (_) {} };
   $('instrumentSelect').onchange = event => {
     state.instrument = ['steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand',...Object.keys(VSCO2_UPRIGHT_PATCHES),'trumpet-real','trumpet-vsco2-sus-vib',...Object.keys(VSCO2_TRUMPET_PATCHES),'strings','solo-violin','distorted-guitar',...NEW_INSTRUMENT_IDS].includes(event.target.value) ? event.target.value : 'grand-piano';
     syncDynamicLayerControl(state.instrument);
