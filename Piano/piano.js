@@ -2,6 +2,18 @@ import { EXTRA_INSTRUMENTS } from './instrument-maps.js';
 // Piano YHWH: lista de canciones primero; Firebase es opcional al arrancar.
 const $ = (id) => document.getElementById(id);
 const safeStorageGetItem=(key)=>{try{return window.localStorage.getItem(key);}catch(_){return null;}};
+const DEVICE_SETTINGS_KEY='yhwh_device_settings_v1';
+const MOBILE_FIRST_VISIT_PROFILE={paletteVersion:2,theme:'dark',themeMode:'dark',palettePreset:'custom',iconSize:20,fontSize:11,headingSize:14,headingHeight:42,pianoHeaderHeight:50,homeButtonHeight:30,radius:3,noteNotation:'latino',keyStyle:'flat',noteLabelSize:15,noteLabelColor:'#ffffff',keyLabelColor:'#000000',keyLabelSize:14,octaveLabelColor:'#d4af37',octaveLabelSize:16,gridSpacing:7,stageBackgroundColor:'#000000',gridLineColor:'#454545',gridLineOpacity:55,melodyColor:'#ffb300',bassColor:'#22c55e',masterVolume:200,layerEnabled:false,layerVolume:200,fallingStyle:'bars',fxGlow:true,goldImpactGlow:true,fxStyle:'gold',fxIntensity:1,fxDuration:2.5,barLook:'normal',barBassDiff:true,barStyle:'solid',barColorMode:'track',barAccompaniment2Color:'#38bdf8'};
+function seedMobileFirstVisitProfile(){
+  try{
+    if(!window.matchMedia?.('(max-width:900px) and (pointer:coarse)').matches||localStorage.getItem(DEVICE_SETTINGS_KEY)!==null||localStorage.getItem('piano_theme')!==null||Object.keys(localStorage).some(key=>key.startsWith('yhwh_piano_')))return;
+    localStorage.setItem(DEVICE_SETTINGS_KEY,JSON.stringify(MOBILE_FIRST_VISIT_PROFILE));
+    localStorage.setItem('piano_theme','dark');
+    const initialPreferences={'yhwh_piano_note_labels':'octavas','yhwh_cifrado_latino':'1','yhwh_piano_show_octave':'1','yhwh_piano_note_outline':'1','yhwh_piano_edge_on':'0','yhwh_piano_key_color':MOBILE_FIRST_VISIT_PROFILE.melodyColor,'yhwh_piano_bass_color':MOBILE_FIRST_VISIT_PROFILE.bassColor,'yhwh_piano_master_volume':'2','yhwh_piano_strings_enabled':'0','yhwh_piano_strings_volume':'200','yhwh_piano_barstyle':'bars','yhwh_piano_bar_look':'normal','yhwh_piano_bar_bass_diff':'1','yhwh_piano_fx_glow':'1','yhwh_piano_fx_style':'gold'};
+    Object.entries(initialPreferences).forEach(([key,value])=>localStorage.setItem(key,String(value)));
+  }catch(_){}
+}
+seedMobileFirstVisitProfile();
 const SONGS_ADORACION = Array.isArray(window.SONGS) ? window.SONGS : [];
 const SONGS_JUBILO = Array.isArray(window.SONGS_JUBILO) ? window.SONGS_JUBILO : [];
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -22,7 +34,6 @@ const state = {
 state.showOctaveNotes=safeStorageGetItem('yhwh_piano_show_octave')==='1';
 const freePlayInstrumentConfig={instrument:state.instrument,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
 state.masterVolume=Number.isFinite(SAVED_MASTER_VOLUME)?Math.max(0,Math.min(2,SAVED_MASTER_VOLUME)):1;
-const DEVICE_SETTINGS_KEY='yhwh_device_settings_v1';
 const DEVICE_THEME_PALETTES={light:{primary:'#155c9a',accent:'#8a5a08',page:'#f3f5f7',surface:'#ffffff',optionPanel:'#f8fafc',headingBackground:'#ffffff',headingText:'#1e2b38',offlineCardBackground:'#eaf2f8',offlineCardText:'#1e2b38',text:'#1e2b38',line:'#d3dde6'},dark:{primary:'#75b9ed',accent:'#f1c875',page:'#101820',surface:'#1a2632',optionPanel:'#1f2e3b',headingBackground:'#1a2632',headingText:'#eef3f7',offlineCardBackground:'#1f2e3b',offlineCardText:'#eef3f7',text:'#eef3f7',line:'#35495a'}};
 const READY_COLOR_PALETTES={
   manantial:{label:'Manantial',theme:'light',colors:{...DEVICE_THEME_PALETTES.light},melody:'#90dd4a',bass:'#bb82ef',bar2:'#a259ff',bar3:'#2f6bff',barLook:'normal',barStyle:'glass'},

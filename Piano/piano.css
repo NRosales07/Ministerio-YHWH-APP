@@ -665,7 +665,7 @@ html[data-theme="dark"] .settings-sheet .master-volume-label { color:#aaa9c1; }
 #player > .player-top .player-tool-group { position:relative; display:flex; flex:0 0 auto; align-items:center; justify-content:flex-end; gap:5px; }
 #player > .player-top .toolbar-actions { display:flex; flex:0 0 auto; align-items:center; gap:2px; }
 #player > .player-top .toolbar-actions .toolbar-icon { display:grid; flex:0 0 32px; place-items:center; width:32px; height:34px; padding:0; border:1px solid #ffffff20; border-radius:8px; background:transparent; color:#fff; }
-#player > .player-top .toolbar-actions .notation-button { font-size:.67rem; font-weight:700; }
+#player > .player-top .toolbar-actions .notation-button { font-size:.55rem; font-weight:700; }
 .player-edit-menu { position:relative; flex:0 0 auto; }
 .player-edit-menu > summary { display:grid; place-items:center; width:32px; height:34px; border:1px solid #ffffff20; border-radius:8px; color:#fff; background:#ffffff0b; cursor:pointer; font-size:19px; line-height:1; list-style:none; }
 .player-edit-menu > summary::-webkit-details-marker { display:none; }
@@ -4476,6 +4476,10 @@ html.device-customization-enabled body.player-active #player>.player-top .toolba
   width:var(--piano-header-symbol-size);
   height:var(--piano-header-symbol-size);
 }
+html.device-customization-enabled body.player-active #player>.player-top .toolbar-actions>#notationToggle {
+  font-size:clamp(8px,calc(var(--piano-header-symbol-size,20px)*.68),27px);
+  font-weight:700;
+}
 html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .top-tempo {
   height:var(--piano-header-control-size);
 }
@@ -4495,5 +4499,16 @@ html.device-customization-enabled body.player-active #player>.player-top .stage-
   html.device-customization-enabled body.player-active #player>.player-top {
     --piano-header-control-size:clamp(16px,calc(clamp(24px,calc(var(--device-piano-header-height,58px) - 16px),84px)*.71),52px);
     --piano-header-symbol-size:clamp(10px,calc(clamp(24px,calc(var(--device-piano-header-height,58px) - 16px),84px)*.57),40px);
+  }
+}
+/* La configuración abierta desde el encabezado también respeta las cuatro zonas seguras del iPhone. */
+@media (max-width:900px) {
+  #playerSettingsScreen .player-config-panel {
+    box-sizing:border-box;
+    height:100dvh;
+    padding:env(safe-area-inset-top,0px)
+      max(var(--mobile-gutter-right,16px),env(safe-area-inset-right,0px))
+      max(var(--mobile-bottom,0px),env(safe-area-inset-bottom,0px))
+      max(var(--mobile-gutter,16px),env(safe-area-inset-left,0px));
   }
 }
