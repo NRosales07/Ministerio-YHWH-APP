@@ -484,7 +484,7 @@ body.player-active #player { position: relative; display: flex; flex: 1; flex-di
 .note-canvas.has-device-background .device-piano-background{display:block}
 .device-piano-background::before{content:"";position:absolute;inset:-18px;background-image:var(--device-piano-background-image,none);background-position:center;background-size:cover;filter:blur(var(--device-piano-image-blur,9px));opacity:var(--device-piano-image-opacity,.34);transform:scale(1.06)}
 .device-piano-background::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#11152238,#11152224 72%,#11152266)}
-.canvas-grid { position: absolute; inset: 0; contain: strict; pointer-events: none; background-image: linear-gradient(to right, #ffffff2c 1px,transparent 1px),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: calc(var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width)) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0;  }
+.canvas-grid { position: absolute; inset: 0; contain: strict; pointer-events: none; background-image: linear-gradient(to right,color-mix(in srgb,var(--device-grid-line-color,#fff) var(--device-grid-line-opacity,55%),transparent) var(--device-grid-line-width,1px),transparent var(--device-grid-line-width,1px)),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: calc(var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width)) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0;  }
 .falling-notes-canvas { position: absolute; z-index: 1; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
 .canvas-readouts { position: absolute; z-index: 2; top: 15px; left: calc(64px + env(safe-area-inset-left)); right: calc(12px + env(safe-area-inset-right)); display: flex; align-items: center; gap: 11px; min-height: 32px; color: #edf2f4; font-size: .78rem; text-shadow: 0 1px 3px #000; }
 .canvas-readouts #playerLabel { color: #dbeaf0; font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
@@ -789,6 +789,7 @@ body.player-active #player .performance-layout > .player-timeline, body.player-a
 .instrument-options { display: grid; gap: 6px; margin-top: 8px; }
 .instrument-option { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 6px 14px 6px 7px; border: 1px solid #a6bbc2; border-radius: 6px; background: #f5f7f8; color: #344951; font-size: .95rem; text-align: left; cursor: pointer; }
 .instrument-option .instrument-icon { display: grid; place-items: center; flex: 0 0 40px; width: 40px; height: 40px; border-radius: 6px; background: #dcebf0; color: #1d6480; }
+.instrument-option .instrument-icon img.instrument-art { display:block; width:100%; height:100%; object-fit:contain; border-radius:inherit; background:#fff; }
 .instrument-option svg:not(.instrument-art) { display: block; width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .instrument-option.active { border-color: #087fb0; background: #e6f3f7; color: #0878a8; font-weight: 700; box-shadow: inset 0 0 0 1px #087fb0; }
 .instrument-option.active .instrument-icon { background: #138bbd; color: #fff; }
@@ -2305,6 +2306,9 @@ html[data-theme="dark"] body.player-active #player #keyboardRangeMenu #keyboardZ
   display: block;
   width: 22px;
   height: 22px;
+  object-fit:contain;
+  border-radius:3px;
+  background:#fff;
 }
 
 /* En móvil, los iconos del extremo derecho indican en amarillo qué panel está abierto. */
@@ -2814,7 +2818,7 @@ body.player-active #player > .player-top{ border-bottom: 1px solid #ffffff1f; ba
 .toolbar-icon, .top-tempo button { border-radius: 10px; }
 .performance-layout { background: #132021; }
 .note-canvas { background: radial-gradient(ellipse at 50% 100%, #294643, #121c1d 70%); }
-.canvas-grid { opacity: .5; }
+.canvas-grid { opacity: 1; }
 .piano-panel { border-color: #263839; border-radius: 0; background: #111b1c; }
 body.player-active #player .performance-layout > .piano-panel{ border-top-color: var(--accent); background: #111b1c; }
 .stage-tool-rail button, .stage-metronome-controls button { border-radius: 12px; }
@@ -3656,15 +3660,15 @@ html.device-customization-enabled #playModeModal .mode-screen-continue {
   color:var(--device-primary-text,#fff);
 }
 html.device-customization-enabled body.player-active #player>.player-top {
-  height:var(--device-heading-height,58px);
-  min-height:var(--device-heading-height,58px);
-  flex-basis:var(--device-heading-height,58px);
+  height:var(--device-piano-header-height,58px);
+  min-height:var(--device-piano-header-height,58px);
+  flex-basis:var(--device-piano-header-height,58px);
 }
 @media (max-width:900px) {
   html.device-customization-enabled body.player-active #player>.player-top {
-    height:clamp(36px,calc(var(--device-heading-height,58px) - 16px),64px);
-    min-height:clamp(36px,calc(var(--device-heading-height,58px) - 16px),64px);
-    flex-basis:clamp(36px,calc(var(--device-heading-height,58px) - 16px),64px);
+    height:clamp(24px,calc(var(--device-piano-header-height,58px) - 16px),84px);
+    min-height:clamp(24px,calc(var(--device-piano-header-height,58px) - 16px),84px);
+    flex-basis:clamp(24px,calc(var(--device-piano-header-height,58px) - 16px),84px);
     padding-bottom:0;
   }
 }
@@ -3765,7 +3769,7 @@ body.player-active.playback-finished #player .performance-layout>#playerTimeline
 
 /* ===== Estilo neón: borde del piano, barras de cristal y fuego ===== */
 .note-canvas{--neon-rgb:47,243,224}
-html body #player .note-canvas>.canvas-grid{background-image:linear-gradient(to right,#ffffff2c 1px,transparent 1px)}
+html body #player .note-canvas>.canvas-grid{background-image:linear-gradient(to right,color-mix(in srgb,var(--device-grid-line-color,#fff) var(--device-grid-line-opacity,55%),transparent) var(--device-grid-line-width,1px),transparent var(--device-grid-line-width,1px))}
 .neon-edge{--neon-thickness:3px;--neon-glow:1;position:absolute;left:0;right:0;bottom:0;height:58px;z-index:1;pointer-events:none;contain:strict;
   background:linear-gradient(to top,rgba(var(--neon-rgb),calc(.4*var(--neon-glow))),rgba(var(--neon-rgb),calc(.14*var(--neon-glow))) 38%,rgba(var(--neon-rgb),0))}
 .neon-edge.is-off{display:none}
@@ -4162,9 +4166,9 @@ body.song-list-active #songView .selected-audio-preview>button {
 }
 /* Piano stage and keyboard surround use true black; note colors remain unchanged. */
 html body.player-active #player .performance-layout,
-html body.player-active #player .performance-layout>.note-canvas,
 html body.player-active #player .performance-layout>.piano-panel,
 html body.player-active #player .performance-layout>.piano-panel #keyboardScroll { background:#000; }
+html body.player-active #player .performance-layout>.note-canvas{background:var(--device-stage-background,#000)!important}
 .settings-preview-effects[data-style="gold"][data-impact-glow="off"] i { opacity:.18;box-shadow:none;filter:none; }
 
 
@@ -4311,3 +4315,185 @@ html[data-piano-key-style="realistic"] body.keys-fill-off #player .piano-panel .
 .settings-preview-stage .preview-fall-bar[data-kind="bass"],.settings-preview-stage .preview-fall-bar[data-kind="accompaniment"] { background:var(--preview-bass);border:0;box-shadow:none;color:inherit; }
 .settings-preview-stage .preview-fall-bar[data-kind="accompaniment"] { background:var(--preview-accent); }
 .settings-preview-stage .preview-fall-bar[data-kind="bass"]:after,.settings-preview-stage .preview-fall-bar[data-kind="accompaniment"]:after { display:none; }
+
+/* El tamaño global de iconos también controla los glifos y SVG del encabezado del piano. */
+html.device-customization-enabled body.player-active #player>.player-top>#backBtn,
+html.device-customization-enabled body.player-active #player>.player-top .mobile-player-controls>button,
+html.device-customization-enabled body.player-active #player>.player-top .toolbar-actions>.toolbar-icon,
+html.device-customization-enabled body.player-active #player>.player-top .player-edit-menu>summary,
+html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .top-tempo button,
+html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .metronome-button,
+html.device-customization-enabled #themeToggle {
+  font-size:var(--device-icon-size,24px);
+}
+html.device-customization-enabled body.player-active #player>.player-top .toolbar-actions>.toolbar-icon .ui-icon,
+html.device-customization-enabled body.player-active #player .stage-tool-rail #instrumentToggle .ui-icon,
+html.device-customization-enabled body.player-active #player .stage-tool-rail #instrumentToggle .instrument-art {
+  width:var(--device-icon-size,24px);
+  height:var(--device-icon-size,24px);
+}
+html.device-customization-enabled body.player-active #player .stage-tool-rail #keyColorSwatch {
+  width:var(--device-icon-size,24px);
+  height:var(--device-icon-size,24px);
+}
+
+/* Estilo 3D del teclado: conserva el fondo y la iluminación de cada tema. */
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel #keyboard{background:#353535}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.white{border:1px solid #171717;border-radius:0 0 2px 2px;background:linear-gradient(90deg,#e4e3dc 0%,#fffef8 13%,#fffef8 83%,#e1e0d9 100%);box-shadow:inset 0 -2px 0 #d5d4cd,0 1px 2px #0002;color:#888985}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.black{height:68%;border:1px solid #050505;border-radius:0 0 6px 6px;background:linear-gradient(90deg,#555 0%,#303030 3%,#090909 12%,#020202 58%,#0a0a0a 88%,#292929 97%,#484848 100%);box-shadow:inset 1px 0 1px #ffffff70,inset -2px 0 2px #000e,inset 0 1px 0 #ffffff45,0 2px 0 #292929,0 6px 7px #000b;color:#eee;overflow:hidden}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.black::after{content:"";position:absolute;z-index:0;left:0;right:0;bottom:0;height:19%;border-top:2px solid #090909;border-radius:0 0 5px 5px;background:linear-gradient(180deg,#555 0%,#3b3b3b 12%,#292929 70%,#111 100%);box-shadow:inset 0 1px 1px #ffffff48}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.black .note-label{position:relative;z-index:1}
+html[data-piano-key-style="synthesia"] body:not(.keys-no-color) #player .piano-panel .key.white.playing{background:var(--pressed-key-color);border-color:var(--pressed-key-color);box-shadow:0 0 12px color-mix(in srgb,var(--pressed-key-color) 60%,transparent)}
+html[data-piano-key-style="synthesia"] body:not(.keys-no-color) #player .piano-panel .key.white.bass-playing{background:var(--bass-note-color);border-color:var(--bass-note-color)}
+html[data-piano-key-style="synthesia"] body:not(.keys-no-color) #player .piano-panel .key.black.playing,html[data-piano-key-style="synthesia"] body:not(.keys-no-color) #player .piano-panel .key.black.bass-playing{background:var(--pressed-key-color);border-color:var(--pressed-key-color);box-shadow:0 0 10px color-mix(in srgb,var(--pressed-key-color) 65%,transparent)}
+html[data-piano-key-style="synthesia"] body.keys-no-color #player .piano-panel .key.white.playing,html[data-piano-key-style="synthesia"] body.keys-no-color #player .piano-panel .key.white.bass-playing{background:#c5c3bb;border-color:#99978f;box-shadow:none}
+html[data-piano-key-style="synthesia"] body.keys-no-color #player .piano-panel .key.black.playing,html[data-piano-key-style="synthesia"] body.keys-no-color #player .piano-panel .key.black.bass-playing{background:#4b4e50;border-color:#55585a;box-shadow:none}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.white.chord-selected{background:linear-gradient(#fff6d7,#f2d889);border-color:#c39c41;box-shadow:inset 0 -4px 0 #c39c41,0 0 0 1px #c39c4188}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.black.chord-selected{background:linear-gradient(#92aafa,#414b83);border-color:#242d57;box-shadow:inset 0 -4px 0 #242d57,0 2px 8px #638af088}
+.device-piano-preview-keys[data-key-style="synthesia"],.settings-preview-keyboard[data-key-style="synthesia"]{background:#353535}
+.device-piano-preview-keys[data-key-style="synthesia"] i,.settings-preview-keyboard[data-key-style="synthesia"] i{background:linear-gradient(90deg,#e4e3dc,#fffef8 13%,#fffef8 83%,#e1e0d9);border-right:1px solid #171717;box-shadow:inset 0 -2px 0 #d5d4cd,0 1px 2px #0002}
+.device-piano-preview-keys[data-key-style="synthesia"] i:nth-child(2),.device-piano-preview-keys[data-key-style="synthesia"] i:nth-child(4),.device-piano-preview-keys[data-key-style="synthesia"] i:nth-child(7),.settings-preview-keyboard[data-key-style="synthesia"] i:nth-child(2),.settings-preview-keyboard[data-key-style="synthesia"] i:nth-child(4),.settings-preview-keyboard[data-key-style="synthesia"] i:nth-child(7){background:linear-gradient(90deg,#343434 0%,#171717 14%,#050505 48%,#101010 82%,#292929 100%);border:1px solid #050505;border-radius:0 0 4px 4px;box-shadow:inset 1px 0 2px #ffffff45,inset -2px 0 2px #000b,inset 0 1px 0 #ffffff28,inset 0 -3px 0 #090909,0 3px 0 #242424,0 6px 7px #000b}
+
+/* Filete rojo fino y biselado, visible con todos los teclados por defecto. */
+html body.player-active #player .performance-layout>.piano-panel{border-top:5px solid #a61118!important;border-image:linear-gradient(to bottom,#ee5a5a 0 1px,#a61118 1px 4px,#69090e 4px 5px) 1!important;border-radius:0 0 12px 12px;box-shadow:0 -1px 5px #c51b222e!important}
+html[data-bar-appearance="neon"] body.player-active #player .performance-layout>.piano-panel{border-top:0!important;box-shadow:none!important}
+
+/* ===== Teclado 3D: réplica de la imagen de referencia =====
+   Medidas tomadas de la captura (tecla blanca = 70 px). --u = 1 px de la referencia,
+   así todo escala con el ancho de tecla y el zoom del teclado. */
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel #keyboard{--kw:calc(var(--keyboard-key-width,40px)*var(--keyboard-zoom,1));--u:calc(var(--kw)/70);background:#303030}
+
+/* Teclas blancas: marfil liso #fffdf0 con separador oscuro suave */
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.white{border:0;border-radius:0 0 calc(var(--u)*2) calc(var(--u)*2);background:#fffdf0;box-shadow:inset 0 calc(var(--u)*-1) calc(var(--u)*2) rgba(0,0,0,.16),0 calc(var(--u)*1) calc(var(--u)*3) rgba(0,0,0,.27);color:#7c7c70;padding-bottom:calc(var(--u)*24)}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.white::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,#0f0f07 0,#0f0f07 calc(var(--u)*1.2),#62625a calc(var(--u)*2.2),#cfcfc7 calc(var(--u)*3.6),#f1f1e7 calc(var(--u)*5),rgba(255,253,240,0) calc(var(--u)*8),rgba(255,253,240,0) calc(100% - var(--u)*4),rgba(0,0,0,.06) calc(100% - var(--u)*3),rgba(0,0,0,.2) calc(100% - var(--u)*2),rgba(0,0,0,.55) calc(100% - var(--u)),rgba(15,15,7,.9) 100%)}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.white .note-label{position:relative;z-index:1}
+/* Las etiquetas heredan tipografía y conservan tamaño/color configurables. */
+html.device-customization-enabled[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.white .note-label.octave-marker{font-size:var(--device-octave-label-size,11px);color:var(--device-octave-label-color,#bd9e00)}
+
+/* Teclas negras: ébano #141414, bisel lateral, tapa inferior gris y sombra a la derecha */
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.black{width:63%;right:calc(-31.5% - var(--off,0%));height:68%;border:calc(var(--u)*2.5) solid #060604;border-top:0;border-radius:0 0 calc(var(--u)*3) calc(var(--u)*3);background:linear-gradient(180deg,#141414 0,#141414 41%,#161616 50%,#171717 60%,#191919 67%,#1b1b1b 72%,#1f1f1f 77%,#242424 82%,#2a2a2a 100%);box-shadow:inset calc(var(--u)*2.5) 0 0 #3e3e3e,inset calc(var(--u)*-2.5) 0 0 #3d3b3c,calc(var(--u)*2) 0 calc(var(--u)*7) rgba(0,0,0,.45),0 calc(var(--u)*3) calc(var(--u)*4) rgba(0,0,0,.4);color:#eee;overflow:hidden}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .key.black::after{content:"";position:absolute;z-index:0;left:0;right:0;bottom:0;height:13%;border:0;border-radius:0 0 calc(var(--u)*2.5) calc(var(--u)*2.5);background:linear-gradient(180deg,#454545 0,#404040 9%,#2a2a2a 13%,#404040 19%,#3d3b40 100%);box-shadow:none}
+/* Desplazamiento real de cada tecla negra respecto a la unión de blancas (C# D# F# G# A#) */
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel #keyboard .keys:nth-child(7n+3) .key.black{--off:-8.6%}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel #keyboard .keys:nth-child(7n+4) .key.black{--off:8.6%}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel #keyboard .keys:nth-child(7n+6) .key.black{--off:-15.7%}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel #keyboard .keys:nth-child(7n) .key.black{--off:0%}
+html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel #keyboard .keys:nth-child(7n+1) .key.black{--off:15.7%}
+
+/* Línea superior: reflejo gris + ranura oscura + banda roja (7 px, como la referencia) */
+html body.player-active #player .performance-layout>.piano-panel{border-top:7px solid #8d2b2a!important;border-image:linear-gradient(to bottom,#484647 0,#636063 .5px,#545351 1.5px,#4c4442 2.5px,#3b2b2c 3px,#2d0607 3.5px,#8d2b2a 4.5px,#982626 5.5px,#893e38 7px) 7 0 0 0/7px 0 0 0 stretch!important;border-radius:0 0 12px 12px;box-shadow:none!important}
+
+/* Vistas previas de ajustes con los mismos colores */
+.device-piano-preview-keys[data-key-style="synthesia"] i,.settings-preview-keyboard[data-key-style="synthesia"] i{background:#fffdf0;box-shadow:inset 0 -1px 1px #0002,0 1px 2px #0002}
+.device-piano-preview-keys[data-key-style="synthesia"] i:nth-child(2),.device-piano-preview-keys[data-key-style="synthesia"] i:nth-child(4),.device-piano-preview-keys[data-key-style="synthesia"] i:nth-child(7),.settings-preview-keyboard[data-key-style="synthesia"] i:nth-child(2),.settings-preview-keyboard[data-key-style="synthesia"] i:nth-child(7),.settings-preview-keyboard[data-key-style="synthesia"] i:nth-child(4){background:linear-gradient(180deg,#141414 0,#141414 70%,#2a2a2a 100%);border:1px solid #060604}
+
+/* Ilustraciones a color y selector carbón inspirado en la referencia de instrumentos. */
+#instrumentMenu{background:#303030;border-color:#161616;color:#f1f1f1}
+#instrumentMenu .instrument-category-tab{background:#383838;color:#f1f1f1;border-bottom-color:#1d1d1d}
+#instrumentMenu .instrument-category-tab[aria-selected="true"]{background:#929292;color:#fff}
+#instrumentMenu .instrument-options{background:#3b3b3b;border:1px solid #1a1a1a;border-radius:10px}
+#instrumentMenu .instrument-option{min-height:60px;padding:5px 13px 5px 8px;gap:12px;background:#3b3b3b;color:#f3f3f3;border-bottom:1px solid #1c1c1c;font-size:.95rem}
+#instrumentMenu .instrument-option:hover{background:#474747}
+#instrumentMenu .instrument-option.active,#instrumentMenu .instrument-option[aria-selected="true"]{background:#505050;color:#fff;box-shadow:inset 0 0 0 1px #717171}
+#instrumentMenu .instrument-option.active::after{color:#d9df39}
+#instrumentMenu .instrument-option .instrument-icon{flex:0 0 44px;width:44px;height:46px;border-radius:0;background:transparent;color:#fff}
+#instrumentMenu .instrument-option.active .instrument-icon,#instrumentMenu .instrument-option:hover .instrument-icon{background:transparent}
+#instrumentMenu .instrument-option .instrument-icon svg.instrument-illustration-svg{display:block;width:calc(var(--device-icon-size,24px)*1.5);height:calc(var(--device-icon-size,24px)*1.5);max-width:100%;max-height:100%;overflow:visible;stroke:none}
+#instrumentMenu .instrument-option .instrument-icon svg.instrument-illustration-svg .instrument-art-piano,
+#instrumentMenu .instrument-option .instrument-icon svg.instrument-illustration-svg .instrument-art-trumpet,
+#instrumentMenu .instrument-option .instrument-icon svg.instrument-illustration-svg .instrument-art-sax,
+#instrumentMenu .instrument-option .instrument-icon svg.instrument-illustration-svg .instrument-art-strings,
+#instrumentMenu .instrument-option .instrument-icon svg.instrument-illustration-svg .instrument-art-guitar,
+#instrumentMenu .instrument-option .instrument-icon svg.instrument-illustration-svg .instrument-art-bass,
+#instrumentMenu .instrument-option .instrument-icon svg.instrument-illustration-svg .instrument-art-organ,
+#instrumentMenu .instrument-option .instrument-icon svg.instrument-illustration-svg .instrument-art-percussion{stroke:none}
+#player .stage-tool-rail #instrumentToggle svg.instrument-illustration-svg{overflow:visible;stroke:none}
+html.device-customization-enabled body.player-active #player #instrumentMenu{background:#303030!important;border-color:#161616!important;color:#f1f1f1!important}
+html.device-customization-enabled body.player-active #player #instrumentMenu .instrument-categories,
+html.device-customization-enabled body.player-active #player #instrumentMenu .instrument-category-tab{background:#383838!important;color:#f1f1f1!important;border-color:#1d1d1d!important}
+html.device-customization-enabled body.player-active #player #instrumentMenu .instrument-category-tab[aria-selected="true"]{background:#929292!important;color:#fff!important}
+html.device-customization-enabled body.player-active #player #instrumentMenu .instrument-options{background:#3b3b3b!important;border-color:#1a1a1a!important}
+html.device-customization-enabled body.player-active #player #instrumentMenu .instrument-option{background:#3b3b3b!important;color:#f3f3f3!important;border-color:#1c1c1c!important}
+html.device-customization-enabled body.player-active #player #instrumentMenu .instrument-option:hover{background:#474747!important}
+html.device-customization-enabled body.player-active #player #instrumentMenu .instrument-option.active,
+html.device-customization-enabled body.player-active #player #instrumentMenu .instrument-option[aria-selected="true"]{background:#505050!important;color:#fff!important;border-color:#717171!important}
+html.device-customization-enabled body.player-active #player #instrumentMenu .instrument-option.active::after{color:#d9df39!important}
+
+/* PNGs transparentes para las ilustraciones 3D de instrumentos. */
+#instrumentMenu .instrument-option .instrument-icon img.instrument-art-png{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;border-radius:0;background:transparent!important;filter:drop-shadow(0 1px 1px #0007)}
+#player .stage-tool-rail #instrumentToggle img.instrument-art-png{display:block;object-fit:contain;border-radius:0;background:transparent!important;filter:drop-shadow(0 1px 1px #0008)}
+
+/* En móvil, el selector ocupa el alto útil y reserva el desplazamiento para la lista. */
+@media (max-width:900px) and (orientation:landscape) and (max-height:600px){
+  body.player-active #player #instrumentMenu:not(.hidden){top:calc(48px + env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right,0px));bottom:max(8px,env(safe-area-inset-bottom,0px));left:max(8px,env(safe-area-inset-left,0px));width:auto;height:auto;max-height:none;display:flex;flex-direction:column;overflow:hidden;transform:none}
+  body.player-active #player #instrumentMenu .instrument-browser{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto minmax(0,1fr);flex:1;min-height:0;align-items:stretch;overflow:hidden;gap:5px}
+  body.player-active #player #instrumentMenu .instrument-picker-targets{grid-row:1;grid-column:1/-1}
+  body.player-active #player #instrumentMenu .instrument-picker-mix{grid-row:2;grid-column:1/-1}
+  body.player-active #player #instrumentMenu .instrument-categories{grid-row:3;grid-column:1/-1}
+  body.player-active #player #instrumentMenu .instrument-category-panels{grid-row:4;grid-column:1/-1}
+  body.player-active #player #instrumentMenu .instrument-categories{height:auto;min-height:0;max-height:64px;flex-direction:row;flex-wrap:wrap;overflow-x:hidden;overflow-y:auto;scrollbar-width:thin}
+  body.player-active #player #instrumentMenu .instrument-category-tab{flex:1 0 auto;min-height:28px;padding:4px 7px;border-right:1px solid #1d1d1d;border-bottom:0;white-space:nowrap;font-size:.7rem}
+  body.player-active #player #instrumentMenu .instrument-category-panels{min-height:0;height:100%;overflow:hidden}
+  body.player-active #player #instrumentMenu .instrument-category-panel:not([hidden]){height:100%;min-height:0}
+  body.player-active #player #instrumentMenu .instrument-options{height:100%;max-height:none;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(30px,auto);align-content:start;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+  body.player-active #player #instrumentMenu .instrument-option{min-height:30px;gap:5px;padding:2px 5px;font-size:.68rem}
+  body.player-active #player #instrumentMenu .instrument-option .instrument-icon{flex-basis:25px;width:25px;height:25px}
+}
+@media (max-width:900px) and (orientation:portrait){
+  body.player-active #player #instrumentMenu:not(.hidden){top:calc(52px + env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right,0px));bottom:max(8px,env(safe-area-inset-bottom,0px));left:max(8px,env(safe-area-inset-left,0px));height:auto;max-height:none;display:flex;flex-direction:column;overflow:hidden}
+  body.player-active #player #instrumentMenu .instrument-browser{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto minmax(0,1fr);flex:1;min-height:0;align-items:stretch;overflow:hidden;gap:6px}
+  body.player-active #player #instrumentMenu .instrument-picker-targets{grid-row:1;grid-column:1/-1}
+  body.player-active #player #instrumentMenu .instrument-picker-mix{grid-row:2;grid-column:1/-1}
+  body.player-active #player #instrumentMenu .instrument-categories{grid-row:3;grid-column:1/-1}
+  body.player-active #player #instrumentMenu .instrument-category-panels{grid-row:4;grid-column:1/-1}
+  body.player-active #player #instrumentMenu .instrument-categories{height:auto;min-height:0;max-height:70px;flex-direction:row;flex-wrap:wrap;overflow-x:hidden;overflow-y:auto;scrollbar-width:thin}
+  body.player-active #player #instrumentMenu .instrument-category-tab{flex:1 0 auto;min-height:32px;padding:5px 8px;border-right:1px solid #1d1d1d;border-bottom:0;white-space:nowrap;font-size:.72rem}
+  body.player-active #player #instrumentMenu .instrument-category-panels{min-height:0;height:100%;overflow:hidden}
+  body.player-active #player #instrumentMenu .instrument-category-panel:not([hidden]){height:100%;min-height:0}
+  body.player-active #player #instrumentMenu .instrument-options{height:100%;max-height:none;grid-template-columns:minmax(0,1fr);grid-auto-rows:minmax(40px,auto);align-content:start;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+  body.player-active #player #instrumentMenu .instrument-option{min-height:40px}
+}
+
+/* Los controles del encabezado siguen automáticamente su altura configurada. */
+html.device-customization-enabled body.player-active #player>.player-top {
+  --piano-header-control-size:clamp(16px,calc(var(--device-piano-header-height,58px)*.52),52px);
+  --piano-header-symbol-size:clamp(10px,calc(var(--device-piano-header-height,58px)*.42),40px);
+}
+html.device-customization-enabled body.player-active #player>.player-top>#backBtn,
+html.device-customization-enabled body.player-active #player>.player-top .mobile-player-controls>button,
+html.device-customization-enabled body.player-active #player>.player-top .toolbar-actions>.toolbar-icon,
+html.device-customization-enabled body.player-active #player>.player-top .player-edit-menu>summary,
+html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .metronome-button {
+  flex-basis:var(--piano-header-control-size);
+  width:var(--piano-header-control-size);
+  min-width:var(--piano-header-control-size);
+  max-width:var(--piano-header-control-size);
+  height:var(--piano-header-control-size);
+  min-height:var(--piano-header-control-size);
+  font-size:var(--piano-header-symbol-size);
+}
+html.device-customization-enabled body.player-active #player>.player-top .toolbar-actions>.toolbar-icon .ui-icon {
+  width:var(--piano-header-symbol-size);
+  height:var(--piano-header-symbol-size);
+}
+html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .top-tempo {
+  height:var(--piano-header-control-size);
+}
+html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .top-tempo button {
+  flex-basis:calc(var(--piano-header-control-size)*.68);
+  width:calc(var(--piano-header-control-size)*.68);
+  min-width:calc(var(--piano-header-control-size)*.68);
+  height:calc(var(--piano-header-control-size)*.78);
+  min-height:0;
+  font-size:var(--piano-header-symbol-size);
+}
+html.device-customization-enabled body.player-active #player>.player-top .stage-metronome-controls .top-tempo output {
+  min-width:calc(var(--piano-header-control-size)*1.7);
+  font-size:clamp(8px,calc(var(--piano-header-control-size)*.34),18px);
+}
+@media (max-width:900px) {
+  html.device-customization-enabled body.player-active #player>.player-top {
+    --piano-header-control-size:clamp(16px,calc(clamp(24px,calc(var(--device-piano-header-height,58px) - 16px),84px)*.71),52px);
+    --piano-header-symbol-size:clamp(10px,calc(clamp(24px,calc(var(--device-piano-header-height,58px) - 16px),84px)*.57),40px);
+  }
+}
