@@ -51,6 +51,16 @@
   window.fbSignOut = signOut;
   window.fbOnAuthChanged = onAuthStateChanged;
 
+  // Compartir con el repertorio qué canciones ya tienen pistas de Piano.
+  onValue(ref(db, 'melodias'), function(snapshot) {
+    window.pianoMelodiesDB = snapshot.val() || {};
+    try { localStorage.setItem('yhwh_piano_melodies_cache', JSON.stringify(window.pianoMelodiesDB)); } catch (_) {}
+    if (window.filterSongs) window.filterSongs();
+    if (window.renderJubiloSidebar) window.renderJubiloSidebar();
+    if (window.jubiloGrupoActivo && window.jubiloCadenaActiva && window.renderJubiloCadena) window.renderJubiloCadena(window.jubiloGrupoActivo, window.jubiloCadenaActiva);
+    if (window.renderSetlist) window.renderSetlist();
+  });
+
   function actualizarEstadoConexion() {
     var enLinea = navigator.onLine;
     var estados = document.querySelectorAll('.network-status');
@@ -4874,7 +4884,7 @@ function isChordLine(line){
 }
 
 function escH(s){
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function esLineaSeccionCantante(s){
@@ -8488,7 +8498,7 @@ function renderSetlist(animarCalendario) {
           '<div style="flex:1; display:flex; align-items:center; gap:10px; padding: 6px 8px; min-width:0;" onclick="abrirDesdeRepertorio(' + i + ')">' +
             '<div class="snum">#' + (posEnSeccion + 1) + '</div>' +
             '<div class="sbody" style="flex:1; min-width:0;">' +
-              '<div class="stitle">' + escH(s.title) + '</div>' +
+              '<div class="stitle">' + escH(s.title) + (s.fuente === 'cadena_jubilo' ? '' : obtenerBadgeMelodiaPiano(s.fuente === 'jubilo' ? 'jubilo' : 'adoracion', s.id)) + '</div>' +
             '</div>' +
           '<div class="skey">' + (s.fuente === 'cadena_jubilo' ? escH(nombreGrupoDeItemRepertorio(s)) : ((s.fuente === 'jubilo') ? 'Jubilo' : '&#9836; ' + escH(s.tono || ''))) + '</div>' +
           '</div>' +
@@ -9534,7 +9544,7 @@ function crearItemHtml(s, num) {
     '<div class="song-item-inner">' +
       '<div class="song-item-texto">' +
         '<div class="snum">#' + num + '</div>' +
-        '<div class="stitle">' + escH(s.title) + obtenerBadgeDificultad(s.id) + obtenerBadgeSinAudio(s.id) + '</div>' +
+        '<div class="stitle">' + escH(s.title) + obtenerBadgeDificultad(s.id) + obtenerBadgeSinAudio(s.id) + obtenerBadgeMelodiaPiano("adoracion", s.id) + '</div>' +
         (match ? '<div class="ssearch-match">' + match + '</div>' : '') +
         '<div class="skey">' + (s.tono ? '&#9836; ' + escH(s.tono) : '') + '</div>' +
       '</div>' +
@@ -9542,6 +9552,30 @@ function crearItemHtml(s, num) {
     '</div>' +
   '</div>';
 }
+
+function tieneMelodiaPiano(categoria, id) {
+  var datos = window.pianoMelodiesDB;
+  if (!datos) { try { datos = JSON.parse(localStorage.getItem('yhwh_piano_melodies_cache') || '{}'); } catch (_) { datos = {}; } }
+  var registro = datos && datos[categoria] && datos[categoria][String(id)];
+  if (!registro || typeof registro !== 'object') return false;
+  if (Array.isArray(registro.notas) && registro.notas.length) return true;
+  return ['introduccion','voz','melodia','acompanamiento1','acompanamiento2'].some(function(tipo) {
+    return registro[tipo] && Array.isArray(registro[tipo].notas) && registro[tipo].notas.length > 0;
+  });
+}
+
+function obtenerBadgeMelodiaPiano(categoria, id) {
+  if (!tieneMelodiaPiano(categoria, id)) return '';
+  return '<button type="button" data-song-category="' + categoria + '" data-song-id="' + escH(id) + '" title="Abrir esta alabanza en Piano" onclick="event.stopPropagation();abrirMelodiaEnPiano(this.dataset.songCategory,this.dataset.songId)" style="display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:2px 7px;border:1px solid #c9a84c;border-radius:999px;background:rgba(201,168,76,.14);color:#f3c641;font-size:.65rem;font-weight:700;cursor:pointer;vertical-align:middle;">🎹 Piano</button>';
+}
+
+function abrirMelodiaEnPiano(categoria, id) {
+  var url = new URL('Piano/index.html', location.href);
+  url.searchParams.set('category', categoria);
+  url.searchParams.set('songId', String(id));
+  location.href = url.href;
+}
+window.abrirMelodiaEnPiano = abrirMelodiaEnPiano;
 
 var SONGS_ORDEN_KEY = 'yhwh_songs_orden';
 
@@ -10025,8 +10059,9 @@ if (typeof filterSongs === 'function') filterSongs();
 var ETIQUETAS_MIGRACION_IDS = { ofertorio: 'fe', jubilo: 'amor', navidad: 'presencia' };
 
 function remapEtiquetasIds(arr) {
-  if (!Array.isArray(arr)) return arr;
-  return arr.map(function(id) { return ETIQUETAS_MIGRACION_IDS[id] || id; });
+  if (!Array.isArray(arr)) return [];
+  var mapa = (typeof ETIQUETAS_MIGRACION_IDS !== 'undefined' && ETIQUETAS_MIGRACION_IDS) || { ofertorio: 'fe', jubilo: 'amor', navidad: 'presencia' };
+  return arr.filter(function(id) { return typeof id === 'string' && id; }).map(function(id) { return mapa[id] || id; });
 }
 
 // Valores de fábrica: se usan solo si todavía no hay nada guardado en Firebase
@@ -10925,7 +10960,9 @@ function renderJubiloSidebar(){
   if (!Array.isArray(jubiloGrupos)) jubiloGrupos = [];
   window.jubiloGrupos = jubiloGrupos;
 
-  var gruposValidos = jubiloGrupos.filter(function(g){ return g && g.id && g.nombre; });
+  var gruposValidos = jubiloGrupos.filter(function(g){ return g && g.id && g.nombre; }).map(function(g){
+    return Object.assign({}, g, { cadenas: Array.isArray(g.cadenas) ? g.cadenas : [] });
+  });
 
   if (!gruposValidos.length) {
     list.innerHTML = '<div class="no-results"><div class="nr-icon">🗂</div>' +
@@ -10941,7 +10978,11 @@ function renderJubiloSidebar(){
   if (gActivo) grupoActivoTipo = tipoGrupoJubilo(gActivo);
 
   var html = '';
-  JUBILO_TIPOS.forEach(function(cat){
+  var tiposDisponibles = typeof JUBILO_TIPOS !== 'undefined' && Array.isArray(JUBILO_TIPOS) ? JUBILO_TIPOS : [
+    { key: 'solista', label: 'Solista', plural: 'Solistas', icon: '🎤', accent: '#8bc7ff' },
+    { key: 'grupo', label: 'Grupo', plural: 'Grupos', icon: '👥', accent: '#c9a84c' }
+  ];
+  tiposDisponibles.forEach(function(cat){
     var delTipo = gruposValidos.filter(function(g){ return tipoGrupoJubilo(g) === cat.key; });
     var abiertoCat = cat.key === grupoActivoTipo ? ' open' : '';
 
@@ -11233,7 +11274,7 @@ function renderJubiloSongCard(song, index, cadena){
   // --- BLOQUE 2: TÍTULO ---
 '<div class="jubilo-song-title-wrap" style="margin-bottom:15px; padding-right:95px; min-height:' + (window.esAdmin && tieneEdicionLocal ? '118px' : '50px') + ';">' +
   '<div class="jubilo-song-title" style="margin-bottom:0; font-size:0.8rem; font-weight:bold; color:#f3c641; text-transform:uppercase; white-space:normal; word-break:normal; overflow-wrap:break-word; padding-right:0;">' + 
-    escH(song.title) + 
+    escH(song.title) + obtenerBadgeMelodiaPiano('jubilo', song.id) +
   '</div>' +
   (tieneEdicionLocal ?
     '<div style="font-size:0.65rem;color:var(--text2);margin-top:3px;font-weight:600;">✏️ Tiene una edición local guardada (puede no coincidir con el archivo de canciones)</div>'
@@ -12947,10 +12988,11 @@ var TUTORIAL_SLIDES = [
 ];
 
 function renderTutorialSlide() {
-  var s = TUTORIAL_SLIDES[tutorialSlideActual];
+  if (typeof TUTORIAL_SLIDES === 'undefined' || !Array.isArray(TUTORIAL_SLIDES) || !TUTORIAL_SLIDES.length) return;
+  var s = TUTORIAL_SLIDES[tutorialSlideActual] || TUTORIAL_SLIDES[0];
   var cont = document.getElementById('tutorialSlideContent');
   if (cont) {
-    var textoHtml = s.texto.split('\n').map(function(linea){ return escH(linea); }).join('<br><br>');
+    var textoHtml = String(s.texto || '').split('\n').map(function(linea){ return escH(linea); }).join('<br><br>');
     cont.innerHTML =
       '<div style="text-align:center;">' +
         (s.svg || '') +

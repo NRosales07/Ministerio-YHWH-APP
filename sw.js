@@ -3,7 +3,7 @@
 //  Cuando cambies PDFs o imágenes, sube CACHE_NAME. Las canciones y
 //  index.html se actualizan solas.
 // ============================================================
-const CACHE_NAME = 'alabanzas-v146';        // index, íconos, PDFs, imágenes
+const CACHE_NAME = 'alabanzas-v149';        // index, íconos, PDFs, imágenes
 const DATA_CACHE_NAME = 'alabanzas-data-v43'; // canciones, Firebase, fuentes
 const AUDIO_CACHE_NAME = 'alabanzas-audio-v1'; // solo el audio de la primera alabanza
 

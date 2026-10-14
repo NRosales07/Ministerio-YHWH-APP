@@ -1,0 +1,397 @@
+/* Base visual styles */
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#1c1c3f 0,#0d0d14 55%);font:15px Inter,system-ui,Arial,sans-serif;min-height:100vh}header{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px)}.brand{display:flex;gap:11px;align-items:center}.brand b{display:block;letter-spacing:.15em}.brand small{font-size:10px;letter-spacing:.12em;color:var(--muted)}button,input{font:inherit}button{cursor:pointer;color:inherit;border:0}.admin,.soft,.gold,.tab{border-radius:999px;padding:10px 15px;background:var(--panel2);border:1px solid var(--line)}.gold{font-weight:750;}.soft:hover,.tab:hover{border-color:var(--gold)}.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:14px}.tab{white-space:nowrap;background:#171729}.tab.active{background:#42426e;border-color:#8176e0}.connection.online{color:#78dba3}.connection.offline{color:#ffc16d}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;}.toolbar h1{margin:0}.toolbar input,.modal input{width:min(320px,52vw);padding:11px 13px;outline:none}.hint{font-size:.9rem}.song-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));}.song-card{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left}.song-card:hover{border-color:var(--gold);}.song-card b{display:block}.song-card small{display:block;margin-top:5px}.badge{font-size:11px;background:#2b3d34;padding:5px 8px;white-space:nowrap}.empty{padding:30px;text-align:center;}.player-top h1{margin:0;}.player-top p{margin:5px 0 0;}.chord-preview,.piano-panel{background:linear-gradient(150deg,#1b1b2e,#14141f);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}.chords{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0}.chord{padding:6px 10px;background:#302b50;border:1px solid #514777;border-radius:8px;color:#e8c97a;font-weight:700}.lyrics{font:14px/1.7 ui-monospace,monospace;color:#d8d6e7;white-space:pre-wrap;max-height:180px;overflow:auto;border-top:1px solid var(--line);padding-top:12px;margin-bottom:0}.player-controls{display:flex;gap:7px;flex-wrap:wrap}.player-controls button{padding:9px 12px;border-radius:999px;background:var(--panel2);border:1px solid var(--line)}.player-controls .gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1c1c3f}.status{font-size:12px;color:var(--muted);margin:12px 0}#keyboardScroll{overflow-x:auto;touch-action:pan-x;scrollbar-color:#514777 #171729}.keyboard{height:205px;display:flex;position:relative;min-width:max-content;padding:0 4px 7px;user-select:none}.key{position:absolute;touch-action:none;user-select:none;transition:transform .07s,background .08s,box-shadow .08s}.white{height:100%;width:52px;background:linear-gradient(110deg,#fff,#e8e7ee);border:1px solid #aaa8b4;border-radius:0 0 7px 7px;color:#383746;z-index:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;font-size:11px}.white.active{background:#e8c97a;transform:translateY(2px);box-shadow:0 0 17px #e8c97a99}.black{height:62%;width:33px;right:-16px;top:0;background:linear-gradient(100deg,#383747,#08080c 65%);border:1px solid #050509;border-radius:0 0 5px 5px;color:#ddd;z-index:2;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;font-size:9px;box-shadow:0 4px 6px #0008}.black.active{background:linear-gradient(#8875dc,#3e3476);transform:translateY(2px)}.recorded{display:flex;gap:5px;flex-wrap:wrap;margin-top:11px}.note-chip{font-size:11px;color:#1c1c3f;background:var(--gold2);padding:4px 7px;border-radius:6px}.modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:15px}.modal-card{position:relative;width:min(380px,100%)}.modal-card h2{margin:0 0 8px}.modal-card p{font-size:14px}.modal-card input{width:100%;margin:9px 0}.close{position:absolute;right:13px;top:11px;background:none;font-size:25px;}.full{width:100%;margin-top:6px}.error{font-size:12px;min-height:18px}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;border:1px solid var(--line);padding:11px 16px;border-radius:12px;z-index:40;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.splash{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(ellipse at center,#1c1c3f 0,#0d0d14 75%);transition:opacity .5s,visibility .5s}.splash.hide{opacity:0;visibility:hidden}.splash-logo{font-size:58px;color:var(--gold2);text-shadow:0 0 24px #d6b55566}.splash-title b{color:var(--gold2)}.splash-sub{font-size:11px;letter-spacing:.25em;color:var(--muted);margin-top:10px}.loader{display:flex;justify-content:center;gap:7px;margin:24px}.loader i{width:7px;height:7px;background:var(--gold2);border-radius:50%;animation:bounce 1s infinite alternate}.loader i:nth-child(2){animation-delay:.2s}.loader i:nth-child(3){animation-delay:.4s}@keyframes bounce{to{transform:translateY(-8px);opacity:.4}}
+
+/* Teclado inspirado directamente en Piano-master; conserva teclas extendidas y audio WAV. */
+.piano-panel .piano{display:flex;width:max-content;height:100%;padding:0;position:relative;user-select:none;cursor:default}
+.piano-panel .keys{height:100%;width:44px;flex:0 0 44px;position:relative}
+.piano-panel .key{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;transition:transform 80ms ease;padding:8px 2px;position:absolute;top:0;user-select:none}
+.piano-panel .key span{transition:opacity .2s ease-in;white-space:nowrap;pointer-events:none;line-height:1.15}
+.piano-panel .white span{color:rgba(0,0,0,.7)}
+.piano-panel .piano:hover .key span,.piano-panel .key:focus span,.piano-panel .key:focus-visible span{opacity:1}
+.piano-panel .white{position:relative;width:100%;height:100%;color:#222;box-shadow:0 1px 1px rgba(0,0,0,.5);z-index:1;font-weight:400}
+.piano-panel .black{position:absolute;top:0;color:#fff;border:0;z-index:2;box-shadow:1px 0 #777,0 2px 0 #777,0 3px 0 #666,0 4px 0 #555,0 5px 0 #444,0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15)}
+.piano-panel .white:active{box-shadow:-1px 0 15px rgba(0,0,0,.7) inset}
+.piano-panel .black:active{box-shadow:1px 0 #555,0 1px 0 #555,0 1px 0 #444,0 2px 0 #333}
+.piano-panel .key.playing{box-shadow:0 0 16px #046ffa;}
+.piano-panel .note{font-size:3rem;opacity:0;text-align:center;line-height:1.15;margin:10px 0 0;transition:opacity .2s ease}
+/* Diseño táctil: conservar las etiquetas y proporciones del piano en pantallas sin cursor. */
+.piano-panel #keyboardScroll{overflow-x:auto;overflow-y:hidden;}
+.piano-panel .piano{min-width:max-content}
+.piano-panel .key.playing{box-shadow:0 0 5px 1px #4c8fd744,0 0 10px #4c8fd722;}
+.piano-panel .black.playing{z-index:4}
+.piano-panel .note{min-height:1.15em}
+
+/* La ficha de melodía toma el lenguaje visual del grabador de YHWH. */
+.piano-panel .player-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+.piano-panel .player-controls button{min-width:0;min-height:40px;padding:8px 9px;background:#24233d;border-color:#48456f;color:#eeedfe;font-size:.77rem;font-weight:700}
+.piano-panel .player-controls #playMelody,.piano-panel .player-controls #recordBtn{background:linear-gradient(135deg,#c9a84c,#e8c97a);border-color:transparent;color:#171520}
+.piano-panel .player-controls #playMelody{grid-column:span 2}
+.piano-panel .player-controls #deleteBtn{background:#481d26;border-color:#8a2b3c;color:#ffb4b4}
+.piano-panel .status{margin:10px 0;min-height:35px}
+
+/* Splash de bienvenida de Manantial de Alabanza, adaptado al piano. */
+.splash-screen{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .6s ease,visibility .6s ease;opacity:1;visibility:visible}
+.splash-screen.splash-hide{opacity:0;visibility:hidden;pointer-events:none}
+.ambient-glow{position:absolute;inset:-25%;pointer-events:none;background:radial-gradient(circle at 20% 20%,rgba(232,201,122,.18),transparent 28%),radial-gradient(circle at 80% 30%,rgba(139,199,255,.14),transparent 26%),radial-gradient(circle at 55% 80%,rgba(241,130,75,.06),transparent 30%),radial-gradient(circle at 50% 92%,rgba(255,255,255,.08),transparent 24%);}
+.splash-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.sp-nota,.sp-gota{position:absolute;bottom:-8%;opacity:0;animation-name:spSubir;animation-timing-function:ease-in;animation-iteration-count:infinite}
+.sp-nota{color:#e8c97a;text-shadow:0 0 6px rgba(232,201,122,.5)}
+.sp-gota{width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,rgba(139,199,255,.9),rgba(139,199,255,.05));box-shadow:0 0 6px rgba(139,199,255,.5)}
+.splash-content{position:relative;text-align:center;padding:20px;animation:splashFadeUp .9s ease}
+.splash-content:before{content:"";position:absolute;left:50%;top:-6px;width:340px;height:340px;transform:translateX(-50%);border-radius:50%;filter:blur(14px);opacity:.35;animation:splashHalo 6s ease-in-out infinite alternate;pointer-events:none}
+.splash-content:after{content:"✝︎";position:absolute;left:50%;top:-72px;transform:translateX(-50%);color:rgba(255,255,255,.3);font-size:3.8rem;line-height:1;font-family:serif;text-shadow:0 0 8px rgba(232,201,122,.08);opacity:.42;animation:splashSymbolGlow 7s ease-in-out infinite alternate;pointer-events:none}
+.splash-content>*{position:relative;z-index:1}
+.splash-logo{width:110px;height:110px;object-fit:cover;margin-bottom:10px;box-shadow:0 6px 18px rgba(0,0,0,.45);animation:splashPulse 3s ease-in-out infinite}
+.splash-title{font-family:'Parisienne','Inter',Arial,serif;color:#c9a84c;font-size:1.65rem;font-weight:700;max-width:300px;margin:0 auto;line-height:1.4}
+.splash-title span{color:#e8c97a}
+.splash-subtitle{font-family:'Parisienne','Inter',Arial,serif;font-size:1.08rem;font-weight:700;margin:6px 0 22px}
+.splash-verse{font-size:.8rem;font-style:italic;max-width:290px;line-height:1.55;margin:0 auto 25px;opacity:.88}
+.splash-verse span{display:block;font-style:normal;font-size:.72rem;margin-top:4px;letter-spacing:.5px}
+.splash-loader{display:flex;gap:8px;justify-content:center}
+.splash-loader span{width:8px;height:8px;border-radius:50%;background:#c9a84c;animation:splashBounce 1.2s ease-in-out infinite}
+.splash-loader span:nth-child(2){animation-delay:.15s}.splash-loader span:nth-child(3){animation-delay:.3s}
+.btn-entrar-splash{opacity:0;transform:translateY(8px) scale(.96);pointer-events:none;transition:opacity .5s ease,transform .5s ease;border:0;font-size:1rem;letter-spacing:.5px;cursor:pointer;margin-top:4px;box-shadow:0 0 0 rgba(232,201,122,.5)}
+.btn-entrar-splash.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;animation:entrarPulso 1.8s ease-in-out infinite}
+@keyframes spSubir{0%{transform:translateY(0);opacity:0}10%{opacity:.85}50%{transform:translateY(-55vh) translateX(10px);opacity:.6}90%,100%{transform:translateY(-100vh);opacity:0}}
+@keyframes splashFadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes splashHalo{from{transform:translateX(-50%) scale(.96);opacity:.7}to{transform:translateX(-50%) scale(1.04);opacity:1}}
+@keyframes splashSymbolGlow{from{opacity:.35;transform:translateX(-50%) scale(.96)}to{opacity:.7;transform:translateX(-50%) scale(1.04)}}
+@keyframes splashBounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+@keyframes splashPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.7}}
+@keyframes entrarPulso{0%,100%{box-shadow:0 0 0 0 rgba(232,201,122,.55)}50%{box-shadow:0 0 0 12px rgba(232,201,122,0)}}
+@media(prefers-reduced-motion:reduce){.ambient-glow,.splash-content,.splash-logo,.splash-loader span,.sp-nota,.sp-gota{animation:none}}
+
+/* Teclado: nombres limpios, C de cada octava en dorado y pulsación sin brillo. */
+.piano-panel .key.playing{transform:translateY(2px) scale(.99);z-index:3}
+.piano-panel .black.playing,.piano-panel .black:active{background:#111;box-shadow:inset 0 3px 6px rgba(0,0,0,.85),0 1px 0 #555;z-index:4}
+.piano-panel .octave-marker{font-weight:700;}
+/* La tecla blanca conserva su blanco; el relieve interior indica la pulsación igual que en las negras. */
+.piano-panel .white.playing,.piano-panel .white:active{background:#fff;border-color:#ddd;box-shadow:inset 0 3px 6px rgba(0,0,0,.32)}
+
+/* Las blancas hundidas conservan su capa; las negras quedan siempre delante. */
+.piano-panel .white.playing,.piano-panel .white:active{z-index:1}
+
+
+
+
+.audio-credit{margin:0 0 10px;text-align:right;}
+
+
+/* Acordes de acompañamiento: herramienta Admin oculta al público y etiqueta sobre la nota asignada. */
+.melody-note-item{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-width:34px;padding:2px 1px;border-radius:8px;transition:background .12s,box-shadow .12s}
+.melody-note-item.selected{background:#8f79e522;box-shadow:0 0 0 1px #8f79e577}
+.melody-note-item .note-chip{border:0;cursor:pointer}
+.melody-note-item .note-chip:disabled{cursor:default}
+.chord-gap-target{align-self:stretch;min-width:18px;padding:0 2px;border:1px dashed #c9a84c66;border-radius:7px;font-size:14px;line-height:1;cursor:pointer;touch-action:manipulation}
+.chord-gap-target span{display:block;max-width:52px;overflow:hidden;text-overflow:ellipsis;writing-mode:vertical-rl;font-size:9px}
+.chord-gap-target.selected{border-style:solid;background:#8f79e522;box-shadow:0 0 0 1px #8f79e577}
+.chord-gap-target:disabled{display:none}
+.note-chord-label{font-size:10px;font-weight:800;white-space:nowrap}
+.chord-editor{margin:10px 4px 14px;padding:13px;border:1px solid #61568d;border-radius:12px;box-shadow:0 5px 18px #0003}
+.chord-editor-title{font-weight:800}
+.chord-editor>p{margin:5px 0 10px;color:var(--muted);font-size:12px}
+.chord-editor-fields{display:grid;gap:8px}
+.chord-editor-fields label{display:flex;flex-direction:column;gap:4px;font-size:11px}
+.chord-editor-fields select{min-height:36px;padding:5px 8px;border:1px solid #5d5878;border-radius:8px;font:inherit}
+.chord-editor-actions{margin-top:10px}
+.chord-editor-actions button{min-height:36px;padding:7px 11px;border-radius:9px;background:#302d48;border:1px solid #5d5878;color:#f4f0ff;font-size:12px;font-weight:700}
+.chord-editor-actions .gold{border-color:transparent}
+#sustainBtn.active{border-color:#e8c97a;background:linear-gradient(145deg,#4a3f26,#302844);color:#f4d77e;box-shadow:0 0 0 1px #e8c97a55,0 0 12px #e8c97a33}
+
+/* Teoría musical integrada a Piano: acordes, tonalidades, círculo y teclado. */
+.theory-header{padding:10px 2px 4px}.theory-header h1{margin:0;color:var(--gold2);font-size:1.5rem}.theory-header p,.theory-intro{color:var(--muted);font-size:.9rem;line-height:1.5}
+.theory-tabs{display:flex;overflow-x:auto;padding:5px 0 12px;scrollbar-width:thin}.theory-tab{flex:0 0 auto;border:1px solid #35334e;border-radius:999px;background:#171722;font-weight:700;white-space:nowrap}
+.theory-panel{padding:17px;background:linear-gradient(145deg,#1a1929,#12121c);border:1px solid #34334f;border-radius:15px;margin-bottom:18px}.theory-panel h2{margin:0;color:var(--gold2);}.theory-intro{margin:6px 0 14px}.theory-chord-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(230px,.8fr);gap:12px;align-items:start}.theory-chord-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.theory-chord-card{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:91px;padding:11px;border:1px solid #383650;border-radius:11px;background:#1c1b2a;color:var(--text);text-align:left}.theory-chord-card.selected,.theory-chord-card:hover{border-color:var(--gold);background:#242137}.theory-chord-card b{color:var(--gold2)}.theory-chord-card span{font-family:ui-monospace,monospace;color:#c9c4d8;font-size:12px}.theory-chord-card small{color:var(--muted);font-size:11px}.theory-preview{border:1px solid #484365;border-radius:12px;background:#171622}.theory-preview h3{margin:0 0 5px;color:#f1d783}.theory-preview>p{margin:0 0 12px;color:var(--muted);font-size:12px}.theory-note-list{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.theory-note{min-width:37px;padding:5px 8px;border-radius:7px;background:#373351;border:1px solid #5e587b;color:#f3d987;text-align:center;font-weight:750}.theory-preview .gold{min-height:39px;padding:8px 13px}.theory-key-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.theory-key-card{padding:11px;border:1px solid #34334f;border-radius:11px;background:#171622}.theory-key-card h3{margin:0 0 9px;color:var(--gold2);}.theory-key-card>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.theory-key-card button{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:6px 3px;border:1px solid #45415e;border-radius:8px;}.theory-key-card button:hover{border-color:var(--gold)}.theory-key-card button small{color:var(--muted);font-size:9px}.theory-key-card button b{font-size:11px;color:#f0d580}.theory-circle-layout{display:grid;grid-template-columns:minmax(280px,380px) minmax(220px,1fr);gap:15px;align-items:center}.theory-circle-layout svg{width:100%;height:auto;overflow:visible}.theory-circle-node{cursor:pointer}.theory-circle-node circle{stroke-width:1.5;transition:.15s}.theory-circle-node text{fill:#eeeafa;text-anchor:middle;font-size:11px;pointer-events:none}.theory-circle-node.minor text{font-size:8px;fill:#d3cfe0}.theory-circle-node:hover circle,.theory-circle-node.selected circle{fill:#927c39;stroke-width:2}.theory-circle-results{display:grid;gap:7px;margin:13px 0}.theory-circle-results button{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid #403d59;border-radius:9px;text-align:left}.theory-circle-results small{color:var(--muted)}.theory-circle-results b{color:#f0d580}.theory-piano-preview{overflow:hidden}.theory-piano-scroll{overflow-x:auto;padding:8px 0 4px;scrollbar-color:#514777 #171729}.theory-piano-keys{position:relative;display:flex;width:max(100%,560px);height:190px;padding:0 2px 5px;background:#09090e;border-radius:8px;touch-action:pan-x;user-select:none}.theory-key{position:relative;flex:1 0 0;min-width:0}.theory-key.white{z-index:1;display:flex;align-items:flex-end;justify-content:center;height:100%;padding:0 1px 9px;border:1px solid #b0adbb;background:linear-gradient(110deg,#fff,#e6e5eb);color:#474454;border-radius:0 0 5px 5px}.theory-key.white span{font-size:10px;white-space:nowrap}.theory-key.white.active{background:linear-gradient(#d7caff,#fff0b5);box-shadow:inset 0 0 0 2px #d2b85d}.theory-key.white.octave span{color:#b58e2e;font-weight:800}.theory-key.black{position:absolute;z-index:2;top:0;width:20px;height:61%;padding:0 1px 6px;border:1px solid #030307;border-radius:0 0 4px 4px;background:linear-gradient(100deg,#3b3949,#09090c 65%);color:#e4e1ef;box-shadow:0 3px 6px #0009;display:flex;align-items:flex-end;justify-content:center}.theory-key.black span{font-size:8px;white-space:nowrap}.theory-key.black.active{background:linear-gradient(#758de1,#353b69);box-shadow:0 0 10px #738fed88}
+
+.theory-root-picker,.theory-mode-picker{display:flex;align-items:center;gap:9px;width:max-content;max-width:100%;margin:0 0 12px;padding:8px 11px;border:1px solid #393650;border-radius:10px;background:#171622;color:#d7d3e5;font-size:12px;font-weight:700}.theory-root-picker select,.theory-mode-picker select{min-height:34px;max-width:100%;padding:5px 9px;border:1px solid #5d5878;border-radius:8px;background:#242239;color:#f4f0ff;font:inherit}.theory-mode-picker{margin:0 0 12px}.theory-formula{margin:12px 0 6px;color:#f0d580;font-size:14px;font-weight:750}.theory-interval-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0 14px}.theory-interval-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:58px;padding:7px 4px;border:1px solid #3e3a58;border-radius:9px;background:#1a1929;color:#e8e6f0}.theory-interval-card b{font-size:11px}.theory-interval-card small{font-size:10px;color:var(--muted)}.theory-interval-card.selected,.theory-interval-card:hover{border-color:#e8c97a;background:#29263b}.theory-interval-preview{max-width:470px}.theory-key-card h3{font-size:.88rem}
+@keyframes screenFadeOut{to{opacity:0;transform:translateY(5px)}}@keyframes screenFadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}.screen-fade-out{animation:screenFadeOut .14s ease both;pointer-events:none}.screen-fade-in{animation:screenFadeIn .25s ease both}.theory-panel.screen-fade-out,.theory-panel.screen-fade-in{will-change:opacity,transform}
+.theory-circle-results{grid-template-columns:repeat(2,minmax(0,1fr))}.theory-circle-results .circle-degree{position:relative;display:grid;grid-template-columns:27px 1fr;grid-template-rows:auto auto;align-items:center;justify-items:start;gap:1px 8px;min-height:56px;padding:8px 9px;border-color:#45415e;transition:border-color .15s,transform .15s,background .15s}.theory-circle-results .circle-degree:active{transform:scale(.97)}.circle-degree .degree-badge{grid-row:1 / 3;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-weight:800}.circle-degree small{font-size:10px}.circle-degree b{font-size:14px}.circle-degree.active{border-color:#fff;box-shadow:0 0 0 1px #ffffff22}.theory-circle-node.degree-1 circle,.circle-degree.degree-1{--degree-color:#e1bd58}.theory-circle-node.degree-2 circle,.circle-degree.degree-2{--degree-color:#69a9de}.theory-circle-node.degree-3 circle,.circle-degree.degree-3{--degree-color:#bd86dc}.theory-circle-node.degree-4 circle,.circle-degree.degree-4{--degree-color:#62bb91}.theory-circle-node.degree-5 circle,.circle-degree.degree-5{--degree-color:#ed8d63}.theory-circle-node.degree-6 circle,.circle-degree.degree-6{--degree-color:#e8799b}.theory-circle-node[class*="degree-"] circle{fill:var(--degree-color);fill-opacity:.72;stroke:var(--degree-color);stroke-width:2.5}.theory-circle-node.minor[class*="degree-"] circle{fill:var(--degree-color);fill-opacity:.52}.theory-circle-node.selected circle{stroke:#fff;stroke-width:4;filter:drop-shadow(0 0 5px var(--degree-color,#f0d580))}.theory-circle-node:hover circle{stroke:#fff;stroke-width:3}.circle-degree{border-left:4px solid var(--degree-color)}.circle-degree .degree-badge{background:var(--degree-color);color:#17151f}.circle-degree.active{background:#ffffff18}
+@media(prefers-reduced-motion:reduce){.screen-fade-out,.screen-fade-in{animation:none}}
+
+/* Visor de letra y acordes: una sola definición para el componente. */
+.lyrics-viewer{max-width:760px;margin:0 auto;padding:0 0 40px;overflow-x:auto;overflow-y:hidden;white-space:pre;font-family:Arial,Helvetica,sans-serif;font-size:.75rem;line-height:1.5;color:var(--text);border:0;-webkit-overflow-scrolling:touch}
+.lyrics-viewer .lc,.lyrics-viewer .ll,.lyrics-viewer .ls,.lyrics-viewer .lm,.lyrics-viewer .lb{display:block;font-family:Arial,Helvetica,sans-serif;white-space:pre}
+.lyrics-viewer .lc{color:var(--gold2);font-size:.7rem;font-weight:bold;text-align:left;line-height:inherit}
+.lyrics-viewer .ll{color:var(--text);font-size:.7rem;text-align:left;line-height:inherit}
+.lyrics-viewer .ls{margin:10px 0;color:var(--gold2);font-size:.7rem;font-weight:bold;text-align:center;letter-spacing:.5px;line-height:inherit}
+.lyrics-viewer .lm{color:var(--muted);font-size:.85rem;font-weight:bold;text-align:center;white-space:pre-line;line-height:inherit}
+.lyrics-viewer .lb{height:6px;min-height:6px}
+.lyrics-viewer .lyrics-chord{display:inline;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:inherit;font:inherit;font-weight:inherit;line-height:inherit;vertical-align:baseline;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.lyrics-viewer .lyrics-chord:hover,.lyrics-viewer .lyrics-chord:focus-visible{color:#fff;background:#e8c97a33;text-decoration:underline;text-underline-offset:2px;outline:none}
+.lyrics-viewer .lyrics-chord.selected{color:#fff;background:#e8c97a55;box-shadow:0 0 0 1px #e8c97a99;border-radius:2px}
+.lyrics-viewer .lyrics-chord:active{color:#fff;opacity:.8}.piano-panel .key.white.chord-selected{background:linear-gradient(#fff6d7,#f2d889);box-shadow:inset 0 -4px 0 #c39c41,0 0 0 1px #c39c4188;z-index:1}
+.piano-panel .key.black.chord-selected{background:linear-gradient(#92aafa,#414b83);box-shadow:inset 0 -4px 0 #242d57,0 2px 8px #638af088;z-index:4}
+.chord-editor-fields .arpeggio-toggle{grid-column:1/-1;display:flex;flex-direction:row;align-items:center;gap:9px;min-height:45px;padding:7px 10px;border:1px solid #514a73;border-radius:9px;background:#191827;cursor:pointer}
+.arpeggio-toggle input{width:18px;height:18px;flex:0 0 auto;accent-color:#e8c97a}
+.arpeggio-toggle>span{display:flex;flex-direction:column;gap:2px}.arpeggio-toggle b{color:#f0d580;font-size:12px}.arpeggio-toggle small{color:#bbb5ce;font-size:10px}.chord-editor-fields select:disabled{opacity:.52}
+
+/* Reduce el auto-zoom de Safari al enfocar controles y la inflación de texto al girar el móvil. */
+button,select,input,summary{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@keyframes playerFadeOpacity{from{opacity:0}to{opacity:1}}
+.player.screen-fade-in{animation:playerFadeOpacity .25s ease both}
+.player.screen-fade-out{animation:playerFadeOpacity .14s ease reverse both}
+/* Evita selecciones accidentales al tocar; conserva edición y selección de letras. */
+body,body *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"],.song-content,.song-content *{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+/* El teclado captura cada dedo por separado y evita selección de texto al sostener o deslizar. */
+.piano-panel #keyboard,.piano-panel .key{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+
+/* Evita selección de texto y entrega al piano los gestos de varios dedos y deslizamiento. */
+
+
+/* Navegación compacta de octavas y zoom del teclado en pantallas pequeñas. */
+.keyboard-navigation{align-items:center;}
+.keyboard-octave-controls,.keyboard-zoom-controls{display:flex;align-items:center;justify-content:center;gap:5px}
+.keyboard-navigation button{border:1px solid #5d5878;border-radius:9px;background:linear-gradient(180deg,#383450,#29263e);font-size:11px;font-weight:700;white-space:nowrap}
+.keyboard-octave-controls span{min-width:29px;text-align:center;font-weight:800}
+body.player-active .piano-panel #keyboard .keys{width:calc(var(--keyboard-key-width,50px)*var(--keyboard-zoom,1));flex-basis:calc(var(--keyboard-key-width,50px)*var(--keyboard-zoom,1))}
+
+/* Lenguaje visual compartido con YHWH Alabanzas. */
+body{background:#0f0f29}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 12% 16%,#e8c97a13,transparent 22%),radial-gradient(circle at 88% 14%,#8bc7ff12,transparent 24%),radial-gradient(circle at 70% 82%,#f1824b0c,transparent 25%)}
+.brand-icon{text-shadow:0 0 12px #e8c97a66}
+.admin,.soft,.gold,.tab,.home-back{transition:border-color .16s,background .16s,transform .16s,box-shadow .16s}
+.admin,.soft,.tab{background:linear-gradient(145deg,#24244a,#19192e);border-color:#42426e}
+.admin:hover,.soft:hover,.tab:hover{border-color:var(--gold2);box-shadow:0 0 16px #c9a84c1c}
+.gold{box-shadow:0 4px 14px #c9a84c2a}
+.toolbar input,.modal input{border-color:#3b3b5c;}
+.song-card,.chord-preview,.piano-panel,.theory-panel,.theory-preview,.modal-card{background:linear-gradient(145deg,rgba(34,34,70,.94),rgba(20,20,37,.97));border-color:#343454;box-shadow:0 12px 30px #0003}
+.song-card:hover{border-color:#c9a84c;}
+.home-view{border-color:#c9a84c55;background:linear-gradient(125deg,#11152f,#211d4a 46%,#121326 100%);box-shadow:0 18px 50px #0005}
+.home-back{border-color:#514b70}
+.theory-tab.active{box-shadow:0 0 14px #c9a84c1c}
+.modal-card{border-radius:20px}
+@media(prefers-reduced-motion:reduce){.admin,.soft,.gold,.tab,.home-back{transition:none}}
+
+/* Componentes interiores con el estilo del repertorio YHWH. */
+.view:not(.hidden){position:relative}
+.view:not(.hidden)>.home-back,.player-top>.soft{border:1px solid #c9a84c66;border-radius:999px;background:linear-gradient(135deg,#1d2677,#1b2152);color:#f1d783;font-weight:700;box-shadow:0 3px 12px #0003}
+.view:not(.hidden)>.home-back:hover,.player-top>.soft:hover{border-color:#e8c97a;background:linear-gradient(135deg,#292f82,#242b61)}
+.toolbar{padding:12px 14px;border:1px solid #c9a84c55;border-radius:14px;background:linear-gradient(145deg,#1c1c3f,#17172f);box-shadow:0 8px 22px #0003}
+.toolbar h1{font-size:1.35rem;letter-spacing:-.02em}
+.toolbar input,.modal input{background:#10102a;border:1px solid #42426e;border-radius:9px;color:var(--text)}
+.toolbar input:focus,.modal input:focus{border-color:#c9a84c;box-shadow:0 0 0 3px #c9a84c20}
+.hint{margin:0 0 12px;color:#d0cde0;line-height:1.5}
+.song-card b{letter-spacing:.01em}
+.song-card:hover{border-color:#e8c97a;box-shadow:0 9px 20px #0005}
+.badge{background:#29473d;border:1px solid #6cb58a55;}
+.empty{color:#d0cde0}
+.player-top{padding:10px 12px;border-radius:14px;}
+.player-top h1{letter-spacing:.01em}
+.piano-panel,.chord-preview,.theory-panel{border:1px solid #c9a84c55;background:linear-gradient(145deg,#1c1c3f,#17172f);box-shadow:0 10px 28px #0004}
+.piano-panel .status{border-color:#ffffff18;}
+.quick-setting select,.mobile-quick-settings select,.chord-editor-fields select{border:1px solid #625a82;border-radius:8px;background:#17172f;color:#f2efff}
+.keyboard-navigation button{border:1px solid #c9a84c66;background:linear-gradient(135deg,#1d2677,#1b2152);color:#f1d783}
+.keyboard-navigation button:hover{border-color:#e8c97a;background:linear-gradient(135deg,#293184,#222a62)}
+.keyboard-octave-controls span{color:#f1d783}
+.keyboard-navigation{padding:6px;border:1px solid #c9a84c33;border-radius:10px;background:#10102a}
+.recorded .note-chip{border:1px solid #e8c97a88;background:linear-gradient(135deg,#c9a84c,#e8c97a);color:#171520}
+.chord-editor,.mobile-song-details{border:1px solid #c9a84c55;border-radius:12px;background:linear-gradient(145deg,#1c1c3f,#17172f)}
+.mobile-song-details>summary{color:#f1d783}
+.mobile-song-details .lyrics{border-color:#42426e}
+.admin-only{border-color:#9c84db;background:linear-gradient(135deg,#39306d,#28234f);color:#efeaff}
+.modal-card{border:1px solid #c9a84c66;}
+.audio-credit a{color:#e8c97a}
+.theory-panel h2,.theory-preview h3{color:#f1d783}
+.theory-chord-card,.theory-key-card,.theory-interval-card,.theory-circle-results button{background:linear-gradient(135deg,#1d2677aa,#1b2152aa)}
+.theory-chord-card:hover,.theory-chord-card.selected,.theory-interval-card:hover,.theory-interval-card.selected{border-color:#e8c97a;background:linear-gradient(135deg,#252f87,#20285f)}
+.quick-tempo{min-width:150px;padding:2px 8px}
+.quick-tempo label{align-items:center;gap:8px;color:#d0cde0;font-size:11px;font-weight:700}
+.quick-tempo input{width:100%;height:20px;margin:0;accent-color:#e8c97a;touch-action:pan-x}
+.mobile-quick-settings:has(.quick-tempo){display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+@media(min-width:701px){body.player-active .quick-tempo{min-width:160px}.mobile-quick-settings:has(.quick-tempo){display:flex}}
+.track-modal{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:18px;}
+.track-modal.hidden{display:none}
+.track-modal-card{width:min(100%,390px);padding:22px;border:1px solid #c9a84c77;border-radius:18px;background:linear-gradient(145deg,#1c1c3f,#17172f);box-shadow:0 20px 60px #0008}
+.track-modal-card h2{margin:0 0 6px;color:#f1d783;font-size:1.2rem}
+.track-modal-card>p{margin:0 0 15px;color:#d0cde0;font-size:.86rem;line-height:1.45}
+.track-choice{display:flex;flex-direction:column;align-items:flex-start;gap:5px;width:100%;margin:8px 0;padding:12px 14px;text-align:left}
+.track-choice span{font-weight:800}
+.track-choice small{color:#e0946a;font-size:.75rem}
+.track-cancel{width:100%;margin-top:8px}
+.voice-mixer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 10px;margin:6px 0;border:1px solid #c9a84c55;border-radius:12px;background:linear-gradient(135deg,#1d2677aa,#1b2152aa)}
+.voice-mixer.hidden{display:none}
+.voice-switch{position:relative;display:flex;align-items:center;gap:8px;min-height:37px;padding:5px 10px;border:1px solid #c9a84c44;border-radius:999px;background:#12122a;color:#eeeafa;font-size:.76rem;font-weight:700;cursor:pointer;touch-action:manipulation}
+.voice-switch input{position:absolute;width:1px;height:1px;opacity:0}
+.voice-switch i{position:relative;width:31px;height:18px;flex:0 0 31px;border-radius:999px;background:#46445b;transition:background .18s}
+.voice-switch i:after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#e8e6f0;transition:transform .18s}
+.voice-switch input:checked+i{background:#c9a84c}
+.voice-switch input:checked+i:after{transform:translateX(13px);background:#171520}
+.voice-switch input:focus-visible+i{outline:2px solid #8bc7ff;outline-offset:2px}
+.voice-mixer>small{flex-basis:100%;color:#c9c4d8;font-size:.69rem;line-height:1.4}
+.voice-direction{display:flex;align-items:center;gap:7px;min-height:37px;padding:5px 9px;border:1px solid #c9a84c44;border-radius:10px;background:#12122a;color:#eeeafa;font-size:.72rem;font-weight:700}
+.voice-direction select{min-height:30px;max-width:150px;padding:4px 7px;border:1px solid #514b70;border-radius:7px;background:#1b1b33;color:#f1edf9;font:inherit}
+.voice-direction select:focus-visible{outline:2px solid #8bc7ff;outline-offset:2px}
+.chord-editor-help{margin:4px 0 10px;font-size:.76rem;line-height:1.45}
+.chord-editor-fields>label:first-child{grid-column:1/-1}
+
+.suggested-voice-notes{display:block;min-height:10px;color:#c9c4d8;font-size:8px;line-height:1.15;white-space:nowrap}
+
+
+/* Taller guiado para acompañamiento de alabanzas sin partituras. */
+.worship-practice{margin:16px 0 20px;padding:18px;border:1px solid #63563d;border-radius:16px;background:linear-gradient(145deg,#242033,#171722 70%);box-shadow:0 12px 30px #0002}.worship-practice-copy small{color:#e5c875;font-weight:800;letter-spacing:.12em}.worship-practice-copy h2{margin:5px 0;color:#f1d783;font-size:1.15rem}.worship-practice-copy p,.worship-tip{max-width:850px;color:var(--muted);font-size:.9rem;line-height:1.55}.worship-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.worship-controls label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:.8rem;font-weight:700}.worship-controls select,.worship-controls input{width:100%;min-height:39px;padding:7px 9px;border:1px solid #49445f;border-radius:9px;background:#171622;color:var(--text)}.worship-controls input{padding:0;accent-color:#e5c875}.worship-now{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px;border:1px solid #49445f;border-radius:12px;background:#12121b}.worship-now>div:first-child{display:grid;gap:4px}.worship-now small{color:#d4c78e;font-size:.68rem;font-weight:800;letter-spacing:.1em}.worship-now strong{color:#f5dc8d;font-size:1.25rem}.worship-now span{color:var(--muted);font-size:.82rem}.worship-chord-strip{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.worship-chord-chip{min-width:100px;padding:8px;border:1px solid #39364d;border-radius:9px;background:#1b1a28;text-align:center;transition:.15s}.worship-chord-chip b,.worship-chord-chip strong,.worship-chord-chip small{display:block}.worship-chord-chip b{color:var(--muted);font-size:.68rem}.worship-chord-chip strong{color:var(--text);font-size:.8rem}.worship-chord-chip small{margin-top:3px;color:#aaa5bb;font-size:.67rem}.worship-chord-chip.active{border-color:#f1d783;background:#343044;box-shadow:0 0 0 1px #f1d78344}.worship-chord-chip.active strong{color:#f1d783}.worship-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:12px}.worship-actions>span{color:var(--muted);font-size:.82rem}.worship-actions button{min-height:40px;padding:8px 13px}.worship-actions button:disabled{opacity:.55}.worship-tip{margin:13px 0 0;padding:10px 12px;border-left:3px solid #b79a4d;background:#ffffff08}.worship-tip b{color:#ead38d}.learning-welcome h2{color:var(--gold2)}
+/* Shared visibility state toggled by the application. */
+.hidden { display: none !important; }
+
+
+/* Music studio and performance controls */
+/* Piano YHWH · estudio móvil y de escritorio */
+
+html {  background: var(--bg); }
+body {
+  background:
+    radial-gradient(ellipse at 50% -25%, rgba(116, 102, 76, .16), transparent 45%),
+    radial-gradient(ellipse at 100% 55%, rgba(52, 72, 97, .09), transparent 40%),
+    var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font-family: inherit; }
+button, select, input[type="range"] { touch-action: manipulation; }
+
+.brand-home { min-height: 48px;  }
+.brand-icon {
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+}
+.brand-home small { margin-top: 3px;   letter-spacing: .13em; }
+.admin, .soft, .gold, .tab, .theory-tab {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition: border-color .18s, background .18s, transform .18s;
+}
+.admin, .soft, .tab, .theory-tab { background: #171d26; }
+.soft:hover, .admin:hover, .tab:hover, .theory-tab:hover { border-color: #ab925e; }
+.connection {   letter-spacing: .02em; }
+
+/* Portada */
+.home-view {
+  background: linear-gradient(145deg, rgba(25,29,37,.96), rgba(15,19,26,.98) 60%, rgba(24,25,29,.96));
+}
+.home-view:before {
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(217,174,98,.12), transparent 42%),
+              radial-gradient(ellipse at 0% 100%, rgba(71,92,111,.1), transparent 34%);
+  animation: none;
+}
+.home-view:after { display: none; }
+
+/* Listas y vistas de contenido */
+.view, .theory-header, .theory-panel { color: var(--text); }
+.home-back { min-height: 42px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 12px; background: #171d26; }
+.toolbar { margin: 18px 0 12px; }
+.toolbar h1, .theory-header h1 { color: #f0e7d4; font-family: Georgia, "Times New Roman", serif; font-size: 1.85rem; font-weight: 500; letter-spacing: -.025em; }
+.toolbar input, .modal input, .theory-root-picker select, .theory-mode-picker select, .quick-setting select, .voice-direction select, .chord-editor select {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background-color: #121720;
+  color: var(--text);
+}
+.hint, .theory-header p, .theory-intro { color: #aab2bd; line-height: 1.55; }
+.song-card {
+  border: 1px solid rgba(255,255,255,.075);
+  border-radius: 15px;
+  background: linear-gradient(145deg, #181e27, #131820);
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  transition: border-color .18s, transform .18s, background .18s;
+}
+.song-card:hover { transform: translateY(-1px); border-color: rgba(240,208,140,.42);  }
+.song-card b {  font-size: .95rem; }
+.song-card small {  line-height: 1.4; }
+.badge { border: 1px solid rgba(129,187,151,.19); background: rgba(47,92,68,.21);  }
+.empty { border: 1px solid rgba(255,255,255,.07); border-radius: 16px; background: #151b23; line-height: 1.55; }
+
+/* Instrumento */
+.player { margin-top: 12px; }
+.player-top { min-height: 54px; margin-bottom: 12px; }
+.player-top h1 { color: #f1e9d9; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; font-weight: 500; }
+.player-top p { color: #a7afba; font-size: .82rem; }
+.piano-panel {
+  padding: 18px;
+}
+.piano-panel .status { padding: 9px 12px; border: 1px solid rgba(255,255,255,.06); border-radius: 10px; background: rgba(255,255,255,.025); color: #aeb6c0; }
+.piano-panel #keyboardScroll { border-radius: 8px; scrollbar-color: #555044 #111318;  }
+.piano-panel #keyboard .keys {
+  flex-basis: calc(var(--keyboard-key-width, 52px) * var(--keyboard-zoom, 1));
+}
+.piano-panel .white {
+  box-shadow: 0 3px 4px rgba(0,0,0,.28);
+}
+.piano-panel .white.chord-selected { background: linear-gradient(#fff5dc,#e5c47d); }
+.piano-panel .black.chord-selected { background: linear-gradient(#9c8149,#46381e); }
+.piano-panel .note { color: var(--gold2); }
+.keyboard-navigation { display: flex; justify-content: space-between; gap: 10px; margin: 10px 2px 0; }
+.keyboard-octave-controls, .keyboard-zoom-controls { gap: 7px; }
+.keyboard-navigation button { min-height: 38px; padding: 7px 11px; }
+.keyboard-octave-controls span { color: #c9c1ae; font-size: .78rem; }
+.mobile-quick-settings {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  align-items: stretch;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 11px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  background: rgba(10,13,18,.52);
+}
+.quick-setting { min-width: 0; padding: 9px 10px; border: 1px solid rgba(255,255,255,.055); border-radius: 11px; background: #141a22; }
+.quick-setting label { color: #aeb5bf; font-size: .72rem; font-weight: 650; letter-spacing: .015em; }
+.quick-setting select { width: 100%; margin-top: 5px; padding: 7px 9px; font-size: .81rem; }
+.quick-setting input[type="range"] { width: 100%; min-height: 24px; accent-color: var(--gold); }
+.quick-tempo { display: flex; flex-direction: column; gap: 6px; }
+.quick-tempo label { display: flex; justify-content: space-between; }
+.quick-tempo output { color: var(--gold2); font-variant-numeric: tabular-nums; }
+.quick-track-key > div { min-width: 0; }
+.quick-track-key select { min-width: 0; }
+.quick-metronome { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 12px; grid-column: 1 / -1; flex: 1 1 100%; }
+.metronome-top { display: flex; align-items: center; gap: 8px; }
+.metronome-readout { display: flex; flex-direction: column; gap: 2px; min-width: 75px; }
+.metronome-readout b { color: #ede8dc; font-size: .78rem; }
+.metronome-readout output { color: var(--gold2); font-size: .75rem; font-variant-numeric: tabular-nums; }
+.metronome-top button { min-height: 38px; padding: 7px 11px; font-size: .76rem; white-space: nowrap; }
+#tapTempo { margin-left: auto; }
+#metronomeToggle { min-width: 94px; }
+#metronomeBpm { grid-column: 1 / -1; width: 100%; }
+.metronome-options { display: flex; align-items: center; gap: 6px; }
+.metronome-options label { color: #aeb5bf; font-size: .68rem; white-space: nowrap; }
+.metronome-options select { width: 71px; min-height: 36px; margin: 0; padding: 5px 7px; font-size: .75rem; }
+.metronome-beats { display: flex; grid-column: 1 / -1; gap: 6px; min-height: 9px; }
+.metronome-beats i { width: 8px; height: 8px; border-radius: 50%; background: #434b55; transition: background .09s, box-shadow .09s, transform .09s; }
+.metronome-beats i.active { transform: scale(1.18); background: var(--gold2); box-shadow: 0 0 10px rgba(240,208,140,.65); }
+.mobile-song-details, .chord-preview { border: 1px solid rgba(255,255,255,.08); border-radius: 14px; background: #151b23; }
+.mobile-song-details > summary { padding: 13px 15px; color: #e9dfca; }
+.mobile-song-details .lyrics-viewer { padding: 7px 14px 15px; }
+.audio-credit { color: #818b97; font-size: .68rem; }
+
+/* Teoría, grabación y diálogos conservan el mismo lenguaje visual. */
+.theory-tab {   color: #d5d7dc; }
+.theory-panel, .theory-preview, .theory-chord-card, .theory-key-card, .theory-interval-card {
+  border-color: rgba(255,255,255,.085);
+  border-radius: 15px;
+  background: linear-gradient(145deg, #171d26, #12171e);
+}
+.theory-panel h2, .theory-preview h3, .theory-chord-card b { color: var(--gold2); }
+.theory-mode-picker, .theory-root-picker { color: #b8bec7; }
+.theory-mode-picker select, .theory-root-picker select { margin-top: 5px; padding: 8px 10px; }
+.track-modal-card, .modal-card {
+  border: 1px solid rgba(240,208,140,.22);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #1d242d, #12171e);
+  box-shadow: 0 24px 80px rgba(0,0,0,.52);
+}
+.track-modal-card h2, .modal-card h2 { color: #f0dfbb; }
+.track-modal-card > p, .modal-card p { color: #adb5bf; line-height: 1.5; }
+.track-choice { min-height: 58px;    }
+.toast { bottom: max(20px, env(safe-area-inset-bottom));    }
+
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {   animation-iteration-count: 1;  }
+}
+

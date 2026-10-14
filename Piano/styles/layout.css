@@ -1,0 +1,399 @@
+
+/* Piano and falling-note display */
+/* Keep the canvas behind screen transitions in the selected theme. */
+html { min-height: 100%; background-color: var(--bg); }
+body { background-color: var(--bg); }
+
+/* Nueva estructura de Piano YHWH, inspirada en el flujo visual de la referencia. */
+:root {
+  --pressed-key-color: #90dd4a;
+}
+body { min-height: 100vh; min-height: 100dvh; color: #2a3740; background: #bdd7e2;  }
+header { height: 58px; padding: 0 max(18px,calc((100vw - 1450px)/2)); background: #087da8; border: 0; border-bottom: 1px solid #ffffff29; box-shadow: 0 2px 8px #07567726; }
+.brand-icon {      color: white;  }
+.brand-home small { color: #d3ecf7; font-size: .59rem; }
+.admin { min-height: 40px; padding: 8px 14px; border: 1px solid #ffffff39; border-radius: 7px;   }
+.admin.active { color: #123644; background: #e7f5fa; }
+.connection { min-height: 21px;  font-size: .75rem; }
+button { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid #ffbf33; outline-offset: 2px; }
+
+/* Inicio con menú vertical y área de contenido, como la referencia. */
+.home-view { display: block;  margin: 0; padding: 20px; overflow: visible;   background: #c3dce6;  }
+.home-view:before,.home-view:after { display: none; }
+.home-layout { display: grid;  gap: 22px;   margin: 0 auto; }
+.home-actions { display: flex; flex-direction: column; align-items: stretch;  padding: 2px; }
+.home-action { display: grid;  align-items: center;      text-align: left;  transition: transform .12s,filter .12s,box-shadow .12s; }
+.home-action.primary { border-color: #076326; background: #0a7a2f; color: white; }
+.home-action.secondary { border-color: #1385b4; background: #178ebd; color: white; }
+.home-action:hover { filter: brightness(1.06);   }
+.home-action:active { transform: scale(.99); }
+.home-action-icon { display: grid;   place-items: center;     }
+.home-action b,.home-action small { display: block; }
+.home-action b {  font-weight: 600; }
+.home-action small { margin-top: 3px;   }
+.home-action-arrow { justify-self: end; font-size: 1.6rem; line-height: 1; opacity: .85; }
+.home-dashboard { display: flex; flex-direction: column;  min-width: 0; }
+.home-welcome-card { position: relative; flex: 1;   overflow: hidden;    }
+
+.home-welcome-card h1 { margin: 7px 0 8px; color: #243d49; font-family: Georgia,"Times New Roman",serif; font-size: clamp(1.8rem,3vw,2.7rem); font-weight: 500; }
+.home-welcome-card>p { max-width: 530px; margin: 0; color: #526a74; font-size: .97rem; line-height: 1.6; }
+.home-info-card { display: grid;  align-items: center; gap: 12px;       }
+.home-info-icon { display: grid;   place-items: center; border-radius: 50%;   font-size: 18px; }
+.home-info-card b { font-size: .82rem; }
+.home-info-card p { margin: 3px 0 0;   line-height: 1.4; }
+.home-info-card>span:not(.home-status-dot) { color: #63808c; font-size: 1.4rem; }
+.home-status-dot { width: 10px; height: 10px; border-radius: 50%;  box-shadow: 0 0 0 4px #5eb77a1c; }
+
+/* Secciones de canciones y teoría siguen el mismo sistema azul claro. */
+.home-back,.soft,.tab,.theory-tab { border: 1px solid #99bac7; border-radius: 5px; background: #1789b7; color: white; }
+.toolbar h1,.theory-header h1 { color: #274552; font-family: Georgia,"Times New Roman",serif; font-weight: 500; }
+.toolbar input,.modal input,.theory-root-picker select,.theory-mode-picker select,.quick-setting select,.voice-direction select,.chord-editor select { border: 1px solid #9dbac5; border-radius: 5px; background-color: #f8fbfc; color: #30444d; }
+.hint,.theory-header p,.theory-intro { color: #59717b; }
+.song-card,.empty { border: 1px solid #a5c3ce; border-radius: 5px; background: #f4f8f9; color: #314a54; box-shadow: 0 2px 4px #385e6b17; }
+.song-card b { color: #294754; }
+.song-card small { color: #6c828a; }
+.badge {  background: #deeff3;  }
+.theory-tabs { gap: 6px; }
+.theory-tab { min-height: 40px; padding: 8px 12px; }
+.theory-tab.active { border-color: #0879aa; background: #0f83b5; color: white; }
+.theory-panel,.theory-preview,.theory-chord-card,.theory-key-card,.theory-interval-card { border-color: #a3c3ce; border-radius: 6px; background: #f3f7f8; color: #344d57; }
+.theory-panel h2,.theory-preview h3,.theory-chord-card b { color: #167fa8; }
+.theory-intro,.theory-header p { color: #647b84; }
+
+/* Piano de pantalla completa: superficie negra, piano abajo y controles arriba. */
+body.player-active { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; background: #252629; }
+body.player-active > header { display: none; }
+body.player-active > main { display: flex; width: 100%; max-width: none; height: 100vh; height: 100dvh; min-height: 0; margin: 0; padding: 0; overflow: hidden; }
+body.player-active #connection { display: none; }
+body.player-active #player { position: relative; display: flex; flex: 1; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; min-height: 0; margin: 0; overflow: hidden; background: #252629; }
+.player-top { z-index: 20; display: flex; flex: 0 0 48px; align-items: center; gap: 8px; min-width: 0; height: 48px; margin: 0; padding: env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left));   box-shadow: 0 1px 3px #0004; }
+.toolbar-back { display: flex; flex: 0 0 auto; flex-direction: column; align-items: center; justify-content: center; min-width: 42px; height: 42px; padding: 0 5px; border: 0;    font-size: 26px; line-height: 20px; }
+.toolbar-back small { font-size: 8px; line-height: 10px; }
+.top-tempo { display: flex; flex: 0 0 auto; align-items: center; gap: 5px; height: 100%; padding: 0 7px; border-right: 1px solid #ffffff27; border-left: 1px solid #ffffff27; }
+.top-tempo button,.toolbar-icon { display: grid; width: 34px; height: 36px; place-items: center; border: 0; border-radius: 5px; background: transparent; color: white; font-size: 21px; }
+.top-tempo button { width: 27px; font-size: 25px; }
+.top-tempo output { min-width: 53px; color: white; font-size: .71rem; font-variant-numeric: tabular-nums; text-align: center; white-space: nowrap; }
+.toolbar-icon { flex: 0 0 35px; font-size: 21px; }
+.toolbar-icon:hover,.top-tempo button:hover { background: #ffffff1a; }
+.metronome-button { font-size: 23px; }
+.metronome-button[aria-pressed="true"] { background: #075c85; color: #e6ff8c; }
+.toolbar-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 2px; }
+.notation-button { border: 1px solid #ffffff48; border-radius: 4px; background: #f2f8fa; color: #0878a8; font-size: .85rem; font-weight: 750; }
+.performance-layout { display: flex; flex: 1; flex-direction: column; min-height: 0;  }
+.note-canvas { --stage-key-width: 40px; position: relative; flex: 1 1 auto; min-height: 70px; overflow: hidden;  touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.device-piano-background{position:absolute;z-index:0;inset:0;overflow:hidden;pointer-events:none}
+.device-piano-background{display:none}
+.note-canvas.has-device-background .device-piano-background{display:block}
+.device-piano-background::before{content:"";position:absolute;inset:-18px;background-image:var(--device-piano-background-image,none);background-position:center;background-size:cover;filter:blur(var(--device-piano-image-blur,9px));opacity:var(--device-piano-image-opacity,.34);transform:scale(1.06)}
+.device-piano-background::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#11152238,#11152224 72%,#11152266)}
+.canvas-grid { position: absolute; inset: 0; contain: strict; pointer-events: none; background-image: linear-gradient(to right,color-mix(in srgb,var(--device-grid-line-color,#fff) var(--device-grid-line-opacity,55%),transparent) var(--device-grid-line-width,1px),transparent var(--device-grid-line-width,1px)),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: calc(var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width)) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0;  }
+.falling-notes-canvas { position: absolute; z-index: 1; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+.canvas-readouts { position: absolute; z-index: 2; top: 15px; left: calc(64px + env(safe-area-inset-left)); right: calc(12px + env(safe-area-inset-right)); display: flex; align-items: center; gap: 11px; min-height: 32px; color: #edf2f4; font-size: .78rem; text-shadow: 0 1px 3px #000; }
+.canvas-readouts #playerLabel { color: #dbeaf0; font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
+.active-chord-label { padding: 4px 10px; border: 1px solid #ffffff21; border-radius: 4px;   font-size: 1.06rem; font-weight: 700; }
+.canvas-readouts #activeKeyName { margin-left: auto; color: #b9c4ca; font-size: .75rem; }
+.stage-tool-rail { position: absolute; z-index: 8; top: 49px; left: env(safe-area-inset-left); display: flex; flex-direction: column; gap: 3px; width: 48px; padding: 6px 5px; border-radius: 0 5px 5px 0; background: #1188b9; box-shadow: 0 2px 7px #0004; }
+.stage-tool-rail button { display: grid; width: 38px; height: 38px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: white; font-size: 21px; }
+.stage-tool-rail button:hover,.stage-tool-rail button.active { background: #ffffff25; }
+#keyColorSwatch { display: block; width: 20px; height: 20px; border: 2px solid white; border-radius: 2px; background: var(--pressed-key-color); box-shadow: 0 1px 3px #0005; }
+.player-status { position: absolute; z-index: 3; bottom: 6px; left: calc(57px + env(safe-area-inset-left)); max-width: min(55vw,460px); margin: 0; padding: 4px 7px;   background: #11131898; color: #d3dade; font-size: .65rem; line-height: 1.35; }
+.current-note { position: absolute; z-index: 3; top: 54px; left: 64px; margin: 0; color: #f4f7f7; font-size: 1.2rem; text-shadow: 0 1px 3px #000; }
+.piano-panel { z-index: 10; flex: 0 0 calc(clamp(170px,29vh,255px) + env(safe-area-inset-bottom));  min-height: 150px; margin: 0; padding: 0 0 env(safe-area-inset-bottom) env(safe-area-inset-left); overflow: hidden; border: 0; border-top: 4px solid #df3c42;   box-shadow: 0 -4px 11px #0006; }
+.piano-panel { flex-basis: calc(clamp(170px,29dvh,255px) + env(safe-area-inset-bottom)); height: calc(clamp(170px,29dvh,255px) + env(safe-area-inset-bottom)); }
+.piano-panel #keyboardScroll { width: 100%; height: 100%; overflow: auto hidden; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x; }
+.piano-panel #keyboardScroll::-webkit-scrollbar { display: none; }
+.piano-panel #keyboard { --keyboard-key-width: 40px; display: flex; width: max-content; min-width: 100%; height: 100%; padding: 0; }
+.piano-panel #keyboard .keys { width: calc(var(--keyboard-key-width,40px) * var(--keyboard-zoom,1)); flex: 0 0 calc(var(--keyboard-key-width,40px) * var(--keyboard-zoom,1)); height: 100%; }
+.piano-panel .key { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.piano-panel .white { border: 1px solid #c0c1c0; border-radius: 0 0 3px 3px; background: linear-gradient(90deg,#fffefa,#e8e7e1); box-shadow: inset 0 -2px 0 #cecfcc; }
+.piano-panel .black { right: -34%; width: 68%; height: 57%; border-radius: 0 0 3px 3px; background: linear-gradient(90deg,#393a3b,#050607 80%); box-shadow: 0 4px 5px #000a,inset 0 0 0 1px #ffffff13; }
+.piano-panel .key span { opacity: 1; color: #636a6c; font-size: 9px; }
+.piano-panel .black span { color: #edf0f0; font-size: 8px; }
+.piano-panel .key.playing { border-color: var(--pressed-key-color); background: var(--pressed-key-color); box-shadow: 0 0 5px var(--pressed-key-color); }
+.piano-panel .black.playing { background: var(--pressed-key-color); }
+.piano-panel .key .label-empty { display: none; }
+
+/* Menús ligeros sobre el área negra. */
+.stage-popover,.player-sheet { position: absolute; z-index: 30; color: #33434a; border: 7px solid #138bbd; border-radius: 7px; background: #c2dbe5; box-shadow: 0 10px 32px #0008; }
+.mini-popover { top: 50px; left: 55px; width: min(340px,calc(100vw - 66px)); padding: 13px; }
+.stage-popover h2,.player-sheet h2 { margin: 0 0 8px; color: #334f5a; font-size: 1rem; font-weight: 650; }
+.stage-popover p { margin: 5px 0 10px; color: #5d7077; font-size: .77rem; line-height: 1.4; }
+.mini-popover .quick-setting { padding: 7px; border: 0; border-radius: 4px; background: transparent; }
+.mini-popover .quick-setting label { color: #4e636c; }
+.mini-popover .quick-setting select,.mini-popover select { min-height: 40px; border: 1px solid #a6b7bc; border-radius: 4px; background: #f6f7f7; color: #35474f; }
+.mini-popover input[type="color"] { width: 80px; height: 50px; padding: 4px; border: 1px solid #9bb5bf; border-radius: 4px; background: white; }
+.range-popover { left: auto; right: 10px; width: min(410px,calc(100vw - 20px)); }
+.range-presets { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 5px; margin: 9px 0; }
+.range-presets button { min-height: 41px; border: 1px solid #a6bbc2; border-radius: 4px; background: #f5f7f8; color: #344951; text-align: left; }
+.range-presets button.active { border-color: #087fb0; background: #e6f3f7; color: #0878a8; font-weight: 700; }
+.range-custom-label { display: flex; justify-content: space-between; color: #526971; font-size: .75rem; }
+.range-popover input[type="range"] { width: 100%; accent-color: #138bbd; }
+.notation-popover { left: auto; right: 8px; width: min(360px,calc(100vw - 20px)); }
+.notation-popover .quick-setting { display: block; }
+.lyrics-popover { top: 15px; right: 12px; left: 62px; max-height: min(72dvh,540px); overflow: auto; border-width: 6px; }
+.lyrics-popover details { border: 0; border-radius: 0; background: transparent; }
+.lyrics-popover details>summary { padding: 3px 3px 9px; color: #3b5964; font-weight: 700; }
+.lyrics-popover .lyrics-viewer { max-width: none; max-height: 57dvh; overflow: auto; padding: 10px; border-radius: 3px; background: #f7f9fa; color: #283c43; font-size: .83rem; white-space: pre; }
+.lyrics-popover .lc,.lyrics-popover .ls { color: #137ea8; }
+.lyrics-popover .ll { color: #33464d; }
+.notes-panel { position: absolute; z-index: 14; right: 10px; bottom: 62px; width: min(520px,calc(100vw - 64px)); max-height: 38%; overflow: auto; padding: 8px 10px; border: 1px solid #d0d9dc; border-radius: 5px; background: #f4f7f8ee; color: #33474e; }
+.notes-panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: .76rem; }
+.notes-panel-head button { width: 28px; height: 28px; border: 0; background: transparent; font-size: 20px; }
+.notes-panel .note-chip { border: 0; background: #cbe7f0; color: #276279; }
+.player-sheet { top: 58px; right: max(9px,env(safe-area-inset-right)); width: min(420px,calc(100vw - 18px)); max-height: calc(100dvh - 75px - env(safe-area-inset-bottom)); overflow: auto; padding: 16px; }
+.sheet-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+.sheet-heading small { color: #63818a; font-size: .65rem; font-weight: 750; letter-spacing: .09em; }
+.sheet-heading h2 { margin: 2px 0 0; }
+.sheet-close { display: grid; width: 35px; height: 35px; place-items: center; border: 1px solid #a7bdc5; border-radius: 4px; background: #edf4f6; color: #3d5660; font-size: 23px; line-height: 1; }
+.settings-switches { display: flex; flex-direction: column; overflow: hidden; border: 1px solid #a7bdc5; border-radius: 5px; background: #f5f7f8; }
+.settings-switches label { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 48px; padding: 8px 10px; border-bottom: 1px solid #ced8dc; }
+.settings-switches label:last-child { border-bottom: 0; }
+.settings-switches b,.settings-switches small { display: block; }
+.settings-switches b { font-size: .8rem; }
+.settings-switches small { margin-top: 2px; color: #76878c; font-size: .66rem; }
+.settings-switches input { width: 38px; height: 23px;  }
+.settings-block { margin-top: 13px; padding-top: 11px; border-top: 1px solid #9dbcc8; }
+.settings-block>h3 { margin: 0 0 6px; color: #41606b; font-size: .78rem; }
+.settings-sheet .mobile-quick-settings { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 5px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
+.settings-sheet .quick-setting { min-width: 0; padding: 7px; border: 1px solid #b5c8ce; border-radius: 4px; background: #eef4f6; }
+.settings-sheet .quick-setting label { color: #4f6770; font-size: .69rem; }
+.settings-sheet .quick-setting select { width: 100%; min-height: 38px; padding: 6px 8px; font-size: .77rem; }
+.settings-sheet .quick-tempo { grid-column: 1/-1; }
+.settings-sheet .quick-metronome { grid-column: 1/-1; flex: none; }
+.settings-sheet .quick-metronome .metronome-top { grid-column: 1/-1; }
+.settings-sheet .quick-metronome #metronomeBpm { grid-column: 1/-1; }
+.settings-sheet .quick-track-key { grid-column: 1/-1; }
+.settings-sheet .quick-track-key>div { display: flex; gap: 5px; }
+.settings-sheet .quick-track-key select { flex: 1; width: 0; }
+.settings-sheet .master-volume-label { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:5px; color:#4f6770; font-size:.75rem; }
+.settings-sheet #masterVolume { display:block; width:100%; margin:0;  }
+html[data-theme="dark"] .settings-sheet .master-volume-label { color:#aaa9c1; }
+.settings-sheet .quick-instrument { display: none; }
+.settings-sheet .quick-notation { display: none; }
+.settings-sheet .voice-mixer { margin: 0; padding: 8px; border: 1px solid #b5c8ce; border-radius: 4px; background: #eef4f6; }
+.settings-sheet .voice-settings .voice-mixer.hidden { display: none; }
+.audio-license { margin-top: 12px; color: #60747c; font-size: .72rem; }
+.audio-license summary { cursor: pointer; }
+.audio-license .audio-credit { color: #687b82; font-size: .67rem; line-height: 1.6; }
+.chord-sheet { right: max(9px,env(safe-area-inset-right)); width: min(690px,calc(100vw - 18px)); }
+.chord-sheet #chordEditor { position: relative; display: block; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.chord-editor-title { display: flex; align-items: center; justify-content: space-between; padding-right: 1px; color: #3f5c66; }
+.chord-editor-help { color: #60747c; }
+.chord-editor-fields { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.chord-editor-fields label { color: #455e67; }
+.chord-editor-fields select { width: 100%; }
+.chord-editor-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.chord-editor-actions .gold { background: #168ab8; color: white; }
+.chord-editor-actions .soft { background: #e5f1f4; color: #3c5862; }
+.chord-editor .admin-only { display: block; }
+.chord-editor.hidden { display: none; }
+
+
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration: .01ms; transition-duration: .01ms; scroll-behavior: auto; }
+}
+
+/* Mobile layout: supersede the previous studio keyboard ordering and colors. */
+
+
+
+/* Keep mobile navigation inside the viewport; only long content areas scroll. */
+
+
+
+/* Mobile palette: remove the legacy purple surfaces from the light-blue UI. */
+
+/* Use the full mobile canvas for Theory and place sync status in the header. */
+
+
+
+/* Keep the original Theory panels, with smaller musical details on phones. */
+
+
+/* Piano playback: keep transport in the header, with a compact timeline above the keys. */
+#player { --bass-note-color: #bb82ef; --melody-note-color: var(--pressed-key-color); }
+#player > .player-top { gap: 5px; }
+
+#player > .player-top .mobile-player-controls::-webkit-scrollbar { display: none; }
+
+#player > .player-top .mobile-player-controls button.hidden,.player-top > .stage-tool-rail button.hidden { display: none; }
+
+
+#player > .player-top .mobile-player-controls button:active { transform: scale(.94); }
+.player-top > .stage-tool-rail { position: static; inset: auto; display: flex; flex: 0 0 auto; flex-direction: row; align-items: center; gap: 1px; width: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.player-top > .stage-tool-rail button { display: grid; flex: 0 0 30px; width: 30px; height: 32px; place-items: center; padding: 0; border: 0; border-radius: 4px; background: transparent; color: white; font-size: 18px; }
+.player-top > .stage-tool-rail button:hover,.player-top > .stage-tool-rail button.active { background: #ffffff1d; }
+.player-top > .stage-tool-rail #keyColorSwatch { width: 17px; height: 17px; }
+.song-intro-overlay { position: absolute;  inset: 0; display: grid; align-content: center; justify-items: center; padding: 20px;  color: #fff; text-align: center; opacity: 0; visibility: hidden; pointer-events: none; }
+.song-intro-overlay { z-index: 18; background: transparent; }
+.song-intro-overlay::before { content: ""; position: absolute; top: 50%; right: 0; left: 0; height: clamp(82px,42%,170px); transform: translateY(-50%); border-top: 4px solid #26bff2; border-bottom: 4px solid #26bff2; background: #087da8; box-shadow: 0 0 24px #007bab66; }
+.song-intro-overlay > * { position: relative; z-index: 1; }
+.song-intro-overlay small { margin-bottom: 9px; color: #d3eef8; font-size: .7rem; font-weight: 750; letter-spacing: .18em; }
+.song-intro-overlay h1 { max-width: min(88vw,900px); margin: 0; color: #fff; font-size: clamp(1.55rem,5vw,3.7rem); font-weight: 650; line-height: 1.12; text-wrap: balance; text-shadow: 0 3px 12px #00456675; }
+.song-intro-overlay p { margin: 9px 0 0; color: #e1f2f8; font-size: clamp(.77rem,2vw,1.1rem); }
+.note-canvas.song-intro-active .song-intro-overlay { visibility: visible; animation: song-title-intro 2.8s ease both; }
+@keyframes song-title-intro { 0% { opacity: 0; transform: scale(.97); } 12% { opacity: 1; transform: scale(1); } 72% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-10px) scale(1.015); visibility: hidden; } }
+.player-timeline { position: relative; z-index: 5; order: 2; display: grid; flex: 0 0 25px; grid-template-columns: 38px minmax(0,1fr) 38px; align-items: center; gap: 8px; width: 100%; height: 25px; min-width: 0; padding: 0 max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left)); background: #1e2022; color: #d3dade; }
+.player-timeline.is-empty { visibility: hidden; }
+.timeline-time { color: #e0e5e7; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.timeline-time:last-child { text-align: right; }
+.timeline-track { height: 4px; overflow: hidden; border-radius: 99px; background: #555a5d; box-shadow: inset 0 1px 2px #0008; }
+.timeline-progress-fill { width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#16a8e5,#74d8ff); transform: scaleX(0); transform-origin: left center; will-change: transform; }
+.piano-panel .key.bass-playing { border-color: #9e5dd1; background: var(--bass-note-color); box-shadow: 0 0 5px #b679ecaa; }
+.piano-panel .black.bass-playing { background: var(--bass-note-color,#bb82ef); }
+.note-canvas .falling-note { background: var(--melody-note-color,var(--pressed-key-color)); }
+.note-canvas .falling-note.bass-note { border-color: #9e5dd1; background: var(--bass-note-color); }
+.visual-color-setting { display:block; margin:8px 0 3px; font-size:.82rem; font-weight:650; }
+.manual-note-effect { position:absolute; z-index:4; display:block; width:3px; height:var(--manual-rise,0px); bottom:calc(2px + var(--manual-offset,0px)); pointer-events:none; opacity:.94; background:var(--note-fx-color); border:0; border-radius:7px 7px 2px 2px; transform:translateX(-50%); }
+.manual-note-effect.is-bar.has-fire { overflow:hidden; background:linear-gradient(90deg,color-mix(in srgb,var(--note-fx-color) 78%,#572000),var(--note-fx-color),color-mix(in srgb,var(--note-fx-color) 72%,#ffad20)); box-shadow:0 0 5px 1px color-mix(in srgb,var(--note-fx-color) 42%,transparent); }
+.manual-note-effect.is-bar.has-fire::before { content:""; position:absolute; top:-70%; bottom:-70%; left:12%; width:76%; background:linear-gradient(180deg,transparent 0%,rgba(255,150,18,.4) 24%,rgba(255,239,112,.78) 43%,rgba(255,255,220,.58) 54%,rgba(255,174,29,.52) 70%,transparent 100%); background-size:100% 220%; mix-blend-mode:screen; animation:manual-lava-flow .9s linear infinite; }
+.manual-note-effect.is-drop { height:10px; bottom:calc(2px + var(--manual-rise,0px) + var(--manual-offset,0px));  }
+@keyframes manual-lava-flow { from { background-position:0 0; } to { background-position:0 100%; } }
+
+
+
+/* Barra del reproductor: transporte claro y herramientas separadas. */
+#player > .player-top { display:flex; align-items:center; justify-content:space-between; gap:clamp(4px,1vw,10px); overflow:visible; padding-right:max(8px,env(safe-area-inset-right)); padding-left:max(8px,env(safe-area-inset-left)); }
+#player > .player-top > * { min-width:0; }
+#player > .player-top > #backBtn { flex:0 0 38px; width:38px; min-width:38px; }
+#player > .player-top .player-playback-group { display:flex; flex:1 1 auto; min-width:0; justify-content:center; align-items:center; gap:0; }
+#player > .player-top .mobile-player-controls { position: static; inset: auto; display: flex; flex: 0 1 auto; flex-wrap: nowrap; justify-content: center; gap: 3px; width: auto; min-width: 32px; max-width: none; min-height: 0; margin: 0; padding: 0; overflow-x: auto; overflow-y: hidden; border: 0; background: transparent; box-shadow: none; scrollbar-width: none; }
+#player > .player-top .mobile-player-controls button { position: relative; inset: auto; display: flex; flex: 0 0 32px; width: 32px; min-width: 32px; height: 34px; min-height: 34px; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 0; border: 1px solid #ffffff28; border-radius: 5px; background: #0d78a8; color: #fff; font-size: 17px; line-height: 1; }
+#player > .player-top .mobile-player-controls #playMelody { background: #075f88; color: white; }
+#player > .player-top .mobile-player-controls button small { display: none; }
+#player > .player-top .player-tool-group { position:relative; display:flex; flex:0 0 auto; align-items:center; justify-content:flex-end; gap:5px; }
+#player > .player-top .toolbar-actions { display:flex; flex:0 0 auto; align-items:center; gap:2px; }
+#player > .player-top .toolbar-actions .toolbar-icon { display:grid; flex:0 0 32px; place-items:center; width:32px; height:34px; padding:0; border:1px solid #ffffff20; border-radius:8px; background:transparent; color:#fff; }
+#player > .player-top .toolbar-actions .notation-button { font-size:.55rem; font-weight:700; }
+.player-edit-menu { position:relative; flex:0 0 auto; }
+.player-edit-menu > summary { display:grid; place-items:center; width:32px; height:34px; border:1px solid #ffffff20; border-radius:8px; color:#fff; background:#ffffff0b; cursor:pointer; font-size:19px; line-height:1; list-style:none; }
+.player-edit-menu > summary::-webkit-details-marker { display:none; }
+.player-edit-menu[open] > summary { background:#075f88; }
+.player-edit-actions { position:absolute; z-index:40; top:calc(100% + 8px); right:0; display:grid;  align-items:center; justify-content:center; gap:6px; min-width:180px; padding:9px; border:1px solid #ffffff25; border-radius:10px;  box-shadow:0 8px 28px #0009; }
+.player-edit-actions strong { grid-column:1/-1; padding:0 2px 3px; color:#dce8ee; font-size:.72rem; font-weight:650; }
+.player-edit-actions button { display:grid; place-items:center; width:36px; min-width:36px; height:36px; padding:0; border:1px solid #ffffff20;  background:#0879a9; color:#fff; font-size:17px; }
+.player-edit-actions #recordBtn.active { background:#b47c13; }
+.player-edit-actions #deleteBtn { background:#98313b; }
+
+/* El instrumento, el metrónomo y el tono quedan dentro del área negra del piano. */
+#player .performance-layout > .note-canvas .canvas-readouts { position:absolute; z-index:20;  right:max(8px,env(safe-area-inset-right)); left:max(8px,env(safe-area-inset-left)); display:block; width:auto; height:40px; min-height:40px; margin:0; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; box-sizing:border-box; pointer-events:none; }
+#player .performance-layout > .note-canvas .canvas-readouts > #playerLabel { display:none; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail { position:absolute; z-index:12; top:0; right:auto; bottom:auto; left:0; display:flex; flex-direction:column; align-items:center; gap:3px; width:36px; margin:0; padding:3px; border:1px solid #ffffff24; border-radius:9px; background:#101215d9; box-shadow:0 3px 10px #0007; pointer-events:auto; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button { display:grid; flex:0 0 29px; place-items:center; width:29px; height:29px; min-height:29px; padding:0; border:1px solid #ffffff21; border-radius:6px; background:#0876a637; color:#fff; font-size:16px; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button:hover,#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button.active { background:#ffffff25; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button.hidden { display:none; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail #keyColorSwatch { width:15px; height:15px; }
+#player .performance-layout > .note-canvas .canvas-readouts > .stage-metronome-controls { position:absolute; z-index:11; top:0; right:auto; bottom:auto; left:50%; transform:translateX(-50%); display:flex; align-items:center; justify-content:center; gap:3px; width:max-content; max-width:calc(100% - 116px); margin:0; padding:3px 5px; border:1px solid #ffffff25; border-radius:9px; background:#101215e8; box-shadow:0 3px 10px #0007; pointer-events:auto; }
+.stage-metronome-controls .top-tempo { display:flex; flex:0 0 auto; align-items:center; gap:2px; height:31px; padding:0 2px; border:0; border-radius:6px; background:#ffffff0c; }
+.stage-metronome-controls .top-tempo button { display:grid; flex:0 0 22px; place-items:center; width:22px; min-width:22px; height:27px; padding:0; border-radius:5px; font-size:19px; }
+.stage-metronome-controls .top-tempo output { min-width:52px; color:#fff; font-size:.65rem; font-variant-numeric:tabular-nums; text-align:center; white-space:nowrap; }
+.stage-metronome-controls .metronome-button { display:grid; flex:0 0 30px; place-items:center; width:30px; min-width:30px; max-width:30px; height:29px; padding:0; border:1px solid #ffffff35; border-radius:6px; background:#0876a637; font-size:17px; }
+.stage-metronome-controls .metronome-button[aria-pressed="true"] { background:#075c85; color:#e6ff8c; }
+#player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName { position:absolute; z-index:12; top:0; right:0; bottom:auto; left:auto; display:inline-flex; align-items:center; justify-content:center; min-width:68px; height:37px; margin:0; padding:0 9px; border:1px solid #ffffff35; border-radius:8px; background:#101215e8; color:#f1f4f5; font-size:.68rem; font-weight:650; white-space:nowrap; cursor:pointer; pointer-events:auto; }
+#player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName:hover,#player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName:focus-visible { background:#0876a6; outline:2px solid #78d8ff; outline-offset:1px; }
+#player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName:empty { display:none; }
+#player .performance-layout > .note-canvas .canvas-readouts > #activeChordLabel { position:absolute; z-index:5; top:44px; right:auto; bottom:auto; left:50%; transform:translateX(-50%); pointer-events:none; }
+.key-transpose-popover { z-index:30; top:52px; right:max(8px,env(safe-area-inset-right)); left:auto; width:min(260px,calc(100vw - 24px)); padding:13px; }
+.key-transpose-popover h2 { margin:0 0 4px; color:#334f5a; font-size:.95rem; }
+.key-transpose-popover p { margin:0 0 9px; color:#5d7077; font-size:.72rem; }
+.key-transpose-popover label { display:block; margin-bottom:4px; color:#526971; font-size:.72rem; }
+.key-transpose-popover select { width:100%; min-height:38px; margin-bottom:8px; padding:6px 9px; }
+.key-transpose-popover #transposeToOriginal { width:100%; min-height:36px; }
+body:has(#keyTransposePopover:not(.hidden)) #player .note-canvas { overflow:visible; z-index:30; }/* En móvil se conserva la composición de PC: volver, reproducción y herramientas. */
+/* Paneles móviles: tarjetas completas en pantalla con desplazamiento propio. */
+/* El control de bajo debe distinguirse del resto de iconos de edición. */
+.player-edit-actions { grid-template-columns: 36px 74px repeat(3,36px); }
+/* Ubicaciones estables: la nota acompaña al piano y el acorde va debajo. */
+
+/* Colores semánticos de lectura: melodía en el color elegido y bajo en violeta. */
+#player { --bass-note-ink: #251632; }
+#player #currentNote:not(:empty) {
+  border-color: var(--melody-note-color, var(--pressed-key-color));
+  background: var(--melody-note-color, var(--pressed-key-color));
+  color: var(--melody-note-ink, #17323b);
+  text-shadow: none;
+}
+.active-chord-label {
+  border-color: #9e5dd1;
+  background: var(--bass-note-color, #bb82ef);
+  color: var(--bass-note-ink, #251632);
+  text-shadow: none;
+}
+.note-chord-label {
+  display: inline-block;
+  min-height: 14px;
+  padding: 0 4px;
+  border: 1px solid #9e5dd1;
+  border-radius: 5px;
+  background: var(--bass-note-color, #bb82ef);
+  line-height: 12px;
+}
+.note-chord-label.empty { visibility: hidden; }
+
+
+/* Asegurar que la tarjeta completa de cada menú conserve superficie clara. */
+
+
+/* Iconos SVG consistentes en iOS, Windows y otros sistemas. */
+.ui-icon { display: block; width: 18px; height: 18px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ui-icon-piano { width: 20px; height: 20px; stroke-width: 1.55; }
+.ui-icon-black-keys { fill: currentColor; stroke: none; }
+#player > .player-top .toolbar-actions .toolbar-icon .ui-icon { width: 19px; height: 19px; }
+#player .stage-tool-rail #instrumentToggle .ui-icon { width: 20px; height: 20px; }
+
+/* Teclado de borde a borde en iPhone horizontal: sin margen negro lateral por el safe-area. También el inferior: el teclado cubre hasta el borde (la barra de inicio puede tapar un poco las etiquetas). */
+body.player-active #player .performance-layout > .piano-panel, body.player-active #player .performance-layout > .piano-panel { padding-left: 0; padding-right: 0; padding-bottom: 0; }
+
+/* Visor de duración como franja fina arriba del área de notas (superpuesto): las barras caen directo sobre el piano. */
+body.player-active #player .performance-layout > .player-timeline, body.player-active #player .performance-layout > .player-timeline { position: absolute; top: 5px; right: 0; bottom: auto; left: 0; z-index: 9; order: 0; flex: none; width: auto; height: 16px; min-height: 16px; background: transparent; pointer-events: none; }
+#player .performance-layout > .note-canvas .canvas-readouts { top: 24px; }
+
+/* Tempo junto a los botones de reproducción (arriba) y lápiz de edición con el mismo estilo que el resto. */
+#player > .player-top .player-playback-group .stage-metronome-controls { position: static; transform: none; display: flex; flex: 0 0 auto; align-items: center; gap: 3px; width: auto; max-width: none; margin: 0 0 0 8px; padding: 0; border: 0; background: transparent; box-shadow: none; }
+#player > .player-top .player-edit-menu.admin-only { background: transparent; border-color: transparent; box-shadow: none; }
+#player > .player-top .player-edit-menu > summary { background: transparent; border-color: #ffffff20; }
+#player > .player-top .player-edit-menu[open] > summary { background: #075f88; }
+
+/* Más separación entre los botones de reproducción y el tempo, con una línea divisoria fina. */
+#player > .player-top .player-playback-group .stage-metronome-controls { margin-left: 14px; padding-left: 14px; border-left: 1px solid #ffffff38; }
+
+/* Orden en la barra: botones de reproducción primero y el tempo después (piano.css le daba order:2 a los botones). */
+#player > .player-top .player-playback-group > .mobile-player-controls { order: 0; }
+#player > .player-top .player-playback-group > .stage-metronome-controls { order: 1; }
+#player .mobile-player-controls #octaveModeToggle { font-size:12px; font-weight:800; letter-spacing:-.04em; }
+#player .mobile-player-controls #octaveModeToggle[aria-pressed="true"] { border-color:#e6ff8c99; background:#075c85; color:#e6ff8c; box-shadow:0 0 0 1px #e6ff8c44; }
+
+/* Teclas encendidas: mismo pintado en móvil y en PC. Melodía = color elegido; bajo = violeta. */
+#player .piano-panel .key.playing { border-color: var(--pressed-key-color); background: var(--pressed-key-color); box-shadow: 0 0 5px var(--pressed-key-color); }
+#player .piano-panel .key.bass-playing { border-color: var(--bass-note-color,#bb82ef); background: var(--bass-note-color,#bb82ef); box-shadow: 0 0 5px color-mix(in srgb,var(--bass-note-color,#bb82ef) 70%,transparent); }
+#player .piano-panel .black.bass-playing { background: var(--bass-note-color,#bb82ef); }
+
+/* Fondos claros: notas grabadas y navegación de octava/zoom. */
+#player #notesPanel #recordedNotes { background: #e2edf1; border: 1px solid #c6d8de; box-shadow: none; color: #33474e; }
+#player #keyboardRangeMenu #keyboardNavigation { background: #e2edf1; border: 1px solid #c6d8de; box-shadow: none; }
+#player #keyboardRangeMenu #keyboardNavigation button { border: 1px solid #a8c0c8; background: #fff; color: #31525e; box-shadow: none; }
+#player #keyboardRangeMenu #keyboardOctaveLabel { color: #176b8a; }
+
+/* Etiquetas: botones como los del zoom en lugar del desplegable oscuro. */
+#notationMenu .quick-notation { display: none; }
+.notation-presets { margin-bottom: 2px; }
+.notation-presets button { padding: 6px 10px; line-height: 1.25; cursor: pointer; }
+.notation-presets button small { display: block; margin-top: 2px; color: #5d7077; font-size: .7rem; font-weight: 400; }
+.notation-presets button.active small { color: #0878a8; }
+
+/* Menús de instrumento y color: compactos (sin estirarse) y claros. */
+#instrumentMenu, #colorMenu { width: fit-content; max-width: calc(100vw - 16px); }
+#colorMenu { min-width: 230px; }
+#instrumentMenu .quick-instrument { display: none; }
+.instrument-options { display: grid; gap: 6px; margin-top: 8px; }
+.instrument-option { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 6px 14px 6px 7px; border: 1px solid #a6bbc2; border-radius: 6px; background: #f5f7f8; color: #344951; font-size: .95rem; text-align: left; cursor: pointer; }
+.instrument-option .instrument-icon { display: grid; place-items: center; flex: 0 0 40px; width: 40px; height: 40px; border-radius: 6px; background: #dcebf0; color: #1d6480; }
+.instrument-option .instrument-icon img.instrument-art { display:block; width:100%; height:100%; object-fit:contain; border-radius:inherit; background:#fff; }
+.instrument-option svg:not(.instrument-art) { display: block; width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.instrument-option.active { border-color: #087fb0; background: #e6f3f7; color: #0878a8; font-weight: 700; box-shadow: inset 0 0 0 1px #087fb0; }
+.instrument-option.active .instrument-icon { background: #138bbd; color: #fff; }
+

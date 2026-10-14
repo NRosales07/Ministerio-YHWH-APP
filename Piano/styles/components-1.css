@@ -1,0 +1,723 @@
+html[data-theme="dark"] #instrumentMenu .instrument-option.active::after { color:#e8c97a; }
+/* Selección de alabanza, vista previa y modos de reproducción */
+#songView{min-height:0}
+#songList .song-card-selectable{display:flex;align-items:stretch;gap:6px;}
+#songList .song-card-main{display:flex;flex:1;min-width:0;align-items:center;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+#songList .song-card-main:hover{background:transparent;transform:none;box-shadow:none}
+#songList .song-card-selectable.selected{border-color:#087da8;box-shadow:0 0 0 2px #087da82b;background:#eefaff}
+#bassInstrumentQuick{width:100%;min-height:36px;padding:6px 8px;border:1px solid #a8bdc5;border-radius:8px;background:#fff;color:#233840}
+html[data-theme="dark"] #songList .song-card-selectable.selected{background:#1a2940;border-color:#6c97dd;box-shadow:0 0 0 2px #6c97dd2b}
+html[data-theme="dark"] #bassInstrumentQuick{background:#1b1b2e;color:#e8e6f0;border-color:#514777}
+/* Lista de canciones: encabezado de controles y filas compactas como la referencia */
+#songView>.song-mobile-header{display:flex;flex:0 0 48px;align-items:center;gap:10px;min-width:0;padding:5px 8px;border:1px solid #a9c9d5;border-radius:10px;background:linear-gradient(180deg,#f4fafc,#e2eff4);box-shadow:0 2px 6px #315f7016}
+#songView>.song-mobile-header>.home-back{flex:0 0 auto;min-height:34px;margin:0;padding:5px 12px}
+.selected-audio-preview{display:flex;flex:1;align-items:center;gap:9px;min-width:0;height:38px}
+.selected-audio-preview>button{flex:0 0 38px;width:38px;height:34px;border:1px solid #0c78a5;border-radius:7px;background:#087da8;color:white;font-size:1.05rem;cursor:pointer;touch-action:manipulation}
+.selected-audio-meta{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
+#selectedSongLabel{overflow:hidden;color:#294754;font-size:.82rem;font-weight:650;text-overflow:ellipsis;white-space:nowrap}
+.preview-track{display:block;overflow:hidden;width:100%;height:5px;border-radius:5px;}
+.preview-track i{display:block;width:0;height:100%;border-radius:inherit;}
+.selected-audio-preview.is-playing .preview-track i{animation:preview-progress var(--preview-duration,10s) linear forwards}
+.selected-audio-preview.is-playing>button{background:#075f83}
+@keyframes preview-progress{to{width:100%}}
+#songView>.toolbar{flex:0 0 auto}
+#songView>#helper{display:none}
+#songView #songList{flex:1 1 0;min-height:0;overflow-y:auto}
+#songList .song-card-selectable{min-height:44px;padding:2px 7px;border-radius:2px;box-shadow:none}
+#songList .song-card-main{gap:8px;padding:2px 3px}
+#songList .song-card-main .song-key{flex-basis:29px;min-width:29px;height:28px;border-radius:4px;font-size:.72rem}
+#songList .song-card-main .song-info{flex-direction:row;align-items:center;gap:8px}
+#songList .song-card-main .song-info b{display:block;flex:1;font-size:.81rem;line-height:1.15;white-space:nowrap;text-overflow:ellipsis}
+#songList .song-card-main .song-info small{font-size:.67rem}
+#songList .song-card-main .song-chips{flex-direction:row;gap:4px}
+#songList .song-card-main .song-chip{height:16px;font-size:.58rem}
+html[data-theme="dark"] #songView>.song-mobile-header{border-color:#2a2a45;background:linear-gradient(150deg,#1b1b2e,#14141f);box-shadow:none}
+html[data-theme="dark"] #selectedSongLabel{color:#e8e6f0}
+html[data-theme="dark"] .preview-track{background:#353550}
+html[data-theme="dark"] .preview-track i{background:#c9a84c}
+/* Pantalla de canciones a pantalla completa: barra Synthesia + lista en una columna */
+body.song-list-active{display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;overflow:hidden;background:#303030;color:#252525}
+body.song-list-active>header,body.song-list-active>#connection,body.song-list-active>main>#connection{display:none}
+body.song-list-active>main{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;max-height:none;max-width:none;margin:0;padding:0;overflow:hidden;background:#303030}
+body.song-list-active>#root,body.song-list-active>main>#songView{max-width:none}
+body.song-list-active>main>#songView{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100%;min-width:0;min-height:0;max-width:none;margin:0;padding:0;overflow:hidden;border:0;border-radius:0;background:#303030;box-shadow:none}
+body.song-list-active #songView>.song-mobile-header{position:relative;z-index:3;display:flex;flex:0 0 46px;align-items:center;gap:0;width:100%;height:46px;min-height:46px;margin:0;padding:0 8px;border:0;border-radius:0;background:#1181b2;box-shadow:0 1px 3px #071d27a8}
+body.song-list-active #songView>.song-mobile-header>.home-back{display:block;flex:0 0 auto;min-height:32px;margin:0;padding:5px 12px;border:1px solid #ffffff3b;border-radius:4px;background:#0d74a3;color:#fff;font-size:.9rem;white-space:nowrap}
+body.song-list-active #songView .selected-audio-preview{flex:1 1 auto;gap:9px;min-width:0;height:100%;margin:0 12px;padding:0 10px;border-right:1px solid #ffffff30;border-left:1px solid #ffffff30}
+body.song-list-active #songView .selected-audio-preview>button{border:0;border-radius:3px;background:transparent;color:#fff;}
+body.song-list-active #songView .selected-audio-preview>button:hover{background:#ffffff20}
+body.song-list-active #songView .selected-audio-meta{flex:1;flex-direction:column;min-width:0;margin:0 auto}
+body.song-list-active #songView #selectedSongLabel{display:block;overflow:hidden;color:#fff;font-size:.82rem;font-weight:600;text-align:center;text-overflow:ellipsis;white-space:nowrap}
+body.song-list-active #songView .preview-track{border-radius:7px}
+body.song-list-active #songView>.song-mobile-header>#continueSongBtn{display:block;flex:0 0 auto;min-height:31px;margin-left:auto;padding:4px 12px;border:1px solid #ffffff3b;border-radius:4px;background:#0d74a3;color:#fff;font-size:.86rem;font-weight:500}
+body.song-list-active #songView>.song-mobile-header>#continueSongBtn:disabled{opacity:.55}
+body.song-list-active #songView>.toolbar{display:flex;flex:0 0 52px;align-items:center;gap:8px;width:100%;min-height:52px;margin:0;padding:6px 9px;border:0;border-bottom:1px solid #a6a6a6;border-radius:0;background:#ededed;box-shadow:none}
+body.song-list-active #songView .toolbar h1{margin:0;color:#303030;font-family:inherit;font-size:.96rem;font-weight:500;line-height:1.1}
+body.song-list-active #songView .toolbar small{color:#777;font-size:.68rem}
+body.song-list-active #songView .toolbar #search{flex:0 0 min(220px,24vw);width:min(220px,24vw);min-width:125px;height:36px;min-height:36px;margin-left:auto;padding:6px 10px 6px 31px;border:1px solid #c2c2c2;border-radius:7px;background-color:#fff;background-position:9px center;background-size:15px;color:#333;font-size:.8rem}
+body.song-list-active #songView>#helper{display:none}
+body.song-list-active #songView>#songList{display:block;flex:1 1 0;width:100%;min-height:0;margin:0;padding:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;background:#dedede;scrollbar-width:thin;scrollbar-color:#8d8d8d #cecece}
+body.song-list-active #songList .song-card-selectable{display:flex;align-items:stretch;width:100%;min-height:39px;margin:0;padding:0;border:0;border-bottom:1px solid #9e9e9e;border-radius:0;background:#eee;box-shadow:none;transform:none}
+body.song-list-active #songList .song-card-selectable:nth-child(even){background:#e6e6e6}
+body.song-list-active #songList .song-card-selectable:hover{background:#d9edf4}
+body.song-list-active #songList .song-card-selectable.selected{background:#98d6ef;box-shadow:inset 0 0 0 1px #66b9d9}
+body.song-list-active #songList .song-card-main{display:flex;flex:1;align-items:center;gap:10px;width:100%;min-width:0;height:auto;margin:0;padding:2px 10px;border:0;border-radius:0;background:transparent;color:#333;text-align:left;box-shadow:none;transform:none}
+body.song-list-active #songList .song-key{display:grid;flex:0 0 31px;width:31px;min-width:31px;height:27px;padding:0;border-radius:3px;background:#d9e7eb;color:#425962;font-size:.72rem}
+body.song-list-active #songList .song-info{display:flex;flex:1;flex-direction:row;align-items:center;gap:10px;min-width:0}
+body.song-list-active #songList .song-info b{display:block;flex:0 1 auto;max-width:72%;overflow:hidden;color:#333;font-size:.84rem;font-weight:500;line-height:1.2;text-overflow:ellipsis;white-space:nowrap}
+body.song-list-active #songList .song-info small{display:block;max-width:25%;color:#777;font-size:.68rem}
+body.song-list-active #songList .song-chips{display:flex;flex:0 0 auto;flex-direction:row;gap:4px;margin-left:auto}
+body.song-list-active #songList .song-chip{height:17px;padding:0 6px;border:1px solid #c5c5c5;border-radius:3px;background:#e8e8e8;color:#56636a;font-size:.58rem}
+body.song-list-active #songView>.song-list-footer{display:flex;flex:0 0 32px;align-items:center;justify-content:space-between;width:100%;padding:4px 12px;border-top:1px solid #9dbbc7;background:#b9d3dc;color:#526c75;font-size:.7rem}
+
+html[data-theme="dark"] body.song-list-active{background:#303030}
+html[data-theme="dark"] body.song-list-active #songView>.toolbar{background:#ededed}
+html[data-theme="dark"] body.song-list-active #songView>#songList{background:#dedede}
+html[data-theme="dark"] body.song-list-active #songList .song-card-selectable,html[data-theme="dark"] body.song-list-active #songList .song-card-selectable:nth-child(even){background:#eee}
+html[data-theme="dark"] body.song-list-active #songList .song-card-main{color:#333}
+html[data-theme="dark"] body.song-list-active #songList .song-info b{color:#333}
+body.song-list-active .admin-home-entry{min-height:36px;max-width:180px;margin-top:8px;padding:6px 10px;border-color:#8eacb8;border-radius:5px;background:#1686b4;color:#fff;text-align:center}
+html[data-theme="dark"] body.song-list-active #songList .song-card-selectable.selected{background:#98d6ef;box-shadow:inset 0 0 0 1px #66b9d9}
+html[data-theme="dark"] body.song-list-active #songList .song-card-main .song-info small{color:#777}
+/* Vista previa: botón en la misma línea que la barra y progreso de alto contraste */
+body.song-list-active #songView .selected-audio-preview{display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 9px;column-gap:9px;align-items:stretch}
+body.song-list-active #songView .selected-audio-preview>button{grid-column:1;grid-row:2;align-self:center;justify-self:center;flex:none;width:28px;height:28px;padding:0;font-size:1rem;line-height:1}
+body.song-list-active #songView .selected-audio-meta{grid-column:2;grid-row:1 / 3;display:grid;grid-template-rows:minmax(0,1fr) 9px;align-items:center;gap:2px;height:100%;max-width:none}
+body.song-list-active #songView .preview-track{grid-row:2;height:8px;background:#f3f7f9;box-shadow:0 0 0 1px #073e5c}
+body.song-list-active #songView .preview-track i{background:#ffdf62;box-shadow:0 0 5px #ffdf62b8}
+body.song-list-active #songView .selected-audio-preview.is-playing>button{color:#ffdf62}
+html[data-theme="dark"] body.song-list-active #songView .preview-track{background:#f3f7f9}
+html[data-theme="dark"] body.song-list-active #songView .preview-track i{background:#ffdf62}
+body.song-list-active #songView>.toolbar .song-filters{display:flex;flex:1 1 auto;align-items:center;gap:3px;min-width:0;overflow-x:auto;scrollbar-width:none}
+body.song-list-active #songView>.toolbar .song-filters::-webkit-scrollbar{display:none}
+body.song-list-active #songView>.toolbar .song-filters button{flex:0 0 auto;min-height:30px;padding:4px 10px;border:1px solid #aebdc2;border-radius:4px;background:#e3e9eb;color:#3e4d52;font-size:.73rem;white-space:nowrap}
+body.song-list-active #songView>.toolbar .song-filters button.active{border-color:#1388b8;background:#c5e3ee;color:#075f83;box-shadow:inset 0 0 0 1px #1388b833}
+/* Fallback por visibilidad de sección: al entrar a canciones, escapar del marco centrado. */
+body:has(> main > :where(#songView:not(.hidden))){display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;overflow:hidden;background:#303030}
+body:has(> main > :where(#songView:not(.hidden)))>header,body:has(> main > :where(#songView:not(.hidden)))>main>#connection{display:none}
+body:has(> main > :where(#songView:not(.hidden)))>main{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;max-height:none;max-width:none;margin:0;padding:0;overflow:hidden;background:#303030}
+body:has(> main > :where(#songView:not(.hidden)))>main>#songView{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100%;min-width:0;min-height:0;max-width:none;margin:0;padding:0;overflow:hidden;border:0;border-radius:0;background:#303030;box-shadow:none}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.song-mobile-header{height:44px;min-height:44px;flex-basis:44px;padding:0 8px;border-radius:0}
+body:has(> main > :where(#songView:not(.hidden))) #songView .selected-audio-preview{display:grid;grid-template-columns:34px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 9px;align-items:stretch;gap:0 9px;height:100%}
+
+
+body:has(> main > :where(#songView:not(.hidden))) #songView .preview-track{grid-row:2;height:8px;background:#f4f8fa;box-shadow:0 0 0 1px #064365}
+body:has(> main > :where(#songView:not(.hidden))) #songView .preview-track i{background:#ffdf62;box-shadow:0 0 5px #ffdf62b8}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters{display:flex;flex:1 1 auto;min-width:0;overflow-x:auto}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button{flex:0 0 auto;min-height:30px;padding:4px 10px;border:1px solid #aebdc2;border-radius:4px;background:#e3e9eb;color:#3e4d52;font-size:.73rem;white-space:nowrap}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button.active{border-color:#1388b8;background:#c5e3ee;color:#075f83}
+body:has(> main > :where(#songView:not(.hidden))) #songView>#songList{display:block;flex:1 1 0;width:100%;min-height:0;margin:0;padding:0;overflow-x:hidden;overflow-y:auto}
+body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable{display:flex;width:100%;min-height:39px;margin:0;padding:0;border:0;border-bottom:1px solid #9e9e9e;border-radius:0;background:#eee;box-shadow:none}
+/* Ajuste fino del reproductor del encabezado: compacto y alineado con su barra */
+body:has(> main > :where(#songView:not(.hidden))) #songView .selected-audio-preview{position:relative;top:-4px;display:grid;flex:0 1 min(390px,calc(100vw - 190px));grid-template-columns:23px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 7px;gap:0 7px;width:min(390px,calc(100vw - 190px));max-width:390px;height:34px;margin:0 auto;padding:0 8px;border:0}
+body:has(> main > :where(#songView:not(.hidden))) #songView .selected-audio-preview>button{grid-column:1;grid-row:1 / 3;align-self:center;justify-self:center;width:30px;height:30px;min-height:30px;margin:0;padding:0;transform:none;line-height:1}
+body:has(> main > :where(#songView:not(.hidden))) #songView .selected-audio-meta{grid-column:2;grid-row:1 / 3;display:grid;grid-template-rows:minmax(0,1fr) 9px;align-self:stretch;gap:2px;height:100%;margin:0}
+body:has(> main > :where(#songView:not(.hidden))) #songView #selectedSongLabel{font-size:.67rem;line-height:1}
+body:has(> main > :where(#songView:not(.hidden))) #songView .preview-track{height:5px}
+/* Selección visible y acceso al modo oscuro desde la pantalla de canciones */
+body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable.selected{background:#91d5ef;box-shadow:inset 0 0 0 2px #59b2d4}
+body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable.selected .song-card-main{background:transparent}
+body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-theme-toggle{display:grid;flex:0 0 34px;width:34px;height:34px;min-height:34px;place-items:center;padding:0;border:1px solid #c1c1c1;border-radius:6px;background:#f8f8f8;color:#37474f;font-size:1rem;cursor:pointer}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar{background:#20212a;border-color:#3a3b46}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button{border-color:#555665;background:#30313c;color:#e1e2ea}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-filters button.active{border-color:#58bce4;background:#17435a;color:#d7f3ff}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar #search{border-color:#555665;background-color:#292a34;color:#f1f1f5}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.toolbar .song-theme-toggle{border-color:#555665;background:#30313c;color:#ffe28a}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>#songList{background:#202126;scrollbar-color:#62636c #292a30}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable,html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable:nth-child(even){border-color:#42434b;background:#292a30}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable:hover{background:#343943}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-selectable.selected{background:#17445b;box-shadow:inset 0 0 0 2px #55b8df}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-card-main,html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-info b{color:#f0f0f3}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-info small{color:#b7b8c2}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-key{border:1px solid #494a56;background:#343540;color:#dcecf2}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songList .song-chip{border-color:#50515c;background:#353640;color:#d8d9e1}
+html[data-theme="dark"] body:has(> main > :where(#songView:not(.hidden))) #songView>.song-list-footer{border-color:#42434b;background:#20212a;color:#c7c8d0}
+/* Catálogo de crear/editar: misma pantalla completa y misma lista vertical */
+body.create-list-active,body.create-list-active{display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;overflow:hidden;background:#303030}
+body.create-list-active>header,body.create-list-active>main>#connection{display:none}
+body.create-list-active>main{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100vh;height:100dvh;min-height:0;max-height:none;max-width:none;margin:0;padding:0;overflow:hidden;background:#303030}
+body.create-list-active>main>#createView{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:100%;min-width:0;min-height:0;max-width:none;margin:0;padding:0;overflow:hidden;border:0;border-radius:0;background:#303030;box-shadow:none}
+body.create-list-active #createView>.create-mobile-header{position:relative;z-index:3;display:flex;flex:0 0 calc(44px + env(safe-area-inset-top,0px));align-items:center;justify-content:space-between;width:100%;height:calc(44px + env(safe-area-inset-top,0px));min-height:calc(44px + env(safe-area-inset-top,0px));margin:0;padding:env(safe-area-inset-top,0px) max(9px,env(safe-area-inset-right,0px)) 0 max(9px,env(safe-area-inset-left,0px));box-sizing:border-box;border:0;border-radius:0;background:#1181b2;color:#fff;box-shadow:0 1px 3px #071d27a8}
+body.create-list-active #createView>.create-mobile-header>.home-back{flex:0 0 auto;min-height:31px;margin:0;padding:4px 11px;border:1px solid #ffffff3b;border-radius:4px;background:#0d74a3;color:#fff;font-size:.82rem;white-space:nowrap}
+body.create-list-active #createView>.create-mobile-header h1{position:absolute;left:50%;max-width:65%;margin:0;overflow:hidden;color:#fff;font-family:inherit;font-size:.95rem;font-weight:600;text-overflow:ellipsis;transform:translateX(-50%);white-space:nowrap}
+body.create-list-active #createView>.create-mobile-header small{margin-left:auto;color:#dceef5;font-size:.7rem;white-space:nowrap}
+body.create-list-active #createView>.toolbar{display:flex;flex:0 0 44px;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;margin:0;padding:5px max(9px,env(safe-area-inset-right,0px)) 5px max(9px,env(safe-area-inset-left,0px));border:0;border-bottom:1px solid #aaa;border-radius:0;background:#ededed;box-shadow:none}
+body.create-list-active #createView .create-list-hint{color:#52646a;font-size:.74rem}
+body.create-list-active #createView #createSearch{flex:0 0 min(240px,30vw);width:min(240px,30vw);min-width:130px;height:32px;min-height:32px;margin-left:auto;padding:5px 10px 5px 31px;border:1px solid #c2c2c2;border-radius:7px;background-color:#fff;color:#333;font-size:.78rem}
+body.create-list-active #createView>.hint{display:none}
+body.create-list-active #createView>#createList{display:block;flex:1 1 0;width:100%;min-height:0;margin:0;padding:0;overflow-x:hidden;overflow-y:auto;padding-right:max(2px,env(safe-area-inset-right,0px));padding-left:max(2px,env(safe-area-inset-left,0px));box-sizing:border-box;background:#dedede;scrollbar-width:thin;scrollbar-color:#8d8d8d #cecece}
+body.create-list-active #createList .song-group-title{display:flex;align-items:center;gap:7px;min-height:29px;margin:0;padding:4px 10px;border-bottom:1px solid #aaa;background:#d1d1d1;color:#414141;font-size:.68rem;letter-spacing:.04em}
+body.create-list-active #createList .song-group-title:after{display:none}
+body.create-list-active #createList .song-group-title small{padding:1px 6px;background:#e5e5e5;color:#666;font-size:.62rem}
+body.create-list-active #createList .song-card{display:flex;align-items:center;width:100%;min-height:39px;margin:0;padding:0;border:0;border-bottom:1px solid #9e9e9e;border-radius:0;background:#eee;box-shadow:none;color:#333;text-align:left;transform:none}
+body.create-list-active #createList .song-card:nth-of-type(even){background:#e6e6e6}
+body.create-list-active #createList .song-card:hover{background:#d9edf4}
+body.create-list-active #createList .song-card .song-key{display:grid;flex:0 0 31px;width:31px;min-width:31px;height:27px;margin:0 10px;border-radius:3px;background:#d9e7eb;color:#425962;font-size:.72rem}
+body.create-list-active #createList .song-card .song-info{display:flex;flex:1;flex-direction:row;align-items:center;gap:10px;min-width:0}
+body.create-list-active #createList .song-card .song-info b{display:block;max-width:72%;overflow:hidden;color:#333;font-size:.82rem;font-weight:500;white-space:nowrap;text-overflow:ellipsis}
+body.create-list-active #createList .song-card .song-info small{display:block;color:#777;font-size:.68rem}
+body.create-list-active #createList .song-chips{display:flex;flex-direction:row;gap:4px;margin:0 9px 0 auto}
+body.create-list-active #createList .song-chip{height:17px;padding:0 6px;border:1px solid #c5c5c5;border-radius:3px;background:#e8e8e8;color:#56636a;font-size:.58rem}
+body.create-list-active #createView>.create-list-footer{display:flex;flex:0 0 calc(29px + env(safe-area-inset-bottom,0px));align-items:center;justify-content:space-between;padding:3px max(11px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(11px,env(safe-area-inset-left,0px));box-sizing:border-box;border-top:1px solid #9dbbc7;background:#b9d3dc;color:#526c75;font-size:.68rem}
+html[data-theme="dark"] body.create-list-active #createView>.toolbar{background:#20212a;border-color:#3a3b46}
+html[data-theme="dark"] body.create-list-active #createView .create-list-hint{color:#c7c8d0}
+html[data-theme="dark"] body.create-list-active #createView #createSearch{border-color:#555665;background-color:#292a34;color:#f1f1f5}
+html[data-theme="dark"] body.create-list-active #createView>#createList{background:#202126;scrollbar-color:#62636c #292a30}
+html[data-theme="dark"] body.create-list-active #createList .song-group-title{border-color:#42434b;background:#30313c;color:#ececf1}
+html[data-theme="dark"] body.create-list-active #createList .song-group-title small{background:#41424e;color:#d1d2db}
+html[data-theme="dark"] body.create-list-active #createList .song-card,html[data-theme="dark"] body.create-list-active #createList .song-card:nth-of-type(even){border-color:#42434b;background:#292a30;color:#f0f0f3}
+html[data-theme="dark"] body.create-list-active #createList .song-card:hover{background:#343943}
+html[data-theme="dark"] body.create-list-active #createList .song-card .song-info b{color:#f0f0f3}
+html[data-theme="dark"] body.create-list-active #createList .song-card .song-info small{color:#b7b8c2}
+html[data-theme="dark"] body.create-list-active #createList .song-card .song-key{border:1px solid #494a56;background:#343540;color:#dcecf2}
+html[data-theme="dark"] body.create-list-active #createList .song-chip{border-color:#50515c;background:#353640;color:#d8d9e1}
+html[data-theme="dark"] body.create-list-active #createView>.create-list-footer{border-color:#42434b;background:#20212a;color:#c7c8d0}
+body.create-list-active #createView>.toolbar .create-theme-toggle{display:grid;flex:0 0 34px;width:34px;height:34px;min-height:34px;place-items:center;padding:0;border:1px solid #c1c1c1;border-radius:6px;background:#f8f8f8;color:#37474f;font-size:1rem;cursor:pointer}
+html[data-theme="dark"] body.create-list-active #createView>.toolbar .create-theme-toggle{border-color:#555665;background:#30313c;color:#ffe28a}
+
+/* Pantalla de modos basada en la composición Synthesia: cabecera, selector superior y panel inferior */
+.mode-screen{position:fixed;inset:0;z-index:1200;display:flex;align-items:stretch;justify-content:stretch;padding:0;background:var(--panel);color:var(--text)}
+.mode-screen.hidden{display:none}
+.mode-screen-panel{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;overflow:hidden;background:var(--panel);color:var(--text)}
+.mode-screen-header{position:relative;top:auto;z-index:2;flex:0 0 44px;height:44px;min-height:44px;display:grid;grid-template-columns:minmax(100px,1fr) minmax(0,2fr) minmax(100px,1fr);align-items:center;gap:8px;padding:3px 8px;background:var(--device-heading-background,var(--gold));color:var(--device-heading-text,#fff);box-shadow:none}
+.mode-screen-header>.soft{justify-self:start;min-height:31px;padding:4px 11px;border:1px solid #ffffff48;border-radius:5px;background:color-mix(in srgb,var(--gold) 82%,#000);color:#fff}
+.mode-screen-song{text-align:center;min-width:0}
+.mode-screen-song h1{margin:0;font-size:.95rem;line-height:1.1;color:inherit}
+.mode-screen-song p{margin:2px 0 0;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mode-screen-continue{justify-self:end;min-height:31px;padding:4px 13px;border:1px solid #ffffff55;border-radius:5px;background:color-mix(in srgb,var(--gold) 82%,#000);color:#fff;font:inherit;font-size:.84rem}
+.mode-screen-continue:hover,.mode-screen-header>.soft:hover{filter:brightness(1.12)}
+.mode-screen-upper{flex:0 0 auto;min-height:270px;width:min(1100px,100%);margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;align-items:center;padding:16px 12px 20px;background:var(--panel)}
+.mode-side-actions{display:flex;flex-direction:column;gap:7px}
+.mode-side-choice{min-height:84px;padding:12px 16px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);color:var(--text);text-align:left;font:inherit;cursor:pointer}
+.mode-side-choice b,.mode-side-choice small{display:block}
+.mode-side-choice b{font-size:.91rem;font-weight:500;line-height:1.35}
+.mode-side-choice small{margin-top:4px;color:var(--muted);font-size:.72rem}
+.mode-side-choice.active{outline:2px solid var(--gold);outline-offset:1px}
+.mode-side-choice:hover{filter:brightness(.97)}
+.mode-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end}
+.mode-choice-card{min-width:0;padding:0;border:0;border-radius:0;background:transparent;color:var(--text);text-align:center;font:inherit;cursor:pointer}
+.mode-card-heading{display:block;min-height:25px;font-family:Georgia,'Times New Roman',serif;font-size:1.05rem;line-height:1.2}
+.mode-choice-card>small{display:block;min-height:23px;color:var(--muted);font-size:.8rem}
+.mode-score-box{min-height:145px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);color:var(--muted);transition:border-color .15s,box-shadow .15s,filter .15s}
+.mode-score-box strong{font-size:1.35rem;font-weight:400;line-height:1}
+.mode-score-box>span{font-size:.83rem}
+.mode-choice-card.active .mode-score-box{outline:2px solid var(--gold);outline-offset:1px;filter:brightness(.98)}
+.mode-choice-card:hover .mode-score-box{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 18%,transparent)}
+.mode-section-title{flex:0 0 44px;display:grid;place-items:center;padding:4px 12px;background:var(--device-heading-background,var(--gold));color:var(--device-heading-text,#fff);text-align:center}
+.mode-section-title h2{margin:0;font-size:1.08rem;font-weight:500}
+.mode-detail-area{flex:1;min-height:0;display:grid;grid-template-columns:180px minmax(0,1fr);background:var(--bg)}
+.mode-detail-nav{display:flex;flex-direction:column;align-items:stretch;overflow:auto;border-right:1px solid var(--line);background:var(--panel)}
+.mode-detail-nav button{min-height:44px;padding:9px 10px;border:0;border-bottom:1px solid var(--line);background:var(--panel);color:var(--text);font:inherit;font-size:.84rem;text-align:left;cursor:pointer}
+.mode-detail-nav button.active{background:var(--gold);color:#fff}
+.mode-detail-content{min-width:0;overflow:auto;padding:clamp(16px,2vw,28px);background:var(--bg);color:var(--text)}
+.mode-detail-panel{max-width:1050px;line-height:1.55}
+.mode-detail-panel h3{margin:0 0 9px;font-size:1rem}
+.mode-detail-panel p{margin:0 0 13px}
+.mode-detail-panel ul{padding-left:21px}
+.mode-voice-directions{display:grid;grid-template-columns:repeat(2,minmax(180px,300px));gap:14px;margin-top:18px}
+.mode-voice-directions label{display:grid;gap:6px;font-size:.84rem}
+.mode-voice-directions select{min-height:36px;padding:6px 9px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--text);font:inherit;font-size:.82rem}
+html[data-theme="dark"] .mode-screen{background:#1c1c3f;color:#e8e6f0}
+html[data-theme="dark"] .mode-screen-panel,html[data-theme="dark"] .mode-screen-upper{background:#1c1c3f;color:#e8e6f0}
+html[data-theme="dark"] .mode-screen-header>.soft,html[data-theme="dark"] .mode-screen-continue{background:#42426e;color:#e8c97a;border-color:#514777}
+html[data-theme="dark"] .mode-side-choice,html[data-theme="dark"] .mode-score-box,html[data-theme="dark"] .mode-detail-nav,html[data-theme="dark"] .mode-detail-nav button{background:#1b1b2e;color:#e8e6f0;border-color:#2a2a45}
+html[data-theme="dark"] .mode-side-choice small,html[data-theme="dark"] .mode-choice-card>small,html[data-theme="dark"] .mode-score-box{color:#aaa9c1}
+html[data-theme="dark"] .mode-detail-content{background:#1b1b2e;color:#e8e6f0}
+html[data-theme="dark"] .mode-voice-directions select{background:#11111d;color:#e8e6f0;border-color:#514777}
+
+/* Pantalla dedicada a instrumentos y colores, inspirada en el panel de ajustes */
+.instrument-screen-header{position:relative;top:auto;z-index:2;flex:0 0 44px;height:44px;min-height:44px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:3px 8px;background:var(--device-heading-background,var(--gold));color:var(--device-heading-text,#fff)}
+.instrument-header-actions{display:flex;align-items:center;gap:8px}
+.instrument-header-actions .soft{min-height:31px;padding:4px 11px;border:1px solid #ffffff48;border-radius:5px;background:color-mix(in srgb,var(--gold) 82%,#000);color:#fff}
+.instrument-screen-header h1{margin:0;text-align:center;font-size:1.08rem;font-weight:500}
+.instrument-screen-main{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;}
+.instrument-config-grid{display:grid;align-items:start}
+.instrument-config-card{overflow:hidden;border:1px solid color-mix(in srgb,var(--gold) 72%,#000);border-radius:4px;background:var(--gold);color:#fff;box-shadow:0 2px 5px #0002}
+.instrument-config-top{min-height:68px;display:grid;grid-template-columns:44px minmax(0,1fr) 22px;align-items:center;gap:9px;padding:7px;border-bottom:1px solid #ffffff42}
+.track-intensity-field{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;border-bottom:1px solid #ffffff30;font-size:.72rem;font-weight:700}
+.track-intensity-field select{min-width:96px;max-width:58%;padding:5px 7px;border:1px solid #ffffff45;border-radius:6px;background:var(--panel,#17232b);color:inherit;font:inherit}
+.instrument-card-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:5px;background:#ffffff20;font-size:1.65rem}
+.instrument-name-field{display:grid;gap:2px;min-width:0;font-size:1rem}
+.instrument-name-field select{width:100%;min-width:0;padding:1px 2px;border:0;background:transparent;color:inherit;font:inherit;font-size:.95rem;outline-offset:1px}
+.instrument-name-field select option{background:var(--panel);color:var(--text)}
+.instrument-name-field small{font-size:.69rem;opacity:.88}
+.instrument-card-play{text-align:center;text-shadow:0 1px 2px #0006}
+.instrument-config-bottom{min-height:66px;display:grid;grid-template-columns:1.15fr .8fr 1fr;align-items:stretch}
+.instrument-config-bottom>*{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;border-right:1px solid #ffffff42;text-align:center}
+.instrument-config-bottom>*:last-child{border-right:0}
+.instrument-hand{font-size:1.22rem}
+.instrument-hand small{font-size:.66rem;line-height:1.2}
+.instrument-color-field{font-size:.68rem}
+.instrument-color-field input[type=color]{width:36px;height:25px;padding:2px;border:1px solid #ffffff6b;border-radius:3px;cursor:pointer}
+.instrument-voice-directions{width:min(740px,100%);border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--text)}
+.instrument-voice-directions h2{margin:0 0 4px;font-size:.95rem}
+.instrument-voice-directions>p{margin:0;color:var(--muted)}
+.instrument-voice-directions .mode-voice-directions{grid-template-columns:repeat(2,minmax(0,1fr));}
+.instrument-settings-footer{flex:0 0 auto;min-height:54px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:5px 9px calc(5px + env(safe-area-inset-bottom));border-top:1px solid var(--line);color:var(--text)}
+.instrument-settings-footer>.soft{min-height:36px;padding:5px 12px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--text);font-size:.8rem}
+.instrument-settings-footer>p{margin:0;font-size:.72rem;line-height:1.35;color:var(--muted)}
+.instrument-settings-footer .mode-screen-continue{min-height:36px;padding:5px 12px;border-radius:4px;font-size:.8rem}
+html[data-theme="dark"] .instrument-header-actions .soft{background:#42426e;color:#e8c97a;border-color:#514777}
+html[data-theme="dark"] .instrument-config-card{background:#2f2f5c;border-color:#514777;color:#e8e6f0}
+html[data-theme="dark"] .instrument-config-top,html[data-theme="dark"] .instrument-config-bottom>*{border-color:#514777}
+html[data-theme="dark"] .instrument-voice-directions{background:#1b1b2e;color:#e8e6f0;}
+
+/* Ajustes de instrumentos: composición compacta de una sola pantalla */
+.instrument-screen-main{overflow:hidden;gap:10px;padding:17px 12px 8px}
+.instrument-config-grid{flex:0 0 auto}
+.instrument-voice-directions{flex:0 0 auto;padding:9px 12px}
+.instrument-voice-directions>p{font-size:.74rem}
+.instrument-voice-directions .mode-voice-directions{margin-top:7px;gap:8px}
+.instrument-card-play{display:grid;place-items:center;width:26px;height:32px;padding:0;border:0;border-radius:4px;font:inherit;font-size:1.25rem;cursor:pointer}
+.instrument-card-play:hover{background:#ffffff22}
+.instrument-sound-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;border:0;background:transparent;color:inherit;font:inherit;font-size:1.13rem;cursor:pointer}
+.instrument-sound-toggle small{font-size:.61rem;line-height:1.2}
+.instrument-sound-toggle[aria-checked="false"]{opacity:.57}
+.instrument-sound-toggle:focus-visible,.instrument-card-play:focus-visible{outline:2px solid currentColor;outline-offset:-2px}
+.instrument-help-dialog{position:fixed;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(450px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:19px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);box-shadow:0 16px 50px #0008}
+.instrument-help-dialog::backdrop{background:#071722a8;backdrop-filter:blur(3px)}
+
+/* Biblioteca para descargar sonidos por seccion */
+.instrument-screen-main{overflow-y:auto;overscroll-behavior:contain}
+.prefetch-library{flex:0 0 auto;width:min(980px,100%);margin:0 0 12px;padding:14px;background:var(--panel);color:var(--text);border-color:var(--line);box-shadow:0 2px 8px #0002}
+.prefetch-library-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.prefetch-library-heading h2{margin:0;font-size:1rem}
+.prefetch-library-heading p{max-width:660px;margin:4px 0 0;color:var(--muted);font-size:.76rem;line-height:1.4}
+.prefetch-library-tools{display:flex;flex-wrap:wrap;gap:6px}
+.prefetch-library-tools button{min-height:31px;padding:4px 9px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--text);font:inherit;font-size:.72rem;cursor:pointer}
+.prefetch-catalog{display:grid;gap:10px;padding-top:10px}
+.prefetch-category{overflow:hidden;border:1px solid var(--line);border-radius:7px;background:var(--panel2)}
+.prefetch-category>header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--gold) 12%,var(--panel))}
+.prefetch-category h3{margin:0;font-size:.86rem}
+.prefetch-category>header label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.68rem;cursor:pointer}
+.prefetch-category input{accent-color:var(--gold)}
+.prefetch-instrument-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.prefetch-instrument{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:54px;padding:6px 10px;border-bottom:1px solid var(--line);cursor:pointer}
+.prefetch-instrument:nth-child(odd){border-right:1px solid var(--line)}
+.prefetch-instrument:nth-last-child(-n+2){border-bottom:0}
+.prefetch-instrument input{width:16px;height:16px;margin:0}
+.prefetch-instrument-info{display:grid;gap:3px;min-width:0}
+.prefetch-instrument-info strong{overflow:hidden;font-size:.77rem;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.prefetch-instrument-info small,.prefetch-instrument-size small{color:var(--muted);font-size:.64rem}
+.prefetch-instrument-size{display:grid;justify-items:end;gap:1px;font-size:.76rem;font-weight:650;white-space:nowrap}
+.prefetch-library-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:11px;color:var(--muted);font-size:.74rem}
+.prefetch-library-footer .mode-screen-continue{min-height:34px;padding:5px 12px;border:0;border-radius:5px;background:var(--gold);color:#fff;font:inherit;font-weight:650;cursor:pointer}
+.prefetch-status{display:block;min-height:1.2em;margin-top:7px;color:var(--muted);font-size:.72rem;line-height:1.4}
+html[data-theme="dark"] .prefetch-library{background:#1b1b2e;color:#e8e6f0;border-color:#383653}
+html[data-theme="dark"] .prefetch-category{background:#202039;border-color:#383653}
+html[data-theme="dark"] .prefetch-category>header{background:#292947;border-color:#383653}
+html[data-theme="dark"] .prefetch-instrument{border-color:#383653}
+html[data-theme="dark"] .prefetch-library-tools button{background:#292947;color:#e8e6f0;border-color:#514777}
+
+.instrument-help-dialog form{display:flex;justify-content:flex-end;margin:-4px -4px 8px}
+.instrument-help-dialog form button{min-height:32px;padding:4px 10px}
+.instrument-help-dialog h2{margin:5px 0 12px;font-size:1.08rem}
+.instrument-help-dialog p{margin:8px 0;line-height:1.45;font-size:.86rem}
+#toast{z-index:1300}
+
+/* Short landscape viewports: preserve room for the full lower details panel. */
+
+/* Keep song options and instrument settings on the same dark palette as the song list. */
+html[data-theme="dark"] .mode-screen,
+html[data-theme="dark"] .mode-screen-panel,
+html[data-theme="dark"] .mode-screen-upper,
+html[data-theme="dark"] .mode-detail-content,
+html[data-theme="dark"] .instrument-screen-main{background:#202126;color:#f0f0f3}
+html[data-theme="dark"] .mode-screen-header,
+html[data-theme="dark"] .mode-section-title,
+html[data-theme="dark"] .instrument-screen-header{background:var(--device-heading-background,#087da8);color:var(--device-heading-text,#fff)}
+html[data-theme="dark"] .mode-screen-header>.soft,
+html[data-theme="dark"] .mode-screen-continue,
+html[data-theme="dark"] .instrument-header-actions .soft{border-color:#ffffff39;background:#0d78a8;color:#fff}
+html[data-theme="dark"] .mode-side-choice,
+html[data-theme="dark"] .mode-score-box,
+html[data-theme="dark"] .mode-detail-nav,
+html[data-theme="dark"] .mode-detail-nav button,
+html[data-theme="dark"] .instrument-config-card,
+html[data-theme="dark"] .instrument-voice-directions{border-color:#42434b;background:#292a30;color:#f0f0f3}
+html[data-theme="dark"] .mode-side-choice small,
+html[data-theme="dark"] .mode-choice-card>small,
+html[data-theme="dark"] .mode-score-box,
+html[data-theme="dark"] .instrument-voice-directions>p,
+html[data-theme="dark"] .instrument-settings-footer>p{color:#b7b8c2}
+html[data-theme="dark"] .mode-side-choice.active,
+html[data-theme="dark"] .mode-choice-card.active .mode-score-box{outline-color:#58bce4}
+html[data-theme="dark"] .mode-detail-nav button{border-color:#42434b}
+html[data-theme="dark"] .mode-detail-nav button.active{background:#17435a;color:#d7f3ff}
+html[data-theme="dark"] .instrument-config-top,
+html[data-theme="dark"] .instrument-config-bottom>*{border-color:#42434b}
+html[data-theme="dark"] .instrument-card-icon{background:#30313c;color:#d7f3ff}
+html[data-theme="dark"] .instrument-settings-footer{border-color:#42434b;background:#20212a;color:#f0f0f3}
+html[data-theme="dark"] .instrument-settings-footer>.soft{border-color:#555665;background:#30313c;color:#f0f0f3}
+html[data-theme="dark"] .instrument-voice-directions{border-color:#42434b}
+html[data-theme="dark"] .mode-voice-directions select,
+html[data-theme="dark"] .instrument-config-card select,
+html[data-theme="dark"] .instrument-config-card input[type="color"]{border-color:#555665;background:#202126;color:#f0f0f3}
+html[data-theme="dark"] .instrument-help-dialog{border-color:#42434b;background:#202126;color:#f0f0f3}
+
+/* Main menu header: app mark, live sync status, theme switch, then Admin. */
+body>header.app-header{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,auto) minmax(0,1fr);align-items:center;gap:12px;width:100%;height:58px;min-height:58px;padding:0 max(16px,calc((100vw - 1450px)/2));background:var(--device-heading-background,#087da8);color:var(--device-heading-text,#fff)}
+body>header.app-header .brand-home{display:flex;justify-self:start;align-items:center;gap:9px;min-width:0;padding:0;border:0;background:transparent;color:#fff;text-decoration:none}
+body>header.app-header .brand-icon{display:block;flex:0 0 36px;width:36px;height:36px;object-fit:contain;border:0;border-radius:6px;background:#0d78a8;box-shadow:none}
+body>header.app-header .brand-home b{display:block;overflow:hidden;color:var(--device-heading-text,#fff);font-size:.92rem;font-weight:650;letter-spacing:.01em;text-overflow:ellipsis;white-space:nowrap}
+body>header.app-header #connection{position:static;grid-column:2;grid-row:1;width:auto;height:auto;min-height:0;margin:0;overflow:hidden;transform:none;color:#e8f7fc;font-size:.72rem;font-weight:600;line-height:1.2;text-align:center;text-overflow:ellipsis;text-shadow:none;white-space:nowrap;pointer-events:none}
+body>header.app-header #connection.offline{color:#fff0c2}
+body>header.app-header .header-actions{grid-column:3;grid-row:1;justify-self:end;display:flex;align-items:center;gap:8px;min-width:0}
+body>header.app-header .theme-toggle{width:38px;height:38px;min-height:38px;background:#0d78a8;border:1px solid #ffffff42;color:#fff}
+body>header.app-header #adminBtn{position:static;inset:auto;display:block;min-height:38px;margin:0;padding:6px 13px;border:1px solid #ffffff42;border-radius:6px;background:#0d78a8;color:#fff;font-size:.8rem;white-space:nowrap}
+body>header.app-header #adminBtn.active{background:#d7f3ff;color:#075f83}
+html[data-theme="dark"] body>header.app-header{background:var(--device-heading-background,#087da8);color:var(--device-heading-text,#fff);border-bottom:1px solid #ffffff29}
+html[data-theme="dark"] body>header.app-header .theme-toggle,
+html[data-theme="dark"] body>header.app-header #adminBtn{border-color:#ffffff42;background:#0d78a8;color:#fff}
+html[data-theme="dark"] body>header.app-header #adminBtn.active{background:#d7f3ff;color:#075f83}
+
+/* Las pantallas de selección y ajustes son vistas completas, sin el encabezado del inicio. */
+body:has(#playModeModal:not(.hidden))>header.app-header,
+body:has(#instrumentSettingsScreen:not(.hidden))>header.app-header,
+body:has(#deviceSettingsScreen:not(.hidden))>header.app-header{display:none}
+body.song-list-active>header.app-header,
+body.create-list-active>header.app-header{display:none}
+body:has(#playModeModal:not(.hidden)) #playModeModal,
+body:has(#instrumentSettingsScreen:not(.hidden)) #instrumentSettingsScreen,
+body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;margin:0;padding:0;z-index:1200}
+
+/* Add breathing room between the option labels, cards, and navigation buttons. */
+
+/* Keep one consistent app typeface across mode headings, cards, and controls. */
+.mode-screen,.mode-screen *{font-family:inherit}
+.mode-screen .mode-card-heading{font-weight:600;letter-spacing:0}
+html[data-theme="dark"] body.home-active>main{background:#202126}
+html[data-theme="dark"] body.home-active #homeView{border-color:#42434b;background:#202126;box-shadow:none}
+html[data-theme="dark"] body.home-active #homeView .home-welcome-card h1{color:#f0f0f3}
+html[data-theme="dark"] body.home-active #homeView .home-welcome-card>p{color:#b7b8c2}
+html[data-theme="dark"] body.home-active #homeView .home-action.primary{border-color:#55b8df;background:#17445b;color:#f0f0f3}
+html[data-theme="dark"] body.home-active #homeView .home-action.primary b,
+html[data-theme="dark"] body.home-active #homeView .home-action.primary small{color:#f0f0f3}
+html[data-theme="dark"] body.home-active #homeView .home-action.primary .home-action-icon{background:#55b8df24;color:#d7f3ff}
+html[data-theme="dark"] body.home-active #homeView .home-action.secondary,
+html[data-theme="dark"] body.home-active #homeView .home-welcome-card,
+html[data-theme="dark"] body.home-active #homeView .home-info-card{border-color:#42434b;background:#292a30;color:#f0f0f3}
+html[data-theme="dark"] body.home-active #homeView .home-info-icon{background:#30313c;color:#d7f3ff}
+html[data-theme="dark"] body.home-active #homeView .home-info-card p{color:#b7b8c2}
+
+/* Home spotlight now shows the last heard song above the illustrated keyboard. */
+#homeView .home-welcome-card{display:flex;align-items:center;justify-content:center;padding:clamp(20px,3vw,36px)}
+#homeView .home-actions{gap:8px}
+#homeView .home-action{flex:0 0 auto;min-height:56px;padding:6px 9px;grid-template-columns:32px minmax(0,1fr) 12px;gap:7px}
+#homeView .home-action-icon{width:29px;height:29px;font-size:16px}
+#homeView .home-action>span:nth-child(2){text-align:center}
+#homeView .home-action b{font-size:.84rem}
+#homeView .home-action small{margin-top:2px;font-size:.64rem;line-height:1.2}
+#homeView .home-action-arrow{font-size:1.25rem}
+/* Keep home actions simple and consistent with the reference menu. */
+#homeView .home-action{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}
+#homeView .home-action-icon,#homeView .home-action small,#homeView .home-action-arrow{display:none}
+#homeView .home-action>span:nth-child(2){grid-column:1;text-align:center}
+#homeView .home-recent-card{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:8px;padding:16px 18px 8px}
+#homeView .home-recent-heading{position:relative;z-index:1;margin:0;color:#334b55;font-size:.82rem;font-weight:600;line-height:1.2}
+#homeView .home-recent-list{position:relative;z-index:1;display:flex;flex:1 1 auto;flex-direction:column;gap:2px;min-height:0;overflow:auto;padding-bottom:30px}
+#homeView .home-recent-row{display:grid;flex:0 0 auto;grid-template-columns:minmax(0,1fr) auto 14px;align-items:center;gap:6px;min-height:26px;padding:1px 7px;border:1px solid #b5cbd3;border-radius:4px;background:#f1f5f6;color:#31444c;text-align:left;cursor:pointer;transition:background .12s,border-color .12s}
+#homeView .home-recent-row:hover,#homeView .home-recent-row:focus-visible{border-color:#087da8;background:#e4f4f9}
+#homeView .home-recent-title{overflow:hidden;font-size:.76rem;font-weight:550;text-overflow:ellipsis;white-space:nowrap}
+#homeView .home-recent-time{color:#5e727c;font-size:.66rem;white-space:nowrap}
+#homeView .home-recent-arrow{color:#1684af;font-size:1.25rem;line-height:1;text-align:center}
+#homeView .home-recent-empty{margin:0;padding:8px 2px;color:#607983;font-size:.77rem}
+html[data-theme="dark"] #homeView .home-recent-heading{color:#f0f0f3}
+html[data-theme="dark"] #homeView .home-recent-row{border-color:#42434b;background:#292a30;color:#f0f0f3}
+html[data-theme="dark"] #homeView .home-recent-row:hover,html[data-theme="dark"] #homeView .home-recent-row:focus-visible{border-color:#58bce4;background:#17445b}
+html[data-theme="dark"] #homeView .home-recent-time,html[data-theme="dark"] #homeView .home-recent-empty{color:#b7b8c2}
+html[data-theme="dark"] #homeView .home-recent-arrow{color:#72c9eb}
+/* Guía compacta: deja libre el centro para ver las barras y sus partículas. */
+#player .performance-layout{position:relative}
+.practice-guide{position:absolute;z-index:8;top:34px;right:8px;display:flex;align-items:center;gap:10px;width:max-content;max-width:calc(100% - 16px);margin:0;padding:6px 9px;border:1px solid #ffffff2c;border-radius:12px;background:#17191dcc;color:#fff;box-shadow:0 3px 12px #0005;backdrop-filter:blur(5px)}
+.practice-guide-copy{display:grid;gap:1px;min-width:0}.practice-guide-copy small{font-size:.58rem;font-weight:800;letter-spacing:.08em;opacity:.72}.practice-guide-copy strong{font-size:1.08rem;line-height:1.05;white-space:nowrap}.practice-guide-copy span{display:none}.practice-guide-actions{display:flex;gap:5px;flex:0 0 auto}.practice-guide-actions button{min-height:30px;padding:4px 8px;font-size:.75rem;white-space:nowrap}
+
+/* Teoría musical: navegación táctil y tarjetas legibles en pantallas pequeñas. */
+
+
+/* Live theory dock stays paired with the app keyboard, using the piano palette. */
+.toolbar-actions #theoryLiveToggle[aria-expanded="true"]{border-color:var(--gold2);color:var(--gold2);}
+.key.theory-highlight{outline:2px solid var(--gold2);outline-offset:-2px;box-shadow:0 0 12px #e8c97a66;}
+.key.theory-highlight::after{position:absolute;z-index:4;top:12px;left:50%;transform:translateX(-50%);padding:2px 3px;border-radius:4px;background:#302b50;color:#f1d783;font:700 8px/1.1 Inter,system-ui,sans-serif;white-space:nowrap;pointer-events:none;}
+.live-theory-dock{display:none;}
+.live-theory-dock:not(.hidden){display:grid;grid-template-columns:minmax(0,1fr);gap:5px;order:3;flex:0 0 auto;max-height:clamp(96px,26dvh,170px);min-height:0;overflow:auto;padding:7px 10px;border:1px solid #c9a84c55;border-radius:10px;background:linear-gradient(145deg,#1c1c3f,#17172f);color:#e8e6f0;}
+#player .performance-layout:has(> #liveTheoryDock:not(.hidden)) > .piano-panel{order:4;}
+.live-theory-head{display:flex;align-items:center;justify-content:space-between;min-height:22px;color:#f1d783;font-size:.82rem;}
+.live-theory-head button{width:25px;height:24px;border:1px solid #514777;border-radius:7px;background:#242239;color:#e8e6f0;font-size:1.1rem;line-height:1;}
+.live-theory-modes{display:flex;gap:5px;}
+.live-theory-modes button{min-height:27px;padding:3px 10px;border:1px solid #343454;border-radius:7px;background:#171729;color:#e8e6f0;font:inherit;font-size:.72rem;}
+.live-theory-modes button.active{border-color:#c9a84c;background:#302b50;color:#f1d783;}
+.live-theory-controls{display:flex;align-items:end;gap:7px;flex-wrap:wrap;}
+.live-theory-controls label{display:grid;gap:2px;color:#aaa9c1;font-size:.64rem;font-weight:700;}
+.live-theory-controls select{min-width:96px;min-height:28px;padding:3px 7px;border:1px solid #343454;border-radius:7px;background:#11111d;color:#e8e6f0;font:inherit;font-size:.72rem;}
+.live-theory-controls .gold{min-height:28px;padding:4px 9px;font-size:.72rem;}
+.live-theory-explanation{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;}
+.live-theory-explanation p{margin:0;color:#d0cde0;font-size:.68rem;line-height:1.25;}
+.live-theory-notes{display:flex;gap:4px;flex:0 0 auto;flex-wrap:wrap;}
+.live-theory-notes span{padding:2px 5px;border:1px solid #514777;border-radius:5px;background:#302b50;color:#f1d783;font-size:.64rem;font-weight:750;}
+html[data-theme="dark"] .live-theory-dock:not(.hidden){border-color:#343454;background:linear-gradient(145deg,rgba(34,34,70,.96),rgba(20,20,37,.98));color:#e8e6f0;box-shadow:0 8px 24px #0005;}
+html[data-theme="dark"] .live-theory-head{color:#e8c97a;}
+html[data-theme="dark"] .live-theory-head button,html[data-theme="dark"] .live-theory-modes button{border-color:#343454;background:#171729;color:#e8e6f0;}
+html[data-theme="dark"] .live-theory-modes button.active{border-color:#c9a84c;background:#302b50;color:#e8c97a;}
+html[data-theme="dark"] .live-theory-controls label,html[data-theme="dark"] .live-theory-explanation p{color:#aaa9c1;}
+html[data-theme="dark"] .live-theory-controls select{border-color:#343454;background:#11111d;color:#e8e6f0;}
+html[data-theme="dark"] .live-theory-notes span{border-color:#514777;background:#302b50;color:#e8c97a;}
+
+/* Theory opens as a compact dashboard over the falling-note area. */
+#player .note-canvas > #liveTheoryDock:not(.hidden){position:absolute;z-index:45;top:42px;right:10px;bottom:auto;left:auto;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;width:min(420px,calc(100% - 20px));max-height:calc(100% - 54px);min-height:0;overflow:auto;flex:none;margin:0;padding:12px;border:1px solid #c9a84c66;border-radius:12px;background:linear-gradient(145deg,rgba(34,34,70,.97),rgba(20,20,37,.98));color:#e8e6f0;box-shadow:0 12px 32px #0008;backdrop-filter:blur(12px);}
+#player .performance-layout:has(> #liveTheoryDock:not(.hidden)) > .piano-panel{order:initial;}
+#player #liveTheoryDock .live-theory-explanation{align-items:flex-start;flex-direction:column;}
+#player #liveTheoryDock .live-theory-notes{flex:initial;}
+#player .stage-tool-rail #liveTheoryPlayKey:not(.hidden){display:grid;border:1px solid #c9a84c;background:#302b50;color:#f1d783;font-size:17px;box-shadow:0 0 8px #c9a84c33;}
+#player .stage-tool-rail #liveTheoryPlayKey:hover{background:#514777;}
+
+
+/* Keep the live theory card simple and prevent theory labels from covering piano keys. */
+.key.theory-highlight::after{content:none;display:none;}
+  #player .note-canvas > #liveTheoryDock:not(.hidden){order:3;}
+#player #liveTheoryDock .live-theory-head,#player #liveTheoryDock .live-theory-modes,#player #liveTheoryDock .live-theory-controls,#player #liveTheoryDock .live-theory-explanation{grid-column:auto;grid-row:auto;}
+#player #liveTheoryDock .live-theory-head{min-height:26px;font-size:.88rem;}
+#player #liveTheoryDock .live-theory-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+#player #liveTheoryDock .live-theory-modes button{min-height:32px;padding:5px 8px;font-size:.76rem;}
+#player #liveTheoryDock .live-theory-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:end;}
+#player #liveTheoryDock .live-theory-controls label{font-size:.68rem;}
+#player #liveTheoryDock .live-theory-controls select{width:100%;min-width:0;min-height:34px;font-size:.76rem;}
+#player #liveTheoryDock .live-theory-explanation{display:block;}
+#player #liveTheoryDock .live-theory-explanation p{font-size:.72rem;line-height:1.35;}
+#player #liveTheoryDock .live-theory-notes{margin-top:6px;}
+
+/* Final live theory panel refinements: respect app colors and isolate it from global header styles. */
+#player #liveTheoryDock:not(.hidden){background:#f5f7f8;border:1px solid #a9c2cd;color:#243640;}
+#player #liveTheoryDock > .live-theory-head{position:static;inset:auto;display:flex;grid-column:auto;grid-row:auto;align-items:center;justify-content:space-between;width:auto;height:auto;min-height:26px;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:#243640;box-shadow:none;font:700 .88rem/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+#player #liveTheoryDock > .live-theory-head button{flex:0 0 28px;width:28px;height:28px;border:1px solid #a9c2cd;border-radius:6px;background:#fff;color:#243640;font-size:1.1rem;}
+#player #liveTheoryDock .live-theory-modes button{border-color:#a9c2cd;background:#eaf3f6;color:#36515c;}
+#player #liveTheoryDock .live-theory-modes button.active{border-color:#087da8;background:#087da8;color:#fff;}
+#player #liveTheoryDock .live-theory-controls label{color:#5e727c;}
+#player #liveTheoryDock .live-theory-controls select{border-color:#a9c2cd;background:#fff;color:#243640;}
+#player #liveTheoryDock .live-theory-notes span{border-color:#a9c2cd;background:#eaf3f6;color:#266985;}
+html[data-theme="dark"] #player #liveTheoryDock:not(.hidden){background:#1b1b2e;border:1px solid #343454;color:#e8e6f0;}
+html[data-theme="dark"] #player #liveTheoryDock > .live-theory-head{background:transparent;color:#e8e6f0;}
+html[data-theme="dark"] #player #liveTheoryDock > .live-theory-head button{border-color:#343454;background:#11111d;color:#e8e6f0;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-modes button{border-color:#343454;background:#11111d;color:#e8e6f0;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-modes button.active{border-color:#c9a84c;background:#302b50;color:#e8c97a;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-controls label{color:#aaa9c1;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-controls select{border-color:#343454;background:#11111d;color:#e8e6f0;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-explanation p{color:#c6c4d5;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-notes span{border-color:#514777;background:#302b50;color:#e8c97a;}
+
+/* Make selected theory notes readable against the keyboard's persistent gold edge styling. */
+
+/* Compact theory controls so they leave most of the falling-note area visible. */
+#player #noteCanvas > #liveTheoryDock:not(.hidden){top:6px;right:8px;left:auto;bottom:auto;width:min(350px,calc(100% - 16px));min-width:0;max-width:calc(100% - 16px);max-height:min(132px,calc(100% - 12px));box-sizing:border-box;overflow:auto;padding:7px 8px;gap:5px;border-radius:9px;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-head{min-height:20px;font-size:.76rem;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-head button{flex-basis:22px;width:22px;height:21px;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-modes{gap:4px;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-modes button{min-height:27px;padding:3px 5px;font-size:.68rem;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-controls{gap:5px;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-controls label{font-size:.59rem;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-controls select{min-height:29px;padding:3px 6px;font-size:.68rem;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-explanation p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.64rem;line-height:1.1;}
+#player #liveTheoryDock .live-theory-head{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;}
+#player #liveTheoryDock.is-dragging .live-theory-head{cursor:grabbing;}
+#player #liveTheoryDock .live-theory-size-control{display:flex;align-items:center;gap:4px;color:var(--muted);font-size:.55rem;font-weight:650;}
+#player #liveTheoryDock .live-theory-size-control select{width:auto;min-width:0;min-height:22px;padding:1px 4px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--text);font:inherit;font-size:.58rem;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-size-control{color:#aaa9c1;}
+html[data-theme="dark"] #player #liveTheoryDock .live-theory-size-control select{border-color:#343454;background:#11111d;color:#e8e6f0;}
+#player #noteCanvas > #liveTheoryDock[data-size="small"]:not(.hidden){width:min(285px,calc(100% - 16px));max-height:min(105px,calc(100% - 12px));padding:5px 6px;gap:4px;}
+#player #noteCanvas > #liveTheoryDock[data-size="large"]:not(.hidden){width:min(470px,calc(100% - 16px));max-height:min(220px,calc(100% - 12px));padding:12px;gap:9px;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-notes{display:flex;max-height:26px;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;margin-top:2px;}
+#player #noteCanvas > #liveTheoryDock:not(.hidden) .live-theory-notes span{flex:0 0 auto;padding:2px 4px;font-size:.58rem;}
+
+/* Teoría en móvil: superficies y controles alineados con el tema oscuro de la app. */
+/* La captura móvil usa un viewport más ancho que 700 px; aplicar también en tablet/landscape. */
+/* Guided beginner lessons for the theory area. */
+#theoryView .theory-mode-tabs{display:flex;gap:8px;padding:4px 0 10px;border-bottom:1px solid var(--line)}
+#theoryView .theory-mode-tabs button.active{box-shadow:0 3px 12px #1689b433}
+#theoryView .theory-learning{padding-bottom:8px}
+#theoryView .learning-welcome,#theoryView .theory-lesson-list,#theoryView .theory-lesson-stage{border:1px solid #41434c;border-radius:14px;background:#292a31;color:#eff0f2}
+#theoryView .learning-welcome{padding:16px 18px;border-bottom:1px solid #41434c;}
+#theoryView .learning-welcome>small{color:#62c6e8;font-size:.68rem;font-weight:800;letter-spacing:.12em}
+
+#theoryView .learning-welcome>p{margin:0;color:#b8bac2;font-size:.87rem}
+#theoryView .learning-progress{margin-top:13px;}
+#theoryView .learning-progress-track i{width:0;}
+#theoryView .learning-layout{grid-template-columns:minmax(210px,.72fr) minmax(0,1.7fr);gap:12px;align-items:start;min-height:0}
+#theoryView .theory-lesson-list{overscroll-behavior:contain}
+#theoryView .lesson-level+.lesson-level{margin-top:12px;padding-top:10px;border-top:1px solid #41434c}
+#theoryView .lesson-level h3{display:flex;align-items:center;gap:7px;margin:0 0 6px;color:#c7c9cf;font-size:.77rem}
+#theoryView .lesson-level h3 span{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#1689b4;color:#fff;font-size:.68rem}
+#theoryView .lesson-link{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:7px;width:100%;padding:5px 7px;border:1px solid transparent;background:transparent;text-align:left}
+#theoryView .lesson-link>span{color:#8f939d;font-size:.67rem;font-weight:750}
+#theoryView .lesson-link b{font-size:.75rem;font-weight:650}
+#theoryView .lesson-link small{color:#9699a2;font-size:.62rem}
+#theoryView .theory-lesson-stage{padding:18px;}
+
+#theoryView .theory-lesson-stage>h2{font-size:1.38rem}
+#theoryView .lesson-listen{min-height:40px;padding:8px 13px;border:1px solid #1689b4;border-radius:9px;background:#1689b4;color:#fff;font-weight:750}
+#theoryView .lesson-answer:hover{border-color:#49b9df}
+#theoryView .lesson-stage-actions{margin-top:7px}
+#theoryView .lesson-next{padding:8px 13px;border:1px solid #1689b4;}
+#theoryView .lesson-next:disabled{cursor:not-allowed}
+
+#theoryView .lesson-keyboard{position:relative;display:flex;user-select:none}
+#theoryView .lesson-key{position:relative;min-width:0;touch-action:manipulation}
+#theoryView .lesson-key.white{z-index:1;display:flex;flex:1 0 0;align-items:flex-end;justify-content:center;height:100%;padding:0 1px 7px;border:1px solid #a8abb2;}
+#theoryView .lesson-key.black{position:absolute;z-index:2;top:0;width:2.8%;border:1px solid #090a0c;box-shadow:0 3px 5px #0008}
+/* Mobile learning layout: lesson first, optional collapsible syllabus below. */
+#theoryView .lesson-level>summary{min-height:34px;font-size:.78rem;font-weight:750;cursor:pointer;list-style:none}
+#theoryView .lesson-level>summary::-webkit-details-marker{display:none}
+#theoryView .lesson-level>summary::after{content:'＋';margin-left:auto;color:#6ac9e4}
+#theoryView .lesson-level[open]>summary::after{content:'−'}
+#theoryView .lesson-level>summary span{display:grid;place-items:center;width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:#1689b4;color:#fff;font-size:.68rem}
+/* Compact mobile lesson density while keeping controls easy to tap. */
+/* Lesson keyboard: match the app piano proportions and give each press a physical downstroke. */
+#theoryView .lesson-keyboard{gap:0;border:1px solid #111216;border-radius:9px;box-shadow:inset 0 2px 8px #000a,0 2px 4px #0006}
+#theoryView .lesson-key{transition:transform .08s ease,background .1s ease,box-shadow .1s ease,border-color .1s ease;-webkit-tap-highlight-color:transparent}
+#theoryView .lesson-key.white{border-radius:0 0 5px 5px;box-shadow:inset 0 -3px 0 #c7c8c9,0 1px 2px #0005}
+#theoryView .lesson-key.white.playing,#theoryView .lesson-key.white:active{transform:translateY(3px);background:linear-gradient(100deg,#d7d8da,#bfc1c4 60%,#adafb3);}
+#theoryView .lesson-key.black{height:62%;transform:translateX(-50%);border-radius:0 0 4px 4px;color:#e5e5e5;box-shadow:0 3px 5px #000b,inset 0 -2px 0 #050506}
+#theoryView .lesson-key.black.playing,#theoryView .lesson-key.black:active{transform:translate(-50%,2px);background:linear-gradient(100deg,#333438,#111214 75%);}
+/* Keep the physical key press easy to follow during slower lesson examples. */
+#theoryView .lesson-key.white.playing,#theoryView .lesson-key.white:active{border-color:#1689b4;box-shadow:inset 0 4px 7px #0005,inset 0 -1px 0 #e8e8e8,0 0 0 1px #1689b488}
+#theoryView .lesson-key.black.playing,#theoryView .lesson-key.black:active{border-color:#66c6e1;box-shadow:inset 0 4px 7px #000b,0 1px 2px #0008,0 0 0 1px #1689b488}
+
+/* Beginner course: one focused lesson at a time, with the syllabus tucked away. */
+
+#theoryView .theory-lesson-list{width:100%;max-height:none;overflow:visible;padding:0;border:0;background:transparent}
+#theoryView .lesson-syllabus>summary{display:flex;align-items:center;cursor:pointer;list-style:none}
+#theoryView .lesson-syllabus>summary::-webkit-details-marker{display:none}
+#theoryView .lesson-syllabus>summary::after{content:'⌄';margin-left:auto;font-size:1.1rem}
+#theoryView .lesson-syllabus[open]>summary::after{content:'⌃'}
+#theoryView .lesson-syllabus>.lesson-level{margin:0 10px;padding:8px 0;border-top:1px solid #41434c}
+#theoryView .lesson-syllabus .lesson-level[open]{max-height:260px;overflow:auto}
+#theoryView .lesson-link.locked{cursor:not-allowed}
+#theoryView .lesson-link:disabled{color:#888;pointer-events:none}
+#theoryView .lesson-practice-actions{justify-content:flex-start;gap:12px;margin:7px 0}
+#theoryView .worship-practice{padding:0;overflow:hidden}
+#theoryView .worship-practice-summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+#theoryView .worship-practice-summary::-webkit-details-marker{display:none}
+#theoryView .worship-practice-summary b{font-size:.85rem}
+#theoryView .worship-practice-summary small{margin-left:auto;font-size:.74rem}
+#theoryView .worship-practice-inner{padding:0 14px 14px}
+#theoryView .worship-practice[open] .worship-practice-summary{border-bottom:1px solid #48435c}
+#theoryView .worship-practice-copy h2{display:none}
+/* Landscape phones: keep the current lesson readable, scrollable, and in focus. */
+/* Keep the navigation inside the learning content, below a two-item page header. */
+#theoryView>.theory-header h1{margin:0;font-size:1.25rem;line-height:1.15}
+#theoryView>.theory-header .home-back{flex:0 0 auto}
+#theoryView .theory-content-shell>#theoryLearning{min-height:0;flex:1 1 auto}
+/* Teoría inicial: bienvenida y una primera clase visibles antes de explorar conceptos. */
+#theoryView{display:flex;flex-direction:column;align-items:stretch;gap:12px;max-width:1440px;margin-inline:auto;padding:18px clamp(14px,3vw,42px);overflow-y:auto;overflow-x:hidden}
+#theoryView>.theory-header{display:flex;align-items:center;justify-content:flex-start;gap:18px;margin:0;padding:10px 0 14px;border-bottom:1px solid #ffffff18}
+#theoryView .theory-heading-copy{min-width:0}
+#theoryView .theory-heading-copy>small{display:block;margin-bottom:4px;color:#e3c97e;font-size:.66rem;font-weight:850;letter-spacing:.14em}
+#theoryView .theory-heading-copy h1{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.45rem,2.3vw,2rem);font-weight:500;letter-spacing:-.025em;line-height:1.1;white-space:normal}
+#theoryView .theory-heading-copy p{margin:5px 0 0;font-size:.86rem;line-height:1.45}
+#theoryView .theory-content-shell{display:flex;flex:0 0 auto;flex-direction:column;min-height:0;overflow:visible}
+#theoryView .theory-content-shell>.theory-mode-tabs{display:flex;flex:0 0 auto;gap:7px;width:max-content;max-width:100%;margin:0 0 12px;padding:5px;border:1px solid #ffffff1c;border-radius:13px;}
+#theoryView .theory-mode-tabs button{min-height:42px;padding:8px 14px;border:1px solid transparent;border-radius:10px;background:transparent;font-size:.82rem;font-weight:750}
+#theoryView .theory-learning{display:flex;flex:0 0 auto;flex-direction:column;gap:14px;min-height:0;overflow:visible;padding:0 0 14px}
+#theoryView .learning-welcome{position:relative;display:grid;gap:22px;height:auto;backdrop-filter:none}
+#theoryView .learning-welcome-main{min-width:0}
+
+#theoryView .learning-welcome h2{font-family:Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:-.02em;line-height:1.15}
+#theoryView .learning-welcome-main>p{margin:0;}
+#theoryView .learning-guide-steps{display:grid;}
+#theoryView .learning-guide-steps>div{display:grid;grid-template-columns:28px 1fr;grid-template-rows:auto auto;align-items:center;}
+#theoryView .learning-guide-steps>div>span{display:grid;place-items:center;border:1px solid #d9c47c66;border-radius:50%;font-weight:850}
+#theoryView .learning-progress{display:grid;grid-template-columns:auto minmax(90px,1fr);align-items:center;gap:12px;margin:0;font-size:.72rem;font-weight:750}
+#theoryView .learning-progress-track{height:7px;overflow:hidden;border-radius:99px;}
+#theoryView .learning-progress-track i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ae914b,#ead58f);transition:width .25s ease}
+#theoryView .learning-start-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0;}
+#theoryView .learning-start-card>b{font-family:Georgia,"Times New Roman",serif;font-weight:550;}
+#theoryView .learning-start-card>span{color:#c7c1af;font-size:.78rem}
+#theoryView #theoryJumpToLesson{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin:5px 0 0;padding:10px 13px;border:1px solid #edda9c;font-size:.8rem;text-align:left;box-shadow:0 4px 12px #0002}
+#theoryView #theoryJumpToLesson:hover{filter:brightness(1.06);transform:translateY(-1px)}
+#theoryView .learning-start-card>p{margin:0;color:#bcb8ac;font-size:.69rem;line-height:1.4}
+#theoryView .learning-layout{display:block;min-width:0}
+#theoryView .theory-lesson-stage{width:100%;min-width:0;min-height:0;}
+#theoryView .lesson-stage-top{gap:10px;}
+#theoryView .lesson-level-tag{padding:5px 10px;}
+#theoryView .theory-lesson-stage>h2{margin:13px 0 6px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.35rem,2vw,1.7rem);font-weight:550}
+#theoryView .lesson-copy{max-width:820px;margin:0;font-size:.92rem;line-height:1.62}
+#theoryView .lesson-visual{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;min-height:72px;margin:16px 0 12px;padding:13px;border:1px solid #ffffff17;border-radius:13px;}
+#theoryView .lesson-visual span{display:grid;place-items:center;min-width:48px;min-height:42px;padding:7px 12px;border:1px solid #56534a;border-radius:10px;font-size:.88rem;font-weight:800}
+#theoryView .lesson-visual i{color:#d6bd73;font-style:normal;font-weight:850}
+#theoryView .lesson-keyboard-scroll{overflow-x:auto;border:1px solid #ffffff20;border-radius:11px;touch-action:pan-x;scrollbar-color:#6d654e #171a20}
+#theoryView .lesson-keyboard{padding:0 4px 5px;background:#12151a}
+#theoryView .lesson-key.white{border-color:#b9bbc1;background:linear-gradient(110deg,#fff,#e5e6e9);color:#34353a}
+#theoryView .lesson-key.white.active{background:linear-gradient(#f8edc5,#fff8e5);box-shadow:inset 0 0 0 3px #d2b45d}
+#theoryView .lesson-key.black{border-color:#08090c;background:linear-gradient(100deg,#3a3b40,#111216 70%)}
+#theoryView .lesson-key.black.active{background:linear-gradient(#d7b85c,#725f2a);box-shadow:0 0 9px #d8bb5680}
+#theoryView .lesson-stage-actions{display:flex;align-items:center;justify-content:flex-start;gap:12px;margin:10px 0 0}
+#theoryView .lesson-practice-actions{flex-wrap:wrap}
+#theoryView .lesson-listen,#theoryView .lesson-next{min-height:44px;padding:9px 14px;border:1px solid #e3cb85;border-radius:10px;background:linear-gradient(135deg,#e5cf8a,#c5a957);color:#29251b;font-size:.82rem;font-weight:850}
+#theoryView #lessonTouchStatus{color:#bcebd0;font-size:.79rem;font-weight:750}
+#theoryView .lesson-answers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#theoryView .lesson-answer{min-height:46px;padding:10px;border:1px solid #ffffff26;font-size:.82rem;font-weight:700}
+#theoryView .lesson-answer.incorrect{border-color:#e38383;background:#4a292d;color:#ffd1d1}
+#theoryView .lesson-next:disabled{border-color:#484a50;background:#34363c;color:#9799a0}
+#theoryView .theory-lesson-list{order:3}
+#theoryView .lesson-syllabus>summary{min-height:46px;font-size:.82rem}
+#theoryView .lesson-syllabus>summary::after{color:#dfc778}
+#theoryView .lesson-level>summary{color:#e0e2e5}
+#theoryView .lesson-link{min-height:42px;border-radius:9px;}
+#theoryView .lesson-link.complete>span{color:#85dcb1}
+#theoryView .lesson-link.locked{opacity:.42}
+#theoryView .worship-practice{margin:0;border-radius:13px;box-shadow:none}
+#theoryView .worship-practice-summary{min-height:48px;padding:10px 14px}
+#theoryView :focus-visible{outline:3px solid #e8cc78;outline-offset:3px}
+/* Respeta los estados ocultos al cambiar entre la ruta guiada y la consulta. */
+#theoryView.hidden{display:none}
+#theoryView .hidden{display:none}
+/* Aula de piano: dashboard de lección, quiz central y práctica inmersiva. */
+#theoryView{--course-card:#ffffff;--course-card-soft:#f2f5f6;--course-ink:#26343c;--course-muted:#60717b;--course-border:#dbe3e7;--course-gold:#846719;--course-gold-soft:#f4eedc;}
+html[data-theme="dark"] #theoryView{--course-card:#20242b;--course-card-soft:#171b22;--course-ink:#f0f1f3;--course-muted:#b3bac4;--course-border:#ffffff20;--course-gold:#e5cc83;--course-gold-soft:#c8a94e19;}
+#theoryView .theory-heading-copy h1{color:var(--course-ink)}
+#theoryView .theory-heading-copy p{color:var(--course-muted)}
+#theoryView .theory-content-shell>.theory-mode-tabs{border-color:var(--course-border);background:var(--course-card);box-shadow:0 3px 12px #172a3410}
+#theoryView .theory-mode-tabs button{color:var(--course-muted)}
+#theoryView .theory-mode-tabs button.active{border-color:#b99949;background:var(--course-gold-soft);color:var(--course-gold);box-shadow:inset 0 0 0 1px #b9994920}
+#theoryView .learning-welcome{border-color:#cbb671;}
+#theoryView .learning-guide-steps>div{border-color:var(--course-border);}
+#theoryView .learning-progress{color:var(--course-muted)}
+#theoryView .learning-progress-track{background:var(--course-border)}
+#theoryView .learning-start-card{border-color:#d5c27d;}
+#theoryView .theory-lesson-stage{border-color:var(--course-border);}
+#theoryView .lesson-level-tag{border-color:#c9b46766;}
+#theoryView .theory-lesson-stage>h2{color:var(--course-ink)}
+#theoryView .lesson-copy{color:var(--course-muted)}
+#theoryView .lesson-visual{border-color:var(--course-border);background:var(--course-card-soft)}
+#theoryView .lesson-visual span{border-color:#d2bd7a;background:linear-gradient(145deg,#fffdf6,#f2ead1);color:#6b551b}
+html[data-theme="dark"] #theoryView .lesson-visual span{border-color:#56534a;background:linear-gradient(145deg,#35332d,#25252a);color:#f3dfa1}
+#theoryView .lesson-keyboard-scroll{border-color:var(--course-border);background:#171a1f}
+#theoryView .lesson-open-piano{min-height:42px;padding:8px 12px;border:1px solid #c6ae60;border-radius:10px;background:var(--course-gold-soft);color:var(--course-gold);font-size:.77rem;font-weight:800}
+#theoryView .lesson-open-piano:hover{background:#efe3ba}
+html[data-theme="dark"] #theoryView .lesson-open-piano:hover{background:#403a2a}
+#theoryView .lesson-stage-actions{flex-wrap:wrap}
+#theoryView .lesson-answer{border-color:var(--course-border);background:var(--course-card);color:var(--course-ink);box-shadow:0 2px 7px #27313a0a}
+#theoryView .lesson-answer:hover,#theoryView .lesson-answer:focus-visible{border-color:#b99b4c;background:var(--course-gold-soft)}
+#theoryView .lesson-syllabus{border-color:var(--course-border);background:var(--course-card);color:var(--course-ink)}
+#theoryView .lesson-syllabus>summary,#theoryView .lesson-level>summary{color:var(--course-ink)}
+#theoryView .lesson-link{color:var(--course-ink)}
+#theoryView .lesson-link.active{border-color:#bea453;background:var(--course-gold-soft);color:var(--course-gold)}
+#theoryView .worship-practice{border-color:var(--course-border);background:var(--course-card)}
+#theoryView .worship-practice-summary b{color:var(--course-gold)}
+#theoryView .worship-practice-summary small{color:var(--course-muted)}
+#theoryView .lesson-piano-focus{position:fixed;inset:0;z-index:120;place-items:center;overflow:auto;padding:clamp(10px,3vw,32px);background:#f3f5f7}
+#theoryView .lesson-piano-focus:not(.hidden){display:grid}
+html[data-theme="dark"] #theoryView .lesson-piano-focus{background:#11141a}
+#theoryView .lesson-piano-focus-shell{display:grid;grid-template-rows:auto auto minmax(120px,1fr) auto;gap:clamp(12px,2.2vh,22px);width:min(1180px,100%);min-height:min(660px,calc(100dvh - 44px));padding:clamp(14px,2.6vw,30px);border:1px solid var(--course-border);border-radius:22px;background:var(--course-card);color:var(--course-ink);box-shadow:0 28px 90px #0003}
+#theoryView .lesson-focus-header{display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid var(--course-border);padding-bottom:12px}
+#theoryView .lesson-focus-header small{color:var(--course-gold);font-size:.66rem;font-weight:850;letter-spacing:.14em}
+#theoryView .lesson-focus-header h2{margin:4px 0 0;color:var(--course-ink);font-family:Georgia,"Times New Roman",serif;font-size:1.35rem;font-weight:550}
+#theoryView .lesson-focus-header button,#theoryView .lesson-piano-focus footer button{min-height:42px;padding:8px 12px;border:1px solid var(--course-border);border-radius:10px;background:var(--course-card-soft);color:var(--course-ink);font-weight:750}
+#theoryView .lesson-focus-prompt{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#theoryView .lesson-focus-prompt p{flex:1 1 300px;margin:0;color:var(--course-muted);font-size:1rem;line-height:1.5}
+#theoryView .lesson-focus-keyboard-scroll{align-self:center;width:100%;overflow-x:auto;border:1px solid var(--course-border);border-radius:14px;background:#171a1f;padding:8px;touch-action:pan-x}
+#theoryView .lesson-focus-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--course-muted);font-size:.8rem}
+#theoryView :focus-visible{outline-color:#bc9d48}
+
+/* Ruta inicial renovada: una guía ilustrada, con ideas cortas y práctica clara. */
+#theoryView .learning-welcome{grid-template-columns:minmax(0,1.45fr) minmax(230px,.55fr);gap:clamp(16px,3vw,32px);padding:clamp(20px,3vw,34px);border:1px solid #b8d9c8;border-radius:26px;background:radial-gradient(circle at 10% 10%,#dff4e9 0,transparent 32%),linear-gradient(135deg,#f5fff9,#fff 78%);box-shadow:0 14px 38px #173d2c12}
+html[data-theme="dark"] #theoryView .learning-welcome{border-color:#48705d;background:radial-gradient(circle at 10% 10%,#29483b 0,transparent 36%),linear-gradient(135deg,#202b26,#20242b 78%)}
