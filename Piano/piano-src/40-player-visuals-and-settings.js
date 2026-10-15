@@ -185,7 +185,7 @@ function fnDrawMoltenHitBurst(ctx,hit,baseline,reducedMotion,load){
   ctx.save();ctx.globalCompositeOperation='screen';
   // Luz de la tecla: del ancho exacto de la tecla y tenue.
   if(life>0){ctx.fillStyle=fnGlow(ctx,hit.color,baseline);ctx.globalAlpha=life*.2;ctx.fillRect(hit.center-half,baseline-96,kw,96);}
-  if(!reducedMotion){
+  if(!reducedMotion&&noteParticlesEnabled){
     if(life>0){
       ctx.save();ctx.beginPath();ctx.rect(hit.center-half,baseline-96,kw,96);ctx.clip();
       const core=kw*1.4;ctx.globalAlpha=life*.28;ctx.drawImage(soft,hit.center-core/2,baseline-7-core/2,core,core);
@@ -364,7 +364,7 @@ function fnDrawGoldSparkBurst(ctx,hit,baseline,reducedMotion,load){
   // Destello en la tecla y columna de luz tenue.
   if(goldImpactGlow){const fw=kw*2.7;ctx.globalAlpha=Math.pow(life,1.6)*.52;ctx.drawImage(soft,cx-fw/2,baseline-fw/2,fw,fw);}
   if(goldImpactGlow){ctx.fillStyle=fnGlow(ctx,FN_GOLD,baseline);ctx.globalAlpha=life*.17;ctx.fillRect(cx-half,baseline-88,kw,88);}
-  if(fxGlow&&!reducedMotion){
+  if(fxGlow&&noteParticlesEnabled&&!reducedMotion){
     const q=(load>12?.4:load>8?.6:load>5?.8:1)*(hit.intensity||1),ribbonN=Math.max(8,Math.round(26*q)),strayN=Math.max(4,Math.round(14*q));
     const lean=(fnRand(hit.index*7.3+1)-.5)*kw*3,rise=150+fnRand(hit.index*3.1+2)*110,flick=hit.t*60;
     // Cinta de chispas que sube serpenteando.
@@ -485,7 +485,7 @@ function drawFallingNotesFrameInner(timestamp){
       event.moltenBurstStarted=true;
       if(center>-40&&center<width+40)fnHitBursts.push({index,center,barWidth,keyWidth,color:fnFallingEventColor(event,geometry),at:event.start,clock:'song',fx:fxStyle,glowOnly:!fxGlow,duration:fxDuration,intensity:fxIntensityScale()});
     }
-    if(fxGlow&&fxStyle==='gold'&&!calm&&!practiceRun&&age>=0&&age<=event.visualDuration&&center>-40&&center<width+40){event.gpAcc=(event.gpAcc||0)+gRate*gdt*fxIntensityScale();const gn=event.gpAcc|0;if(gn>0){event.gpAcc-=gn;fnGoldEmit(center,keyWidth,gn);}}
+    if(fxGlow&&noteParticlesEnabled&&fxStyle==='gold'&&!calm&&!practiceRun&&age>=0&&age<=event.visualDuration&&center>-40&&center<width+40){event.gpAcc=(event.gpAcc||0)+gRate*gdt*fxIntensityScale();const gn=event.gpAcc|0;if(gn>0){event.gpAcc-=gn;fnGoldEmit(center,keyWidth,gn);}}
     if(elapsed>event.start+event.visualDuration+(style==='drops'&&fxGlow ? .5 : 0))continue;
     if(style==='drops'){
       const dw=Math.max(5,Math.min(barWidth,16)),dh=dw*1.4,dBottom=Math.min(baseline,baseline-(event.start-elapsed)*pps);
@@ -509,8 +509,8 @@ function drawFallingNotesFrameInner(timestamp){
     hits.push({...burst,t});
   }
   const burstLoad=hits.length;let goldLevel=0;
-  for(const hit of hits){if(hit.fx==='gold'){goldLevel=Math.max(goldLevel,1-hit.t);fnDrawGoldSparkBurst(ctx,hit,baseline,calm,burstLoad);}else if(hit.fx==='rings')fnDrawRingBurst(ctx,hit,baseline,calm);else if(hit.fx==='bubbles')fnDrawBubbleBurst(ctx,hit,baseline,calm);else if(hit.fx==='notes')fnDrawNoteBurst(ctx,hit,baseline,calm);else fnDrawMoltenHitBurst(ctx,hit,baseline,calm,burstLoad);}
-  if(fxGlow&&fxStyle==='gold'){
+  for(const hit of hits){if(hit.fx==='gold'){goldLevel=Math.max(goldLevel,1-hit.t);fnDrawGoldSparkBurst(ctx,hit,baseline,calm,burstLoad);}else if(hit.fx==='fire')fnDrawMoltenHitBurst(ctx,hit,baseline,calm,burstLoad);else if(noteParticlesEnabled&&hit.fx==='rings')fnDrawRingBurst(ctx,hit,baseline,calm);else if(noteParticlesEnabled&&hit.fx==='bubbles')fnDrawBubbleBurst(ctx,hit,baseline,calm);else if(noteParticlesEnabled&&hit.fx==='notes')fnDrawNoteBurst(ctx,hit,baseline,calm);}
+  if(fxGlow&&noteParticlesEnabled&&fxStyle==='gold'){
     for(let i=fnGoldHolds.length-1;i>=0;i--){
       const hold=fnGoldHolds[i];if(!hold.active||nowTs-hold.since>20000){fnGoldHolds.splice(i,1);continue;}
       if(!calm){hold.acc+=gRate*gdt*fxIntensityScale();const gn=hold.acc|0;if(gn>0){hold.acc-=gn;fnGoldEmit(hold.center,hold.kw,gn);}}
@@ -707,7 +707,7 @@ function showManualNoteEffect(midi,key){
     if(canvasReady){
       const center=keyRect.left-stageRect.left+keyRect.width/2,at=performance.now()/1000,index=++fnManualHitIndex;
       fnHitBursts.push({index,center,barWidth,keyWidth:keyRect.width,color:fxNoteColor(midi),at,clock:'wall',fx:fxStyle,glowOnly:!fxGlow,duration:fxDuration,intensity:fxIntensityScale()});
-      if(fxGlow&&fxStyle==='gold'){gHold={center,kw:keyRect.width,active:true,acc:0,since:performance.now()};fnGoldHolds.push(gHold);}
+      if(fxGlow&&noteParticlesEnabled&&fxStyle==='gold'){gHold={center,kw:keyRect.width,active:true,acc:0,since:performance.now()};fnGoldHolds.push(gHold);}
       if(!fallingNotesFrame)fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);
     }
   }
@@ -1288,6 +1288,7 @@ function setFxStyle(value){
   syncFxStyleButtons();updateDeviceSettingsPreview();
 }
 function setGoldImpactGlow(enabled){goldImpactGlow=!!enabled;deviceSettings.goldImpactGlow=goldImpactGlow;['goldImpactGlowSwitch','deviceGoldImpactGlow'].forEach(id=>{const control=$(id);if(control)control.checked=goldImpactGlow;});saveDeviceSettings();updateDeviceSettingsPreview();}
+function setNoteParticlesEnabled(enabled){noteParticlesEnabled=!!enabled;deviceSettings.noteParticlesEnabled=noteParticlesEnabled;try{localStorage.setItem('yhwh_piano_note_particles',noteParticlesEnabled?'1':'0');}catch(_){}const input=$('noteParticlesSwitch');if(input)input.checked=noteParticlesEnabled;if(!noteParticlesEnabled)fnGoldReset();saveDeviceSettings();updateDeviceSettingsPreview();}
 function setFxIntensity(value){fxIntensity=Math.max(1,Math.min(3,Math.round(Number(value)||2)));deviceSettings.fxIntensity=fxIntensity;syncFxStyleButtons();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
 function setFxDuration(value){fxDuration=Math.max(.1,Math.min(6,Number(value)||3.4));deviceSettings.fxDuration=fxDuration;syncFxStyleButtons();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
 // Acción del usuario: si los destellos estaban apagados se encienden, para que el efecto elegido se vea de inmediato.
@@ -1303,11 +1304,12 @@ const FX_STYLE_OPTIONS=[['fire','Fuego','Llamas y chispas del color de la nota']
 function initFxStyleSetting(){
   const sheet=$('playerSettings');if(!sheet||$('fxStyleBlock'))return;
   const block=document.createElement('div');block.id='fxStyleBlock';block.className='settings-block';
-  block.innerHTML='<h3>Efecto al tocar</h3><div class="range-presets" role="group" aria-label="Estilo del efecto al tocar">'+FX_STYLE_OPTIONS.map(option=>'<button type="button" data-fx-style="'+option[0]+'"><span>'+option[1]+'</span><small>'+option[2]+'</small></button>').join('')+'</div><label class="fx-control-row">Intensidad <output id="fxIntensityValue"></output><input id="fxIntensityInput" type="range" min="1" max="3" step="1"></label><details class="settings-advanced fx-advanced"><summary>Personalizar a fondo</summary><div class="settings-advanced-content"><label class="fx-control-row">Duración <output id="fxDurationValue"></output><input id="fxDurationInput" type="range" min="1" max="6" step="0.5"></label><label class="fx-toggle-row gold-impact-glow-row"><span><b>Halo dorado al impactar</b><small>Funciona con Chispas doradas, incluso si desactivas las partículas.</small></span><input id="goldImpactGlowSwitch" type="checkbox"></label></div></details>';
+  block.innerHTML='<h3>Efecto al tocar</h3><div class="range-presets" role="group" aria-label="Estilo del efecto al tocar">'+FX_STYLE_OPTIONS.map(option=>'<button type="button" data-fx-style="'+option[0]+'"><span>'+option[1]+'</span><small>'+option[2]+'</small></button>').join('')+'</div><label class="fx-toggle-row"><span><b>Puntos que salen de las notas</b><small>Desactiva los puntos, chispas y burbujas que aparecen al tocar o reproducir.</small></span><input id="noteParticlesSwitch" type="checkbox"></label><label class="fx-control-row">Intensidad <output id="fxIntensityValue"></output><input id="fxIntensityInput" type="range" min="1" max="3" step="1"></label><details class="settings-advanced fx-advanced"><summary>Personalizar a fondo</summary><div class="settings-advanced-content"><label class="fx-control-row">Duración <output id="fxDurationValue"></output><input id="fxDurationInput" type="range" min="1" max="6" step="0.5"></label><label class="fx-toggle-row gold-impact-glow-row"><span><b>Halo dorado al impactar</b><small>Funciona con Chispas doradas, incluso si desactivas las partículas.</small></span><input id="goldImpactGlowSwitch" type="checkbox"></label></div></details>';
   const anchor=$('fallingStyleBlock');if(anchor)anchor.insertAdjacentElement('afterend',block);else sheet.appendChild(block);
   block.addEventListener('click',event=>{const button=event.target.closest('[data-fx-style]');if(button)chooseFxStyle(button.dataset.fxStyle);});
   block.addEventListener('input',event=>{if(event.target.id==='fxIntensityInput')setFxIntensity(event.target.value);else if(event.target.id==='fxDurationInput')setFxDuration(event.target.value);});
   $('goldImpactGlowSwitch').checked=goldImpactGlow;$('goldImpactGlowSwitch').addEventListener('change',event=>setGoldImpactGlow(event.target.checked));syncFxStyleButtons();
+  $('noteParticlesSwitch').checked=noteParticlesEnabled;$('noteParticlesSwitch').addEventListener('change',event=>setNoteParticlesEnabled(event.target.checked));
 }
 function syncBarLookButtons(){
   document.querySelectorAll('[data-bar-look]').forEach(button=>{const on=button.dataset.barLook===barLook;button.classList.toggle('active',on);button.setAttribute('aria-pressed',on?'true':'false');});
@@ -1457,7 +1459,7 @@ function initializePlayerSettingsPage(){
   };
   preview.querySelector('.settings-preview-volume')?.insertAdjacentHTML('beforeend','<small class="preview-playback-readout"></small><div class="preview-meter"><i></i><i></i><i></i><i></i><i></i><i></i></div>');
   page.addEventListener('input',event=>{syncPreview();if(['playerMelodyColor','playerBassColor','fxIntensityInput','barRadiusInput','barOpacityInput','barTrailInput','barColorModeInput','barAccompaniment2ColorInput','neonEdgeColor','neonEdgeThickness','neonEdgeGlow'].includes(event.target.id))markPlayerLookCustom();});
-  page.addEventListener('change',event=>{syncPreview();if(['fxGlowSwitch','goldImpactGlowSwitch','lightKeysSwitch','keyColorOnSwitch','keyEdgeSwitch','neonEdgeOn','barBassDiffInput','deviceTheme','playerKeyLightingMode'].includes(event.target.id))markPlayerLookCustom();if(['lightKeysSwitch','keyColorOnSwitch','keyEdgeSwitch'].includes(event.target.id)){const mode=!lightKeys&&!keyEdge?'off':!lightKeys&&keyEdge?'edge':lightKeys&&!keyColorOn?'gray':'full';const selector=$('playerKeyLightingMode');if(selector)selector.value=mode;}});
+  page.addEventListener('change',event=>{syncPreview();if(['fxGlowSwitch','goldImpactGlowSwitch','noteParticlesSwitch','lightKeysSwitch','keyColorOnSwitch','keyEdgeSwitch','neonEdgeOn','barBassDiffInput','deviceTheme','playerKeyLightingMode'].includes(event.target.id))markPlayerLookCustom();if(['lightKeysSwitch','keyColorOnSwitch','keyEdgeSwitch'].includes(event.target.id)){const mode=!lightKeys&&!keyEdge?'off':!lightKeys&&keyEdge?'edge':lightKeys&&!keyColorOn?'gray':'full';const selector=$('playerKeyLightingMode');if(selector)selector.value=mode;}});
   page.addEventListener('click',event=>{if(event.target.closest('[data-bar-look],[data-bar-palette],[data-bar-appearance],[data-fx-style],[data-fall-style],[data-key-style],[data-edge-style],#neonEdgeReset'))markPlayerLookCustom();requestAnimationFrame(syncPreview);});
   const addSwitch=(label,tab)=>{let group=panels[tab].querySelector('.settings-switches');if(!group){group=document.createElement('div');group.className='settings-switches';panels[tab].append(group);}group.append(label);};
   const switchRoot=page.querySelector('.settings-switches');
@@ -1470,6 +1472,16 @@ function initializePlayerSettingsPage(){
   move('.audio-license','sound');
   const quick=page.querySelector('.mobile-quick-settings')?.closest('.settings-block');if(quick)panels.playback.append(quick);
   const remaining=[...page.children].filter(node=>node!==heading&&node!==nav&&node!==layout);remaining.forEach(node=>{if(node!==switchRoot)panels.playback.append(node);});
+
+  const titleStyle=document.createElement('label');titleStyle.className='player-basic-control';titleStyle.innerHTML='<span><strong>Presentación de la alabanza</strong><small>Elige cómo aparece el título sobre el piano.</small></span><select id="songTitleStyle"><option value="classic">Actual · escenario completo</option><option value="cinematic">Cinemática · título entre dos líneas</option><option value="black-card">Negra · título, álbum y autor</option></select>';
+  titleStyle.querySelector('select').value=['cinematic','black-card'].includes(deviceSettings.songTitleStyle)?deviceSettings.songTitleStyle:'classic';
+  titleStyle.querySelector('select').addEventListener('change',event=>{
+    deviceSettings.songTitleStyle=['cinematic','black-card'].includes(event.target.value)?event.target.value:'classic';document.body.dataset.songPresentation=deviceSettings.songTitleStyle;document.body.classList.remove('cinematic-title-run','black-title-intro','black-title-ready');
+    if(deviceSettings.songTitleStyle==='cinematic'&&state.song){void $('songTitlePresentation').offsetWidth;document.body.classList.add('song-title-visible','cinematic-title-run');}
+    if(deviceSettings.songTitleStyle==='black-card'&&state.song){$('blackTitleName').textContent=state.song.song.title||'Alabanza';$('blackTitleAlbum').textContent=state.song.song.album||'';$('blackTitleComposer').textContent=state.song.song.compositor||'Ministerio YHWH';document.body.classList.add('song-title-visible','black-title-ready');}
+    saveDeviceSettings();
+  });
+  panels.playback.insertBefore(titleStyle,panels.playback.children[1]||null);
 
   const looks=document.createElement('section');looks.className='player-looks';looks.innerHTML='<div class="player-looks-heading"><div><h4>Looks rápidos</h4><p>Elige un estilo completo y luego ajústalo a tu gusto.</p></div><span id="playerLookStatus" class="player-look-status"></span></div><div class="player-look-grid">'+PLAYER_LOOKS.map(look=>'<button type="button" class="player-look-card" data-player-look="'+look.id+'" aria-pressed="false"><span class="player-look-preview look-'+look.id+'"><i></i><i></i><i></i><b>♩</b></span><strong>'+look.name+'</strong><small>'+look.description+'</small></button>').join('')+'</div>';
   panels.bars.insertBefore(looks,panels.bars.children[1]||null);

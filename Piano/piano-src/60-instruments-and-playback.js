@@ -310,8 +310,22 @@ async function previewInstrumentNote(instrument,midi){
     scheduleLayerNote(context,midi,strings,start,.55,1.05);
   }catch(error){console.error('No se pudo reproducir la muestra del instrumento:',error);toast('No se pudo cargar el sonido de prueba. Revisa la conexión.');}
 }
+let blackTitleIntroCancel=null;
+function cancelBlackTitleIntro(){if(blackTitleIntroCancel)blackTitleIntroCancel();else document.body.classList.remove('black-title-intro');}
+function showBlackTitleIntro(){
+  if(deviceSettings.songTitleStyle!=='black-card'||!state.song)return Promise.resolve();
+  const card=$('blackTitlePresentation');if(!card)return Promise.resolve();
+  document.body.dataset.songPresentation='black-card';document.body.classList.add('black-title-ready');document.body.classList.remove('black-title-intro');void card.offsetWidth;
+  return new Promise(resolve=>{
+    let finished=false,holdTimer=0,finishTimer=0;
+    const finish=event=>{if(event&&event.target!==card||finished)return;finished=true;clearTimeout(holdTimer);clearTimeout(finishTimer);card.removeEventListener('animationend',finish);document.body.classList.remove('black-title-intro','black-title-ready');blackTitleIntroCancel=null;resolve();};
+    blackTitleIntroCancel=()=>finish();
+    holdTimer=setTimeout(()=>{if(finished)return;card.addEventListener('animationend',finish);document.body.classList.add('black-title-intro');finishTimer=setTimeout(()=>finish(),2900);},3200);
+  });
+}
 function setStagePlaying(on){document.body.classList.toggle('melody-playing',!!on);}
 function stopPlayback({suspendAudio=false}={}) {
+  cancelBlackTitleIntro();
   state.playing = false;state.recordingGuidePlaying=false;practiceRun=null;$('practiceGuide')?.classList.add('hidden');setStagePlaying(false);
   $('playbackCountIn')?.setAttribute('hidden','');
   stopFallingNotes();
@@ -434,9 +448,11 @@ async function playMelody() {
   playbackNotes=playbackGroups.flatMap(group=>group.notes);
   $('tempoControl').disabled=true;
   $('status').textContent = `${state.playMode==='performance'?'Reproduciendo alabanza':'Reproduciendo pista'} · ${Math.round(state.tempo*100)}%`;
+  if(deviceSettings.songTitleStyle==='black-card'){await showBlackTitleIntro();if(!state.playing)return;}
   const context=getAudioContext(),countInBeat=60/metronomeBpm,countInStart=context.currentTime+.12,playbackStart=countInStart+countInBeat*3;
   const countIn=$('playbackCountIn');
   if(countIn){countIn.hidden=false;countIn.querySelector('strong').textContent='3';}
+  if(!state.playing)return;
   $('status').textContent='Cuenta regresiva · 3, 2, 1';
   if(metronomeOn){metronomeBeatIndex=0;metronomeNextBeat=countInStart;runMetronomeScheduler();}
   for(let index=0;index<3;index++){

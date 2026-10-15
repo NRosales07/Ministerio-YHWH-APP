@@ -399,6 +399,7 @@ function openFreePlay() {
   if(state.melodyDirty&&!confirmDiscardUnsavedMelody())return;
   stopPlayback();stopTheorySequence();stopMetronome();closePlayerPopovers();closeLiveTheoryDock();
   clearSongIntro();
+  document.body.classList.remove('song-title-visible');
   state.song=null;state.view='libre';state.category='adoracion';state.melodyType='introduccion';state.notes=[];state.chords=[];state.chordTarget=null;state.transpose=0;state.melodyDirty=false;state.recording=false;state.lastMidi=null;chordEditorOpen=false;applySongTrackInstrument(freePlayInstrumentConfig);
   document.body.classList.remove('home-active');
   document.body.classList.remove('song-list-active');

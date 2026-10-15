@@ -740,3 +740,36 @@ html.device-customization-enabled body.player-active #player>.player-top .stage-
       max(var(--mobile-gutter,16px),env(safe-area-inset-left,0px));
   }
 }
+/* Optional cinematic song-title card: a centered title framed by two rules. */
+.song-title-presentation{display:none;position:absolute;z-index:4;top:20%;left:50%;width:min(560px,72%);transform:translateX(-50%);grid-template-columns:minmax(0,1fr);justify-items:center;gap:clamp(5px,1.2vh,12px);color:#f7f8fc;text-align:center;pointer-events:none;text-shadow:0 2px 12px #000b}
+.song-title-rule{display:block;width:100%;height:2px;background:currentColor;box-shadow:0 0 5px #fff5}
+.song-title-credit,.song-title-subcredit{max-width:100%;overflow:hidden;color:#e6e8ef;font-size:clamp(10px,1.5vw,17px);font-weight:400;letter-spacing:.015em;text-overflow:ellipsis;white-space:nowrap}
+.song-title-presentation strong{max-width:100%;overflow:hidden;font-size:clamp(17px,3vw,34px);font-weight:500;line-height:1.1;text-overflow:ellipsis;white-space:nowrap}
+.song-title-subcredit{justify-self:end;font-family:Parisienne,cursive;font-size:clamp(13px,1.8vw,21px);font-style:italic}
+body.player-active.song-title-visible[data-song-presentation="cinematic"] #songTitlePresentation{display:grid}
+body.player-active.song-title-visible[data-song-presentation="cinematic"] #songIntroOverlay,body.player-active.song-title-visible[data-song-presentation="black-card"] #songIntroOverlay{display:none!important}
+body.player-active[data-song-presentation="black-card"] #noteCanvas.song-intro-active #songIntroOverlay{display:none!important;visibility:hidden!important;animation:none!important}
+body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] #songTitlePresentation{animation:cinematic-title-fade 6.8s ease both}
+body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] #songTitleCredit{animation:cinematic-from-right 6.8s ease both}
+body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] #songTitlePresentationName{animation:cinematic-title-rise 6.8s ease both}
+body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] #songTitleSubcredit{animation:cinematic-from-left 6.8s ease both}
+body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] .song-title-rule:nth-of-type(2){transform-origin:right;animation:cinematic-rule-reveal 6.8s ease both}
+body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] .song-title-rule:nth-of-type(3){transform-origin:left;animation:cinematic-rule-reveal 6.8s ease both}
+@keyframes cinematic-title-fade{0%{opacity:0;visibility:visible}12%,76%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
+@keyframes cinematic-from-right{0%,5%{opacity:0;transform:translateX(28px)}18%,76%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(8px)}}
+@keyframes cinematic-from-left{0%,12%{opacity:0;transform:translateX(-28px)}25%,76%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(-8px)}}
+@keyframes cinematic-title-rise{0%,17%{opacity:0;transform:translateY(10px)}32%,76%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-4px)}}
+@keyframes cinematic-rule-reveal{0%,8%{opacity:0;transform:scaleX(0)}24%,76%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(.85)}}
+@media(prefers-reduced-motion:reduce){body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] #songTitlePresentation,body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] #songTitleCredit,body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] #songTitlePresentationName,body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] #songTitleSubcredit,body.player-active.song-title-visible.cinematic-title-run[data-song-presentation="cinematic"] .song-title-rule{animation-duration:3.5s}}
+.black-title-presentation{display:none;position:fixed;z-index:10000;inset:0;width:100vw;height:100vh;height:100dvh;grid-template-rows:24% auto auto 22% auto 18% 1fr;justify-items:center;gap:clamp(2px,.8vh,8px);padding:max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));overflow:hidden;background:#000;color:#f5f5f5;text-align:center;pointer-events:none;box-sizing:border-box}
+body.player-active.song-title-visible.black-title-ready[data-song-presentation="black-card"] #blackTitlePresentation{display:grid}
+body.player-active.song-title-visible.black-title-intro[data-song-presentation="black-card"] #blackTitlePresentation{animation:black-title-exit 2.8s ease-in-out both}
+.black-title-presentation #blackTitleName{grid-row:2;max-width:100%;overflow:hidden;font-family:Georgia,'Times New Roman',serif;font-size:clamp(22px,5vw,76px);font-weight:700;letter-spacing:.22em;line-height:1.05;text-overflow:ellipsis;white-space:nowrap}
+.black-title-album{grid-row:3;max-width:100%;overflow:hidden;color:#e2e2e2;font-family:Georgia,'Times New Roman',serif;font-size:clamp(10px,1.8vw,24px);letter-spacing:.34em;text-overflow:ellipsis;white-space:nowrap}
+.black-title-author{grid-row:5;display:flex;width:min(76%,900px);align-items:center;justify-content:center;gap:clamp(8px,1.5vw,22px);font-family:Georgia,'Times New Roman',serif}
+.black-title-author i{height:1px;flex:1;background:#eee}
+.black-title-author b{max-width:50%;overflow:hidden;font-size:clamp(15px,3vw,42px);font-weight:500;letter-spacing:.3em;text-overflow:ellipsis;white-space:nowrap}
+.black-title-performed{grid-row:6;align-self:end;margin-bottom:12%;color:#aaa;font-family:Parisienne,cursive;font-size:clamp(16px,2.7vw,34px);font-style:italic;letter-spacing:.16em}
+@keyframes black-title-exit{0%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
+@media(prefers-reduced-motion:reduce){body.player-active.song-title-visible.black-title-intro[data-song-presentation="black-card"] #blackTitlePresentation{animation-duration:1.2s}}
+@media(max-width:600px){.song-title-presentation{width:min(560px,76%);top:22%}.song-title-presentation strong{font-size:clamp(16px,5vw,25px)}.black-title-presentation{grid-template-rows:24% auto auto 20% auto 20% 1fr;padding-right:max(14px,env(safe-area-inset-right));padding-left:max(14px,env(safe-area-inset-left))}.black-title-presentation #blackTitleName{max-width:100%;font-size:clamp(20px,7vw,34px);letter-spacing:.16em}.black-title-album{max-width:100%;font-size:clamp(9px,3vw,13px);letter-spacing:.22em}.black-title-author{width:92%;gap:8px}.black-title-author b{max-width:58%;font-size:clamp(13px,4vw,19px);letter-spacing:.2em}.black-title-performed{margin-bottom:14%;font-size:clamp(15px,5vw,22px)}}

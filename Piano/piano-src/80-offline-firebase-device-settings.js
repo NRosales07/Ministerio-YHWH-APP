@@ -145,7 +145,7 @@ function applyDeviceCustomization(){
   const palette=deviceSettings[deviceSettings.theme==='dark'?'paletteDark':'paletteLight']||DEVICE_THEME_PALETTES[deviceSettings.theme==='dark'?'dark':'light'];
   Object.assign(deviceSettings,palette);
   deviceSettings.headingColor=deviceSettings.headingText||deviceSettings.headingColor;
-  const root=document.documentElement;root.classList.add('device-customization-enabled');root.dataset.pianoKeyStyle=pianoKeyStyle;
+  const root=document.documentElement;root.classList.add('device-customization-enabled');root.dataset.pianoKeyStyle=pianoKeyStyle;document.body.dataset.songPresentation=['cinematic','black-card'].includes(deviceSettings.songTitleStyle)?deviceSettings.songTitleStyle:'classic';
   const css={
     '--device-primary-color':deviceSettings.primary,'--device-primary-text':deviceContrastColor(deviceSettings.primary),
     '--gold':deviceSettings.primary,'--gold2':deviceSettings.accent,'--bg':deviceSettings.page,'--panel':deviceSettings.surface,
