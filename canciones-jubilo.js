@@ -1289,7 +1289,7 @@ var SONGS_JUBILO =
     "compositor": "Inspiración",
     "tono": "Am",
     "album": "",
-    "content": "[VERSO 1]:\n                            Am\nX4   Y es que mi copa está rebosando\n         G                            Am\nDel gozo del Espíritu de Dios...    X4\n\n[VERSO 2]:\n            Am          F         G        Am\nX4    Aleluya, Aleluya, Amén, Aleluya...    X4",
+    "content": "[VERSO 1]:\n                            Am\nX4   Y es que mi copa está rebosando\n         G                            Am\nDel gozo del Espíritu de Dios...    X4\n\n[VERSO 2]:\n            Am          F         G        Am\nX4    Aleluya, Aleluya, Amén, Aleluya...    X4\n\n\n\n\n\n\nESPACIO PARA MOTIVAR (CAMBIO DE TONO)",
     "id": 451,
     "version": "Centro Vida"
   },
@@ -1436,8 +1436,8 @@ var SONGS_JUBILO =
     "title": "GÓZATE DELANTE DEL SEÑOR",
     "compositor": "Inspiración",
     "tono": "Cm",
-    "album": "|",
-    "content": "[VERSO 1]\n         Cm                                                  Bb      Cm\nX2  Gózate delante del Señor, Porque Él es tu Rey, \n  Cm                                                   Bb    Cm\nGózate delante del Señor, Porque Él es tu Rey… \n              Eb     Fm     Ab       Cm \nÉl es, Él es, Él es, Él es, Tu Rey…\n\n[VERSO 2]\nX2   Gózate delante del Señor, Porque Él es tu roca, \nGózate delante del Señor, Porque Él es tu roca… \nÉl es, Él es, Él es, Él es, Tu roca.   X2\n\n[VERSO 3]\nX2   Gózate delante del Señor, Porque Él es tu escudo, \nGózate delante del Señor, Porque Él es tu escudo, \nÉl es, Él es, Él es, Él es, Tu escudo.  X2\n",
+    "album": "¡Espíritu Santo Gracias!",
+    "content": "[VERSO 1]\n   Cm                                                  Bb      Cm\nGózate delante del Señor, Porque Él es tu Rey, \n  Cm                                                   Bb    Cm\nGózate delante del Señor, Porque Él es tu Rey… \n              Eb     Fm     Ab       Cm \nÉl es, Él es, Él es, Él es, Tu Rey…\n\n[VERSO 2]\nGózate delante del Señor, Porque Él es tu roca, \nGózate delante del Señor, Porque Él es tu roca… \nÉl es, Él es, Él es, Él es, Tu roca.  \n\n[VERSO 3]\nGózate delante del Señor, Porque Él es tu escudo, \nGózate delante del Señor, Porque Él es tu escudo, \nÉl es, Él es, Él es, Él es, Tu escudo. \n",
     "id": 467
   },
   {
@@ -1445,8 +1445,8 @@ var SONGS_JUBILO =
     "title": "HARÉ UN ALTAR PARA TI",
     "compositor": "Inspiración",
     "tono": "Cm",
-    "album": "",
-    "content": "[VERSO 1]:\n       Cm                            Fm                          Cm    \nX3  Haré un altar para ti, Con sacrificio de alabanza, \nFm                Cm            G                Cm\nCon júbilo y danza, Y cantaré… a Jehová.  \n\n[CORO]:\n                              Fm      Bb                               Eb        Cm\nQue descienda el fuego,         que descienda el fuego \n                                G         Cm\nQue descienda el fuego de Dios...\n                              Fm      Bb                               Eb        Cm\nQue descienda el fuego,         que descienda el fuego \n                                G         Cm\nQue descienda el fuego de Dios   X3",
+    "album": "¡Espíritu Santo Gracias!",
+    "content": "[VERSO 1]:\n       Cm                            Fm                          Cm    \nX3  Haré un altar para ti, Con sacrificio de alabanza, \nFm                Cm            G                Cm\nCon júbilo y danza, Y cantaré… a Jehová.  \n\n[CORO]:\n                            Fm      Bb                              Eb   Cm\nQue descienda el fuego,      que descienda el fuego \n                                G         Cm\nQue descienda el fuego de Dios...\n                            Fm      Bb                              Eb   Cm\nQue descienda el fuego,      que descienda el fuego \n                                G         Cm\nQue descienda el fuego de Dios...   X3\n\n\n\n\nESPACIO",
     "id": 468
   }
 ];
