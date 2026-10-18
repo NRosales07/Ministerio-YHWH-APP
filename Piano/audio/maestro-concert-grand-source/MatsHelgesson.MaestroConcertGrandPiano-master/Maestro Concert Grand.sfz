@@ -1,0 +1,118 @@
+// --------------------------------------
+// SFZ format v2 with ARIA extensions
+// --------------------------------------
+// Maestro Concert Grand v2
+// Mats Helgesson
+// --------------------------------------
+// converted by kinwie
+// --------------------------------------
+
+
+//midi cc
+#define $SUS_PED 64
+#define $MID_PED 66
+#define $LID 67
+#define $RELEASE 72
+#define $REL_NOI 80
+#define $PED_NOI 81
+#define $VELTRACK 99
+
+//velocity range
+#define $LOVEL1 1
+#define $HIVEL1 29
+//---
+#define $LOVEL2 30
+#define $HIVEL2 59
+//---
+#define $LOVEL3 60
+#define $HIVEL3 89
+//---
+#define $LOVEL4 90
+#define $HIVEL4 108
+//---
+#define $LOVEL5 109
+#define $HIVEL5 127
+
+//rel.noise vel.range
+#define $REL_LOVEL1 1
+#define $REL_HIVEL1 31
+//---
+#define $REL_LOVEL2 32
+#define $REL_HIVEL2 63
+//---
+#define $REL_LOVEL3 64
+#define $REL_HIVEL3 95
+//---
+#define $REL_LOVEL4 96
+#define $REL_HIVEL4 127
+
+//ped.noise range
+#define $PED_UP 0
+#define $PED_DN 127
+
+//file extension
+#define $EXT flac
+
+
+////////////////////////////////////////////////////////////////
+<control>
+default_path=Samples/
+
+label_cc7=Vol
+label_cc10=Pan
+label_cc$SUS_PED=Sus.Pedal
+label_cc$MID_PED=Mid.Pedal
+label_cc$LID=Lid
+label_cc$RELEASE=Release
+label_cc$REL_NOI=Rel.Noise
+label_cc$PED_NOI=Ped.Noise
+label_cc$VELTRACK=Veltrack
+
+set_cc7=100
+set_hdcc10=0.5
+set_hdcc$RELEASE=0.575
+set_hdcc$REL_NOI=1
+set_hdcc$PED_NOI=0.1
+set_hdcc$VELTRACK=1
+
+
+//**************************************************************
+<global>
+amplitude_oncc7=100
+amplitude_curvecc7=4
+pan_oncc10=100
+pan_curvecc10=1
+amp_veltrack=0
+amp_veltrack_oncc$VELTRACK=100
+ampeg_release_oncc$RELEASE=1
+ampeg_release_curvecc$RELEASE=7
+note_polyphony=1
+off_time=0.5
+
+<master>
+#include "Data/group.txt"
+
+<master>
+locc$REL_NOI=1
+amplitude_oncc$REL_NOI=200
+#include "Data/release.txt"
+
+
+//**************************************************************
+<global>
+amplitude_oncc7=100
+amplitude_curvecc7=4
+pan_oncc10=100
+pan_curvecc10=1
+locc$PED_NOI=1
+amplitude_oncc$PED_NOI=100
+#include "Data/effect.txt"
+
+
+//--------------------------
+<curve>
+curve_index=7
+v000=-0.3
+v063=0
+v064=0
+v127=1

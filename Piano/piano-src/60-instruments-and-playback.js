@@ -71,7 +71,8 @@ async function getInstrumentSample(midi, instrument = state.instrument, prefetch
         const cloudinaryUrl=`${CLOUDINARY_AUDIO_BASE}${cloudinaryPath.split('/').map(encodeURIComponent).join('/')}`;
         const cloudinaryFirst=cloudinaryHosted||isLayeredPiano||isVscoTrumpet||Boolean(vscoPatch)||Boolean(uprightPatch)||isCustomSample;
         const growlyRootUrl=isGrowlybass?`${CLOUDINARY_AUDIO_BASE}${filename.split('/').map(encodeURIComponent).join('/')}`:null;
-        const sources=isGrowlybass?[growlyRootUrl,cloudinaryUrl]:cloudinaryFirst?[cloudinaryUrl,localUrl]:[localUrl];let lastError=null;
+        const instantPackInstrument=['maestro-concert-grand','trumpet-vsco2-sus-vib'].includes(instrument);
+        const sources=isGrowlybass?[growlyRootUrl,cloudinaryUrl]:instantPackInstrument?[localUrl,cloudinaryUrl]:cloudinaryFirst?[cloudinaryUrl,localUrl]:[localUrl];let lastError=null;
         for(const source of sources){
           try{
             if(prefetchOnly){
@@ -107,18 +108,19 @@ function setInstrumentSampleLoop(source,sample){
   if(start>=0&&end>start&&end<sample.buffer.duration){source.loop=true;source.loopStart=start;source.loopEnd=end;}
 }
 function primeAudioForInstrument(instrument=state.instrument){
-  // Calienta unas notas centrales sin descargar toda la biblioteca al cambiar de sonido.
+  // Prepara una octava alrededor de la última nota usada para evitar esperas al empezar a tocar.
   const generation=++instrumentPrimeGeneration;
   void resumeAudioContext(getAudioContext()).catch(()=>{});
   const sampleSpec=INSTRUMENTS[instrument],firstNote=instrument==='grand-piano'?60:sampleSpec?.first??21,lastNote=instrument==='grand-piano'?76:sampleSpec?.last??108,warmRoot=Math.max(firstNote,Math.min(lastNote,state.lastMidi||60));
   const midis=instrument==='grand-piano'
     ? [60,64,67,62,65,69,72,...Array.from({length:17},(_,i)=>60+i).filter(midi=>![60,64,67,62,65,69,72].includes(midi))]
-    : [...new Set([warmRoot,Math.max(firstNote,Math.min(lastNote,warmRoot+7))])];
+    : [...new Set(Array.from({length:13},(_,index)=>Math.max(firstNote,Math.min(lastNote,warmRoot-6+index))))];
   const status=$('status'),pendingName=instrumentLabel(instrument);if(status&&instrument===state.instrument)status.textContent=`Preparando ${pendingName}…`;
   let failed=0;
   let next=0;
-  const worker=async()=>{while(generation===instrumentPrimeGeneration&&next<midis.length){const midi=midis[next++];try{if(instrument==='grand-piano')await getSample(midi);else await getInstrumentSample(midi,instrument);}catch(error){failed++;console.warn('No se pudo preparar una muestra de audio:',error);}}};
-  void Promise.all([worker(),worker()]).then(()=>{if(generation===instrumentPrimeGeneration&&instrument===state.instrument&&status)status.textContent=failed?`${pendingName}: algunas muestras se cargarán al tocar.`:`${pendingName} listo para tocar.`;});
+  const worker=async()=>{while(generation===instrumentPrimeGeneration&&next<midis.length){const midi=midis[next++];try{if(instrument==='grand-piano')await getSample(midi);else await getInstrumentSample(midi,instrument);if(state.stringsLayerEnabled&&state.stringsLayerVolume>0)await getOptionalLayerSample(midi);}catch(error){failed++;console.warn('No se pudo preparar una muestra de audio:',error);}}};
+  const concurrency=3;
+  void Promise.all(Array.from({length:concurrency},worker)).then(()=>{if(generation===instrumentPrimeGeneration&&instrument===state.instrument&&status)status.textContent=failed?`${pendingName}: algunas muestras de esta zona se cargarán al tocar.`:`Zona central de ${pendingName} lista.`;});
 }
 async function playChord(chord) {
   if(!chord.preview&&!state.bassSoundEnabled)return;
@@ -370,6 +372,18 @@ async function prepareMelodyAudio(notesToPrepare=state.notes) {
   await Promise.all([...loads,resumePromise]);
   return new Map(entries);
 }
+async function warmPlaybackAudio(groups=playbackGroupsForCurrentSong()) {
+  if(!groups.length)return;
+  const original={instrument:state.instrument,intensity:state.trumpetIntensity,headroomLayer:state.headroomVelocityLayer,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume,chords:state.chords};
+  try{
+    for(const group of groups){
+      const settings=group.settings||original,intensity=settings.intensity||'strong',pianoLayer=intensity==='very-soft'?1:intensity==='soft'?2:intensity==='medium'?3:intensity==='strong'?4:5;
+      Object.assign(state,{instrument:settings.instrument||original.instrument,trumpetIntensity:intensity,headroomVelocityLayer:settings.instrument==='livingroom-upright-micro'?(intensity==='soft'||intensity==='medium'?1:2):pianoLayer,stringsLayerEnabled:!!settings.layerEnabled,layerInstrument:settings.layerInstrument||original.layerInstrument,stringsLayerVolume:Number(settings.layerVolume??original.layerVolume),chords:group.chords||[]});
+      await prepareMelodyAudio(group.notes||[]);
+    }
+  }catch(error){console.warn('No se pudieron dejar listas todas las muestras antes de reproducir:',error);}
+  finally{Object.assign(state,{instrument:original.instrument,trumpetIntensity:original.intensity,headroomVelocityLayer:original.headroomLayer,stringsLayerEnabled:original.layerEnabled,layerInstrument:original.layerInstrument,stringsLayerVolume:original.layerVolume,chords:original.chords});}
+}
 function schedulePlaybackNote(midi,element,duration,when,prepared,cut,showReadout=true,soundKind='melody'){
   if(!(soundKind==='bass'?state.bassSoundEnabled:state.melodySoundEnabled))return;
   const context=getAudioContext(),entry=prepared.get(midi);
@@ -449,6 +463,8 @@ async function playMelody() {
   $('tempoControl').disabled=true;
   $('status').textContent = `${state.playMode==='performance'?'Reproduciendo alabanza':'Reproduciendo pista'} · ${Math.round(state.tempo*100)}%`;
   if(deviceSettings.songTitleStyle==='black-card'){await showBlackTitleIntro();if(!state.playing)return;}
+  // Quita las presentaciones de entrada antes de mostrar la cuenta de tres pulsos.
+  clearSongIntro();document.body.classList.remove('song-title-visible','cinematic-title-run','black-title-ready','black-title-intro');
   const context=getAudioContext(),countInBeat=60/metronomeBpm,countInStart=context.currentTime+.12,playbackStart=countInStart+countInBeat*3;
   const countIn=$('playbackCountIn');
   if(countIn){countIn.hidden=false;countIn.querySelector('strong').textContent='3';}

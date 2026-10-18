@@ -53,7 +53,7 @@ const deviceInitialTheme=deviceInitialThemeMode==='system'?(systemThemeIsDark()?
 const BAR_COLOR_PRESETS=[['galaxia','Galaxia','#c05cff','#3487ff'],['oceano','Océano','#12b8d4','#2563eb'],['aurora','Aurora','#a855f7','#34d399'],['atardecer','Atardecer','#fb7185','#f59e0b'],['fuego','Fuego','#ff4d2e','#ffc247'],['bosque','Bosque','#22a06b','#d4a83d'],['dulce','Dulce','#ec4899','#8b5cf6']];
 const BAR_COLOR_DEFAULTS=['#c05cff','#3487ff'];
 const BAR_LOOK_OPTIONS=[['normal','Normal'],['duo','Dos colores'],['tri','Tres colores']];
-const DEVICE_SETTINGS_DEFAULTS={paletteVersion:2,theme:deviceInitialTheme,themeMode:deviceInitialThemeMode,palettePreset:'manantial',font:'Inter, system-ui, Arial, sans-serif',fontSize:15,headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',iconSize:24,headingSize:26,headingHeight:58,pianoHeaderHeight:58,mobileHeadingSize:18,homeButtonHeight:46,radius:12,...DEVICE_THEME_PALETTES[deviceInitialTheme],paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,brand:'Ministerio YHWH',worship:'Adoración',joy:'Júbilo',freePlay:'Reproducción libre',create:'Crear melodía',theory:'Teoría musical',noteNotation:state.notation==='latino'?'latino':'americano',noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,gridSpacing:4,stageBackgroundColor:"#000000",gridLineColor:"#ffffff",gridLineOpacity:55,melodyColor:state.keyColor,bassColor:state.bassColor,masterVolume:Math.round(state.masterVolume*100),layerEnabled:state.stringsLayerEnabled,layerVolume:state.stringsLayerVolume,fallingStyle:safeStorageGetItem('yhwh_piano_barstyle')||'bars',fxGlow:safeStorageGetItem('yhwh_piano_fx_glow')==='1',goldImpactGlow:true,fxStyle:(v=>v==='flow'?'gold':['fire','gold','rings','bubbles','notes'].includes(v)?v:'fire')(safeStorageGetItem('yhwh_piano_fx_style')),fxIntensity:2,fxDuration:3.4,keyStyle:'classic',barLook:(v=>v==='duo'||v==='tri'?v:'normal')(safeStorageGetItem('yhwh_piano_bar_look')),playerLook:'custom',songTitleStyle:'classic',barColorPreset:'galaxia',barColor2:BAR_COLOR_DEFAULTS[0],barColor3:BAR_COLOR_DEFAULTS[1],barBassDiff:safeStorageGetItem('yhwh_piano_bar_bass_diff')!=='0',barStyle:'glass',barRadius:2,barOpacity:100,barColorMode:'track',barTrail:0,barAccompaniment2Color:'#ff9f43',lightKeys:safeStorageGetItem('yhwh_piano_light_keys')!=='0'};
+const DEVICE_SETTINGS_DEFAULTS={paletteVersion:2,theme:deviceInitialTheme,themeMode:deviceInitialThemeMode,palettePreset:'manantial',font:'Inter, system-ui, Arial, sans-serif',fontSize:15,headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',iconSize:24,headingSize:26,headingHeight:58,pianoHeaderHeight:58,mobileHeadingSize:18,homeButtonHeight:46,radius:12,...DEVICE_THEME_PALETTES[deviceInitialTheme],paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,brand:'Ministerio YHWH',worship:'Adoración',joy:'Júbilo',freePlay:'Reproducción libre',create:'Crear melodía',theory:'Teoría musical',noteNotation:state.notation==='latino'?'latino':'americano',noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,gridSpacing:4,stageBackgroundColor:"#000000",gridLineColor:"#ffffff",gridLineOpacity:55,melodyColor:state.keyColor,bassColor:state.bassColor,masterVolume:Math.round(state.masterVolume*100),layerEnabled:state.stringsLayerEnabled,layerVolume:state.stringsLayerVolume,fallingStyle:safeStorageGetItem('yhwh_piano_barstyle')||'bars',fxGlow:safeStorageGetItem('yhwh_piano_fx_glow')==='1',goldImpactGlow:true,fxStyle:(v=>v==='flow'?'gold':v==='fire'?'smoke':['smoke','gold','rings','bubbles','notes'].includes(v)?v:'smoke')(safeStorageGetItem('yhwh_piano_fx_style')),fxIntensity:2,fxDuration:3.4,keyStyle:'classic',barLook:(v=>v==='duo'||v==='tri'?v:'normal')(safeStorageGetItem('yhwh_piano_bar_look')),playerLook:'custom',songTitleStyle:'classic',barColorPreset:'galaxia',barColor2:BAR_COLOR_DEFAULTS[0],barColor3:BAR_COLOR_DEFAULTS[1],barBassDiff:safeStorageGetItem('yhwh_piano_bar_bass_diff')!=='0',barStyle:'glass',barRadius:2,barOpacity:100,barColorMode:'track',barTrail:0,barAccompaniment2Color:'#ff9f43',lightKeys:safeStorageGetItem('yhwh_piano_light_keys')!=='0'};
 function readDeviceSettings(){try{const saved=JSON.parse(safeStorageGetItem(DEVICE_SETTINGS_KEY)||'{}'),themeMode=['light','dark','system'].includes(saved.themeMode)?saved.themeMode:(['light','dark','system'].includes(storedThemePreference)?storedThemePreference:saved.theme==='dark'?'dark':'light'),theme=themeMode==='system'?(systemThemeIsDark()?'dark':'light'):themeMode,settings={...DEVICE_SETTINGS_DEFAULTS,...saved,themeMode,theme,palettePreset:saved.palettePreset?(READY_COLOR_PALETTES[saved.palettePreset]?saved.palettePreset:'custom'):saved.paletteVersion===2?'custom':'manantial'},hasCurrentPalette=saved.paletteVersion===2;settings.paletteLight=hasCurrentPalette?{...DEVICE_THEME_PALETTES.light,...saved.paletteLight}:{...DEVICE_THEME_PALETTES.light};settings.paletteDark=hasCurrentPalette?{...DEVICE_THEME_PALETTES.dark,...saved.paletteDark}:{...DEVICE_THEME_PALETTES.dark};settings.paletteVersion=2;return settings;}catch(_){return {...DEVICE_SETTINGS_DEFAULTS};}}
 let deviceSettings=readDeviceSettings();
 if(READY_COLOR_PALETTES[deviceSettings.palettePreset]&&deviceSettings.iconColor?.toLowerCase()==='#ffffff'&&READY_COLOR_PALETTES[deviceSettings.palettePreset].theme==='light')deviceSettings.iconColor=deviceContrastColor(READY_COLOR_PALETTES[deviceSettings.palettePreset].colors.headingBackground);
@@ -111,7 +111,9 @@ let fallingNotesLookahead = (()=>{try{const v=parseFloat(safeStorageGetItem('yhw
 const SHOW_PLAYER_TIMELINE = true; // línea de tiempo (0:00 ——— 0:00) visible; pon false para quitarla
 const perfOption=(key)=>{try{return safeStorageGetItem(key)!=='0';}catch(_){return true;}};
 let fxGlow=(()=>{try{return safeStorageGetItem('yhwh_piano_fx_glow')==='1';}catch(_){return false;}})(); // destellos y partículas al llegar a la tecla, apagados por defecto
-let noteParticlesEnabled=(()=>{try{return safeStorageGetItem('yhwh_piano_note_particles')!=='0';}catch(_){return true;}})(); // permite ocultar las chispas que se desprenden de las notas
+let noteParticlesEnabled=true;
+let keyNoteIndicatorEnabled=(()=>{try{const saved=safeStorageGetItem('yhwh_piano_key_indicator');return saved===null?safeStorageGetItem('yhwh_piano_note_particles')!=='0':saved!=='0';}catch(_){return true;}})();
+document.documentElement.classList.toggle('key-note-indicator-off',!keyNoteIndicatorEnabled);
 let barLook=(()=>{try{return (v=>v==='duo'||v==='tri'?v:'normal')(safeStorageGetItem('yhwh_piano_bar_look'));}catch(_){return 'normal';}})(); // color de las barras: 'normal' o 'duo' (dos colores)
 let barColorPreset=(()=>{const id=safeStorageGetItem('yhwh_piano_bar_palette');return BAR_COLOR_PRESETS.some(item=>item[0]===id)?id:'galaxia';})();
 let barColor2=BAR_COLOR_PRESETS.find(item=>item[0]===barColorPreset)[2],barColor3=BAR_COLOR_PRESETS.find(item=>item[0]===barColorPreset)[3]; // tonos para degradar las barras
@@ -120,8 +122,8 @@ let barStyle=['glass','neon','synesthesia','solid'].includes(deviceSettings.barS
 let barRadius=Math.max(0,Math.min(12,Number(deviceSettings.barRadius??2))),barOpacity=Math.max(10,Math.min(100,Number(deviceSettings.barOpacity??100))),barTrail=Math.max(0,Math.min(100,Number(deviceSettings.barTrail??0)));
 let barColorMode=deviceSettings.barColorMode==='note'?'note':'track',barAccompaniment2Color=/^#[0-9a-f]{6}$/i.test(deviceSettings.barAccompaniment2Color||'')?deviceSettings.barAccompaniment2Color:'#ff9f43';
 let pianoKeyStyle=['flat','realistic','synthesia'].includes(deviceSettings.keyStyle)?deviceSettings.keyStyle:'classic';
-const FX_STYLES=['fire','gold','rings','bubbles','notes'];
-let fxStyle=deviceSettings.fxStyle==='flow'?'gold':FX_STYLES.includes(deviceSettings.fxStyle)?deviceSettings.fxStyle:'fire';if(!FX_STYLES.includes(deviceSettings.fxStyle))deviceSettings.fxStyle=fxStyle;
+const FX_STYLES=['smoke','gold','rings','bubbles','notes'];
+let fxStyle=deviceSettings.fxStyle==='flow'?'gold':deviceSettings.fxStyle==='fire'?'smoke':FX_STYLES.includes(deviceSettings.fxStyle)?deviceSettings.fxStyle:'smoke';deviceSettings.fxStyle=fxStyle;
 let goldImpactGlow=deviceSettings.goldImpactGlow!==false;
 let fxIntensity=Math.max(1,Math.min(3,Number(deviceSettings.fxIntensity)||2)),fxDuration=Math.max(1,Math.min(6,Number(deviceSettings.fxDuration)||3.4));
 const fxIntensityScale=()=>[0,.7,1,1.35][fxIntensity]||1;
@@ -134,6 +136,7 @@ const neonEdge=(()=>{const num=(k,d,lo,hi)=>{const v=parseFloat(safeStorageGetIt
   return {on:safeStorageGetItem('yhwh_piano_edge_on')!=='0',style:safeStorageGetItem('yhwh_piano_edge_style')==='flame'?'flame':'turq',color:/^#[0-9a-f]{6}$/i.test(c||'')?c:NEON_EDGE_DEFAULTS.color,thickness:num('yhwh_piano_edge_thickness',NEON_EDGE_DEFAULTS.thickness,1,10),glow:num('yhwh_piano_edge_glow',NEON_EDGE_DEFAULTS.glow,0,150)};})();
 function applyNeonEdge(){
   const m=/^#([0-9a-f]{6})$/i.exec(neonEdge.color),v=m?parseInt(m[1],16):0x2ff3e0;
+  document.documentElement.classList.toggle('neon-edge-enabled',neonEdge.on);
   document.querySelectorAll('.neon-edge').forEach(el=>{
     el.style.setProperty('--neon-rgb',`${v>>16&255},${v>>8&255},${v&255}`);
     el.style.setProperty('--neon-thickness',neonEdge.thickness+'px');
@@ -271,7 +274,7 @@ async function getStringsSample(midi){
     let pending=state.stringsSampleLoads.get(sample.midi);
     if(!pending){
       pending=(async()=>{
-        const sources=[...(sample.cloudinaryId?[`${CLOUDINARY_AUDIO_BASE}${sample.cloudinaryId}.wav`]:[]),`audio/strings/${sample.file}`];
+        const sources=[`audio/strings/${sample.file}`,...(sample.cloudinaryId?[`${CLOUDINARY_AUDIO_BASE}${sample.cloudinaryId}.wav`]:[])];
         let lastError=null;
         for(const source of sources){
           try{
@@ -772,6 +775,8 @@ function openFreePlay() {
   clearSongIntro();
   document.body.classList.remove('song-title-visible');
   state.song=null;state.view='libre';state.category='adoracion';state.melodyType='introduccion';state.notes=[];state.chords=[];state.chordTarget=null;state.transpose=0;state.melodyDirty=false;state.recording=false;state.lastMidi=null;chordEditorOpen=false;applySongTrackInstrument(freePlayInstrumentConfig);
+  // Prepara el instrumento y la capa guardados para que Reproducción libre no empiece fría.
+  primeAudioForInstrument(state.instrument);if(state.stringsLayerEnabled)primeStringsLayer();
   document.body.classList.remove('home-active');
   document.body.classList.remove('song-list-active');
   document.body.classList.remove('create-list-active');
@@ -1725,6 +1730,8 @@ function openSong(song, category, trackType='introduccion',autoPlay=false,playMo
   else if(deviceSettings.songTitleStyle==='black-card'){document.body.dataset.songPresentation='black-card';document.body.classList.remove('cinematic-title-run','black-title-intro');document.body.classList.add('black-title-ready');}
   else document.body.classList.remove('black-title-ready','black-title-intro');
   updateTrackTimeline();
+  // Decodifica por adelantado las muestras de esta alabanza mientras el usuario la prepara.
+  void warmPlaybackAudio();
   $('activeKeyName').textContent=state.songTonic?`Tono ${state.songTonic}`:'';
   updateTransposeUI();
   const trackLabel=SONG_TRACK_LABELS[trackType]||'Introducción';
@@ -2065,6 +2072,24 @@ function fnDrawMoltenHitBurst(ctx,hit,baseline,reducedMotion,load){
   }
   ctx.restore();
 }
+function fnDrawSmokeSparkBurst(ctx,hit,baseline,reducedMotion,load){
+  const t=hit.t,kw=Math.max(6,hit.keyWidth||hit.barWidth/.72),scale=(hit.intensity||1)*(load>12?.65:1),tone=fnTone(hit.color),smokeCount=Math.max(9,Math.round((18-Math.min(load,10)*.7)*scale));
+  ctx.save();ctx.globalCompositeOperation='screen';
+  if(!reducedMotion){
+    // Columnas suaves de humo teñido con el halo, que ascienden en remolinos lentos.
+    for(let i=0;i<smokeCount;i++){
+      const seed=fnRand(hit.index*41+i*13+5),delay=seed*.16,p=Math.max(0,(t-delay)/(1-delay));if(p<=0||p>=1)continue;
+      const angle=p*3.4+seed*6.283+i*.72,orbit=kw*(.12+p*(.48+seed*.42)),sway=fnTurb(seed,p*1.35+i),sideSwing=Math.sin(p*5.2+seed*5+i*.38)*kw*(.28+p*.78),x=hit.center+(seed-.5)*kw*.3+sideSwing+Math.cos(angle)*orbit+sway*kw*(.12+p*.24),y=baseline-7-p*(85+seed*120)+Math.sin(angle)*kw*(.08+p*.12),r=kw*(.16+seed*.11)*(1+p*1.4);
+      const g=ctx.createRadialGradient(x-r*.2,y-r*.25,1,x,y,r);g.addColorStop(0,tone.rgba(.38*(1-p)));g.addColorStop(.42,tone.rgba(.27*(1-p)));g.addColorStop(.72,tone.rgba(.13*(1-p)));g.addColorStop(1,tone.rgba(0));
+      ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);
+    }
+    // Chispas persistentes recorren la misma curva mientras el humo sube.
+    if(noteParticlesEnabled&&t<.82){const count=Math.max(7,Math.round(14*scale)),p=t/.82;ctx.globalCompositeOperation='lighter';
+      for(let i=0;i<count;i++){const a=fnRand(hit.index*67+i*17+2),b=fnRand(hit.index*23+i*29+8),curl=p*3.4+a*6.283,sideSwing=Math.sin(p*5.2+a*5+i*.38)*kw*(.28+p*.78),x=hit.center+sideSwing+Math.cos(curl)*kw*(.2+p*.78),y=baseline-5-p*(48+b*120)+Math.sin(curl)*kw*.13,d=1.5+b*1.7;ctx.globalAlpha=(1-p)*(.7+.3*Math.sin(t*24+i*3));ctx.fillStyle=tone.shine;ctx.fillRect(x-d/2,y-d*2,d,d*2);}
+    }
+  }
+  ctx.restore();
+}
 // Efecto "Chispas doradas": cinta de chispas que sube al tocar cada nota (la línea del piano es una opción aparte).
 const FN_GOLD='#ffc21a',FN_FX_SECONDS={gold:1.9};
 // Línea de brasa: línea fina y casi recta con una ligera curva que ondula hacia la derecha, con resplandor cálido que también avanza a la derecha.
@@ -2332,7 +2357,7 @@ function drawFallingNotesFrameInner(timestamp){
     hits.push({...burst,t});
   }
   const burstLoad=hits.length;let goldLevel=0;
-  for(const hit of hits){if(hit.fx==='gold'){goldLevel=Math.max(goldLevel,1-hit.t);fnDrawGoldSparkBurst(ctx,hit,baseline,calm,burstLoad);}else if(hit.fx==='fire')fnDrawMoltenHitBurst(ctx,hit,baseline,calm,burstLoad);else if(noteParticlesEnabled&&hit.fx==='rings')fnDrawRingBurst(ctx,hit,baseline,calm);else if(noteParticlesEnabled&&hit.fx==='bubbles')fnDrawBubbleBurst(ctx,hit,baseline,calm);else if(noteParticlesEnabled&&hit.fx==='notes')fnDrawNoteBurst(ctx,hit,baseline,calm);}
+  for(const hit of hits){if(hit.fx==='gold'){goldLevel=Math.max(goldLevel,1-hit.t);fnDrawGoldSparkBurst(ctx,hit,baseline,calm,burstLoad);}else if(hit.fx==='smoke')fnDrawSmokeSparkBurst(ctx,hit,baseline,calm,burstLoad);else if(hit.fx==='rings')fnDrawRingBurst(ctx,hit,baseline,calm);else if(hit.fx==='bubbles')fnDrawBubbleBurst(ctx,hit,baseline,calm);else if(hit.fx==='notes')fnDrawNoteBurst(ctx,hit,baseline,calm);}
   if(fxGlow&&noteParticlesEnabled&&fxStyle==='gold'){
     for(let i=fnGoldHolds.length-1;i>=0;i--){
       const hold=fnGoldHolds[i];if(!hold.active||nowTs-hold.since>20000){fnGoldHolds.splice(i,1);continue;}
@@ -3105,13 +3130,13 @@ function syncFxStyleButtons(){
   [['deviceFxIntensityValue',['','Suave','Normal','Intenso'][fxIntensity]],['fxIntensityValue',['','Suave','Normal','Intenso'][fxIntensity]],['deviceFxDurationValue',`${fxDuration.toFixed(1)} s`],['fxDurationValue',`${fxDuration.toFixed(1)} s`]].forEach(([id,value])=>{const output=$(id);if(output)output.textContent=value;});
 }
 function setFxStyle(value){
-  fxStyle=FX_STYLES.includes(value)?value:'fire';
+  fxStyle=FX_STYLES.includes(value)?value:'smoke';
   if(typeof deviceSettings==='object'){deviceSettings.fxStyle=fxStyle;saveDeviceSettings();}
   try{localStorage.setItem('yhwh_piano_fx_style',fxStyle);}catch(_){}
   syncFxStyleButtons();updateDeviceSettingsPreview();
 }
 function setGoldImpactGlow(enabled){goldImpactGlow=!!enabled;deviceSettings.goldImpactGlow=goldImpactGlow;['goldImpactGlowSwitch','deviceGoldImpactGlow'].forEach(id=>{const control=$(id);if(control)control.checked=goldImpactGlow;});saveDeviceSettings();updateDeviceSettingsPreview();}
-function setNoteParticlesEnabled(enabled){noteParticlesEnabled=!!enabled;deviceSettings.noteParticlesEnabled=noteParticlesEnabled;try{localStorage.setItem('yhwh_piano_note_particles',noteParticlesEnabled?'1':'0');}catch(_){}const input=$('noteParticlesSwitch');if(input)input.checked=noteParticlesEnabled;if(!noteParticlesEnabled)fnGoldReset();saveDeviceSettings();updateDeviceSettingsPreview();}
+function setKeyNoteIndicatorEnabled(enabled){keyNoteIndicatorEnabled=!!enabled;try{localStorage.setItem('yhwh_piano_key_indicator',keyNoteIndicatorEnabled?'1':'0');}catch(_){}document.documentElement.classList.toggle('key-note-indicator-off',!keyNoteIndicatorEnabled);const input=$('keyNoteIndicatorSwitch');if(input)input.checked=keyNoteIndicatorEnabled;saveDeviceSettings();updateDeviceSettingsPreview();}
 function setFxIntensity(value){fxIntensity=Math.max(1,Math.min(3,Math.round(Number(value)||2)));deviceSettings.fxIntensity=fxIntensity;syncFxStyleButtons();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
 function setFxDuration(value){fxDuration=Math.max(.1,Math.min(6,Number(value)||3.4));deviceSettings.fxDuration=fxDuration;syncFxStyleButtons();scheduleDeviceSettingsSave();updateDeviceSettingsPreview();}
 // Acción del usuario: si los destellos estaban apagados se encienden, para que el efecto elegido se vea de inmediato.
@@ -3123,16 +3148,16 @@ function chooseFxStyle(value){
     updateDeviceSettingsPreview();saveDeviceSettings();
   }
 }
-const FX_STYLE_OPTIONS=[['fire','Fuego','Llamas y chispas del color de la nota'],['gold','Chispas doradas','Una cinta de chispas que sube al tocar'],['rings','Ondas','Anillos que se expanden desde la tecla'],['bubbles','Burbujas','Burbujas translúcidas que flotan hacia arriba'],['notes','Notas flotantes','Símbolos musicales que ascienden']];
+const FX_STYLE_OPTIONS=[['smoke','Humo con chispas','Humo suave con pequeñas chispas al tocar'],['gold','Chispas doradas','Una cinta de chispas que sube al tocar'],['rings','Ondas','Anillos que se expanden desde la tecla'],['bubbles','Burbujas','Burbujas translúcidas que flotan hacia arriba'],['notes','Notas flotantes','Símbolos musicales que ascienden']];
 function initFxStyleSetting(){
   const sheet=$('playerSettings');if(!sheet||$('fxStyleBlock'))return;
   const block=document.createElement('div');block.id='fxStyleBlock';block.className='settings-block';
-  block.innerHTML='<h3>Efecto al tocar</h3><div class="range-presets" role="group" aria-label="Estilo del efecto al tocar">'+FX_STYLE_OPTIONS.map(option=>'<button type="button" data-fx-style="'+option[0]+'"><span>'+option[1]+'</span><small>'+option[2]+'</small></button>').join('')+'</div><label class="fx-toggle-row"><span><b>Puntos que salen de las notas</b><small>Desactiva los puntos, chispas y burbujas que aparecen al tocar o reproducir.</small></span><input id="noteParticlesSwitch" type="checkbox"></label><label class="fx-control-row">Intensidad <output id="fxIntensityValue"></output><input id="fxIntensityInput" type="range" min="1" max="3" step="1"></label><details class="settings-advanced fx-advanced"><summary>Personalizar a fondo</summary><div class="settings-advanced-content"><label class="fx-control-row">Duración <output id="fxDurationValue"></output><input id="fxDurationInput" type="range" min="1" max="6" step="0.5"></label><label class="fx-toggle-row gold-impact-glow-row"><span><b>Halo dorado al impactar</b><small>Funciona con Chispas doradas, incluso si desactivas las partículas.</small></span><input id="goldImpactGlowSwitch" type="checkbox"></label></div></details>';
+  block.innerHTML='<h3>Efecto al tocar</h3><div class="range-presets" role="group" aria-label="Estilo del efecto al tocar">'+FX_STYLE_OPTIONS.map(option=>'<button type="button" data-fx-style="'+option[0]+'"><span>'+option[1]+'</span><small>'+option[2]+'</small></button>').join('')+'</div><label class="fx-toggle-row"><span><b>Círculo indicador en las teclas</b><small>Muestra u oculta el círculo que aparece sobre cada tecla mientras suena.</small></span><input id="keyNoteIndicatorSwitch" type="checkbox"></label><label class="fx-control-row">Intensidad <output id="fxIntensityValue"></output><input id="fxIntensityInput" type="range" min="1" max="3" step="1"></label><details class="settings-advanced fx-advanced"><summary>Personalizar a fondo</summary><div class="settings-advanced-content"><label class="fx-control-row">Duración <output id="fxDurationValue"></output><input id="fxDurationInput" type="range" min="1" max="6" step="0.5"></label><label class="fx-toggle-row gold-impact-glow-row"><span><b>Halo dorado al impactar</b><small>Funciona con Chispas doradas, incluso si desactivas las partículas.</small></span><input id="goldImpactGlowSwitch" type="checkbox"></label></div></details>';
   const anchor=$('fallingStyleBlock');if(anchor)anchor.insertAdjacentElement('afterend',block);else sheet.appendChild(block);
   block.addEventListener('click',event=>{const button=event.target.closest('[data-fx-style]');if(button)chooseFxStyle(button.dataset.fxStyle);});
   block.addEventListener('input',event=>{if(event.target.id==='fxIntensityInput')setFxIntensity(event.target.value);else if(event.target.id==='fxDurationInput')setFxDuration(event.target.value);});
   $('goldImpactGlowSwitch').checked=goldImpactGlow;$('goldImpactGlowSwitch').addEventListener('change',event=>setGoldImpactGlow(event.target.checked));syncFxStyleButtons();
-  $('noteParticlesSwitch').checked=noteParticlesEnabled;$('noteParticlesSwitch').addEventListener('change',event=>setNoteParticlesEnabled(event.target.checked));
+  $('keyNoteIndicatorSwitch').checked=keyNoteIndicatorEnabled;$('keyNoteIndicatorSwitch').addEventListener('change',event=>setKeyNoteIndicatorEnabled(event.target.checked));
 }
 function syncBarLookButtons(){
   document.querySelectorAll('[data-bar-look]').forEach(button=>{const on=button.dataset.barLook===barLook;button.classList.toggle('active',on);button.setAttribute('aria-pressed',on?'true':'false');});
@@ -3213,12 +3238,12 @@ function initBarLookSetting(){
   block.addEventListener('change',event=>{if(event.target.id==='barBassDiffInput')setBarBassDiff(event.target.checked);});syncBarLookButtons();
 }
 const PLAYER_LOOKS=[
-  {id:'classic',name:'Clásico',description:'Equilibrado y familiar',barStyle:'glass',barLook:'normal',palette:'galaxia',fxStyle:'fire',fxGlow:false,keyStyle:'classic',lineOn:true,lineStyle:'turq',melodyColor:'#45c4d6',bassColor:'#d9b45f',lineColor:'#2ff3e0'},
+  {id:'classic',name:'Clásico',description:'Equilibrado y familiar',barStyle:'glass',barLook:'normal',palette:'galaxia',fxStyle:'smoke',fxGlow:false,keyStyle:'classic',lineOn:true,lineStyle:'turq',melodyColor:'#45c4d6',bassColor:'#d9b45f',lineColor:'#2ff3e0'},
   {id:'neon',name:'Neón',description:'Colores vivos y ondas',barStyle:'neon',barLook:'duo',palette:'oceano',fxStyle:'rings',fxGlow:true,keyStyle:'flat',lineOn:true,lineStyle:'turq',melodyColor:'#11d9f0',bassColor:'#8a4dff',lineColor:'#11d9f0'},
   {id:'crystal',name:'Cristal',description:'Transparencias y degradado',barStyle:'glass',barLook:'tri',palette:'aurora',fxStyle:'gold',fxGlow:false,keyStyle:'classic',lineOn:true,lineStyle:'turq',melodyColor:'#8ddfff',bassColor:'#f3c7ff',lineColor:'#8ddfff'},
   {id:'aurora',name:'Aurora',description:'Degradados y burbujas',barStyle:'synesthesia',barLook:'tri',palette:'aurora',fxStyle:'bubbles',fxGlow:true,keyStyle:'realistic',lineOn:true,lineStyle:'turq',melodyColor:'#53e2bc',bassColor:'#a26bfa',lineColor:'#53e2bc'},
-  {id:'minimal',name:'Minimalista',description:'Color plano, sin efectos',barStyle:'solid',barLook:'normal',palette:'bosque',fxStyle:'fire',fxGlow:false,keyStyle:'flat',lineOn:false,lineStyle:'turq',melodyColor:'#759269',bassColor:'#c5a14b',lineColor:'#759269'},
-  {id:'fire',name:'Fuego',description:'Calidez y chispas',barStyle:'synesthesia',barLook:'duo',palette:'atardecer',fxStyle:'fire',fxGlow:true,keyStyle:'realistic',lineOn:true,lineStyle:'flame',melodyColor:'#ff633d',bassColor:'#ffb23f',lineColor:'#ff633d'}
+  {id:'minimal',name:'Minimalista',description:'Color plano, sin efectos',barStyle:'solid',barLook:'normal',palette:'bosque',fxStyle:'smoke',fxGlow:false,keyStyle:'flat',lineOn:false,lineStyle:'turq',melodyColor:'#759269',bassColor:'#c5a14b',lineColor:'#759269'},
+  {id:'fire',name:'Fuego',description:'Calidez y chispas',barStyle:'synesthesia',barLook:'duo',palette:'atardecer',fxStyle:'smoke',fxGlow:true,keyStyle:'realistic',lineOn:true,lineStyle:'flame',melodyColor:'#ff633d',bassColor:'#ffb23f',lineColor:'#ff633d'}
 ];
 let activePlayerLook=deviceSettings.playerLook||'custom',applyingPlayerLook=false;
 function syncPlayerLookButtons(){
@@ -3276,13 +3301,13 @@ function initializePlayerSettingsPage(){
     const keyboard=preview.querySelector('.settings-preview-keyboard');
     if(keyboard){keyboard.dataset.keyStyle=pianoKeyStyle;keyboard.dataset.colorOn=$('keyColorOnSwitch')?.checked===false?'off':'on';keyboard.dataset.fill=$('lightKeysSwitch')?.checked===false?'off':'on';keyboard.dataset.edge=$('keyEdgeSwitch')?.checked?'on':'off';keyboard.dataset.line=neonEdge.style;keyboard.dataset.lineOn=neonEdge.on?'on':'off';keyboard.style.setProperty('--preview-key-color',state.keyColor);keyboard.style.setProperty('--preview-edge-color',neonEdge.color);keyboard.style.setProperty('--preview-line-size',`${neonEdge.thickness}px`);keyboard.style.setProperty('--preview-line-glow',String(neonEdge.glow/100));keyboard.querySelectorAll('i').forEach((key,index)=>key.classList.toggle('is-playing',[0,3,5].includes(index)));}
     const effect=preview.querySelector('.settings-preview-effects');
-    if(effect){effect.dataset.style=fxStyle;effect.dataset.enabled=fxGlow?'on':'off';effect.dataset.intensity=String(fxIntensity);effect.dataset.impactGlow=goldImpactGlow?'on':'off';effect.style.setProperty('--preview-effect-duration',`${fxDuration}s`);const glyph={fire:'🔥',gold:'✦',rings:'◉',bubbles:'◌',notes:'♫'}[fxStyle]||'♫';effect.querySelector('span').textContent=glyph;}
+    if(effect){effect.dataset.style=fxStyle;effect.dataset.enabled=fxGlow?'on':'off';effect.dataset.intensity=String(fxIntensity);effect.dataset.impactGlow=goldImpactGlow?'on':'off';effect.style.setProperty('--preview-effect-duration',`${fxDuration}s`);const glyph={smoke:'☁',gold:'✦',rings:'◉',bubbles:'◌',notes:'♫'}[fxStyle]||'♫';effect.querySelector('span').textContent=glyph;}
     const volume=preview.querySelector('.settings-preview-volume');
     if(volume){const pct=Math.max(0,Math.min(100,Number($('masterVolume')?.value??state.masterVolume*100)/2)),tempo=Number($('tempoControl')?.value||100),bpm=$('metronomeBpm')?.value||'100',voices=[...page.querySelectorAll('.voice-switch input')].filter(input=>input.checked).length;volume.style.setProperty('--preview-volume',`${pct}%`);volume.style.setProperty('--preview-tempo',`${tempo}%`);volume.style.setProperty('--preview-bpm',bpm);volume.style.setProperty('--preview-beat-duration',`${Math.max(.45,1.6/(tempo/100))}s`);volume.dataset.metronome=bpm;volume.dataset.meter=$('metronomeMeter')?.value||'4';volume.dataset.voices=voices;const readout=volume.querySelector('.preview-playback-readout');if(readout)readout.textContent=`Volumen ${Math.round(pct)}% · Tempo ${tempo}% · Metrónomo ${bpm} BPM · ${voices} voces activas`;}
   };
   preview.querySelector('.settings-preview-volume')?.insertAdjacentHTML('beforeend','<small class="preview-playback-readout"></small><div class="preview-meter"><i></i><i></i><i></i><i></i><i></i><i></i></div>');
   page.addEventListener('input',event=>{syncPreview();if(['playerMelodyColor','playerBassColor','fxIntensityInput','barRadiusInput','barOpacityInput','barTrailInput','barColorModeInput','barAccompaniment2ColorInput','neonEdgeColor','neonEdgeThickness','neonEdgeGlow'].includes(event.target.id))markPlayerLookCustom();});
-  page.addEventListener('change',event=>{syncPreview();if(['fxGlowSwitch','goldImpactGlowSwitch','noteParticlesSwitch','lightKeysSwitch','keyColorOnSwitch','keyEdgeSwitch','neonEdgeOn','barBassDiffInput','deviceTheme','playerKeyLightingMode'].includes(event.target.id))markPlayerLookCustom();if(['lightKeysSwitch','keyColorOnSwitch','keyEdgeSwitch'].includes(event.target.id)){const mode=!lightKeys&&!keyEdge?'off':!lightKeys&&keyEdge?'edge':lightKeys&&!keyColorOn?'gray':'full';const selector=$('playerKeyLightingMode');if(selector)selector.value=mode;}});
+  page.addEventListener('change',event=>{syncPreview();if(['fxGlowSwitch','goldImpactGlowSwitch','keyNoteIndicatorSwitch','lightKeysSwitch','keyColorOnSwitch','keyEdgeSwitch','neonEdgeOn','barBassDiffInput','deviceTheme','playerKeyLightingMode'].includes(event.target.id))markPlayerLookCustom();if(['lightKeysSwitch','keyColorOnSwitch','keyEdgeSwitch'].includes(event.target.id)){const mode=!lightKeys&&!keyEdge?'off':!lightKeys&&keyEdge?'edge':lightKeys&&!keyColorOn?'gray':'full';const selector=$('playerKeyLightingMode');if(selector)selector.value=mode;}});
   page.addEventListener('click',event=>{if(event.target.closest('[data-bar-look],[data-bar-palette],[data-bar-appearance],[data-fx-style],[data-fall-style],[data-key-style],[data-edge-style],#neonEdgeReset'))markPlayerLookCustom();requestAnimationFrame(syncPreview);});
   const addSwitch=(label,tab)=>{let group=panels[tab].querySelector('.settings-switches');if(!group){group=document.createElement('div');group.className='settings-switches';panels[tab].append(group);}group.append(label);};
   const switchRoot=page.querySelector('.settings-switches');
@@ -3442,7 +3467,7 @@ function initializeSplash() {
     enter.classList.add('show');
     autoCloseTimer = setTimeout(hide, 950);
   };
-  enter.addEventListener('click', hide);
+  enter.addEventListener('click', () => { primeAudioForInstrument(state.instrument); hide(); });
   setTimeout(reveal, 350);
 }
 let audioContext = null,masterGainNode = null,masterLimiterNode = null,stringsLayerGainNode = null,instrumentPrimeGeneration=0;
@@ -3674,7 +3699,7 @@ async function refreshHomeAudioStatus(cached=homeAudioCacheStatus.cached,total=h
   homeAudioCacheStatus={cached,total,progress};
   let instrumentSamples=0;
   try{if('caches' in window){const cache=await caches.open(AUDIO_CACHE_NAME);instrumentSamples=(await cache.keys()).length;}}catch(_){ }
-  const text=`${cached} de ${total} sonidos base guardados · ${instrumentSamples} muestras de instrumentos descargadas${progress?' · descargando…':''}.`;
+  const text=`${cached} de ${total} archivos de audio guardados para usar sin conexión · ${instrumentSamples} muestras externas en caché${progress?' · descargando…':''}.`;
   ['offlineStatus','devicePreviewOffline'].forEach(id=>{const target=$(id);if(!target)return;if(id==='devicePreviewOffline'){const span=target.querySelector('span');if(span)span.textContent=text;}else target.textContent=text;});
 }
 // Guarda en el dispositivo cada muestra de Cloudinary la primera vez que se descarga;
@@ -3764,7 +3789,8 @@ async function getInstrumentSample(midi, instrument = state.instrument, prefetch
         const cloudinaryUrl=`${CLOUDINARY_AUDIO_BASE}${cloudinaryPath.split('/').map(encodeURIComponent).join('/')}`;
         const cloudinaryFirst=cloudinaryHosted||isLayeredPiano||isVscoTrumpet||Boolean(vscoPatch)||Boolean(uprightPatch)||isCustomSample;
         const growlyRootUrl=isGrowlybass?`${CLOUDINARY_AUDIO_BASE}${filename.split('/').map(encodeURIComponent).join('/')}`:null;
-        const sources=isGrowlybass?[growlyRootUrl,cloudinaryUrl]:cloudinaryFirst?[cloudinaryUrl,localUrl]:[localUrl];let lastError=null;
+        const instantPackInstrument=['maestro-concert-grand','trumpet-vsco2-sus-vib'].includes(instrument);
+        const sources=isGrowlybass?[growlyRootUrl,cloudinaryUrl]:instantPackInstrument?[localUrl,cloudinaryUrl]:cloudinaryFirst?[cloudinaryUrl,localUrl]:[localUrl];let lastError=null;
         for(const source of sources){
           try{
             if(prefetchOnly){
@@ -3800,18 +3826,19 @@ function setInstrumentSampleLoop(source,sample){
   if(start>=0&&end>start&&end<sample.buffer.duration){source.loop=true;source.loopStart=start;source.loopEnd=end;}
 }
 function primeAudioForInstrument(instrument=state.instrument){
-  // Calienta unas notas centrales sin descargar toda la biblioteca al cambiar de sonido.
+  // Prepara una octava alrededor de la última nota usada para evitar esperas al empezar a tocar.
   const generation=++instrumentPrimeGeneration;
   void resumeAudioContext(getAudioContext()).catch(()=>{});
   const sampleSpec=INSTRUMENTS[instrument],firstNote=instrument==='grand-piano'?60:sampleSpec?.first??21,lastNote=instrument==='grand-piano'?76:sampleSpec?.last??108,warmRoot=Math.max(firstNote,Math.min(lastNote,state.lastMidi||60));
   const midis=instrument==='grand-piano'
     ? [60,64,67,62,65,69,72,...Array.from({length:17},(_,i)=>60+i).filter(midi=>![60,64,67,62,65,69,72].includes(midi))]
-    : [...new Set([warmRoot,Math.max(firstNote,Math.min(lastNote,warmRoot+7))])];
+    : [...new Set(Array.from({length:13},(_,index)=>Math.max(firstNote,Math.min(lastNote,warmRoot-6+index))))];
   const status=$('status'),pendingName=instrumentLabel(instrument);if(status&&instrument===state.instrument)status.textContent=`Preparando ${pendingName}…`;
   let failed=0;
   let next=0;
-  const worker=async()=>{while(generation===instrumentPrimeGeneration&&next<midis.length){const midi=midis[next++];try{if(instrument==='grand-piano')await getSample(midi);else await getInstrumentSample(midi,instrument);}catch(error){failed++;console.warn('No se pudo preparar una muestra de audio:',error);}}};
-  void Promise.all([worker(),worker()]).then(()=>{if(generation===instrumentPrimeGeneration&&instrument===state.instrument&&status)status.textContent=failed?`${pendingName}: algunas muestras se cargarán al tocar.`:`${pendingName} listo para tocar.`;});
+  const worker=async()=>{while(generation===instrumentPrimeGeneration&&next<midis.length){const midi=midis[next++];try{if(instrument==='grand-piano')await getSample(midi);else await getInstrumentSample(midi,instrument);if(state.stringsLayerEnabled&&state.stringsLayerVolume>0)await getOptionalLayerSample(midi);}catch(error){failed++;console.warn('No se pudo preparar una muestra de audio:',error);}}};
+  const concurrency=3;
+  void Promise.all(Array.from({length:concurrency},worker)).then(()=>{if(generation===instrumentPrimeGeneration&&instrument===state.instrument&&status)status.textContent=failed?`${pendingName}: algunas muestras de esta zona se cargarán al tocar.`:`Zona central de ${pendingName} lista.`;});
 }
 async function playChord(chord) {
   if(!chord.preview&&!state.bassSoundEnabled)return;
@@ -4063,6 +4090,18 @@ async function prepareMelodyAudio(notesToPrepare=state.notes) {
   await Promise.all([...loads,resumePromise]);
   return new Map(entries);
 }
+async function warmPlaybackAudio(groups=playbackGroupsForCurrentSong()) {
+  if(!groups.length)return;
+  const original={instrument:state.instrument,intensity:state.trumpetIntensity,headroomLayer:state.headroomVelocityLayer,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume,chords:state.chords};
+  try{
+    for(const group of groups){
+      const settings=group.settings||original,intensity=settings.intensity||'strong',pianoLayer=intensity==='very-soft'?1:intensity==='soft'?2:intensity==='medium'?3:intensity==='strong'?4:5;
+      Object.assign(state,{instrument:settings.instrument||original.instrument,trumpetIntensity:intensity,headroomVelocityLayer:settings.instrument==='livingroom-upright-micro'?(intensity==='soft'||intensity==='medium'?1:2):pianoLayer,stringsLayerEnabled:!!settings.layerEnabled,layerInstrument:settings.layerInstrument||original.layerInstrument,stringsLayerVolume:Number(settings.layerVolume??original.layerVolume),chords:group.chords||[]});
+      await prepareMelodyAudio(group.notes||[]);
+    }
+  }catch(error){console.warn('No se pudieron dejar listas todas las muestras antes de reproducir:',error);}
+  finally{Object.assign(state,{instrument:original.instrument,trumpetIntensity:original.intensity,headroomVelocityLayer:original.headroomLayer,stringsLayerEnabled:original.layerEnabled,layerInstrument:original.layerInstrument,stringsLayerVolume:original.layerVolume,chords:original.chords});}
+}
 function schedulePlaybackNote(midi,element,duration,when,prepared,cut,showReadout=true,soundKind='melody'){
   if(!(soundKind==='bass'?state.bassSoundEnabled:state.melodySoundEnabled))return;
   const context=getAudioContext(),entry=prepared.get(midi);
@@ -4142,6 +4181,8 @@ async function playMelody() {
   $('tempoControl').disabled=true;
   $('status').textContent = `${state.playMode==='performance'?'Reproduciendo alabanza':'Reproduciendo pista'} · ${Math.round(state.tempo*100)}%`;
   if(deviceSettings.songTitleStyle==='black-card'){await showBlackTitleIntro();if(!state.playing)return;}
+  // Quita las presentaciones de entrada antes de mostrar la cuenta de tres pulsos.
+  clearSongIntro();document.body.classList.remove('song-title-visible','cinematic-title-run','black-title-ready','black-title-intro');
   const context=getAudioContext(),countInBeat=60/metronomeBpm,countInStart=context.currentTime+.12,playbackStart=countInStart+countInBeat*3;
   const countIn=$('playbackCountIn');
   if(countIn){countIn.hidden=false;countIn.querySelector('strong').textContent='3';}
@@ -4649,7 +4690,7 @@ function bindInterface() {
     if(!state.song){freePlayInstrumentConfig.instrument=state.instrument;try { localStorage.setItem('yhwh_piano_instrument', state.instrument); } catch (_) {}}
     primeAudioForInstrument(state.instrument);
     syncInstrumentButtons();
-    $('status').textContent = `Instrumento seleccionado: ${instrumentLabel(state.instrument)}.`;
+    $('status').textContent = `Preparando ${instrumentLabel(state.instrument)}…`;
   };
   const sustainButton = $('sustainBtn');
   if (sustainButton) {
@@ -4738,6 +4779,7 @@ async function downloadOfflineAudio() {
   if (!('serviceWorker' in navigator)) { status.textContent='Este navegador no permite guardar sonidos para usarlos sin conexión.'; return; }
   if(navigator.onLine){offlineAudioDownloadRunning=true;status.textContent='Preparando descarga automática de sonidos…';}
   try {
+    try{await navigator.storage?.persist?.();}catch(_){}
     const registration=await navigator.serviceWorker.ready;
     if(navigator.onLine)await registration.update();
     if(registration.installing){
@@ -4917,7 +4959,7 @@ function applyDeviceCustomization(){
   const previewBg=$('devicePianoPreview')?.querySelector('.device-piano-preview-bg');if(previewBg){previewBg.style.backgroundImage=deviceSettings.backgroundImage?`url("${deviceSettings.backgroundImage}")`:'none';previewBg.style.filter=`blur(${deviceSettings.pianoImageBlur||0}px)`;previewBg.style.opacity=String(Number(deviceSettings.pianoImageOpacity??34)/100);}
   const previewBar=$('devicePreviewPianoNote')?.parentElement;if(previewBar){previewBar.style.background=deviceSettings.melodyColor;previewBar.style.color=deviceSettings.noteLabelColor||'#111111';}
   const soundBar=$('devicePreviewStyle');if(soundBar)soundBar.textContent=({bars:'Barras completas',melody:'Solo melodía',drops:'Gotas',off:'Sin barras'})[fallingNotesStyle]||'Barras completas';
-  if($('devicePreviewEffects'))$('devicePreviewEffects').textContent=fxGlow?`Efectos activados · ${FX_STYLE_OPTIONS.find(option=>option[0]===fxStyle)?.[1]||'Fuego'} · ${['','Suave','Normal','Intenso'][fxIntensity]} · ${fxDuration.toFixed(1)} s${fxStyle==='gold'?` · halo ${goldImpactGlow?'activo':'inactivo'}`:''}`:goldImpactGlow&&fxStyle==='gold'?'Halo dorado activo · partículas apagadas':'Efectos apagados';
+  if($('devicePreviewEffects'))$('devicePreviewEffects').textContent=fxGlow?`Efectos activados · ${FX_STYLE_OPTIONS.find(option=>option[0]===fxStyle)?.[1]||'Humo con chispas'} · ${['','Suave','Normal','Intenso'][fxIntensity]} · ${fxDuration.toFixed(1)} s${fxStyle==='gold'?` · halo ${goldImpactGlow?'activo':'inactivo'}`:''}`:goldImpactGlow&&fxStyle==='gold'?'Halo dorado activo · partículas apagadas':'Efectos apagados';
   const volumeMeter=$('devicePreviewVolume')?.querySelector('i');if(volumeMeter)volumeMeter.style.width=`${Math.max(0,Math.min(100,state.masterVolume*50))}%`;
   const textPreview={devicePreviewBrandText:deviceSettings.brand,devicePreviewWorship:deviceSettings.worship,devicePreviewJoy:deviceSettings.joy,devicePreviewFreePlay:deviceSettings.freePlay};Object.entries(textPreview).forEach(([id,value])=>{if($(id))$(id).textContent=value;});
 }
@@ -5050,7 +5092,7 @@ function initializeDeviceSettings(){
     const resetNotation=useMobileProfile?'latino':'americano';
     const resetMelodyColor=useMobileProfile?MOBILE_FIRST_VISIT_PROFILE.melodyColor:'#90dd4a';
     const resetBassColor=useMobileProfile?MOBILE_FIRST_VISIT_PROFILE.bassColor:'#bb82ef';
-    deviceSettings={...DEVICE_SETTINGS_DEFAULTS,...DEVICE_THEME_PALETTES[resetTheme],paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},theme:resetTheme,themeMode:resetTheme,headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',headingHeight:58,pianoHeaderHeight:58,mobileHeadingSize:18,homeButtonHeight:46,backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,noteNotation:resetNotation,noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,melodyColor:resetMelodyColor,bassColor:resetBassColor,masterVolume:100,layerEnabled:false,layerVolume:70,fallingStyle:'bars',fxGlow:false,fxStyle:'fire',barLook:'normal',barColor2:BAR_COLOR_DEFAULTS[0],barColor3:BAR_COLOR_DEFAULTS[1],barBassDiff:true,lightKeys:true,...(useMobileProfile?MOBILE_FIRST_VISIT_PROFILE:{})};
+    deviceSettings={...DEVICE_SETTINGS_DEFAULTS,...DEVICE_THEME_PALETTES[resetTheme],paletteLight:{...DEVICE_THEME_PALETTES.light},paletteDark:{...DEVICE_THEME_PALETTES.dark},theme:resetTheme,themeMode:resetTheme,headingFont:'Inter, system-ui, Arial, sans-serif',headingColor:'#087da8',iconColor:'#ffffff',headingHeight:58,pianoHeaderHeight:58,mobileHeadingSize:18,homeButtonHeight:46,backgroundImage:'',pianoImageBlur:9,pianoImageOpacity:34,noteNotation:resetNotation,noteLabelSize:12,noteLabelColor:'#111111',keyLabelColor:'#636a6c',keyLabelSize:9,octaveLabelColor:'#bd9e00',octaveLabelSize:11,melodyColor:resetMelodyColor,bassColor:resetBassColor,masterVolume:100,layerEnabled:false,layerVolume:70,fallingStyle:'bars',fxGlow:false,fxStyle:'smoke',barLook:'normal',barColor2:BAR_COLOR_DEFAULTS[0],barColor3:BAR_COLOR_DEFAULTS[1],barBassDiff:true,lightKeys:true,...(useMobileProfile?MOBILE_FIRST_VISIT_PROFILE:{})};
     state.keyColor=deviceSettings.melodyColor;state.bassColor=deviceSettings.bassColor;state.notation=resetNotation;
     fxGlow=!!deviceSettings.fxGlow;goldImpactGlow=useMobileProfile?!!deviceSettings.goldImpactGlow:true;lightKeys=true;document.body.classList.toggle('keys-fill-off',!lightKeys);resetNeonEdge();setNoteLabelOutline(useMobileProfile);
     try{localStorage.setItem('yhwh_piano_key_color',state.keyColor);localStorage.setItem('yhwh_piano_bass_color',state.bassColor);localStorage.setItem('yhwh_piano_note_labels',useMobileProfile?'octavas':'americano');localStorage.setItem('yhwh_cifrado_latino',resetNotation==='latino'?'1':'0');localStorage.setItem('yhwh_piano_show_octave',useMobileProfile?'1':'0');localStorage.setItem('yhwh_piano_fx_glow',fxGlow?'1':'0');localStorage.setItem('yhwh_piano_light_keys','1');}catch(_){}

@@ -188,6 +188,8 @@ function openSong(song, category, trackType='introduccion',autoPlay=false,playMo
   else if(deviceSettings.songTitleStyle==='black-card'){document.body.dataset.songPresentation='black-card';document.body.classList.remove('cinematic-title-run','black-title-intro');document.body.classList.add('black-title-ready');}
   else document.body.classList.remove('black-title-ready','black-title-intro');
   updateTrackTimeline();
+  // Decodifica por adelantado las muestras de esta alabanza mientras el usuario la prepara.
+  void warmPlaybackAudio();
   $('activeKeyName').textContent=state.songTonic?`Tono ${state.songTonic}`:'';
   updateTransposeUI();
   const trackLabel=SONG_TRACK_LABELS[trackType]||'Introducción';

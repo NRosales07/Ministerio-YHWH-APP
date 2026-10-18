@@ -38,7 +38,7 @@ async function getStringsSample(midi){
     let pending=state.stringsSampleLoads.get(sample.midi);
     if(!pending){
       pending=(async()=>{
-        const sources=[...(sample.cloudinaryId?[`${CLOUDINARY_AUDIO_BASE}${sample.cloudinaryId}.wav`]:[]),`audio/strings/${sample.file}`];
+        const sources=[`audio/strings/${sample.file}`,...(sample.cloudinaryId?[`${CLOUDINARY_AUDIO_BASE}${sample.cloudinaryId}.wav`]:[])];
         let lastError=null;
         for(const source of sources){
           try{

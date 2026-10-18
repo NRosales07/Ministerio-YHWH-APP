@@ -437,7 +437,7 @@ function bindInterface() {
     if(!state.song){freePlayInstrumentConfig.instrument=state.instrument;try { localStorage.setItem('yhwh_piano_instrument', state.instrument); } catch (_) {}}
     primeAudioForInstrument(state.instrument);
     syncInstrumentButtons();
-    $('status').textContent = `Instrumento seleccionado: ${instrumentLabel(state.instrument)}.`;
+    $('status').textContent = `Preparando ${instrumentLabel(state.instrument)}…`;
   };
   const sustainButton = $('sustainBtn');
   if (sustainButton) {

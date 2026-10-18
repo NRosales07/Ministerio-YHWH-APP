@@ -1,0 +1,29 @@
+#define $ART mcr
+master_label=$ART
+trigger=release
+rt_decay=3
+group=2
+
+<group>
+lovel=$REL_LOVEL1
+hivel=$REL_HIVEL1
+#define $DYN mp
+#include "Data/region.txt"
+
+<group>
+lovel=$REL_LOVEL2
+hivel=$REL_HIVEL2
+#define $DYN mf
+#include "Data/region.txt"
+
+<group>
+lovel=$REL_LOVEL3
+hivel=$REL_HIVEL3
+#define $DYN f
+#include "Data/region.txt"
+
+<group>
+lovel=$REL_LOVEL4
+hivel=$REL_HIVEL4
+#define $DYN ff
+#include "Data/region.txt"
