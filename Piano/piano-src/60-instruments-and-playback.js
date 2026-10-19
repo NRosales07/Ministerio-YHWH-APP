@@ -427,7 +427,7 @@ function playbackGroupsForCurrentSong(){
 async function playMelody() {
   const playbackGroups=playbackGroupsForCurrentSong(),playbackChords=playbackGroups.flatMap(group=>group.chords.map(chord=>({...chord,_playbackTrack:group.type})));let playbackNotes=playbackGroups.flatMap(group=>group.notes);
   const drumPattern=readSongDrumPattern();
-  if (!playbackNotes.length) { toast(state.melodyType==='voz'?'Activa al menos una voz para escucharla.':'Esta pista todavía no tiene melodía grabada.'); $('status').textContent = 'No hay notas seleccionadas para reproducir.'; return; }
+  if (!playbackNotes.length) { if(drumPadRecordAlongPending)cancelDrumPadRecordAlong();toast(state.melodyType==='voz'?'Activa al menos una voz para escucharla.':'Esta pista todavía no tiene melodía grabada.'); $('status').textContent = 'No hay notas seleccionadas para reproducir.'; return; }
   stopPlayback();
   document.body.classList.remove('playback-finished');
   state.selectedSongChord=null;
@@ -450,6 +450,7 @@ async function playMelody() {
     if(drumPattern.events.length){try{await loadDrumPadBuffers();}catch(error){console.warn('Se omitió el patrón de batería porque no se pudieron cargar sus sonidos:',error);toast('La melodía seguirá sin batería; no se cargaron sus sonidos.');}}
     state.playbackPreparing=false;
   } catch (error) {
+    if(drumPadRecordAlongPending)cancelDrumPadRecordAlong();
     state.playbackPreparing=false;state.playing = false;setStagePlaying(false);
     stopFallingNotes();
     resetPlaybackTimeline();
@@ -530,6 +531,7 @@ async function playMelody() {
   const end = Math.max(noteEnd, chordEnd);
   scheduleSongDrumPattern(drumPattern,playbackStart,end);
   startPlaybackTimeline(playbackStart,end);
+  beginDrumPadRecordAlongSong(playbackStart,end);
   startFallingNotes(playbackNotes,playbackChords,playbackStart,fallingEvents);
   state.playTimers.push(setTimeout(() => { state.playing = false; setStagePlaying(false); document.body.classList.add('playback-finished'); finishFallingNotesPlayback(); if(timelineFrame)cancelAnimationFrame(timelineFrame);timelineFrame=0;timelineStartedAt=0;updatePlaybackTimeline(end,end);$('tempoControl').disabled=false; setPlayerControl('playMelody','▶','Reproducir'); $('status').textContent = state.playMode==='performance'?'Reproducción terminada.':'Pista terminada.'; }, Math.max(0,(playbackStart-context.currentTime+end)*1000+500)));
 }

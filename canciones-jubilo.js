@@ -22,7 +22,7 @@ var SONGS_JUBILO =
     "title": "¿QUIÉN COMO JEHOVÁ?",
     "compositor": "Ebenezer",
     "tono": "Em",
-    "album": "Alabanzas de Júbilo",
+    "album": "Todo Adorable - 2013",
     "content": "[VERSO 1]:\n           Em                                         G\nX4    ¿Quién, quién, quién como Jehová?, \n             Am   B                 Em\nQue con su poder el mar abrió.   X4\n[CORO]:\n Am             B                   Em  \nOirán las naciones lo que hizo \n    Am                     D            G-Em\nCantaran cuando vean sus prodigios,\n                  B                                  C \nX2     Su pueblo le alabara, con pandero danzara, \n      D       B                           Em\nY dirán quién, quién como Jehová.  X2\nTROMPETAS                                      \n[VERSO 1]:   X2      |      [CORO]:   X2\n             D       B                            Em\nX2   Y dirán quién, quién como Jehová.  X2",
     "id": 302
   },
@@ -31,7 +31,7 @@ var SONGS_JUBILO =
     "title": "EN EL PRINCIPIO",
     "compositor": "Ebenezer",
     "tono": "Em",
-    "album": "Alabanzas de Júbilo",
+    "album": "Todo Adorable - 2013",
     "content": "[VERSO 1]:    |    JOSELINE CANTA LENTO:\n\n                      Em                             B                                                \nX2     En el principio el Espíritu de Dios, \n                                  Em\nSe movía sobre las aguas.     X2\n\n\n[CORO]:   |    NAIN CANTA LENTO\n                  Am-D              G-Em\nX2     Pero ahora se está moviendo \n             B          Em\nDentro de mi corazón.    X2\n\n\n\n\n\n\nENTRA LA BATERIA... Y SE CANTA DE NUEVO:\n[VERSO 1]:  X2         |       [CORO]:  X2\n\n\nSe movía (Se movía),  Se movía (Se movía) Se movía...\n\n\n\n\nTROMPETAS     |   SE CANTA RÁPIDO:\n[VERSO 1]: X2       |      [CORO]:  X4\n\n\n\nTROMPETAS \n [CORO]:  X4\n",
     "id": 303
   },
@@ -67,7 +67,7 @@ var SONGS_JUBILO =
     "title": "JERUSALÉN",
     "compositor": "Ebenezer",
     "tono": "Em",
-    "album": "Alabanzas de Júbilo",
+    "album": "Todo Adorable - 2013",
     "content": "[VERSO 1]:\n            Em        C                     B    \nX2    Jerusalén      que bonita eres, \n                                    Em\nCalles de oro mar de cristal.  X2\n[CORO]:\n                         Am                    Em                             \nX4    Por esas calles yo voy a caminar \n                 B                Em\nCalles de oro mar de cristal.    X4         \n\n\n\n\nSE REPITE TODO",
     "id": 307
   },
@@ -224,7 +224,7 @@ var SONGS_JUBILO =
     "title": "PON ACEITE EN MI LÁMPARA",
     "compositor": "Ebenezer",
     "tono": "Em",
-    "album": "Alabanzas de Júbilo",
+    "album": "Todo Adorable - 2013",
     "content": "TROMPETAS | Em | B | Em-E | Am | Em-B-Em |\n[VERSO 1]:\n                 Em           \nX2    Pon aceite en mi lámpara Señor, \n                                             B\nPon aceite en mi lámpara Señor\n                E                          Am\nQue yo quiero servirte con amor, \n          Em                  B       Em         \nPon aceite en mi lámpara Señor.   X2\n[CORO]:\n              B                     Em\nSeñor Jesús tu eres mi vida, \n              B                      Em\nSeñor Jesús tu eres mi amor,\n    Am                     Em\nSalvaste mi alma perdida, \n                    B                   Em\nPor eso te alabo con el corazón,\n    Am                    Em\nSalvaste mi alma perdida, \n                    B                   Em\nPor eso te alabo con el corazón.   \n\n\n\n\n\n\n\n\n\nCANTAR SIGUIENTE ALABANZA   \n\n",
     "id": 325
   },
@@ -574,7 +574,7 @@ var SONGS_JUBILO =
     "title": "HUELE A VICTORIA",
     "compositor": "Ebenezer",
     "tono": "Gm",
-    "album": "Alabanzas de Júbilo",
+    "album": "Nuestro Legado - 2004",
     "content": "SE CANTA LENTO:\n                                   Gm                \nX2    A que huele un guerrero… \n                F            Gm\nCuando viene de batalla,\n                Gm          F          Gm\n(Huele a victoria, Huele a victoria)    \nX2    Porque Jehová está con él…\n\n\n\n\n\n\n\n\n\n\n\nTROMPETAS    | Gm | F | Gm | F |\n\n\n[VERSO 1]:\n            Gm                                F                   Gm\n X2     Somos como escudos, tres son los valientes,\n                                     F            Gm         [D]\nY con su espíritu venceremos siempre.    X2\n                     Gm        \n X4     A que huele un guerrero, \n                 F               Gm   [D]\nCuando viene de la batalla.     X4\n\n\n[CORO]:    \n                          Gm    F               Eb\nX2      Huele a victoria, huele a victoria       X2\n[VERSO 2]:\n          Cm                Dm    Eb                 F       [D]\n X2     Si con Dios peleas esto sabe a gloria…   X2    \n[CORO]   \n                             Gm      F                 Eb \nX2   Esto sabe a gloria, esto sabe a gloria…     X2\nX2      Huele a victoria, huele a victoria       X2\n",
     "id": 367
   },
@@ -583,7 +583,7 @@ var SONGS_JUBILO =
     "title": "JEHOVÁ GIBBOR",
     "compositor": "Ebenezer",
     "tono": "Gm",
-    "album": "Alabanzas de Júbilo",
+    "album": "Todo Adorable - 2013",
     "content": "TROMPETAS    | Gm | F | Eb | Cm | D\n[VERSO 1]:\nX2     A la presencia de Jehová...      X2   \n| Gm | F | Eb | Cm | D |\n[PRE-CORO]:\nX2  ¿Qué tuviste, oh mar que huiste?      X2   \n| D | Eb | Cm | D |\n[VERSO 1]:\nX2   A la presencia de Jehová...   X2\n[PRE-CORO]:\nX2  Él convirtió la peña...                X2\n[CORO]:\n                       D                Eb             Cm  \nX2   Y ahora salta, ahora salta, ahora salta, \n               D\nPara tu Dios…   X2   \n\n\nDanza  |  Gira  |  Grita  |  Corre\n\n\n\n\n\n\n\n\nTROMPETAS\n\n\n\n\n\n\nSE REPITE TODO\n\n\n\n\n\n\n\n\n\n\n\nTROMPETAS\nFINAL",
     "id": 368
   },
@@ -600,7 +600,7 @@ var SONGS_JUBILO =
     "title": "ME GOZARÉ",
     "compositor": "Ebenezer",
     "tono": "Am",
-    "album": "Alabanzas de Júbilo",
+    "album": "Nuestro Legado - 2004",
     "content": "TROMPETAS   | Am | G | Dm | E7 |\n[VERSO 1]:\nX2   Cuando el Señor hiciere volver la cautividad…    X2\nX2   Mi boca llenará de risa...   X2\n[CORO]:\nX2   Me gozaré, me gozaré, me gozaré...   X2\n\n\n\n\nSE REPITE TODO\n\n\n\n\n\nTROMPETAS              \n[VERSO 2]:\nX2  Así como David cantaba...   X2\nX2   Yo cantaré, Yo danzaré...    X2\n\n\n\nTROMPETAS              \n\n[CORO]:  X2",
     "id": 370
   },
@@ -616,9 +616,9 @@ var SONGS_JUBILO =
   {
     "num": null,
     "title": "DESIERTO EN PARAÍSO",
-    "compositor": "Tradicional",
+    "compositor": "Hannah Ponce",
     "tono": "Gm",
-    "album": "Alabanzas de Júbilo",
+    "album": "Desierto en Paraíso - 2019",
     "content": "TROMPETAS    | Gm | Eb | Bb | F |\n[VERSO 1]:\n                Gm                            Bb\nX2    Mi Desierto en paraíso convirtió, \n        Cm                                    D\nMis tierras secas ahora son huertos de Jehová\n         Gm                           Bb              Cm\nCada una de mis ruinas consoló, De lugares\n      Cm                 Eb                              D\nDesolados y de oscura soledad él me sacó X2\n\n[PRE-CORO]:\n                Eb                                   Bb \nY en Él encontré, mi alegría y mi consuelo, \n           Dm                                         Gm – F\nY mi gratitud, me hace darle canto nuevo.\n                          Eb                                   Bb       \nPorque en él encontré, mi alegría y mi consuelo, \n             F                      Cm                 D\nY mi gratitud, me hace darle canto nuevo…\n[CORO]:\n       Gm                             Eb  \nX2   ¡Ven y toca hoy mi corazón Señor! \n               Bb                   F         D\n¡Pon tu alegría donde había lamento!\n Gm                          Eb    \n¡Ven y toca hoy mi corazón Señor! \n Bb                                   F         D\n¡Que tu rio fluya donde había desierto! X2\n\n\n\n\n\nTROMPETAS                         \n\n\n\n\n[PRE-CORO]:      |     [CORO]:   X2\n\n\n\n\n\n[PUENTE]:\n                               Eb                              Bb\nX2     Y en un de repente, todo puedes cambiar,\n                  Eb                                      Bb\nEn un de repente, haces ríos en la sequedad.    X2\n[PUENTE]:\n                                           Gm  \nX2      Soplas vida en los huesos secos, \n                          Bb\nCambiaste mi lamento en baile,\n                     Cm                     \nTomaste mi corazón de piedra \n                                             D\nY me diste un corazón de carne.     X2\n\n\n\n\n\n\n\n\nTROMPETAS",
     "id": 372
   },
@@ -636,7 +636,7 @@ var SONGS_JUBILO =
     "title": "¿QUIÉN LO DIRÍA?",
     "compositor": "Ebenezer",
     "tono": "Cm",
-    "album": "Alabanzas de Júbilo",
+    "album": "Culto en Vivo",
     "content": "TROMPETAS    | Cm | Bb | Ab-Fm | G |\n[VERSO 1]:\n   Cm         Bb           Ab-Fm             \n¿Quién lo diría? Que yo            \n      G\nDanzaría en tu casa, Señor,\n   Cm         Bb            Ab-Fm             \n¿Quién lo diría? Que yo            \n      G\nAbrazaría tu gloria, Señor.\n[CORO]:\n           Cm                                             Bb\nVoy a perder la compostura, delante de ti,\n            Ab                                    Fm   \nVoy a cantar, voy a danzar voy a reír, \n           G\nYo lo hago solo para ti.\n            Cm                                            Bb\nVoy a perder la compostura, delante de ti,\n                 Ab                              Fm                    \nQué me importa que me digan aleluya,\n           G\nYo lo hago solo para ti.\n\n\n\n\n\n\n\n\n\n\nTROMPETAS\n\n\n\n\n\n\n[VERSO 2]:\n| Cm | Bb | Ab-Fm | G |\n                         Cm    \nX4    Que me importa que critiquen  que no entiendan \n                                         Bb\nQue me digan que estoy loco,\n    Ab-Fm        G\nSi yo,        lo hago solo para ti.     X4                                                                                                                                                           \n\n\n[CORO]:\nVoy a perder la compostura...\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nX2   Yo lo hago solo para ti.  X2",
     "id": 375
   },
@@ -677,12 +677,13 @@ var SONGS_JUBILO =
     "id": 379
   },
   {
-    "id": 380,
+    "num": null,
     "title": "GRAN REY",
-    "compositor": "Tradicional",
+    "compositor": "Génesis Campos",
     "tono": "Bm",
-    "album": "Alabanzas de Júbilo",
-    "content": "TROMPETAS     | G | F#m7 | Bm |     —    | Bm | A-G | A-Bm | G-F#m-Bm |\n[VERSO 1]:\n                    A       D            G       A-Bm                                                              D                                       A\nNo hay nada que dé más felicidad hoy mi señor, que estar al lado tuyo Dios y contemplar tu grande amor.\n           G                             A      Bm                                               A      D                             A\nSolo tu podías ser aquel gran rey con gran poder, que dejó su deidad para darnos libertad.\n[CORO]:\n                    G                                   A                 Bm                              A           D                                              A\nY veo a miles de naciones que hoy cantan a tu nombre, y me uno a esas voces para darte gloria Rey,\n                        G                      A       Bm              A       G[G-Em]     A               Bm [F#]\nY cantan santo santo santo santo, y dicen santo santo al gran Rey.\nTROMPETAS"
+    "album": "Renacer",
+    "content": "TROMPETAS     | G | F#m7 | Bm |     —    | Bm | A-G | A-Bm | G-F#m-Bm |\n[VERSO 1]:\n                    A       D            G       A-Bm                                                              D                                       A\nNo hay nada que dé más felicidad hoy mi señor, que estar al lado tuyo Dios y contemplar tu grande amor.\n           G                             A      Bm                                               A      D                             A\nSolo tu podías ser aquel gran rey con gran poder, que dejó su deidad para darnos libertad.\n[CORO]:\n                    G                                   A                 Bm                              A           D                                              A\nY veo a miles de naciones que hoy cantan a tu nombre, y me uno a esas voces para darte gloria Rey,\n                        G                      A       Bm              A       G[G-Em]     A               Bm [F#]\nY cantan santo santo santo santo, y dicen santo santo al gran Rey.\nTROMPETAS",
+    "id": 380
   },
   {
     "num": null,
@@ -735,12 +736,13 @@ var SONGS_JUBILO =
     "id": 386
   },
   {
-    "id": 387,
+    "num": null,
     "title": "CANTOS DE LIBERACIÓN",
-    "compositor": "Tradicional",
+    "compositor": "Ebenezer",
     "tono": "Cm",
-    "album": "Alabanzas de Júbilo",
-    "content": "MIX 12  |  EBENEZER\nMIX 12  |  EBENEZER\nTROMPETAS    | Cm | Fm7 | Ab7  | G7 |\n[VERSO 1]:\n                  G      Cm                                       Fm7\nX2     ¿Cantos de liberación, son los que me rodearán\n        Ab7                G7                Cm                       Ab7\nAl shofar del jubileo, las cadenas se abren ya.   X2\n[CORO]:\nG    Fm7             Cm            Fm                  Cm              Fm            Cm    Ab      G7\nEl triste tiene vino, el ansioso tiene paz, pues hoy ha llegado tu libertad.\nG    Fm7                     Cm               Fm            Cm                  Fm                  Cm                Ab                   G7\nEl cansado tiene fuerza, el enfermo sanidad, el pecador se arrepiente, y limpio queda ya.\nTROMPETAS"
+    "album": "Todo Adorable - 2013",
+    "content": "MIX 12  |  EBENEZER\nMIX 12  |  EBENEZER\nTROMPETAS    | Cm | Fm7 | Ab7  | G7 |\n[VERSO 1]:\n                  G      Cm                                       Fm7\nX2     ¿Cantos de liberación, son los que me rodearán\n        Ab7                G7                Cm                       Ab7\nAl shofar del jubileo, las cadenas se abren ya.   X2\n[CORO]:\nG    Fm7             Cm            Fm                  Cm              Fm            Cm    Ab      G7\nEl triste tiene vino, el ansioso tiene paz, pues hoy ha llegado tu libertad.\nG    Fm7                     Cm               Fm            Cm                  Fm                  Cm                Ab                   G7\nEl cansado tiene fuerza, el enfermo sanidad, el pecador se arrepiente, y limpio queda ya.\nTROMPETAS",
+    "id": 387
   },
   {
     "num": null,
@@ -761,12 +763,13 @@ var SONGS_JUBILO =
     "id": 389
   },
   {
-    "id": 390,
+    "num": null,
     "title": "LAS RIQUEZAS Y LA GLORIA",
-    "compositor": "Tradicional",
+    "compositor": "Ebenezer",
     "tono": "Em",
-    "album": "Alabanzas de Júbilo",
-    "content": "MIX 10  |  EBENEZER\nMIX 10  |  EBENEZER\n    TROMPETAS   | Em | B | Em | B | A-B-C-D-E |\n[CORO]:\n                        Em                                                       B                                   Em\nX2    Las riquezas y la gloria proceden de ti y sobre todo dominas,"
+    "album": "Todo Adorable - 2013",
+    "content": "MIX 10  |  EBENEZER\nMIX 10  |  EBENEZER\n    TROMPETAS   | Em | B | Em | B | A-B-C-D-E |\n[CORO]:\n                        Em                                                       B                                   Em\nX2    Las riquezas y la gloria proceden de ti y sobre todo dominas,",
+    "id": 390
   },
   {
     "id": 391,
@@ -815,7 +818,7 @@ var SONGS_JUBILO =
     "title": "ENTONCES LA IGLESIA",
     "compositor": "Ebenezer",
     "tono": "Em",
-    "album": "Alabanzas de Júbilo",
+    "album": "Todo Adorable - 2013",
     "content": "TROMPETAS     | Em | Am-B | Em |\n[VERSO 1]:\n             Em      \nX2    Entonces la iglesia se alegrará en la danza, \n         Am             B             Em\nLos jóvenes y ancianos juntamente. X2\n[CORO]:\n         Am-D                      G-Em    B                   Em\nX2   Cambiaré su lloro en gozo y los alegraré en él,\n  Am-D                     G-Em            B\nCambiaré su lloro en gozo, me alegraré, \n                               Em\nMe alegraré en el Señor.   X2\n\n\n\nTROMPETAS\n\n\n\nSE REPITE TODO",
     "id": 396
   },
@@ -824,7 +827,7 @@ var SONGS_JUBILO =
     "title": "GRITA, CANTA, DANZA",
     "compositor": "Ebenezer",
     "tono": "Cm",
-    "album": "Alabanzas de Júbilo",
+    "album": "Culto en Vivo",
     "content": "TROMPETAS   | Cm | Ab | Bb | G |\n[CORO]:\n         Cm                                                            Ab\nX2    Grita, canta, danza alegremente en su presencia, \n                                                    Bb\nGira, salta dando vueltas para Cristo\n              G                                       Cm\nÉl vive, vive para siempre, Él es el Rey.     X2\n\n\n\n\nTROMPETAS \n[CORO]:   X2\n\nTROMPETAS",
     "id": 397
   },
@@ -987,12 +990,13 @@ var SONGS_JUBILO =
     "content": "[VERSO 1]:\n              C                                                                                                     G                         Dm                            G\nVa bajando ya, va bajando ya, va bajando la gloria de Jehová, si esta Iglesia empieza a orar,\n        Em                    Am                   Dm               G                C\nEl Señor va a contestar, va bajando la gloria de Jehová.\n[VERSO 2]:\n                     C                                                                                                                                     Dm     G       C\nX2    La gloria de Jehová cayó en la Profecía y esta iglesia temblaba porque Dios está aquí.  X2\n[CORO]:\n            F                              C                                                                                           Dm    G       C\nX2   Dios está aquí, Dios está aquí y esta iglesia temblaba porque Dios está aquí. X2         SE REPITE TODO"
   },
   {
-    "id": 417,
+    "num": null,
     "title": "ALELUYEMOS",
-    "compositor": "Tradicional",
+    "compositor": "Ebenezer",
     "tono": "Em",
-    "album": "Alabanzas de Júbilo",
-    "content": "TROMPETAS     | Em | C | D | B |\n[VERSO 1]:\n          Em                                                                  D\nAleluyemos con todo nuestro ser, Aleluyemos solo para Él,\n          C                                        Am                B\nAleluyemos con grande honor, si el Dios de los cielos,\nSe ha mudado a mi corazón.\n          Em                                                                  D\nAleluyemos con todo nuestro ser, Aleluyemos solo para Él,\n        C                                       Am                     B\nAleluyemos con grande honor y como no aleluyar,\nSi mi Dios vivo está.\n[CORO]:\n             Em-C-D                                                                       B\nX3    Alelu, Alelu, Alelu, Aleluyemos.    X3     Aleluyemos hoy…\n             Em-C-D                                                                       B\nX3    Alelu, Alelu, Alelu, Aleluyemos.    X3     Aleluyemos hoy…"
+    "album": "Todo Adorable - 2013",
+    "content": "TROMPETAS     | Em | C | D | B |\n[VERSO 1]:\n          Em                                                                  D\nAleluyemos con todo nuestro ser, Aleluyemos solo para Él,\n          C                                        Am                B\nAleluyemos con grande honor, si el Dios de los cielos,\nSe ha mudado a mi corazón.\n          Em                                                                  D\nAleluyemos con todo nuestro ser, Aleluyemos solo para Él,\n        C                                       Am                     B\nAleluyemos con grande honor y como no aleluyar,\nSi mi Dios vivo está.\n[CORO]:\n             Em-C-D                                                                       B\nX3    Alelu, Alelu, Alelu, Aleluyemos.    X3     Aleluyemos hoy…\n             Em-C-D                                                                       B\nX3    Alelu, Alelu, Alelu, Aleluyemos.    X3     Aleluyemos hoy…",
+    "id": 417
   },
   {
     "id": 418,
@@ -1007,7 +1011,7 @@ var SONGS_JUBILO =
     "title": "LA MESA",
     "compositor": "Ebenezer",
     "tono": "Am",
-    "album": "Alabanzas de Júbilo",
+    "album": "Culto en Vivo",
     "content": "TROMPETAS      | Am | G-Am | E |   \n                            | F | Am | G | Dm |\n[VERSO 1]:\n        Am                                 C          \nReconocerán que Jesús es Dios, \n Dm             G       Am          Bb              \nToda lengua lo confesará.\n       Am                      C    \nNo habrá duda ni argumento, \n           Dm               G            Am\nEstá sentado a la diestra del Señor.\n[VERSO 2]:\n           F      C    G                                Am             F    \nSe levanta hoy,        el canto de los redimidos,       \n                  C     E                     Am\nJesús es Dios,       Mesías escogido.\n[CORO]:\n                    F                                               Am \nX2     El preparará mesa delante de mis enemigos, \nG                   Dm\nYo cenaré y beberé.  X2\n\n\n\n\nTROMPETAS\n\n\n\n[CORO]:   X2",
     "id": 419
   },
