@@ -217,16 +217,21 @@ function melodyTracks(record){
   if(!record)return tracks;
   if(Array.isArray(record.notas)){tracks.introduccion=record;return tracks;}
   SONG_TRACK_TYPES.forEach(type=>{tracks[type]=record[type]||null;});
+  Object.entries(record.melodiasAlternas||{}).forEach(([id,variation])=>{tracks[`melodiaAlterna_${id}`]=variation?.track||null;});
   tracks.trackSettings=record.trackSettings&&typeof record.trackSettings==='object'?record.trackSettings:{};
+  tracks.alternateMelodyNames=Object.fromEntries(Object.entries(record.melodiasAlternas||{}).map(([id,item])=>[id,String(item?.nombre||'Melodía alternativa') ]));
   return tracks;
 }
 function serializeMelodyTracks(source,tracks){
   const stored=source&&typeof source==='object'&&!Array.isArray(source.notas)?{...source}:{};
   delete stored.notas;
   SONG_TRACK_TYPES.forEach(type=>{if(tracks[type])stored[type]=tracks[type];else delete stored[type];});
+  const alternates={};Object.keys(tracks.alternateMelodyNames||{}).forEach(id=>{alternates[id]={nombre:tracks.alternateMelodyNames[id]||'Melodía alternativa',track:tracks[`melodiaAlterna_${id}`]||null};});
+  if(Object.keys(alternates).length)stored.melodiasAlternas=alternates;else delete stored.melodiasAlternas;
   if(Object.keys(tracks.trackSettings||{}).length)stored.trackSettings=tracks.trackSettings;else delete stored.trackSettings;
   return stored;
 }
+function songTrackLabel(type,category=selectedCreateSong?.category,id=selectedCreateSong?.song?.id){if(SONG_TRACK_LABELS[type])return SONG_TRACK_LABELS[type];const key=String(type||'').startsWith('melodiaAlterna_')?String(type).slice('melodiaAlterna_'.length):'';return key?(melodyFor(category,id)?.melodiasAlternas?.[key]?.nombre||'Melodía alternativa'):'Introducción';}
 function trackFor(category,id,type=state.melodyType){return melodyTracks(melodyFor(category,id))[type]||null;}
 function hasTrack(category,id,type){return !!trackFor(category,id,type)?.notas?.length;}
 function hasMelody(category, id) { return SONG_TRACK_TYPES.some(type=>hasTrack(category,id,type)); }

@@ -8,17 +8,41 @@ function openCreateTrackScreen(){
     const exists=hasTrack(category,song.id,button.dataset.recordTrack);
     const label=button.querySelector('em');if(label)label.textContent=exists?'Grabación guardada · puedes reemplazarla':'Aún no grabada';
   });
+  renderAlternateMelodyButtons(category,song.id);
   transitionScreen('createTrackScreen',['homeView','songView','createView','theoryView','createTrackScreen','player','instrumentSettingsScreen']);
   document.body.classList.remove('create-list-active');
   queueGuidedTour('grabar');
 }
+function openCreateSongDrumPad(){
+  if(!selectedCreateSong)return;
+  const {song,category}=selectedCreateSong,tracks=melodyTracks(melodyFor(category,song.id));
+  const alternateTypes=Object.keys(tracks).filter(type=>type.startsWith('melodiaAlterna_'));
+  const guideType=['melodia',...alternateTypes,'voz','introduccion'].find(type=>tracks[type]?.notas?.length);
+  if(guideType)openSong(song,category,guideType,false,'record');
+  openDrumPadScreen();
+  drumPadReturnScreen='createTrackScreen';
+}
 function beginCreateTrack(type){
-  if(!selectedCreateSong||!['melodia','acompanamiento1','acompanamiento2'].includes(type))return;
+  if(!selectedCreateSong||(!['melodia','acompanamiento1','acompanamiento2'].includes(type)&&!/^melodiaAlterna_[a-zA-Z0-9_-]+$/.test(type)))return;
   if(!state.admin){toast('Solo Admin puede grabar pistas.');return;}
   selectedCreateTrack=type;
   const {song,category}=selectedCreateSong;
   state.pendingSong={song,category};state.pendingPurpose='create';
   openSong(song,category,type,false,'record');
+}
+function renderAlternateMelodyButtons(category,id){
+  const list=$('alternateMelodyList');if(!list)return;const variations=melodyFor(category,id)?.melodiasAlternas||{};
+  list.innerHTML=Object.entries(variations).map(([key,item])=>`<button type="button" data-record-track="melodiaAlterna_${escapeHTML(key)}"><span>🎵</span><b>${escapeHTML(item?.nombre||'Melodía alternativa')}</b><small>Melodía alternativa</small><em>${item?.track?.notas?.length?'Grabación guardada · puedes reemplazarla':'Aún no grabada'}</em></button>`).join('')||'<p class="alternate-melody-empty">Todavía no agregas otras melodías.</p>';
+  list.querySelectorAll('[data-record-track]').forEach(button=>button.onclick=()=>beginCreateTrack(button.dataset.recordTrack));
+}
+async function addAlternateMelody(name){
+  if(!selectedCreateSong||!state.admin)return;const title=String(name||'').trim().slice(0,48);if(!title)return;
+  const {category,song}=selectedCreateSong,source=melodyFor(category,song.id)||{},tracks=melodyTracks(source),id=`m${Date.now().toString(36)}`;
+  tracks.alternateMelodyNames={...tracks.alternateMelodyNames,[id]:title};tracks[`melodiaAlterna_${id}`]=null;
+  const stored=serializeMelodyTracks(source,tracks);state.melodies[category]||={};state.melodies[category][String(song.id)]=stored;
+  try{localStorage.setItem('yhwh_melodias_cache',JSON.stringify(state.melodies));}catch(_){}
+  if(state.db&&state.ref&&state.set){try{await state.set(state.ref(state.db,`melodias/${category}/${song.id}`),stored);}catch(error){toast('Se guardó en este dispositivo; no se pudo sincronizar.');console.warn('No se sincronizó la variante de melodía',error);}}
+  renderAlternateMelodyButtons(category,song.id);renderLists();
 }
 function openCreateTrackSettings(){
   if(!selectedCreateSong)return;
@@ -35,7 +59,7 @@ function openCreateTrackSettings(){
 function instrumentTrackConfig(category,id,type){
   const record=melodyFor(category,id)||{},saved=record.trackSettings?.[type]||{};
   const track=trackFor(category,id,type)||{};
-  const newTrack=['melodia','acompanamiento1','acompanamiento2'].includes(type);
+  const newTrack=['melodia','acompanamiento1','acompanamiento2'].includes(type)||type.startsWith('melodiaAlterna_');
   const instrument=saved.instrument||track.instrument||(type==='acompanamiento1'?state.bassInstrument:state.instrument);
   return {instrument,intensity:['very-soft','soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',octaveShift:[-24,-12,0,12,24].includes(Number(saved.octaveShift))?Number(saved.octaveShift):0,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:saved.layerInstrument||track.layerInstrument||(newTrack?'strings':state.layerInstrument),layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
 }
@@ -54,7 +78,7 @@ function syncSongTrackSettingsForm(type=$('songSettingsTrack')?.value||selectedC
   $('songTrackLayerInstrument').value=config.layerInstrument;$('songTrackLayerVolume').value=String(config.layerVolume);
   $('songTrackLayerVolumeValue').textContent=`${config.layerVolume}%`;
   $('songTrackLayerInstrument').disabled=!config.layerEnabled;$('songTrackLayerVolume').disabled=!config.layerEnabled;
-  $('songTrackSettingsStatus').textContent=`${SONG_TRACK_LABELS[type]} · ${instrumentLabel(config.instrument)}${config.layerEnabled?` + ${instrumentLabel(config.layerInstrument)}`:''}`;
+  $('songTrackSettingsStatus').textContent=`${songTrackLabel(type,selectedCreateSong.category,selectedCreateSong.song.id)} · ${instrumentLabel(config.instrument)}${config.layerEnabled?` + ${instrumentLabel(config.layerInstrument)}`:''}`;
 }
 async function saveSongTrackSettings(){
   if(!selectedCreateSong)return;
@@ -194,7 +218,7 @@ function openSong(song, category, trackType='introduccion',autoPlay=false,playMo
   void warmPlaybackAudio();
   $('activeKeyName').textContent=state.songTonic?`Tono ${state.songTonic}`:'';
   updateTransposeUI();
-  const trackLabel=SONG_TRACK_LABELS[trackType]||'Introducción';
+  const trackLabel=songTrackLabel(trackType,category,song.id);
   $('playerLabel').textContent = `${trackLabel}${savedMelody.notas?.length?' · Guardada':''}`;
   $('status').textContent = isRecordingAccompaniment&&state.recordGuideNotes.length ? `Guía de melodía lista. Al grabar, sus barras avanzarán sincronizadas para que sigas la canción.` : savedMelody.notas?.length ? `${trackLabel} guardada. Pulsa reproducir.` : `Todavía no hay ${trackLabel.toLocaleLowerCase('es')} grabada. Toca el piano o pulsa Grabar si tienes acceso de Admin.`;
   $('voiceMixer').classList.toggle('hidden',!state.admin);$('notesPanel').dataset.open='';$('notesPanel').classList.add('hidden');$('lyricsPanel').classList.add('hidden');$('chordEditorPanel').classList.add('hidden');$('activeChordLabel').textContent='';renderVoiceMixer();
@@ -202,6 +226,7 @@ function openSong(song, category, trackType='introduccion',autoPlay=false,playMo
   renderRecorded();
   updateAdminControls();
   transitionScreen('player',['homeView','songView','createView','createTrackScreen','theoryView','playModeModal','instrumentSettingsScreen','player']);
+  requestAnimationFrame(fitSongPresentationCards);document.fonts?.ready?.then(()=>fitSongPresentationCards());
   queueGuidedTour('piano',650);
   if(playMode!=='record'&&deviceSettings.songTitleStyle!=='black-card')songIntroStartTimer=setTimeout(()=>{songIntroStartTimer=null;showSongIntro(autoPlay,playMode);},180);
   else if(autoPlay)songIntroStartTimer=setTimeout(()=>{songIntroStartTimer=null;if(state.song&&state.notes.length){if(playMode==='practice')startPracticeMelody();else playMelody();}},180);

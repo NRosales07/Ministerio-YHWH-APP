@@ -257,11 +257,11 @@ var SONGS =
     "title": "RODEADO",
     "compositor": "Elyssa Smith - 2018",
     "tono": "Dm",
-    "youtube": "https://www.youtube.com/embed/NmV9xj6HeAM",
     "album": "Rodeado",
-    "version": "Hope W Music & Tba",
     "content": "[INTRO]: MELODÍA \n                               | G | D | Em | F | C | D | G |\n        [VERSO 1]:\n               F                                     Bb\nX2   Derramo mi perfume aunque no te pueda ver,\nDm           C–F                     Bb                    C\nTú me prometiste que nunca me dejarás.   X2\n        [PRE - CORO]:  \n            Gm      Bb              F - Am         Gm       Bb                  Am - A\nVeo ángeles rodear este lugar,    veo ángeles rodear este lugar.\n        [CORO]: \n                      Dm\nX2   Estoy rodeado, rodeado, rodeado,\n                                     C\nDe una Gloria que no veo, no veo, no veo,\n                              Bb                         Gm\nSin mirarte yo te siento, te siento, te siento\n                                A\nY no puedo de ti escapar.   X2\n       \n [PRE - CORO]:          |         [CORO]  X2 \n        [PUENTE]:\nDm                                           Bb                               F\nX4   Tu manto cubre el templo,    tu Gloria aquí está,\n                                 Am\nNo me puedo resistir    ante tu majestad.   X4\n      [CORO]:  X4",
-    "id": 21
+    "id": 21,
+    "version": "Hope W Music & Tba",
+    "youtube": "https://www.youtube.com/embed/NmV9xj6HeAM"
   },
   {
     "num": 23,
@@ -2022,12 +2022,12 @@ var SONGS =
   {
     "num": 1,
     "title": "SANTO ES EL QUE VIVE",
-    "compositor": "Giancarlo Raul Huaman Cossio - 2000",
-    "tono": "E",
-    "youtube": "https://www.youtube.com/embed/",
-    "album": "El Dios que santifica",
-    "content": "[INTRO]: MELODÍA\n                                           | E | B | A | C#m | \n        [VERSO 1]:  \n        E                          B\nX2    Ayúdame Señor, se me agotaron las fuerzas,\n        A       C#m\nExtiéndeme tus manos, abrázame.   X2\n        [CORO]:  \n        A                                                E\nX2   Quiero llorar como un niño, quiero llorar en tus brazos,\n        B                        C#m\nY decirte que, sin ti no puedo vivir.   X2\n        [VERSO 1]:          |          [CORO]:",
-    "id": 186
+    "compositor": "Monte Santo",
+    "tono": "D#m",
+    "album": "Bautizados En Fuego - 2023",
+    "content": "[INTRO]:   MELODÍA\n[CORO 1]:\n D#m                                                               C#m\nSanto es el que vive, Santo es el que reina, Santo en las alturas,\n                                         B                             G#m\nSanto aquí en la tierra, Santo en el pesebre, Santo en el sepulcro,\n  Bb\nSanta es su sangre derramada en la cruz.\n[VERSO 1]: \n                D#m                                                  C#\nCorrió su sangre por un madero, a él no lo mataron, \n                                                 B              G#m\nSe entregó primero, De tal manera amó Jesús\n            Bb\nQue entregó su vida en la cruz.\n            D#m                                                       C#\nNo dijo nada, no abrió su boca, le hieren, le golpean, \n                                           B              G#m\nPero él perdona, De tal manera amó Jesús\n             Bb\nQue entregó su vida en la cruz.\n\n[CORO 1]:  X2 \n\n\n[INSTRUMENTAL]: \n\n\n[PUENTE]: \n                       B                                                    C#\nX4 Todos lo verán, como un rey en las nubes volverá,\n                                      G#m               B         Bb\nCoronado en poder y autoridad, el cordero y león reinará. X4\n",
+    "id": 186,
+    "youtube": "https://www.youtube.com/embed/"
   },
   {
     "num": 2,

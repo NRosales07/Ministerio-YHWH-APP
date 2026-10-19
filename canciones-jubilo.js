@@ -588,12 +588,13 @@ var SONGS_JUBILO =
     "id": 368
   },
   {
-    "id": 369,
+    "num": null,
     "title": "ABRIÓ EL MAR",
-    "compositor": "Tradicional",
+    "compositor": "Ebenezer",
     "tono": "Gm",
-    "album": "Alabanzas de Júbilo",
-    "content": "Gm                  Eb                         F                                        Gm\nX4   CORO    Abrió el mar, abrió el Jordán, y a sus enemigos destruyó…    X4    TROMPETAS\n                              Am                     F                           G                                    Am\nX4   CORO    Abrió el mar, abrió el Jordán, y a sus enemigos destruyó...    X4    TROMPETAS"
+    "album": "Nuestro Legado - 2004",
+    "content": "Gm                  Eb                         F                                        Gm\nX4   CORO    Abrió el mar, abrió el Jordán, y a sus enemigos destruyó…    X4    TROMPETAS\n                              Am                     F                           G                                    Am\nX4   CORO    Abrió el mar, abrió el Jordán, y a sus enemigos destruyó...    X4    TROMPETAS",
+    "id": 369
   },
   {
     "num": null,

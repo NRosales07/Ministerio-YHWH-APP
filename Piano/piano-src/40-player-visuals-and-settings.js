@@ -1,4 +1,25 @@
 const keyLightCounts=new Map();
+function shrinkTitleTextToFit(id,maxWidth,minFontSize=9){
+  const element=$(id);if(!element)return;
+  element.style.removeProperty('font-size');const text=element.textContent.trim();if(!text)return;
+  const style=getComputedStyle(element),baseSize=parseFloat(style.fontSize)||16,spacing=parseFloat(style.letterSpacing)||0,spacingPerEm=spacing/baseSize;
+  const canvas=document.createElement('canvas'),context=canvas.getContext('2d');if(!context)return;
+  const measure=size=>{context.font=`${style.fontStyle} ${style.fontWeight} ${size}px ${style.fontFamily}`;return context.measureText(text).width+Math.max(0,text.length-1)*spacingPerEm*size;};
+  let low=Math.min(minFontSize,baseSize),high=baseSize;
+  if(measure(high)<=maxWidth){return;}
+  for(let i=0;i<14;i++){const middle=(low+high)/2;if(measure(middle)<=maxWidth)low=middle;else high=middle;}
+  element.style.fontSize=`${low}px`;
+}
+function fitSongPresentationCards(){
+  const cinematic=$('songTitlePresentation'),black=$('blackTitlePresentation'),available=(element,padding=0)=>Math.max(0,(element?.clientWidth||0)-padding);
+  const cinematicWidth=available(cinematic);
+  if(cinematicWidth){shrinkTitleTextToFit('songTitlePresentationName',cinematicWidth,9);shrinkTitleTextToFit('songTitleCredit',cinematicWidth,8);}else ['songTitlePresentationName','songTitleCredit'].forEach(id=>$(id)?.style.removeProperty('font-size'));
+  const blackWidth=Math.max(0,window.innerWidth-(window.innerWidth<=600?28:40));
+  if(black&&getComputedStyle(black).display!=='none'){
+    shrinkTitleTextToFit('blackTitleName',blackWidth,9);shrinkTitleTextToFit('blackTitleAlbum',blackWidth,8);
+    const authorBox=$('blackTitleComposer')?.parentElement;shrinkTitleTextToFit('blackTitleComposer',available(authorBox)*(window.innerWidth<=600 ? .58 : .5),8);
+  }else ['blackTitleName','blackTitleAlbum','blackTitleComposer'].forEach(id=>$(id)?.style.removeProperty('font-size'));
+}
 function lightKey(key,classes,ms){
   if(!key)return;
   classes=[...new Set([...classes,'note-sounding'])];
@@ -1497,6 +1518,7 @@ function initializePlayerSettingsPage(){
     deviceSettings.songTitleStyle=['cinematic','black-card'].includes(event.target.value)?event.target.value:'classic';document.body.dataset.songPresentation=deviceSettings.songTitleStyle;document.body.classList.remove('cinematic-title-run','black-title-intro','black-title-ready');
     if(deviceSettings.songTitleStyle==='cinematic'&&state.song){void $('songTitlePresentation').offsetWidth;document.body.classList.add('song-title-visible','cinematic-title-run');}
     if(deviceSettings.songTitleStyle==='black-card'&&state.song){$('blackTitleName').textContent=state.song.song.title||'Alabanza';$('blackTitleAlbum').textContent=state.song.song.album||'';$('blackTitleComposer').textContent=state.song.song.compositor||'Ministerio YHWH';document.body.classList.add('song-title-visible','black-title-ready');}
+    requestAnimationFrame(fitSongPresentationCards);
     saveDeviceSettings();
   });
   panels.playback.insertBefore(titleStyle,panels.playback.children[1]||null);
@@ -1635,8 +1657,8 @@ function initializeSplash() {
     splash.dataset.ready = '1';
     $('splashLoader').style.display = 'none';
     enter.classList.add('show');
-    autoCloseTimer = setTimeout(hide, 950);
+    autoCloseTimer = setTimeout(hide, 8400);
   };
   enter.addEventListener('click', () => { primeAudioForInstrument(state.instrument); hide(); });
-  setTimeout(reveal, 350);
+  setTimeout(reveal, 1600);
 }

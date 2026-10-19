@@ -412,7 +412,8 @@ function playbackGroupsForCurrentSong(){
   const currentSettings=state.song&&['melodia','acompanamiento1','acompanamiento2'].includes(state.melodyType)?instrumentTrackConfig(state.song.category,state.song.song.id,state.melodyType):{instrument:state.instrument,intensity:state.trumpetIntensity||'strong',octaveShift:0,layerEnabled:state.stringsLayerEnabled,layerInstrument:state.layerInstrument,layerVolume:state.stringsLayerVolume};
   if(state.playMode!=='performance'||!state.song)return [{type:state.melodyType,kind:'melody',notes:shiftRecordedTrackNotes(notesForCurrentMix(),currentSettings.octaveShift),chords:shiftRecordedTrackChords(state.voiceMix.acordes?state.chords:[],currentSettings.octaveShift),settings:currentSettings}];
   const record=melodyFor(state.song.category,state.song.song.id)||{},tracks=melodyTracks(record);
-  const mainType=['melodia','voz','introduccion'].find(type=>tracks[type]?.notas?.length)||null;
+  const preferredMain=state.melodyType.startsWith('melodiaAlterna_')&&tracks[state.melodyType]?.notas?.length?state.melodyType:null;
+  const mainType=preferredMain||['melodia','voz','introduccion'].find(type=>tracks[type]?.notas?.length)||null;
   const types=[...(mainType?[mainType]:[]),'acompanamiento1','acompanamiento2'];
   const groups=[];
   types.forEach(type=>{

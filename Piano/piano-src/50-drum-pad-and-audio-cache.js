@@ -160,7 +160,7 @@ function startDrumPadRecordPlayback(pattern,startAt,duration=Infinity){
 function updateDrumPadSongLabel(){const label=$('drumPadSongLabel');if(label)label.textContent=drumPadContextSong?`Patrón para: ${drumPadContextSong.song.title||'esta alabanza'}`:'Patrón general · plantilla: ábrelo desde una alabanza para asignárselo';}
 function armDrumPadRecordAlongSong(){
   const button=$('drumPadRecordAlongSong'),status=$('drumPadPatternStatus');
-  if(!drumPadContextSong||!state.song||!state.notes.length){toast('Abre una pista guardada de una alabanza para usarla como guía.');return;}
+  if(!drumPadContextSong||!state.song||state.song.category!==drumPadContextSong.category||String(state.song.song.id)!==String(drumPadContextSong.song.id)||!state.notes.length){toast('Abre una pista guardada de esta alabanza para usarla como guía.');return;}
   if(drumPadRecording||drumPadRecordAlongPending)return;
   stopDrumPadPlayback();drumPadRecordingPreviousPattern={...drumPadPattern,events:drumPadPattern.events.map(event=>({...event}))};
   drumPadPattern={bpm:metronomeBpm,bars:2,loop:false,durationBeats:0,events:[]};drumPadRecordAlongPending=true;drumPadRecordAlongPlayback=false;
@@ -183,14 +183,14 @@ function cancelDrumPadRecordAlong(){
   const button=$('drumPadRecordAlongSong');if(button){button.disabled=false;button.textContent='🎵 Grabar siguiendo la alabanza';}
 }
 function openDrumPadScreen(){
-  const playerVisible=$('player')&&!$('player').classList.contains('hidden');if(state.recording){toast('Detén la grabación del piano antes de abrir el Drum Pad.');return;}
-  drumPadReturnFocus=document.activeElement;drumPadReturnScreen=playerVisible?'player':'homeView';drumPadContextSong=playerVisible?state.song:null;drumPadResumeMetronome=playerVisible&&metronomeOn;
+  const playerVisible=$('player')&&!$('player').classList.contains('hidden'),createTrackVisible=$('createTrackScreen')&&!$('createTrackScreen').classList.contains('hidden');if(state.recording){toast('Detén la grabación del piano antes de abrir el Drum Pad.');return;}
+  drumPadReturnFocus=document.activeElement;drumPadReturnScreen=playerVisible?'player':createTrackVisible?'createTrackScreen':'homeView';drumPadContextSong=playerVisible?state.song:createTrackVisible?selectedCreateSong:null;drumPadResumeMetronome=playerVisible&&metronomeOn;
   stopPlayback();stopMetronome();stopDrumPadPlayback();drumPadPattern=readDrumPadEditable(drumPadContextSong);
   updateDrumPadSongLabel();$('drumPadKit').value=selectedDrumPadKit;renderDrumPadGrid();$('drumPadBpm').value=String(drumPadPattern.bpm);$('drumPadBars').value=String(drumPadPattern.bars);setMetronomeBpm(drumPadPattern.bpm,true);
   const status=$('drumPadPatternStatus');if(status)status.textContent=drumPadPattern.events.length?(drumPadPattern.loop===false?`Grabación completa lista · ${drumPadPattern.events.length} golpes · ${drumPadPattern.bars} compases.`:`Patrón listo · ${drumPadPattern.events.length} golpes · ${drumPadPattern.bars} compases.`):'Toca los cuadros para probar los sonidos.';
   transitionScreen('drumPadScreen',['homeView','songView','createView','createTrackScreen','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen','playerSettingsScreen','drumPadScreen']);window.scrollTo(0,0);setTimeout(()=>document.querySelector('#drumPadScreen [data-drum-pad]')?.focus({preventScroll:true}),0);
   syncDrumPadSongToggle();
-  const recordAlong=$('drumPadRecordAlongSong');if(recordAlong){recordAlong.disabled=!drumPadContextSong||!state.notes.length;recordAlong.textContent='🎵 Grabar siguiendo la alabanza';}
+  const recordAlong=$('drumPadRecordAlongSong');if(recordAlong){recordAlong.disabled=!drumPadContextSong||!state.song||state.song.category!==drumPadContextSong.category||String(state.song.song.id)!==String(drumPadContextSong.song.id)||!state.notes.length;recordAlong.textContent='🎵 Grabar siguiendo la alabanza';}
   if($('drumPadBars'))$('drumPadBars').disabled=drumPadPattern.loop===false;
   void loadDrumPadBuffers().catch(error=>{console.warn('El Drum Pad cargará los sonidos al primer toque:',error);});
 }
