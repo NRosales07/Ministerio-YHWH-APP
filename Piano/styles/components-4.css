@@ -344,7 +344,7 @@ body.song-list-active #songView .selected-audio-preview>button {
 .settings-preview-effects[data-style="smoke"] i { border-color:#aab4c2;border-radius:50%;background:radial-gradient(ellipse at center,#cbd3dd88,rgba(105,119,139,.2) 52%,transparent 75%);filter:drop-shadow(0 0 5px #aab4c2); }
 .settings-preview-effects[data-style="gold"] i { border-color:#ffd166;border-radius:50%;box-shadow:0 0 10px #ffd166; }
 .settings-preview-effects[data-style="bubbles"] i { border-color:#82dfff;background:#82dfff33;box-shadow:inset -4px -5px 10px #fff6; }
-.settings-preview-effects[data-style="notes"] i { width:auto;height:auto;border:0; }
+.settings-preview-effects[data-style="notes"] i { top:12%;width:5px;height:62%;border:0;border-radius:5px;background:linear-gradient(180deg,transparent,var(--device-primary-color,var(--gold)) 68%,#fff);box-shadow:0 0 12px var(--device-primary-color,var(--gold)); }
 .settings-preview-effects[data-enabled="off"] i { display:none; }
 .settings-preview-effects[data-intensity="1"] i { opacity:.18; }
 .settings-preview-effects[data-intensity="3"] i { opacity:.85;filter:drop-shadow(0 0 8px currentColor); }
@@ -362,7 +362,17 @@ body.song-list-active #songView .selected-audio-preview>button {
 .settings-preview-stage[data-appearance="neon"] .preview-fall-bar[data-kind="accompaniment"] { color:var(--preview-accent); }
 .settings-preview-stage[data-appearance="synesthesia"] .preview-fall-bar[data-kind="bass"] { background:linear-gradient(180deg,color-mix(in srgb,var(--preview-bass) 45%,white),var(--preview-bass) 60%,color-mix(in srgb,var(--preview-bass) 65%,black)); }
 .settings-preview-stage[data-appearance="synesthesia"] .preview-fall-bar[data-kind="accompaniment"] { background:linear-gradient(180deg,color-mix(in srgb,var(--preview-accent) 45%,white),var(--preview-accent) 60%,color-mix(in srgb,var(--preview-accent) 65%,black)); }
-.settings-preview-effects[data-style="notes"] i:before { content:"♪";color:#ffe27a;font-size:1.2rem;font-style:normal; }
+.settings-preview-effects[data-style="notes"] i:before { content:"";position:absolute;left:50%;bottom:-5px;width:24px;height:16px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,#fff 0%,var(--device-primary-color,var(--gold)) 24%,transparent 72%); }
+.key-ray-flare { position:fixed;z-index:10000;pointer-events:none;transform:translateX(-50%);overflow:visible;animation:key-ray-fade var(--ray-duration) ease-out both; }
+.key-ray-flare:after { content:"";position:absolute;left:50%;bottom:calc(var(--key-reveal) - 1px);width:175%;height:27px;transform:translateX(-50%);border-radius:50% 50% 0 0;background:radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.78) 0%,rgba(255,255,255,.56) 20%,rgba(255,255,255,.3) 48%,transparent 78%);filter:blur(2.5px);box-shadow:0 0 12px 3px #fff4;animation:key-ray-wobble .5s ease-in-out infinite alternate; }
+.key-ray-flare .key-ray-orb { position:absolute;z-index:2;left:50%;bottom:calc(var(--key-reveal) - 1px);width:120%;height:19px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.9) 0%,rgba(255,255,255,.72) 27%,rgba(255,255,255,.4) 55%,rgba(255,255,255,.08) 78%,transparent 100%);filter:blur(2.5px);box-shadow:0 0 8px 3px #fff5;animation:key-ray-wobble .5s ease-in-out infinite alternate; }
+.key-ray-flare .key-ray-particle { position:absolute;z-index:3;bottom:0;left:50%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 4px 1px #fff;opacity:0; }
+.key-ray-flare .key-ray-particle.is-left { animation:key-ray-particle-left .62s ease-out infinite; }
+.key-ray-flare .key-ray-particle.is-right { animation:key-ray-particle-right .62s ease-out .18s infinite; }
+@keyframes key-ray-wobble { from{margin-left:-.5px} to{margin-left:.5px} }
+@keyframes key-ray-particle-left { 0%{opacity:0;transform:translate(-2px,0) scale(.65)} 12%{opacity:.95} 100%{opacity:0;transform:translate(-38px,-24px) scale(1.25)} }
+@keyframes key-ray-particle-right { 0%{opacity:0;transform:translate(1px,0) scale(.65)} 12%{opacity:.95} 100%{opacity:0;transform:translate(38px,-24px) scale(1.25)} }
+@keyframes key-ray-fade { 0%,78%{opacity:1} 100%{opacity:0} }
 /* A compact, layered octave keeps the key proportions recognizable at every preview size. */
 .settings-preview-keyboard { display:block; width:100%; height:auto; min-height:0; max-height:none; aspect-ratio:2.55 / 1; padding:0; overflow:hidden; border-radius:8px; background:#101820; }
 .settings-preview-keyboard .preview-white-keys { position:absolute;inset:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr)); }
@@ -414,14 +424,14 @@ html body.player-active #player .performance-layout>.note-canvas{background:var(
 @media(max-width:760px){.bar-palette-options{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.bar-palette-button{padding:6px 4px;font-size:.67rem}}
 
 /* Solid bars remove the decorative fill, glow, rounded ends, and trail. */
-.settings-preview-stage[data-appearance="solid"] .preview-fall-bar{border:0;border-radius:0;box-shadow:none;filter:none}
+.settings-preview-stage[data-appearance="solid"] .preview-fall-bar{border:0;border-radius:var(--preview-radius,2px);box-shadow:none;filter:none}
 .settings-preview-stage[data-appearance="solid"] .preview-fall-bar:after{display:none}
 .settings-preview-stage[data-appearance="solid"] .preview-fall-bar[data-kind="melody"]{background:var(--preview-melody)}
 .settings-preview-stage[data-appearance="solid"] .preview-fall-bar[data-kind="bass"]{background:var(--preview-bass)}
 .settings-preview-stage[data-appearance="solid"] .preview-fall-bar[data-kind="accompaniment"]{background:var(--preview-accent)}
 .settings-preview-stage[data-appearance="solid"][data-look="duo"] .preview-fall-bar[data-kind="melody"],.settings-preview-stage[data-appearance="solid"][data-look="tri"] .preview-fall-bar[data-kind="melody"]{background:linear-gradient(180deg,var(--preview-melody),var(--preview-color2))}
 .settings-preview-stage[data-appearance="solid"][data-look="tri"] .preview-fall-bar[data-kind="bass"]{background:linear-gradient(180deg,var(--preview-bass),var(--preview-color3))}
-html body .manual-note-effect.is-bar.is-solid{border-radius:0;background:var(--note-fx-color);box-shadow:none}
+html body .manual-note-effect.is-bar.is-solid{border-radius:var(--manual-bar-radius,2px);background:var(--note-fx-color);box-shadow:none}
 html body .manual-note-effect.is-bar.is-solid.is-duo{background:linear-gradient(0deg,var(--note-fx-color),var(--note-fx-color2,var(--note-fx-color)));box-shadow:none}
 html body .manual-note-effect.is-bar.is-solid.is-tri{background:linear-gradient(0deg,var(--note-fx-color),var(--note-fx-color2,var(--note-fx-color)),var(--note-fx-color3,var(--note-fx-color)));box-shadow:none}
 html body .manual-note-effect.is-bar.is-solid::before,html body .manual-note-effect.is-bar.is-solid::after{display:none}
