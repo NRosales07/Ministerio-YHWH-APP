@@ -1725,7 +1725,9 @@ function openSong(song, category, trackType='introduccion',autoPlay=false,playMo
   state.recording=false;chordEditorOpen=false;closePlayerPopovers();
   $('songTitle').textContent = song.title || 'Alabanza';
   $('songMeta').textContent = `${category === 'jubilo' ? 'Júbilo' : 'Adoración'}${song.compositor ? ` · ${song.compositor}` : ''}`;
-  document.body.classList.remove('cinematic-title-run');document.body.classList.add('song-title-visible');$('songTitlePresentationName').textContent=song.title||'Alabanza';$('songTitleCredit').textContent=song.compositor||'Ministerio YHWH';$('songTitleSubcredit').textContent='Performed by Nain';$('blackTitleName').textContent=song.title||'Alabanza';$('blackTitleAlbum').textContent=song.album||'';$('blackTitleComposer').textContent=song.compositor||'Ministerio YHWH';
+  // La presentación de título se usa al escuchar. En modo grabación no hay
+  // reproducción que la cierre, así que entrar al piano sin dejarla encima.
+  document.body.classList.remove('cinematic-title-run');document.body.classList.toggle('song-title-visible',playMode!=='record');$('songTitlePresentationName').textContent=song.title||'Alabanza';$('songTitleCredit').textContent=song.compositor||'Ministerio YHWH';$('songTitleSubcredit').textContent='Performed by Nain';$('blackTitleName').textContent=song.title||'Alabanza';$('blackTitleAlbum').textContent=song.album||'';$('blackTitleComposer').textContent=song.compositor||'Ministerio YHWH';
   if(deviceSettings.songTitleStyle==='cinematic'){void $('songTitlePresentation').offsetWidth;document.body.classList.add('cinematic-title-run');}
   else if(deviceSettings.songTitleStyle==='black-card'){document.body.dataset.songPresentation='black-card';document.body.classList.remove('cinematic-title-run','black-title-intro');document.body.classList.add('black-title-ready');}
   else document.body.classList.remove('black-title-ready','black-title-intro');
@@ -1743,7 +1745,7 @@ function openSong(song, category, trackType='introduccion',autoPlay=false,playMo
   updateAdminControls();
   transitionScreen('player',['homeView','songView','createView','createTrackScreen','theoryView','playModeModal','instrumentSettingsScreen','player']);
   queueGuidedTour('piano',650);
-  if(deviceSettings.songTitleStyle!=='black-card')songIntroStartTimer=setTimeout(()=>{songIntroStartTimer=null;showSongIntro(autoPlay,playMode);},180);
+  if(playMode!=='record'&&deviceSettings.songTitleStyle!=='black-card')songIntroStartTimer=setTimeout(()=>{songIntroStartTimer=null;showSongIntro(autoPlay,playMode);},180);
   else if(autoPlay)songIntroStartTimer=setTimeout(()=>{songIntroStartTimer=null;if(state.song&&state.notes.length){if(playMode==='practice')startPracticeMelody();else playMelody();}},180);
   setTimeout(startKeyboardAtC4,170);
   window.scrollTo(0, 0);
