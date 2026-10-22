@@ -1,3 +1,5 @@
+const sustainedLiveNotes=new Set();
+function releaseSustainedNotes(){for(const release of [...sustainedLiveNotes])release();}
 const STEINWAY_PREFIX = 'Mp';
 const STEINWAY_SAMPLE_NAMES = ["FF-A#2.m4a","FF-A#4.m4a","FF-A0.m4a","FF-A1.m4a","FF-A2.m4a","FF-A3.m4a","FF-A4.m4a","FF-A5.m4a","FF-B-1.m4a","FF-B0.m4a","FF-B1.m4a","FF-B2.m4a","FF-B3.m4a","FF-B4.m4a","FF-C#1.m4a","FF-C#5.m4a","FF-C2.m4a","FF-C3.m4a","FF-C4.m4a","FF-D#0.m4a","FF-D1.m4a","FF-D2.m4a","FF-D3.m4a","FF-D4.m4a","FF-D5.m4a","FF-E1.m4a","FF-E2.m4a","FF-E3.m4a","FF-E4.m4a","FF-E5.m4a","FF-F0.m4a","FF-F1.m4a","FF-F2.m4a","FF-F3.m4a","FF-F4.m4a","FF-F5.m4a","FF-G#2.m4a","FF-G#4.m4a","FF-G0.m4a","FF-G1.m4a","FF-G2.m4a","FF-G3.m4a","FF-G4.m4a","FF-G5.m4a","Mp-A#2.m4a","Mp-A#4.m4a","Mp-A#5.m4a","Mp-A#6.m4a","Mp-A0.m4a","Mp-A1.m4a","Mp-A2.m4a","Mp-A3.m4a","Mp-A4.m4a","Mp-A5.m4a","Mp-A6.m4a","Mp-B-1.m4a","Mp-B0.m4a","Mp-B1.m4a","Mp-B2.m4a","Mp-B3.m4a","Mp-B4.m4a","Mp-B5.m4a","Mp-C#1.m4a","Mp-C#5.m4a","Mp-C#6.m4a","Mp-C2.m4a","Mp-C3.m4a","Mp-C4.m4a","Mp-C6.m4a","Mp-D#0.m4a","Mp-D#5.m4a","Mp-D#6.m4a","Mp-D1.m4a","Mp-D2.m4a","Mp-D3.m4a","Mp-D4.m4a","Mp-D5.m4a","Mp-D6.m4a","Mp-E1.m4a","Mp-E2.m4a","Mp-E3.m4a","Mp-E4.m4a","Mp-E5.m4a","Mp-F#5.m4a","Mp-F#6.m4a","Mp-F0.m4a","Mp-F1.m4a","Mp-F2.m4a","Mp-F3.m4a","Mp-F4.m4a","Mp-F5.m4a","Mp-F6.m4a","Mp-G#2.m4a","Mp-G#4.m4a","Mp-G#5.m4a","Mp-G#6.m4a","Mp-G0.m4a","Mp-G1.m4a","Mp-G2.m4a","Mp-G3.m4a","Mp-G4.m4a","Mp-G5.m4a","Mp-G6.m4a","PP-A#2.m4a","PP-A#4.m4a","PP-A#5.m4a","PP-A#6.m4a","PP-A0.m4a","PP-A1.m4a","PP-A2.m4a","PP-A3.m4a","PP-A4.m4a","PP-A5.m4a","PP-A6.m4a","PP-B-1.m4a","PP-B0.m4a","PP-B1.m4a","PP-B2.m4a","PP-B3.m4a","PP-B4.m4a","PP-B5.m4a","PP-B6.m4a","PP-C#1.m4a","PP-C#5.m4a","PP-C#6.m4a","PP-C2.m4a","PP-C3.m4a","PP-C4.m4a","PP-C6.m4a","PP-C7.m4a","PP-D#0.m4a","PP-D#5.m4a","PP-D#6.m4a","PP-D1.m4a","PP-D2.m4a","PP-D3.m4a","PP-D4.m4a","PP-D5.m4a","PP-D6.m4a","PP-E1.m4a","PP-E2.m4a","PP-E3.m4a","PP-E4.m4a","PP-E6.m4a","PP-F#5.m4a","PP-F#6.m4a","PP-F0.m4a","PP-F1.m4a","PP-F2.m4a","PP-F3.m4a","PP-F4.m4a","PP-F5.m4a","PP-F6.m4a","PP-G#2.m4a","PP-G#4.m4a","PP-G#5.m4a","PP-G#6.m4a","PP-G0.m4a","PP-G1.m4a","PP-G2.m4a","PP-G3.m4a","PP-G4.m4a","PP-G5.m4a","PP-G6.m4a"];
 function steinwayMidi(name) { const octave = Number(name.slice(-1)); const pitch = name.slice(0, -1); return (octave + 1) * 12 + NOTE_NAMES.indexOf(pitch); }
@@ -12,6 +14,7 @@ function steinwayNoteName(midi) {
   return candidates.reduce((best, candidate) => Math.abs(toMidi(candidate) - midi) < Math.abs(toMidi(best) - midi) ? candidate : best, candidates[0] || 'C4');
 }
 async function getInstrumentSample(midi, instrument = state.instrument, prefetchOnly = false) {
+  if(!INSTRUMENTS[instrument]&&instrument!=='strings'){const buffer=await getSample(midi);return{buffer,sampleMidi:Math.max(60,Math.min(76,midi)),release:.4};}
   if (instrument === 'strings') { const stringsSample = await getStringsSample(midi); return { buffer: stringsSample.buffer, sampleMidi: stringsSample.sampleMidi, release: 0.5 }; }
   const spec = INSTRUMENTS[instrument];
   const vscoPatch=VSCO2_TRUMPET_PATCHES[instrument];
@@ -118,7 +121,7 @@ function primeAudioForInstrument(instrument=state.instrument){
   const status=$('status'),pendingName=instrumentLabel(instrument);if(status&&instrument===state.instrument)status.textContent=`Preparando ${pendingName}…`;
   let failed=0;
   let next=0;
-  const worker=async()=>{while(generation===instrumentPrimeGeneration&&next<midis.length){const midi=midis[next++];try{if(instrument==='grand-piano')await getSample(midi);else await getInstrumentSample(midi,instrument);if(state.stringsLayerEnabled&&state.stringsLayerVolume>0)await getOptionalLayerSample(midi);}catch(error){failed++;console.warn('No se pudo preparar una muestra de audio:',error);}}};
+  const worker=async()=>{while(generation===instrumentPrimeGeneration&&next<midis.length){const midi=midis[next++];try{if(instrument==='grand-piano')await getSample(midi);else await getInstrumentSample(midi,instrument);if(state.stringsLayerEnabled&&state.stringsLayerVolume>0)await getOptionalLayerSample(midi);if(state.thirdLayerEnabled&&state.thirdLayerVolume>0)await getOptionalThirdLayerSample(midi);}catch(error){failed++;console.warn('No se pudo preparar una muestra de audio:',error);}}};
   const concurrency=3;
   void Promise.all(Array.from({length:concurrency},worker)).then(()=>{if(generation===instrumentPrimeGeneration&&instrument===state.instrument&&status)status.textContent=failed?`${pendingName}: algunas muestras de esta zona se cargarán al tocar.`:`Zona central de ${pendingName} lista.`;});
 }
@@ -131,14 +134,14 @@ async function playChord(chord) {
     const resumePromise=resumeAudioContext(context);
     const chordInstrument = chord.instrument || state.bassInstrument || 'grand-piano';
     const entries = await Promise.all([resumePromise,...chordMidiNotes(chord).map(async midi => {
-      const stringsLoad=state.stringsLayerEnabled&&state.stringsLayerVolume>0?getOptionalLayerSample(midi):Promise.resolve(null);
+      const stringsLoad=state.stringsLayerEnabled&&state.stringsLayerVolume>0?getOptionalLayerSample(midi):Promise.resolve(null),thirdLoad=state.thirdLayerEnabled&&state.thirdLayerVolume>0?getOptionalThirdLayerSample(midi):Promise.resolve(null);
       if (chordInstrument === 'grand-piano') {
         const sampleMidi = Math.max(60, Math.min(76, midi));
-        const [buffer,strings]=await Promise.all([getSample(midi),stringsLoad]);
-        return { midi, sampleMidi, buffer, strings };
+        const [buffer,strings,thirdLayer]=await Promise.all([getSample(midi),stringsLoad,thirdLoad]);
+        return { midi, sampleMidi, buffer, strings, thirdLayer };
       }
-      const [sample,strings]=await Promise.all([getInstrumentSample(midi, chordInstrument),stringsLoad]);
-      return { midi, ...sample, strings };
+      const [sample,strings,thirdLayer]=await Promise.all([getInstrumentSample(midi, chordInstrument),stringsLoad,thirdLoad]);
+      return { midi, ...sample, strings, thirdLayer };
     })]).then(([, ...loaded])=>loaded);
     if (!state.playing && !chord.preview) return;
     const when = Number(chord.startAt) || context.currentTime + 0.015;
@@ -174,6 +177,8 @@ async function playChord(chord) {
       if(state.playing&&!chord.preview){state.activePlaybackSources.push(source);source.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==source);},{once:true});}
       const stringsSource=scheduleLayerNote(context,entry.midi,entry.strings,noteWhen,duration,1.05);
       if(stringsSource&&state.playing&&!chord.preview){state.activePlaybackSources.push(stringsSource);stringsSource.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==stringsSource);},{once:true});}
+      const thirdSource=scheduleThirdLayerNote(context,entry.midi,entry.thirdLayer,noteWhen,duration,1.05);
+      if(thirdSource&&state.playing&&!chord.preview){state.activePlaybackSources.push(thirdSource);thirdSource.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==thirdSource);},{once:true});}
       const key = document.querySelector(`.key[data-midi="${entry.midi}"]`);
       const isBassChord=(chord.noteIndex!==undefined&&chord.noteIndex!==null)||(!chord.preview&&!!state.song);
       const barSeconds=Array.isArray(chord.lightDurations)&&Number.isFinite(chord.lightDurations[index])?chord.lightDurations[index]:null;
@@ -220,17 +225,18 @@ async function playNote(midi, element, duration = 0.4, visualDuration = null, oc
     const source = context.createBufferSource();
     const gain = context.createGain();
     const wantsStrings=state.stringsLayerEnabled&&state.stringsLayerVolume>0;
-    const stringsLoad=wantsStrings?getOptionalLayerSample(midi):Promise.resolve(null);
-    let stringsSample=null,stringsSource=null,stringsGain=null,playbackSample=null;
+    const wantsThirdLayer=state.thirdLayerEnabled&&state.thirdLayerVolume>0;
+    const stringsLoad=wantsStrings?getOptionalLayerSample(midi):Promise.resolve(null),thirdLayerLoad=wantsThirdLayer?getOptionalThirdLayerSample(midi):Promise.resolve(null);
+    let stringsSample=null,stringsSource=null,stringsGain=null,thirdLayerSample=null,thirdLayerSource=null,thirdLayerGain=null,playbackSample=null;
     if (state.instrument === 'grand-piano') {
       const sampleMidi = Math.max(60, Math.min(76, midi));
-      const [buffer,,loadedStrings]=await Promise.all([getSample(midi),resumePromise,stringsLoad]);
-      stringsSample=loadedStrings;
+      const [buffer,,loadedStrings,loadedThirdLayer]=await Promise.all([getSample(midi),resumePromise,stringsLoad,thirdLayerLoad]);
+      stringsSample=loadedStrings;thirdLayerSample=loadedThirdLayer;
       source.buffer = buffer;
       source.playbackRate.value = 2 ** ((midi - sampleMidi) / 12);
     } else {
-      const [sample,,loadedStrings]=await Promise.all([getInstrumentSample(midi),resumePromise,stringsLoad]);
-      stringsSample=loadedStrings;
+      const [sample,,loadedStrings,loadedThirdLayer]=await Promise.all([getInstrumentSample(midi),resumePromise,stringsLoad,thirdLayerLoad]);
+      stringsSample=loadedStrings;thirdLayerSample=loadedThirdLayer;
       source.buffer = sample.buffer;
       playbackSample=sample;
       source.playbackRate.value = 2 ** ((midi - sample.sampleMidi) / 12);
@@ -240,7 +246,7 @@ async function playNote(midi, element, duration = 0.4, visualDuration = null, oc
     const contextNow = context.currentTime;
     const attackAt = contextNow + 0.006;
     const held = duration === Infinity;
-    const noteDuration = held ? 60 : Math.max(0.08, duration * (state.sustain ? 2.4 : 1));
+    const noteDuration = held ? 60 : Math.max(0.08, duration * (state.sustain ? 1.6 : 1));
     const release = instrumentReleaseTime(state.instrument);
     const stopAt = attackAt + noteDuration;
     gain.gain.setValueAtTime(0.0001, contextNow);
@@ -250,6 +256,7 @@ async function playNote(midi, element, duration = 0.4, visualDuration = null, oc
     source.connect(gain); gain.connect(getMasterGain(context));
     source.start(attackAt);
     const stringsRelease=state.layerInstrument==='strings'?Math.max(1.05,release):instrumentReleaseTime(state.layerInstrument);
+    const thirdLayerRelease=state.thirdLayerInstrument==='strings'?Math.max(1.05,release):instrumentReleaseTime(state.thirdLayerInstrument);
     if(stringsSample){
       stringsSource=context.createBufferSource();stringsGain=context.createGain();
       stringsSource.buffer=stringsSample.buffer;setInstrumentSampleLoop(stringsSource,stringsSample);
@@ -262,29 +269,55 @@ async function playNote(midi, element, duration = 0.4, visualDuration = null, oc
       stringsSource.connect(stringsGain);stringsGain.connect(getStringsLayerGain(context));
       stringsSource.start(attackAt);stringsSource.stop(stringsStopAt+stringsRelease+.02);
     }
+    if(thirdLayerSample){
+      thirdLayerSource=context.createBufferSource();thirdLayerGain=context.createGain();
+      thirdLayerSource.buffer=thirdLayerSample.buffer;setInstrumentSampleLoop(thirdLayerSource,thirdLayerSample);
+      thirdLayerSource.playbackRate.value=2**((midi-thirdLayerSample.sampleMidi)/12);
+      const thirdStopAt=attackAt+(held?noteDuration:Math.max(noteDuration,.42));
+      thirdLayerGain.gain.setValueAtTime(.0001,contextNow);thirdLayerGain.gain.linearRampToValueAtTime(.85,attackAt+instrumentAttackTime(state.thirdLayerInstrument));
+      thirdLayerGain.gain.setValueAtTime(.85,thirdStopAt);thirdLayerGain.gain.linearRampToValueAtTime(.0001,thirdStopAt+thirdLayerRelease);
+      thirdLayerSource.connect(thirdLayerGain);thirdLayerGain.connect(getThirdLayerGain(context));
+      thirdLayerSource.start(attackAt);thirdLayerSource.stop(thirdStopAt+thirdLayerRelease+.02);
+    }
     const finishNoteEffect=(octaveLayer&&!state.showOctaveNotes)?null:showManualNoteEffect(midi,element||document.querySelector(`.piano-panel .key[data-midi="${midi}"]`));
     source.stop(stopAt + release + 0.02);
     if(!held){setTimeout(()=>{finishNoteEffect?.();element?.classList.remove('playing');},visualDuration===null?noteDuration:Math.min(noteDuration,Math.max(.08,visualDuration)));if(recordedNote)setTimeout(finalizeRecordedNote,noteDuration*1000);}
-    let released = false;
+    let released = false,sustainDecay=null,stringsSustainDecay=null,sustainTimer=0;
+    const holdGainUnderPedal=(param,target)=>{
+      const at=context.currentTime,start=Math.max(.0001,param.value),timeConstant=.55;
+      param.cancelScheduledValues(at);param.setValueAtTime(start,at);param.setTargetAtTime(target,at,timeConstant);
+      return{start,target,at,timeConstant};
+    };
+    const releaseGain=(param,decay,at)=>{
+      const current=decay?decay.target+(decay.start-decay.target)*Math.exp(-Math.max(0,at-decay.at)/decay.timeConstant):Math.max(.0001,param.value);
+      param.cancelScheduledValues(at);param.setValueAtTime(Math.max(.0001,current),at);param.linearRampToValueAtTime(.0001,at+release);
+    };
+    const releaseAudio=()=>{
+      clearTimeout(sustainTimer);
+      sustainedLiveNotes.delete(releaseAudio);
+      const releaseAt=context.currentTime;
+      try{releaseGain(gain.gain,sustainDecay,releaseAt);source.stop(releaseAt+release+.03);}catch(_){}
+      if(stringsGain&&stringsSource){
+        try{
+          const current=stringsSustainDecay?stringsSustainDecay.target+(stringsSustainDecay.start-stringsSustainDecay.target)*Math.exp(-Math.max(0,releaseAt-stringsSustainDecay.at)/stringsSustainDecay.timeConstant):Math.max(.0001,stringsGain.gain.value);
+          stringsGain.gain.cancelScheduledValues(releaseAt);stringsGain.gain.setValueAtTime(Math.max(.0001,current),releaseAt);stringsGain.gain.linearRampToValueAtTime(.0001,releaseAt+stringsRelease);stringsSource.stop(releaseAt+stringsRelease+.03);
+        }catch(_){}
+      }
+      if(thirdLayerGain&&thirdLayerSource){try{const current=Math.max(.0001,thirdLayerGain.gain.value);thirdLayerGain.gain.cancelScheduledValues(releaseAt);thirdLayerGain.gain.setValueAtTime(current,releaseAt);thirdLayerGain.gain.linearRampToValueAtTime(.0001,releaseAt+thirdLayerRelease);thirdLayerSource.stop(releaseAt+thirdLayerRelease+.03);}catch(_){}}
+    };
     const stopNote = (releasedAt=performance.now()) => {
       if (released) return;
       released = true;
       finishNoteEffect?.();
       finalizeRecordedNote(releasedAt);
-      const releaseAt = context.currentTime;
-      try {
-        gain.gain.cancelScheduledValues(releaseAt);
-        gain.gain.setValueAtTime(Math.max(0.0001, gain.gain.value), releaseAt);
-        gain.gain.linearRampToValueAtTime(0.0001, releaseAt + release);
-        source.stop(releaseAt + release + 0.03);
-      } catch (_) {}
-      if(stringsGain&&stringsSource){
-        try{
-          stringsGain.gain.cancelScheduledValues(releaseAt);
-          stringsGain.gain.setValueAtTime(Math.max(.0001,stringsGain.gain.value),releaseAt);
-          stringsGain.gain.linearRampToValueAtTime(.0001,releaseAt+stringsRelease);
-          stringsSource.stop(releaseAt+stringsRelease+.03);
-        }catch(_){}
+      if(state.sustain&&!isTrumpetInstrument(state.instrument)){
+        sustainDecay=holdGainUnderPedal(gain.gain,.07);
+        if(stringsGain)stringsSustainDecay=holdGainUnderPedal(stringsGain.gain,.04);
+        if(thirdLayerGain)holdGainUnderPedal(thirdLayerGain.gain,.04);
+        sustainedLiveNotes.add(releaseAudio);
+        sustainTimer=setTimeout(releaseAudio,1500);
+      }else{
+        releaseAudio();
       }
       element?.classList.remove('playing');
     };
@@ -301,15 +334,15 @@ async function previewInstrumentNote(instrument,midi){
   const context=getAudioContext(),resumePromise=resumeAudioContext(context);
   try{
     const samplePromise=instrument==='grand-piano'?getSample(midi).then(buffer=>({buffer,sampleMidi:Math.max(60,Math.min(76,midi))})):getInstrumentSample(midi,instrument);
-    const stringsPromise=state.stringsLayerEnabled&&state.stringsLayerVolume>0?getOptionalLayerSample(midi):Promise.resolve(null);
-    const [sample,strings]=await Promise.all([samplePromise,stringsPromise]);
+    const stringsPromise=state.stringsLayerEnabled&&state.stringsLayerVolume>0?getOptionalLayerSample(midi):Promise.resolve(null),thirdPromise=state.thirdLayerEnabled&&state.thirdLayerVolume>0?getOptionalThirdLayerSample(midi):Promise.resolve(null);
+    const [sample,strings,thirdLayer]=await Promise.all([samplePromise,stringsPromise,thirdPromise]);
     await resumePromise;
     const source=context.createBufferSource(),gain=context.createGain(),start=context.currentTime+.01;
     source.buffer=sample.buffer;source.playbackRate.value=2**((midi-sample.sampleMidi)/12);setInstrumentSampleLoop(source,sample);
     const isStrings=instrument==='strings'||instrument==='sigex-strings',release=instrumentReleaseTime(instrument),stopAt=start+(isStrings?1.1:.55);
     gain.gain.setValueAtTime(.0001,context.currentTime);gain.gain.linearRampToValueAtTime(.78,start+instrumentAttackTime(instrument));gain.gain.setValueAtTime(.78,stopAt);gain.gain.linearRampToValueAtTime(.0001,stopAt+release);
     source.connect(gain);gain.connect(getMasterGain(context));source.start(start);source.stop(stopAt+release+.02);
-    scheduleLayerNote(context,midi,strings,start,.55,1.05);
+    scheduleLayerNote(context,midi,strings,start,.55,1.05);scheduleThirdLayerNote(context,midi,thirdLayer,start,.55,1.05);
   }catch(error){console.error('No se pudo reproducir la muestra del instrumento:',error);toast('No se pudo cargar el sonido de prueba. Revisa la conexión.');}
 }
 let blackTitleIntroCancel=null;
@@ -353,13 +386,13 @@ async function prepareMelodyAudio(notesToPrepare=state.notes) {
   const resumePromise=resumeAudioContext(context);
   const noteMidis = [...new Set(notesToPrepare.map(note => Number(note.midi)).filter(Number.isFinite))];
   const entries=await Promise.all(noteMidis.map(async midi=>{
-    const stringsLoad=state.stringsLayerEnabled&&state.stringsLayerVolume>0?getOptionalLayerSample(midi):Promise.resolve(null);
+    const stringsLoad=state.stringsLayerEnabled&&state.stringsLayerVolume>0?getOptionalLayerSample(midi):Promise.resolve(null),thirdLoad=state.thirdLayerEnabled&&state.thirdLayerVolume>0?getOptionalThirdLayerSample(midi):Promise.resolve(null);
     if(state.instrument==='grand-piano'){
-      const [buffer,strings]=await Promise.all([getSample(midi),stringsLoad]);
-      const sampleMidi=Math.max(60,Math.min(76,midi));return [midi,{buffer,sampleMidi,release:.4,strings}];
+      const [buffer,strings,thirdLayer]=await Promise.all([getSample(midi),stringsLoad,thirdLoad]);
+      const sampleMidi=Math.max(60,Math.min(76,midi));return [midi,{buffer,sampleMidi,release:.4,strings,thirdLayer}];
     }
-    const [sample,strings]=await Promise.all([getInstrumentSample(midi,state.instrument),stringsLoad]);
-    return [midi,{...sample,strings}];
+    const [sample,strings,thirdLayer]=await Promise.all([getInstrumentSample(midi,state.instrument),stringsLoad,thirdLoad]);
+    return [midi,{...sample,strings,thirdLayer}];
   }));
   const loads = [];
   state.chords.forEach(chord => {
@@ -367,6 +400,7 @@ async function prepareMelodyAudio(notesToPrepare=state.notes) {
     chordMidiNotes(chord).forEach(midi => {
       loads.push(instrument === 'grand-piano' ? getSample(midi) : getInstrumentSample(midi, instrument));
       if(state.stringsLayerEnabled&&state.stringsLayerVolume>0)loads.push(getOptionalLayerSample(midi));
+      if(state.thirdLayerEnabled&&state.thirdLayerVolume>0)loads.push(getOptionalThirdLayerSample(midi));
     });
   });
   await Promise.all([...loads,resumePromise]);
@@ -401,6 +435,8 @@ function schedulePlaybackNote(midi,element,duration,when,prepared,cut,showReadou
   state.activePlaybackSources.push(source);source.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==source);},{once:true});
   const stringsSource=scheduleLayerNote(context,midi,entry.strings,when,noteDuration,cut ? .35 : 1.05);
   if(stringsSource){state.activePlaybackSources.push(stringsSource);stringsSource.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==stringsSource);},{once:true});}
+  const thirdSource=scheduleThirdLayerNote(context,midi,entry.thirdLayer,when,noteDuration,cut ? .35 : 1.05);
+  if(thirdSource){state.activePlaybackSources.push(thirdSource);thirdSource.addEventListener('ended',()=>{state.activePlaybackSources=state.activePlaybackSources.filter(active=>active!==thirdSource);},{once:true});}
   if(showReadout)queueVisualEvent(when,()=>{
     const readout=$('currentNote'),name=noteName(midi);
     if(readout.textContent!==name)readout.textContent=name;

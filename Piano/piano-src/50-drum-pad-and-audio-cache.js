@@ -260,7 +260,7 @@ async function refreshHomeAudioStatus(cached=homeAudioCacheStatus.cached,total=h
   homeAudioCacheStatus={cached,total,progress};
   let instrumentSamples=0;
   try{if('caches' in window){const cache=await caches.open(AUDIO_CACHE_NAME);instrumentSamples=(await cache.keys()).length;}}catch(_){ }
-  const text=`${cached} de ${total} archivos de audio guardados para usar sin conexión · ${instrumentSamples} muestras externas en caché${progress?' · descargando…':''}.`;
+  const text=`${cached}/${total} audios guardados · ${instrumentSamples} muestras en caché${progress?' · descargando…':''}.`;
   ['offlineStatus','devicePreviewOffline'].forEach(id=>{const target=$(id);if(!target)return;if(id==='devicePreviewOffline'){const span=target.querySelector('span');if(span)span.textContent=text;}else target.textContent=text;});
 }
 // Guarda en el dispositivo cada muestra de Cloudinary la primera vez que se descarga;

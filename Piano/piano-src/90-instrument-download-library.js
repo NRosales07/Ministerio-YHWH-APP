@@ -46,16 +46,16 @@ async function prefetchInstrumentSounds(instrument,onProgress){
 }
 const DOWNLOAD_CATALOG=[
   {section:'Pianos',items:[
-    ['steinway-grand','Steinway de cola',164,16.15],['headroom-piano','Headroom · Yamaha C3',312,148.99],['splendid-grand','Splendid Grand Piano',234,73.30],['livingroom-upright-micro','LivingRoom Upright Micro',141,101.75],['maestro-concert-grand','Maestro Concert Grand · Yamaha CF-3',820,256.07],['salamander-grand','Salamander Grand · Yamaha C5',145,331.44],['upright-piano-vsco2','Upright Piano · VSCO 2',69,241.89],['upright-nr1-vsco2','Upright No. 1 · VSCO 2',79,147.89],['upright-piano-kw','Upright Piano KW · Kawai',66,31.28]
+    ['steinway-grand','Steinway de cola',164,16.15],['splendid-grand','Splendid Grand Piano',234,73.30],['maestro-concert-grand','Maestro Concert Grand · Yamaha CF-3',820,256.07],['salamander-grand','Salamander Grand · Yamaha C5',145,331.44]
   ]},
   {section:'Bajos',items:[
     ['growlybass-clean','Bajo eléctrico · Growlybass',224,170.17],['fashionbass-clean','Bajo eléctrico · Fashionbass Clean',285,315.40]
   ]},
   {section:'Cuerdas',items:[
-    ['strings','Ensemble de cuerdas · VSCO 2',13,21.99],['solo-violin','Violín solista · VSCO 2',33,70.92],['sigex-strings','Ensemble de violines · Signal Experiments',17,2.22],['bigcat-cello','Cello solista · Bigcat',17,126.46]
+    ['strings','Ensemble de cuerdas · VSCO 2',13,21.99],['solo-violin','Violín solista · VSCO 2',33,70.92],['sigex-strings','Ensemble de violines · Signal Experiments',17,2.22]
   ]},
   {section:'Vientos y metales',items:[
-    ['trumpet-real','Trompeta real',21,6.87],['trumpet-vsco2-sus-vib','Trompeta VSCO · Vibrato',25,20.60],['trumpet-vsco2-sus','Trompeta VSCO · Sostenida',20,38.67],['trumpet-vsco2-stac','Trompeta VSCO · Staccato',66,13.96],['trumpet-vsco2-harmon-mute-sus','Trompeta VSCO · Sordina Harmon',16,17.64],['trumpet-vsco2-straight-mute-sus','Trompeta VSCO · Sordina Straight',16,23.32],['sigex-brass','Sección de cornos · Signal Experiments',15,1.99],['mtg-solo-sax','Saxofón alto · MTG Solo Sax',33,100.14]
+    ['trumpet-real','Trompeta real',21,6.87],['trumpet-vsco2-sus-vib','Trompeta VSCO · Vibrato',25,20.60],['trumpet-vsco2-stac','Trompeta VSCO · Staccato',66,13.96],['mtg-solo-sax','Saxofón alto · MTG Solo Sax',33,100.14]
   ]},
   {section:'Teclas y percusión',items:[
     ['church-organ','Órgano de iglesia · FreePats',11,12.43],['vibraphone','Vibráfono · MSLP',37,18.95]

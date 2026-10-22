@@ -22,10 +22,7 @@ const VSCO2_TRUMPET_SUS_VIB_REGIONS=[
   [76,78,77,'f4'],[79,82,81,'a4'],[83,84,84,'c5']
 ];
 const VSCO2_TRUMPET_PATCHES={
-  'trumpet-vsco2-sus':{folder:'vsco2-trumpet-sus',prefix:'trumpet-sus',release:.5,regions:[[69,71,70,'asharp3'],[55,58,57,'a2'],[79,82,81,'a4'],[59,61,60,'c3'],[83,84,84,'c5'],[62,64,63,'dsharp3'],[72,75,74,'d4'],[52,54,53,'f2'],[76,78,77,'f4'],[65,68,67,'g3']]},
   'trumpet-vsco2-stac':{folder:'vsco2-trumpet-stac',prefix:'trumpet-stac',release:.22,roundRobin:true,regions:[[69,71,70,'asharp3'],[55,58,57,'a2'],[79,82,81,'a4'],[59,61,60,'c3'],[83,84,84,'c5'],[62,63,63,'dsharp3'],[72,75,74,'d4'],[52,54,53,'f2'],[64,65,65,'f3'],[76,78,77,'f4'],[66,68,67,'g3']]},
-  'trumpet-vsco2-harmon-mute-sus':{folder:'vsco2-trumpet-harmon-mute-sus',prefix:'trumpet-harmonM-sus',release:.6,regions:[[58,58,58,'asharp2'],[69,71,70,'asharp3'],[79,84,81,'a4'],[59,61,60,'c3'],[62,65,63,'dsharp3'],[72,75,74,'d4'],[76,78,77,'f4'],[66,68,68,'gsharp3']]},
-  'trumpet-vsco2-straight-mute-sus':{folder:'vsco2-trumpet-straight-mute-sus',prefix:'trumpet-straightM-sus',release:.6,regions:[[58,58,58,'asharp2'],[69,71,70,'asharp3'],[79,84,81,'a4'],[59,60,60,'c3'],[61,64,62,'d3'],[72,75,74,'d4'],[76,78,77,'f4'],[65,68,67,'g3']]}
 };
 const VSCO2_UPRIGHT_PIANO_REGIONS=[[21,22,21,'000'],[23,26,25,'002'],[27,30,29,'004'],[31,34,33,'006'],[35,38,37,'008'],[39,42,41,'010'],[43,46,45,'012'],[47,50,49,'014'],[51,54,53,'016'],[55,58,57,'018'],[59,62,61,'020'],[63,66,65,'022'],[67,70,69,'024'],[71,74,73,'026'],[75,78,77,'028'],[79,82,81,'030'],[83,86,85,'032'],[87,90,89,'034'],[91,94,93,'036'],[95,98,97,'038'],[99,102,101,'040'],[103,106,105,'042'],[107,108,108,'044']];
 const VSCO2_UPRIGHT_NR1_REGIONS=[[24,27,24,'C1','12','2','12'],[28,33,31,'G1','1','12','2'],[34,39,36,'C2','1','12','12'],[40,45,43,'G2','1','12','12'],[46,51,48,'C3','12','12','12'],[52,57,55,'G3','12','12','12'],[58,63,60,'C4','12','12','12'],[64,69,67,'G4','12','12','12'],[70,75,72,'C5','12','12','12'],[76,81,79,'G5','12','12','12'],[82,87,84,'C6','12','12','12'],[88,93,91,'G6','12','12','12'],[94,99,96,'C7','12','12','12'],[100,103,103,'G7','12','12','12']];
@@ -112,24 +109,13 @@ const UPRIGHT_KW_REGIONS={
     [108,108,108,"C8vH.flac",0,0]
   ]
 };
-const VSCO2_UPRIGHT_PATCHES={
-  'upright-piano-vsco2':{folder:'vsco2-upright-piano',release:.6,regions:VSCO2_UPRIGHT_PIANO_REGIONS},
-  'upright-nr1-vsco2':{folder:'vsco2-upright-nr1',release:1,regions:VSCO2_UPRIGHT_NR1_REGIONS}
-};
+const VSCO2_UPRIGHT_PATCHES={};
 const INSTRUMENTS = {
   'solo-violin':{folder:'solo-violin-upload',first:55,last:96,step:1,release:.72,sampledRoots:SOLO_VIOLIN_ROOTS},
   'distorted-guitar':{folder:'distorted-guitar-upload',first:36,last:85,step:1,release:.42,sampledRoots:DISTORTED_GUITAR_ROOTS},
   'grand-piano': { folder: 'grand-piano', first: 30, last: 96, step: 3, release: 0.4 },
-  'steinway-grand': { folder: 'steinway-grand', first: 36, last: 95, step: 1, release: 0.7 },
-  'headroom-piano':{folder:'headroom-piano-source/BengtNilsson.HeadroomPiano-master/Samples',first:21,last:108,step:3,release:.8,samples:HEADROOM_REGIONS},
-  'splendid-grand':{folder:'splendid-grand-source/SplendidGrandPiano-master/Samples',first:21,last:108,step:1,release:.7,samples:SPLENDID_PP_REGIONS},
-  'livingroom-upright-micro':{folder:'livingroom-upright-source',first:21,last:108,step:1,release:.9,samples:LIVINGROOM_REGIONS},
-  'maestro-concert-grand':{folder:'maestro-concert-grand-source/MatsHelgesson.MaestroConcertGrandPiano-master/Samples',first:21,last:108,step:1,release:.7,samples:MAESTRO_REGIONS},
+  'steinway-grand': { folder: 'steinway-grand', first: 36, last: 95, step: 1, release: 0.7 },  'splendid-grand':{folder:'splendid-grand-source/SplendidGrandPiano-master/Samples',first:21,last:108,step:1,release:.7,samples:SPLENDID_PP_REGIONS},  'maestro-concert-grand':{folder:'maestro-concert-grand-source/MatsHelgesson.MaestroConcertGrandPiano-master/Samples',first:21,last:108,step:1,release:.7,samples:MAESTRO_REGIONS},
   'salamander-grand':{folder:'salamander-cloudinary-upload',first:21,last:108,step:1,release:.9,samples:SALAMANDER_REGIONS},
-  'upright-piano-vsco2':{folder:'vsco2-upright-piano',first:21,last:108,step:1,release:.6,samples:VSCO2_UPRIGHT_PIANO_REGIONS.map(([low,high,root,code])=>[low,high,root,code])},
-  'upright-nr1-vsco2':{folder:'vsco2-upright-nr1',first:24,last:103,step:1,release:1,samples:VSCO2_UPRIGHT_NR1_REGIONS.map(([low,high,root,note])=>[low,high,root,note])},
-  'upright-piano-kw':{folder:'upright-piano-kw/samples',cloudinaryRoot:true,first:21,last:108,step:1,release:.6,rawSamplePaths:true,samples:UPRIGHT_KW_REGIONS.soft},
-  'trumpet-real': { folder: 'trumpet-vsco', first: 41, last: 72, step: 1, release: 0.25 },
   'trumpet-vsco2-sus-vib': { folder: 'vsco2-trumpet-sus-vib', first: 53, last: 84, step: 1, release: 0.25, samples: VSCO2_TRUMPET_SUS_VIB_REGIONS.map(([low,high,root,note])=>[low,high,root,`trumpet-sus-vib-${note}`]) },
   ...Object.fromEntries(Object.entries(VSCO2_TRUMPET_PATCHES).map(([id,patch])=>[id,{folder:patch.folder,first:Math.min(...patch.regions.map(region=>region[0])),last:Math.max(...patch.regions.map(region=>region[1])),step:1,release:patch.release,samples:patch.regions.map(([low,high,root,note])=>[low,high,root,`${patch.prefix}-${note}`])}])),
   ...Object.fromEntries(EXTRA_INSTRUMENTS.map(instrument=>[instrument.id,{...instrument,step:1,nearestSample:true}])),

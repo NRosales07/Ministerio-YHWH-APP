@@ -486,6 +486,7 @@ function perfProbeReport(now){
 function drawFallingNotesFrameInner(timestamp){
   const run=fallingNotesRun,playbackActive=!!(state.playing&&run);
   if(document.hidden){fallingNotesFrame=0;return;}
+  if($('player')?.classList.contains('mobile-piano-wide')){clearFallingNotesCanvas();fallingNotesFrame=0;return;}
   if(!playbackActive&&!fnHasFx()){stopFallingNotes();return;}
   if(!playbackActive&&!fnHitBursts.length&&!fnGp.n&&!fnGoldHolds.length&&timestamp-fnIdleLast<30){fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);return;}
   fnIdleLast=timestamp;
@@ -711,6 +712,7 @@ function startKeyboardAtC4() {
   $('voiceMixer').classList.toggle('hidden',!state.song||!state.admin);
   updateVisualOptions();
   $('adminBtn').textContent = state.admin ? '🔓 Admin activo' : '🔑 Admin';
+  const adminTile=$('homeAdminTile');if(adminTile){const adminIcon=adminTile.querySelector('.home-action-icon img');if(adminIcon)adminIcon.src=`assets/home-icons/${state.admin?'admin-unlocked':'admin'}.svg`;adminTile.querySelector('[data-admin-label]').textContent=state.admin?'Admin activo':'Admin';}
   $('adminBtn').classList.toggle('active', state.admin);
   syncTrackKeyUI();
 }
@@ -851,13 +853,14 @@ function notesForTrackPlayback(list,trackType=state.melodyType){
 }
 function noteHoldSeconds(note){
   // Trompeta: solo el toque, sin alargar con sustain. Los demás respetan el sustain.
-  const base=(Number(note.duration)||.32)*(isTrumpetInstrument(state.instrument)?1:(state.sustain?2.4:1));
+  const pedalOn=state.sustain&&!isTrumpetInstrument(state.instrument);
+  const base=(Number(note.duration)||.32)*(isTrumpetInstrument(state.instrument)?1:(state.sustain?1.6:1));
   const limit=Number(note.cutAt);
-  return Number.isFinite(limit)?Math.max(.06,Math.min(base,limit)):base;
+  return Number.isFinite(limit)&&!pedalOn?Math.max(.06,Math.min(base,limit)):base;
 }
 function noteWasCut(note){
   const limit=Number(note.cutAt);
-  return Number.isFinite(limit)&&limit<(Number(note.duration)||.32)*(isTrumpetInstrument(state.instrument)?1:(state.sustain?2.4:1));
+  return !(state.sustain&&!isTrumpetInstrument(state.instrument))&&Number.isFinite(limit)&&limit<(Number(note.duration)||.32)*(isTrumpetInstrument(state.instrument)?1:(state.sustain?1.6:1));
 }
 function notesForCurrentMix(){
   const parts=generatedVoiceParts(),selected=[];
@@ -1178,18 +1181,22 @@ function buildInstrumentButtons(){
   const targetBar=document.createElement('div');targetBar.className='instrument-picker-targets';targetBar.setAttribute('role','group');targetBar.setAttribute('aria-label','Dónde aplicar el instrumento');
   const primaryTarget=document.createElement('button');primaryTarget.type='button';primaryTarget.className='instrument-picker-target';primaryTarget.textContent='Instrumento principal';primaryTarget.onclick=()=>{instrumentPickerTarget='primary';syncInstrumentButtons();};
   const layerTarget=document.createElement('button');layerTarget.type='button';layerTarget.className='instrument-picker-target';layerTarget.textContent='Segunda capa';layerTarget.onclick=()=>{instrumentPickerTarget='layer';setStringsLayerEnabled(true);syncInstrumentButtons();};
+  const thirdLayerTarget=document.createElement('button');thirdLayerTarget.type='button';thirdLayerTarget.className='instrument-picker-target';thirdLayerTarget.textContent='Tercera capa';thirdLayerTarget.onclick=()=>{instrumentPickerTarget='third';setThirdLayerEnabled(true);syncInstrumentButtons();};
   const layerEnabledLabel=document.createElement('label');layerEnabledLabel.className='instrument-picker-layer-switch';layerEnabledLabel.innerHTML='<input id="layerPickerEnabled" type="checkbox" aria-label="Activar la segunda capa"><span>Capa activa</span>';
-  targetBar.append(primaryTarget,layerTarget,layerEnabledLabel);
+  const thirdLayerEnabledLabel=document.createElement('label');thirdLayerEnabledLabel.className='instrument-picker-layer-switch';thirdLayerEnabledLabel.innerHTML='<input id="thirdLayerPickerEnabled" type="checkbox" aria-label="Activar la tercera capa"><span>Tercera activa</span>';
+  targetBar.append(primaryTarget,layerTarget,thirdLayerTarget,layerEnabledLabel,thirdLayerEnabledLabel);
   const mixControls=document.createElement('div');mixControls.className='instrument-picker-mix';
-  mixControls.innerHTML='<div class="instrument-mix-control"><label for="pickerMasterVolume">Volumen del piano <output id="pickerMasterVolumeValue">100%</output></label><input id="pickerMasterVolume" type="range" min="0" max="200" step="1" aria-label="Volumen del instrumento principal"></div><div class="instrument-mix-control"><label for="layerPickerVolume">Volumen de la capa <output id="layerPickerVolumeValue">70%</output></label><input id="layerPickerVolume" type="range" min="0" max="200" step="1" aria-label="Volumen de la segunda capa"></div><div class="instrument-mix-control"><label for="layerPickerAttack">Entrada de cuerdas <output id="layerPickerAttackValue">10 ms</output></label><input id="layerPickerAttack" type="range" min="0" max="200" step="5" aria-label="Tiempo de ataque de las cuerdas"></div>';
+  mixControls.innerHTML='<div class="instrument-mix-control"><label for="pickerMasterVolume">Volumen del piano <output id="pickerMasterVolumeValue">100%</output></label><input id="pickerMasterVolume" type="range" min="0" max="200" step="1" aria-label="Volumen del instrumento principal"></div><div class="instrument-mix-control"><label for="layerPickerVolume">Volumen de la segunda <output id="layerPickerVolumeValue">70%</output></label><input id="layerPickerVolume" type="range" min="0" max="200" step="1" aria-label="Volumen de la segunda capa"></div><div class="instrument-mix-control"><label for="layerPickerAttack">Entrada de cuerdas <output id="layerPickerAttackValue">10 ms</output></label><input id="layerPickerAttack" type="range" min="0" max="200" step="5" aria-label="Tiempo de ataque de las cuerdas"></div><div class="instrument-mix-control"><label for="thirdLayerPickerVolume">Volumen de la tercera <output id="thirdLayerPickerVolumeValue">40%</output></label><input id="thirdLayerPickerVolume" type="range" min="0" max="200" step="1" aria-label="Volumen de la tercera capa"></div>';
   const masterPicker=mixControls.querySelector('#pickerMasterVolume'),volumePicker=mixControls.querySelector('#layerPickerVolume'),attackPicker=mixControls.querySelector('#layerPickerAttack');masterPicker.value=String(Math.round(state.masterVolume*100));volumePicker.value=String(state.stringsLayerVolume);attackPicker.value=String(state.stringsLayerAttackMs);masterPicker.oninput=event=>setMasterVolume(event.target.value);
+  const thirdVolumePicker=mixControls.querySelector('#thirdLayerPickerVolume');thirdVolumePicker.value=String(state.thirdLayerVolume);thirdVolumePicker.oninput=event=>setThirdLayerVolume(event.target.value);
   volumePicker.oninput=event=>setStringsLayerVolume(event.target.value);attackPicker.oninput=event=>setStringsLayerAttack(event.target.value);
   layerEnabledLabel.querySelector('input').checked=state.stringsLayerEnabled;layerEnabledLabel.querySelector('input').onchange=event=>setStringsLayerEnabled(event.target.checked);
-  const layerStatus=$('stringsLayerStatus');if(layerStatus)mixControls.appendChild(layerStatus);
+  thirdLayerEnabledLabel.querySelector('input').checked=state.thirdLayerEnabled;thirdLayerEnabledLabel.querySelector('input').onchange=event=>setThirdLayerEnabled(event.target.checked);
+  const layerStatus=$('stringsLayerStatus'),thirdLayerStatus=$('thirdLayerStatus');if(layerStatus)mixControls.appendChild(layerStatus);if(thirdLayerStatus)mixControls.appendChild(thirdLayerStatus);
   browser.append(targetBar,mixControls);
   const categories=document.createElement('div');categories.className='instrument-categories';categories.setAttribute('role','tablist');categories.setAttribute('aria-label','Familia de instrumentos');
   const panels=document.createElement('div');panels.className='instrument-category-panels';
-  const groups=[{id:'piano',name:'Piano',instruments:['grand-piano','steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','upright-piano-vsco2','upright-nr1-vsco2','upright-piano-kw']},{id:'bass',name:'Bajo',instruments:['growlybass-clean','fashionbass-clean']},{id:'brass',name:'Vientos',instruments:['trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','sigex-brass','mtg-solo-sax']},{id:'strings',name:'Strings',instruments:['strings','solo-violin','sigex-strings','bigcat-cello']},{id:'guitar',name:'Guitarra',instruments:['distorted-guitar']},{id:'organ',name:'Órgano',instruments:['church-organ']},{id:'percussion',name:'Percusión',instruments:['vibraphone']}];
+  const groups=[{id:'piano',name:'Piano',instruments:['grand-piano','steinway-grand','splendid-grand','maestro-concert-grand','salamander-grand']},{id:'bass',name:'Bajo',instruments:['growlybass-clean','fashionbass-clean']},{id:'brass',name:'Vientos',instruments:['trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-stac','mtg-solo-sax']},{id:'strings',name:'Strings',instruments:['strings','solo-violin','sigex-strings']},{id:'guitar',name:'Guitarra',instruments:['distorted-guitar']},{id:'organ',name:'Órgano',instruments:['church-organ']},{id:'percussion',name:'Percusión',instruments:['vibraphone']}];
   groups.forEach((group,index)=>{
     const tab=document.createElement('button');tab.type='button';tab.className='instrument-category-tab';tab.id=`instrument-tab-${group.id}`;tab.textContent=group.name;tab.setAttribute('role','tab');tab.setAttribute('aria-controls',`instrument-panel-${group.id}`);tab.setAttribute('aria-selected',String(index===0));
     const panel=document.createElement('div');panel.id=`instrument-panel-${group.id}`;panel.className='instrument-category-panel';panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby',tab.id);panel.hidden=index!==0;
@@ -1200,7 +1207,7 @@ function buildInstrumentButtons(){
       const icon=document.createElement('span');icon.className='instrument-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=instrumentIllustration(option.value);
       const name=document.createElement('span');name.className='instrument-name';name.textContent=instrumentMenuLabel(option.value,option.textContent);
       button.append(icon,name);
-      button.onclick=()=>{if(instrumentPickerTarget==='layer'){setLayerInstrument(option.value);setStringsLayerEnabled(true);}else{select.value=option.value;select.dispatchEvent(new Event('change'));}syncInstrumentButtons();};
+      button.onclick=()=>{if(instrumentPickerTarget==='layer'){setLayerInstrument(option.value);setStringsLayerEnabled(true);}else if(instrumentPickerTarget==='third'){setThirdLayerInstrument(option.value);setThirdLayerEnabled(true);}else{select.value=option.value;select.dispatchEvent(new Event('change'));}syncInstrumentButtons();};
       list.appendChild(button);
     });
     panel.appendChild(list);categories.appendChild(tab);panels.appendChild(panel);
@@ -1217,7 +1224,7 @@ function registerExtraInstrumentOptions(){
     if([...source.options].some(option=>option.value===instrument.id))return;
     const option=document.createElement('option');option.value=instrument.id;option.textContent=instrument.label;source.appendChild(option);
   });
-  const targets=document.querySelectorAll('#layerInstrumentSelect,#bassInstrumentQuick,#bassInstrument,#modeBassInstrument,#modeMelodyInstrument,#modeAccompaniment2Instrument,#songTrackInstrument,#songTrackLayerInstrument,[id^="mode_"][id$="_layerInstrument"]');
+  const targets=document.querySelectorAll('#layerInstrumentSelect,#thirdLayerInstrument,#bassInstrumentQuick,#bassInstrument,#modeBassInstrument,#modeMelodyInstrument,#modeAccompaniment2Instrument,#songTrackInstrument,#songTrackLayerInstrument,[id^="mode_"][id$="_layerInstrument"]');
   targets.forEach(select=>{
     const selected=select.value;
     select.replaceChildren(...[...source.options].map(option=>option.cloneNode(true)));
@@ -1228,25 +1235,25 @@ function syncInstrumentButtons(){
   const instrumentButton=$('instrumentToggle'),instrumentNames={...Object.fromEntries(EXTRA_INSTRUMENTS.map(item=>[item.id,item.label])),'grand-piano':'Grand Piano','steinway-grand':'Steinway de cola','headroom-piano':'Headroom · Yamaha C3','splendid-grand':'Splendid Grand Piano','livingroom-upright-micro':'LivingRoom Upright Micro','maestro-concert-grand':'Maestro Concert Grand · Yamaha CF-3','salamander-grand':'Salamander Grand Piano · Yamaha C5','upright-piano-vsco2':'Vertical VSCO · Upright Piano','upright-nr1-vsco2':'Vertical VSCO · Upright No. 1','upright-piano-kw':'Upright Piano KW · Kawai','trumpet-real':'Trompeta real','trumpet-vsco2-sus-vib':'Trompeta VSCO · Vibrato','trumpet-vsco2-sus':'Trompeta VSCO · Sostenida','trumpet-vsco2-stac':'Trompeta VSCO · Staccato','trumpet-vsco2-harmon-mute-sus':'Trompeta VSCO · Sordina Harmon','trumpet-vsco2-straight-mute-sus':'Trompeta VSCO · Sordina Straight','strings':'Strings','solo-violin':'Violín solista','distorted-guitar':'Guitarra distorsionada'};
   if(instrumentButton){
      const name=instrumentNames[state.instrument]||instrumentNames['grand-piano'];
-     instrumentButton.innerHTML=instrumentIllustration(state.instrument,'stage');
+     instrumentButton.innerHTML=instrumentButton.classList.contains('instrument-header-toggle')?'<svg class="ui-icon ui-icon-piano" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M7 5v14M11 5v8M15 5v8M19 5v14"/><path class="ui-icon-black-keys" d="M8 5h2v5H8zm4 0h2v5h-2zm4 0h2v5h-2z"/></svg>':instrumentIllustration(state.instrument,'stage');
     instrumentButton.setAttribute('aria-label',`Instrumento actual: ${name}. Cambiar instrumento`);instrumentButton.title=name;
   }
-  const selected=instrumentPickerTarget==='layer'?state.layerInstrument:state.instrument;
+  const selected=instrumentPickerTarget==='layer'?state.layerInstrument:instrumentPickerTarget==='third'?state.thirdLayerInstrument:state.instrument;
   document.querySelectorAll('#instrumentMenu [data-instrument]').forEach(button=>{const on=button.dataset.instrument===selected;button.classList.toggle('active',on);button.setAttribute('aria-checked',String(on));});
-  document.querySelectorAll('#instrumentMenu .instrument-picker-target').forEach((button,index)=>{const active=index===(instrumentPickerTarget==='layer'?1:0);button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+  document.querySelectorAll('#instrumentMenu .instrument-picker-target').forEach((button,index)=>{const active=index===(instrumentPickerTarget==='layer'?1:instrumentPickerTarget==='third'?2:0);button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
   const group=['sigex-brass','mtg-solo-sax',...Object.keys(VSCO2_TRUMPET_PATCHES),'trumpet-real','trumpet-vsco2-sus-vib'].includes(selected)?'brass':['strings','solo-violin','sigex-strings','bigcat-cello'].includes(selected)?'strings':selected==='distorted-guitar'?'guitar':selected==='church-organ'?'organ':selected==='vibraphone'?'percussion':['growlybass-clean','fashionbass-clean'].includes(selected)?'bass':'piano';
   const tab=$(`instrument-tab-${group}`),panel=$(`instrument-panel-${group}`);
   if(tab&&panel){document.querySelectorAll('#instrumentMenu [role="tab"]').forEach(item=>item.setAttribute('aria-selected',String(item===tab)));document.querySelectorAll('#instrumentMenu [role="tabpanel"]').forEach(item=>item.hidden=item!==panel);}
 }
 function instrumentIllustration(instrument){
-  const horns=['trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-sus','trumpet-vsco2-stac','trumpet-vsco2-harmon-mute-sus','trumpet-vsco2-straight-mute-sus','sigex-brass',...Object.keys(VSCO2_TRUMPET_PATCHES)];
-  const pianos=['grand-piano','steinway-grand','headroom-piano','splendid-grand','livingroom-upright-micro','maestro-concert-grand','salamander-grand','upright-piano-vsco2','upright-nr1-vsco2','upright-piano-kw'];
+  const horns=['trumpet-real','trumpet-vsco2-sus-vib','trumpet-vsco2-stac',...Object.keys(VSCO2_TRUMPET_PATCHES)];
+  const pianos=['grand-piano','steinway-grand','splendid-grand','maestro-concert-grand','salamander-grand'];
   const pianoImages={'grand-piano':'grand-piano-black.png','steinway-grand':'grand-piano-gray.png','headroom-piano':'grand-piano-black.png','splendid-grand':'grand-piano-gray.png','livingroom-upright-micro':'upright-piano.png','maestro-concert-grand':'grand-piano-black.png','salamander-grand':'grand-piano-gray.png','upright-piano-vsco2':'upright-piano.png','upright-nr1-vsco2':'upright-piano.png','upright-piano-kw':'upright-piano.png'};
   let image='grand-piano-black.png';
   if(pianos.includes(instrument))image=pianoImages[instrument]||image;
   else if(horns.includes(instrument))image='trumpet.png';
   else if(instrument==='mtg-solo-sax')image='saxophone.png';
-  else if(['strings','solo-violin','sigex-strings','bigcat-cello'].includes(instrument))image='violin.png';
+  else if(['strings','solo-violin','sigex-strings'].includes(instrument))image='violin.png';
   else if(instrument==='distorted-guitar')image='guitar.png';
   else if(['growlybass-clean','fashionbass-clean'].includes(instrument))image='bass.png';
   else if(instrument==='church-organ')image='organ.png';

@@ -61,7 +61,7 @@ function instrumentTrackConfig(category,id,type){
   const track=trackFor(category,id,type)||{};
   const newTrack=['melodia','acompanamiento1','acompanamiento2'].includes(type)||type.startsWith('melodiaAlterna_');
   const instrument=saved.instrument||track.instrument||(type==='acompanamiento1'?state.bassInstrument:state.instrument);
-  return {instrument,intensity:['very-soft','soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',octaveShift:[-24,-12,0,12,24].includes(Number(saved.octaveShift))?Number(saved.octaveShift):0,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:saved.layerInstrument||track.layerInstrument||(newTrack?'strings':state.layerInstrument),layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
+  return {instrument,intensity:['very-soft','soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',octaveShift:[-24,-12,0,12,24].includes(Number(saved.octaveShift))?Number(saved.octaveShift):0,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:newTrack&&!saved.layerInstrument&&!track.layerInstrument?'strings':layerInstrument,layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
 }
 function shiftRecordedTrackNotes(notes,octaveShift){
   const shift=Number(octaveShift)||0;
@@ -98,7 +98,7 @@ async function saveSongTrackSettings(){
   renderLists();
 }
 function applySongTrackInstrument(config){
-  state.instrument=config.instrument;state.trumpetIntensity=config.intensity||'strong';state.headroomVelocityLayer=state.trumpetIntensity==='very-soft'?1:state.trumpetIntensity==='soft'?2:state.trumpetIntensity==='medium'?3:state.trumpetIntensity==='strong'?4:5;if(config.instrument==='livingroom-upright-micro'&&state.headroomVelocityLayer>2)state.headroomVelocityLayer=2;state.layerInstrument=config.layerInstrument;state.stringsLayerEnabled=!!config.layerEnabled;state.stringsLayerVolume=config.layerVolume;
+  state.instrument=availableInstrumentId(config.instrument);state.trumpetIntensity=config.intensity||'strong';state.headroomVelocityLayer=state.trumpetIntensity==='very-soft'?1:state.trumpetIntensity==='soft'?2:state.trumpetIntensity==='medium'?3:state.trumpetIntensity==='strong'?4:5;state.layerInstrument=availableInstrumentId(config.layerInstrument,'strings');state.stringsLayerEnabled=!!config.layerEnabled;state.stringsLayerVolume=config.layerVolume;
   if($('instrumentSelect'))$('instrumentSelect').value=state.instrument;
   syncDynamicLayerControl(state.instrument);syncPianoLayerControl(state.instrument);syncInstrumentButtons();syncStringsLayerControls();if(audioContext)updateStringsLayerGain();
   primeAudioForInstrument(state.instrument);if(state.stringsLayerEnabled)primeStringsLayer();

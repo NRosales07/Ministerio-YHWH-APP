@@ -116,11 +116,17 @@ var SONGS =
     "num": 9,
     "title": "MÁS ALLÁ DEL HORIZONTE",
     "compositor": "Ely Nuñez - 2019",
-    "tono": "F",
+    "tono": "C",
     "album": "Culto en Vivo",
-    "version": "Virginia Brito",
     "content": "[INTRO]: \n                                    | F | G | C | F| G | F | C |\n        [VERSO 1]:\n                          F                        G                      C\nMás allá del horizonte y de las nubes habita un Rey,\n                              F                              G                   C\nMás allá de las esferas, la luna y las estrellas vive Jehová,\n                              F                 G                           C\nSobre su trono sublime, los serafines, alabando están,\n                                  F                                            G                  C\nY los veinticuatro ancianos dicen: Santo, Santo, Santo a su Majestad.\n        [CORO]: \n                            F            G                        C\nX2   Y su gloria está aquí,        Y su gloria está sobre mí,\n                          F             G                           F          C\nY me llena con su poder,       Solo quiero adorarle a Él.    X2\n                                       [VERSO 1]: X2             |          [CORO]: X2           ",
-    "id": 8
+    "id": 8,
+    "version": "Virginia Brito",
+    "versiculos": [
+      {
+        "texto": "Salmo 97:1-6:\n1 \"Jehová reina; regocíjese la tierra, alégrense las muchas costas.\n2 Nube y oscuridad alrededor de él; justicia y juicio son el cimiento de su trono.\n3 Fuego irá delante de él, y abrasará a sus enemigos alrededor\n\n4 Sus relámpagos alumbraron el mundo; la tierra vio y se estremeció.\n5 Los montes se derritieron como cera delante de Jehová, delante del Señor de toda la tierra.\n6 Los cielos anunciaron su justicia, y todos los pueblos vieron su gloria.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 10,
@@ -153,11 +159,17 @@ var SONGS =
     "title": "SOBRE ALAS DE PALOMA",
     "compositor": "Billy Bunster",
     "tono": "F#m",
-    "youtube": "https://www.youtube.com/embed/_Fj3YwSrtNI",
     "album": "Agradecido - 2002",
-    "version": "Virginia B.",
     "content": "[INTRO]: MELODÍA \n                                         | C#m | G#m | F#m |\n        [VERSO 1]: \nF#m       G#m7        F#m  C#m              G#m7          F#m         E\nComo la lluvia se derrama,         de la montaña hacia el... mar,\n                                     B                               C#m7\nHe derramado hoy mi vida, buscándote con ansias,\n    A                          E\nAquel que ama mi alma.\n        [CORO]:\n                              Bsus4 C#m7          A              E      Esus2 - E\nX2 Sobre alas de paloma,        sobre alas de querubes,\n                                    B                                C#m7\nVe y cuéntale que le amo, que yo por el me muero,\n       A              E               [C#m – G#m – F#m]\nPor Él me desespero. X2\n        [VERSO 2]: \n             G#m7       F#m7  C#m              G#m7         F#m7     E\nQuiero llamar tu atención,       y que me mires con pasión,\n                                         B                                     C#m7\nHe de correr hasta tus brazos, y refugiarme en tu regazo,\n    A                    E\nRecibe hoy mi canto.\n          [CORO]:X4 ",
-    "id": 11
+    "id": 11,
+    "version": "Virginia B.",
+    "youtube": "https://www.youtube.com/embed/_Fj3YwSrtNI",
+    "versiculos": [
+      {
+        "texto": "Salmo 91:1-4:\n1 \"El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente.\n\n2 Diré yo a Jehová: Esperanza mía, y castillo mío; mi Dios, en quien confiaré.\n\n3 Él te librará del lazo del cazador, de la peste destructora.\n\n4 Con sus plumas te cubrirá, y debajo de sus alas estarás seguro; escudo y adarga es su verdad.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 13,
@@ -319,10 +331,16 @@ var SONGS =
     "title": "MERECES LA GLORIA",
     "compositor": "Luigi Castro",
     "tono": "C",
-    "youtube": "https://www.youtube.com/embed/PsD5aaQi74A",
     "album": "Anhelo Conocerte - 2001",
     "content": "[INTRO]: MELODÍA \n                                  | G | D | Em | F | C | D | G |\n        [VERSO 1]:         \n                             C            Em\nX2   Mereces la gloria y la honra,\n        Bb7                          F                             G\nLevantamos nuestras manos, exaltándote, Señor.   X2\n        [CORO]: \n              C                         Cm7 Am                       Am7  F   Dm\nX2    Altísimo, milagroso, salvador, no hay nadie como tú,\n           Gsus4\nNo hay nadie como tú.      X2\n[VERSO 1]  X2        |         [CORO]   X2 ",
-    "id": 27
+    "id": 27,
+    "youtube": "https://www.youtube.com/embed/PsD5aaQi74A",
+    "versiculos": [
+      {
+        "texto": "Apocalipsis 4:11:\n11 \"Señor, digno eres de recibir la gloria y la honra y el poder; porque tú creaste todas las cosas, y por tu voluntad existen y fueron creadas.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 29,
@@ -819,11 +837,17 @@ var SONGS =
     "title": "LLÉVAME A TUS ATRIOS",
     "compositor": "Dave Browning - 1986",
     "tono": "Em",
-    "youtube": "https://www.youtube.com/embed/DRVwwa7y3aw",
     "album": "Glorificad a Jehová",
-    "version": "P.A.",
     "content": "[INTRO]: MELODÍA\n                              | Em | D | Em | D | Em | Bm7 |\n        [VERSO 1]: \n               Em                       C7\nSeñor llévame a tus Atrios, al Lugar Santo,\n D                                           Em               D\nAl altar de Bronce, Señor tu rostro quiero ver.\n        [VERSO 2]: \n    Em\nPásame en la muchedumbre,\n                       C7\nPor donde el sacerdote canta,\n                D                                                 C7              D\nTengo hambre y sed de justicia, y solo encuentro un lugar.\n        [CORO]: \n     Em                        D                      C                 D         Em\nLlévame al lugar Santísimo, por la sangre del cordero redentor\nC-D-Em                     D              C            D                    Em     C - D\nLlévame al lugar Santísimo, tócame, límpiame, ¡heme aquí!\n    [VERSO 1]:          |     [VERSO 2]        |     [CORO]  X2 ",
-    "id": 68
+    "id": 68,
+    "version": "P.A.",
+    "youtube": "https://www.youtube.com/embed/DRVwwa7y3aw",
+    "versiculos": [
+      {
+        "texto": "Salmo 29:2:\n2 \"Dad a Jehová la gloria debida a su nombre; Adorad a Jehová en la hermosura de la santidad.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 2,
@@ -920,10 +944,16 @@ var SONGS =
     "title": "CREO EN TI",
     "compositor": "Julio Melgar",
     "tono": "Bm",
-    "youtube": "https://www.youtube.com/embed/7Yrdroseg14",
     "album": "Tus cuerdas de amor - 2019",
     "content": "[INTRO]: MELODÍA\n                                          | Bm | G | D | A |\n        [VERSO 1]: \n   Bm                                 G              D                            A                   \nQuiero levantar a ti mis manos, maravilloso Jesús, milagroso Señor\n  Bm                                  G                           D        \nLlena este lugar de tu presencia, y haz descender tu poder, \n                       A \n A los que estamos aquí\n     [PRE - CORO]:\n                    Bm       A      G                         Bm     A   G \nX2    Creo en ti,      Je  -  sús, y en lo que harás,  en mí.   X2    \n      D         A\nEn mí, en mí.\n        [CORO]:\n                    Bm                              G \nX2   Recibe toda la gloria, recibe toda la honra,\n       D                    A\nPrecioso hijo de Dios.  X2\n   [CORO]  X2  ",
-    "id": 77
+    "id": 77,
+    "youtube": "https://www.youtube.com/embed/7Yrdroseg14",
+    "versiculos": [
+      {
+        "texto": "Efesios 3:20-21\n20 \"Y a Aquel que es poderoso para hacer todas las cosas mucho más abundantemente de lo que pedimos o entendemos, según el poder que actúa en nosotros,\n\n21 a él sea gloria en la iglesia en Cristo Jesús por todas las edades, por los siglos de los siglos. Amén.\"\n\nJeremías 32:27\n27 \"He aquí que yo soy Jehová, Dios de toda carne; ¿habrá algo que sea difícil para mí?\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 3,
@@ -1232,7 +1262,13 @@ var SONGS =
     "tono": "A",
     "album": "Poderoso - 1993",
     "content": "[INTRO]: \n                                        | C | Am | D | G |\n        [VERSO 1]:\n       G                       Em              C            Dsus4-D\nAl borde de tu gran trono me postraré hoy a ti,\n         G                     Em           C-Am                           D\nTú reinas sobre principados, sentado a la diestra de Dios.\n        [CORO]:\n      G                       Em            C    Am            D7\nExáltate, oh gran cordero, tú vives       hoy y vivirás, \n       G                       Em               C                     G\nCorónate con mi alabanza, Tu nombre es el vencedor .\n       \n        [VERSO 1]:        |    [CORO] X2 .\n           C                    G\nTu nombre es el vencedor…",
-    "id": 107
+    "id": 107,
+    "versiculos": [
+      {
+        "texto": "Apocalipsis 5:12-13:\n12 \"que decían a gran voz: El Cordero que fue inmolado es digno de tomar el poder, las riquezas, la sabiduría, la fortaleza, la honra, la gloria y la alabanza.\n\n13 Y a todo lo creado que está en el cielo, y sobre la tierra, y debajo de la tierra, y en el mar, y a todas las cosas que en ellos hay, oí decir: Al que está sentado en el trono, y al Cordero, sea la alabanza, la honra, la gloria y el poder, por los siglos de los siglos.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 12,
@@ -1260,7 +1296,13 @@ var SONGS =
     "tono": "G",
     "album": "Enciende Una Luz - 1999",
     "content": "[INTRO]:\n                                    | A | C#m | F# | Bm | E |\n        [VERSO 1]::\n            A                           C#m      F#7                     Bm\nX2   Quiero levantar mis manos, quiero levantar mi voz,\n   F#                       Bm   E                           A      A7\nOfreciendo a ti, mi vida,     en santidad y amor\n    D     F#m             Bm7       C#m             F#\nPadre, solo a ti te ofrezco, mi vida y mi corazón,\n Bm                              E       Bm      E\nY me postro en tu presencia, en adoración.   X2\n        [CORO]: \nA          C#m   Em      A       D   Dm                 A-F#m      \nHijo de Dios,          recibe hoy,         toda la gloria,       \n  Bm-A  D  B7   E\nla honra y      honor,\nA          C#m  Em       A     D    Dm                  A-F#m      \nHijo de Dios,          recibe hoy,         toda la gloria,        \n  Bm-A  D  B7   E\nla honra y       honor.\n        [VERSO 1]:          |     [CORO] X2 ",
-    "id": 110
+    "id": 110,
+    "versiculos": [
+      {
+        "texto": "Salmo 95:6-7:\n6 \"Venid, adoremos y postrémonos;\nArrodillémonos delante de Jehová nuestro Hacedor.\n7 Porque él es nuestro Dios;\nNosotros el pueblo de su prado, y ovejas de su mano...\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 15,
@@ -1343,10 +1385,16 @@ var SONGS =
     "title": "MI VIDA ESTÁ LLENA DE TI",
     "compositor": "Roberto Orellana",
     "tono": "G",
-    "youtube": "https://www.youtube.com/embed/P1J8vyCIEKY",
     "album": "Pistas - 2013",
     "content": "[INTRO]: MELODÍA\n        | G | C | D | Em | Am | C | D | G | C | G |\n        [CORO]: \n  G                          C            D               C                  Em\nX2   Mi vida está llena de ti,     mi vida está llena de ti,\n      Am           C                 D   Em           G          C\nMi vida está llena de ti, yo sé que estás en mí.   X2\n        [VERSO 1]: \n                       C   D                    Em\nY es como un río que baña mi alma,\nD                             C               D           G\nCual agua fresca que inunda mi ser.\n                       C            D   Em\nY es como un río que baña mi alma,\nBm             C                        D Esus4    E\nY es tu presencia que me hace vivir.\n\n\nSUBE DE TONO\n           [CORO]: \n               A      D             E                       A             F#m\nMi vida está llena de ti,     mi vida está llena de ti,\n               A      D                   E                       A-D\nMi vida está llena de ti, yo sé que estás en mí.\n                           D            E                            A             F#m\nMi familia está llena de ti,    mi familia está llena de ti,\n                   A     D                  E                     A-D\nMi familia está llena de ti, yo sé que estás aquí.\n        [VERSO 1]: \nA                     D             E        F#m    A\nY es como un río que baña mi alma,   \n                     D                 E          A\nCual agua fresca que inunda mi ser.\n                        D           E          F#m    A            \nY es como un río que baña mi alma, \n                   D                       E      A\nY es tu presencia que me hace vivir.\n        [CORO]: ",
-    "id": 117
+    "id": 117,
+    "youtube": "https://www.youtube.com/embed/P1J8vyCIEKY",
+    "versiculos": [
+      {
+        "texto": "Juan 7:37-38:\n37 \"En el último y gran día de la fiesta, Jesús se puso en pie y alzó la voz, diciendo: Si alguno tiene sed, venga a mí y beba.\n\n38 El que cree en mí, como dice la Escritura, de su interior correrán ríos de agua viva.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 1,
@@ -1520,10 +1568,16 @@ var SONGS =
     "num": 1,
     "title": "MANDA TU FUEGO",
     "compositor": "Ninoska de Ponce",
-    "tono": "G",
+    "tono": "A",
     "album": "Nuestro Legado - 2004",
     "content": "[INTRO]:\n                                   | Asus2 | C#m7 | D | E |\n        [VERSO 1]: \nAsus2                                           E\nX2   Inúndame oh Dios, con tu santidad,\n    G                           D           E      A Asus2\nAnhelo estar más ce - rca de ti, no te dejare,\n                                E      G                             D   [F#m]\nSi no me bendices,    derrama tu espíritu en mí.   X2\n        [CORO]: \n            E     A     D             E                   A     D       E\nX2   Manda tu fuego, Seño - or, manda tu fuego, Señor.   X2\n           Bm7                         A             D                  A             Bm  \nX2   Consume el mal que hay en mí,   sediento estoy de ti, \n          A      G       F#m - E\nYo quiero verte, Señor   X2\n                   Bm7\nManda tu fue - ego.",
-    "id": 135
+    "id": 135,
+    "versiculos": [
+      {
+        "texto": "Salmo 51:10:\n10 \"Crea en mí, oh Dios, un corazón limpio, y renueva un espíritu recto dentro de mí.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 2,
@@ -1532,7 +1586,13 @@ var SONGS =
     "tono": "E",
     "album": "Nuestro Legado - 2004",
     "content": "[INTRO]:\n                                      | F#m7 | E | Bsus4 |\n        [CORO]:\n          F#m7                  E                                G     \nVen bendición, ven sanidad, las puertas del cielo \n                            Bsus4 - B\nEstán abiertas para mi.\n        [VERSO 1]:\n                       F#m7                       E        \nX2   Día de liberación ha dicho Jehová, \n                                       G             Bsus4 - B\nRocío del cielo está cayendo sobre mí.   X2\n          [CORO] X2 \n        [VERSO 2]: \n                      Asus2                      E\nX2   Gotas de rocío, están descendiendo aquí,\n                         G                             B\nSeguro que mañana me verás reverdecer.   X2\n       [CORO] X2 ",
-    "id": 136
+    "id": 136,
+    "versiculos": [
+      {
+        "texto": "Isaías 44:3-4:\n3 \"Porque yo derramaré aguas sobre el sequedal, y ríos sobre la tierra árida; mi Espíritu derramaré sobre tu generación, y mi bendición sobre tus renuevos.\n\n4 Y brotarán entre hierba, como sauces junto a las riberas de las aguas.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 3,
@@ -1550,7 +1610,13 @@ var SONGS =
     "tono": "E",
     "album": "Nuestro Legado - 2004",
     "content": "[INTRO]:\n                                  | E | F#m | E | A | Bsus4 |\n        [VERSO 1]:\n                        E-Esus4-E                   A - Asus4 - A\nX2   Yo vi al Señor,          lo vi en su trono,\n                 D-A/C#                      B - Bsus4 - B\nY vi que su manto, cubrió este lugar.   X2\n        [CORO]: \n          E-F#m-E-A                    Bsus4\nX2   Alto y sublime, Es nuestro Dios\n          D A/C#                                 Bsus4\nY los serafines    se unen a nuestra voz.   X2\n         [VERSO 1] X2          |            [CORO] X2\n        [CORO 2]: \n            E         A        B       A\nX8   Santo, Santo, Santo.   X8",
-    "id": 138
+    "id": 138,
+    "versiculos": [
+      {
+        "texto": "Isaías 6:1-3:\n1 \"En el año que murió el rey Uzías vi yo al Señor sentado sobre un trono alto y sublime, y sus faldas llenaban el templo.\n\n2 Por encima de él había serafines; cada uno tenía seis alas; con dos cubrían sus rostros, con dos cubrían sus pies, y con dos volaban.\n\n3 Y el uno al otro daba voces, diciendo: Santo, santo, santo, Jehová de los ejércitos; toda la tierra está llena de su gloria.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 5,
@@ -1588,7 +1654,13 @@ var SONGS =
     "album": "Campamento Celestial - 2008",
     "content": "[INTRO]: MELODIA\n                                     | C | G | E | Am | F | G |\n        [VERSO 1]: \n C                                       G                                   Am\nX2    Te amo más que a estos, te amo más que a nadie,\n                                  F                G             C\nTe amo más que a todos, Dios mira mi corazón.     X2\n        [CORO]: \n                        G    E    Am7               F     C\nX2   ¿Que si te a – a – amo? Yo si te a – amo…   X2\n        [VERSO 1] X2           |        [CORO] X2 ",
     "id": 142,
-    "youtube": "https://www.youtube.com/embed/"
+    "youtube": "https://www.youtube.com/embed/",
+    "versiculos": [
+      {
+        "texto": "1. Juan 21:15-17\n15 \"Cuando hubieron comido, Jesús dijo a Simón Pedro: Simón, hijo de Jonás, ¿me amas más que éstos? Le respondió: Sí, Señor; tú sabes que te amo. Él le dijo: Apacienta mis corderos.\n\n16 Volvió a decirle la segunda vez: Simón, hijo de Jonás, ¿me amas? Pedro le respondió: Sí, Señor; tú sabes que te amo. Le dijo: Pastorea mis ovejas.\n\n17 Le dijo la tercera vez: Simón, hijo de Jonás, ¿me amas? Pedro se entristeció de que le dijese la tercera vez: ¿Me amas? y le respondió: Señor, tú lo sabes todo; tú sabes que te amo. Jesús le dijo: Apacienta mis ovejas.\"\n\nMateo 22:37\n37 \"Jesús le dijo: Amarás al Señor tu Dios con todo tu corazón, y con toda tu alma, y con toda tu mente.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 9,
@@ -1642,10 +1714,16 @@ var SONGS =
     "title": "DEDICACIÓN",
     "compositor": "Ninoska de Ponce",
     "tono": "F",
-    "youtube": "https://www.youtube.com/embed/",
     "album": "Todo Adorable - 2013",
-    "content": "[INTRO]: MELODIA\n                                         | Bb | Gm | F | F |\n        [VERSO 1]:\nCsus4-F    Bb              F A Bb    7\n        F    Gm C            C7       A7               Dm-C-G\nPues has estado conmi - go,    y no olvido lo vivido, \nDm\nQue tu mano poderosa me alcanzó,\n        Gm7 Cssu4        C              F    A Bb              C      Gm C\nDe tu amor fui revestido,  pues has estado conmi - go, y no olvido        lo vivido.\n        C7            A7          Dm C G                         Gm - C\nPorque fuerte como muerte es este amo - o - or, \nC\nEl que yo tengo contigo.    \n\nMELODIA\n        [CORO]:\n        F                          Gm7                              F\nX2   Ni los cielos, (Ni los cielos) \nC\nDe los cielos (de los cielos), de los cielos\n        Bb        Gm                 C7\nPueden contener tu gloria, ni mucho menos esta casa,\n        A7               Dm          Bb     Csus4\nQue con amor hemos construido para ti, para ti.   X2\n        [CORO 2]: \n        F Bb-F              C    Bb Dm                    Bb                   Dm\nMas hay una petición, escucha nuestra oración, tu mirada no se aparte, y no dejes de besarme,\n        Bb            C         F C\nNi tu nube, de abrazarme, te lo ruego por favor.\n        [CORO 1] X2\n        F                           Gm7                             F\nNi los cielos, (Ni los cielos) de los cielos (de los cielos), de los cielos\n        Bb       C          C7,            Bb F                  Bb\nPueden contener tu gloo — ria... Tu mirada no se aparte, y no dejes de besarme,\n        F                  Gm     F          Bb-Csus4 | Gm-F | Bb-C | Gm7-F | F-Bb-C\nNi tu nube de abrazarme, \nC\nX5  Te lo ruego…  X5 Por favor.",
-    "id": 148
+    "content": "[INTRO]: MELODIA\n                                         | Bb | Gm | F | F |\n        [VERSO 1]:\nCsus4-F          Bb                      F   A7  Bb                   F     Gm    C\n               Pues has estado conmi - go,       y no olvido    lo vivido, \n              C7         A7               Dm     C-G\nQue tu mano poderosa me alcanzó,\n                           Gm7    Csu4          C                       F    A  Bb              C      Gm C\nDe tu amor fui revestido,         pues has estado conmi - go,      \n                   C       Gm     C\nY no olvido     lo vivido.\n               C7                A7                  Dm   C   G  \nPorque fuerte como muerte es este amo - o - or, \n                             Gm      C\nEl que yo tengo contigo.    \n\n\n\n\nMELODIA\n        [CORO]:\n                     F  \nX2   Ni los cielos, (Ni los cielos) \n            Gm7                                        F\nDe los cielos (de los cielos), de los cielos\n                                  Bb         Gm                           C7\nPueden contener tu gloria, ni mucho menos esta casa,\n                 A7                    Dm            Bb    Csus4\nQue con amor hemos construido para ti, para ti.   X2\n[CORO 2]: \n                           F       Bb-F                    C          Bb    Dm                       Dm\nMas hay una petición,          escucha nuestra oración, \n                              Bb                               Dm\nTu mirada no se aparte, y no dejes de besarme,\n                              Bb                   C              F     C\nNi tu nube, de abrazarme, te lo ruego por favor.\n    \n\n    [CORO 1] X2\n\n\n             F                                        Gm7       \nNi los cielos, (Ni los cielos) de los cielos (de los cielos), \n               F                                       Bb       C                       Bb\nDe los cielos, Pueden contener tu gloo — ria... \n                             Bb      F                              Bb\nTu mirada no se aparte,      Y no dejes de besarme,\n                            Gm         F   \nNi tu nube de abrazarme, \n         Bb-C             Gm-F           Bb-C  \nTe lo ruego,  Te lo ruego,  Te lo ruego\n        Gm7-F         F-Bb                     C\nTe lo ruego, Te lo ruego…       Por favor.",
+    "id": 148,
+    "youtube": "https://www.youtube.com/embed/",
+    "versiculos": [
+      {
+        "texto": "2 Crónicas 6:18-20:\n18 \"Mas ¿es verdad que Dios habitará con el hombre en la tierra? He aquí, los cielos y los cielos de los cielos no te pueden contener; ¿cuánto menos esta casa que he edificado? \n\n19 Mas tú mirarás a la oración de tu siervo, y a su ruego, oh Jehová Dios mío, para oír el clamor y la oración con que tu siervo ora delante de ti. \n\n20 Que tus ojos estén abiertos sobre esta casa de día y de noche, sobre el lugar del cual dijiste: Mi nombre estará allí; que oigas la oración con que tu siervo ora en este lugar.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 15,
@@ -1897,7 +1975,13 @@ var SONGS =
     "tono": "E",
     "album": "Él es Grande - 1998",
     "content": "[INTRO]:\n                                      | E | A | E | A | F#m | E |\n        [VERSO 1]:\n      E           A-F#m            B7 G C#m7             F#m7 B7              E Bm\nX2   Que tu gloria      llene este lugar,    que tu gloria      llene mi ser,\n    E            A-F#m          B7 G C#m7             F#m7 B7                  E Bm\nQue tu gloria    llene este lugar,     que tu gloria     llene todo mi ser. X2\n        [VERSO 2]:\n        E            Bsus4 B7                   E      G#m-C#m\nAl estar ante ti,     anhelando tu presencia\n        F#m7 B7                   E\nMe olvidaré de mí,       y me humillo ante ti.\n        F#m7 B7                E      C\nAl estar ante ti,     adorando tu nombre,\n        F#m7 B7                  E\nMe olvidaré de mí,       y me humillo ante ti.\n         [VERSO 1] X2 ",
-    "id": 174
+    "id": 174,
+    "versiculos": [
+      {
+        "texto": "2 Crónicas 7:1-3:\n1 \"Cuando Salomón acabó de orar, descendió fuego de los cielos, y consumió el holocausto y las víctimas; y la gloria de Jehová llenó la casa.\n\n2 Y no podían entrar los sacerdotes en la casa de Jehová, porque la gloria de Jehová había llenado la casa de Jehová.\n\n3 Cuando vieron todos los hijos de Israel descender el fuego y la gloria de Jehová sobre la casa, se postraron sobre sus rostros en el pavimento y adoraron, y alabaron a Jehová, diciendo: Porque él es bueno, y su misericordia es para siempre.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 11,
@@ -2083,10 +2167,16 @@ var SONGS =
     "title": "INCOMPRENSIBLE AMOR",
     "compositor": "New Wine",
     "tono": "G#m",
-    "youtube": "https://www.youtube.com/embed/",
     "album": "Vientos de Gloria - 2018",
     "content": "[INTRO]: MELODÍA\n                                         | G#m | E | B | F# |\n        [VERSO 1]:\n        G#m                                         E\nNo entiendo cómo, siendo pecador, fuiste a la cruz por mí,\n        B                      F#\nLo entregaste todo, no te reservaste nada,\n        G#m                                               E\nConociendo la maldad que había en mí, y todos mis errores,\n        B                         F#\nNo me despreciaste, si no, que me abrazaste.\n        [PRE - CORO]:\n        G#m                      E\nX2       Diste tu sangre por mí, diste tu vida por mí,\n        B                F#\nLo diste todo por mí, mi Jesús. X2\n     \nMELODÍA     \n[VERSO 1]:        |      [PRE - CORO]: X2\n        [CORO]: \n        G#m          E             B          F#\nX2 Tu amor es alto, es profundo, y es ancho, sobrenatural, X2\n        G#m E                    B      F#\nX2 Sobrenatura - al… sobrenatura - al. X2\n        [PUENTE]: \n        E                            B                F#                G#m\nX4   En cada clavo que traspasó tu cuerpo, pensabas en mí, \n\nLo hacías por mí,\n        E                    B                 F#              G#m\nEn cada latigazo que te dieron, pensabas en mí, lo hacías por mí. X4\n        G#m        E            B     F#\n [CORO] X4  \nG#m\nX2 Sobrenatura - al… sobrenatura - al. X2",
-    "id": 192
+    "id": 192,
+    "youtube": "https://www.youtube.com/embed/",
+    "versiculos": [
+      {
+        "texto": "Romanos 5:6-8:\nEnfoque: El amor de Dios demostrado al entregar a Cristo por nosotros, aun siendo pecadores.\n6 \"Porque Cristo, cuando aún éramos débiles, a su tiempo murió por los impíos.\n\n7 Ciertamente, apenas morirá alguno por un justo; con todo, pudiera ser que alguno osara morir por el bueno.\n\n8 Mas Dios muestra su amor para con nosotros, en que siendo aún pecadores, Cristo murió por nosotros.\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 6,
@@ -2151,12 +2241,18 @@ var SONGS =
     "num": 11,
     "title": "CRISTO YO TE AMO",
     "compositor": "Monica Lizett M. P. - 2005",
-    "tono": "E",
-    "youtube": "https://www.youtube.com/embed/",
+    "tono": "G",
     "album": "Santo y Grande",
-    "version": "New Wine",
     "content": "[INTRO]: MELODÍA\n                                           | C | Bm7 | D | G |\n        [VERSO 1]: \n        D                    G          D      Em\nX2     Cristo yo te amo, Cristo yo te amo,\n        Dsus4          C      D G        Am-D\nNo hay nadie como tú, Jesús. X2\n        [CORO]: \n        D                    G    C G                       Em\nX2 Y no sé dónde estuviera,     si yo, a ti, no te tuviera,\n        D             Bm Am7        D                    Em7 G-C\nSi no hubiera conocido,   al Dios que me ama. X2\n         [VERSO 1] X2              |      [CORO] X2 ",
-    "id": 198
+    "id": 198,
+    "version": "New Wine",
+    "youtube": "https://www.youtube.com/embed/",
+    "versiculos": [
+      {
+        "texto": "Salmo 63:3-4:\n3 \"Porque mejor es tu misericordia que la vida; mis labios te alabarán.\n4 Así te bendeciré en mi vida; en tu nombre alzaré mis manos.\"\n\n\n3. Efesios 2:4-5:\n4 \"Pero Dios, que es rico en misericordia, por su gran amor con que nos amó,\n5 aun estando nosotros muertos en pecados, nos dio vida juntamente con Cristo (por gracia sois salvos).\"",
+        "cita": ""
+      }
+    ]
   },
   {
     "num": 12,
