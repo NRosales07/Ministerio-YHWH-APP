@@ -485,6 +485,8 @@ async function playMelody() {
       }
     }finally{Object.assign(state,{instrument:original.instrument,trumpetIntensity:original.intensity,headroomVelocityLayer:original.headroomLayer,stringsLayerEnabled:original.layerEnabled,layerInstrument:original.layerInstrument,stringsLayerVolume:original.layerVolume});}
     if(drumPattern.events.length){try{await loadDrumPadBuffers();}catch(error){console.warn('Se omitió el patrón de batería porque no se pudieron cargar sus sonidos:',error);toast('La melodía seguirá sin batería; no se cargaron sus sonidos.');}}
+    // La carga de muestras puede tardar; reactiva el audio justo antes de programar la reproducción.
+    await resumeAudioContext(getAudioContext());
     state.playbackPreparing=false;
   } catch (error) {
     if(drumPadRecordAlongPending)cancelDrumPadRecordAlong();

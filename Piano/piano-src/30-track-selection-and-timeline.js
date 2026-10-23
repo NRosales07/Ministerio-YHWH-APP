@@ -61,7 +61,7 @@ function instrumentTrackConfig(category,id,type){
   const track=trackFor(category,id,type)||{};
   const newTrack=['melodia','acompanamiento1','acompanamiento2'].includes(type)||type.startsWith('melodiaAlterna_');
   const instrument=saved.instrument||track.instrument||(type==='acompanamiento1'?state.bassInstrument:state.instrument);
-  return {instrument,intensity:['very-soft','soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',octaveShift:[-24,-12,0,12,24].includes(Number(saved.octaveShift))?Number(saved.octaveShift):0,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:newTrack&&!saved.layerInstrument&&!track.layerInstrument?'strings':layerInstrument,layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
+  return {instrument,intensity:['very-soft','soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',octaveShift:[-24,-12,0,12,24].includes(Number(saved.octaveShift))?Number(saved.octaveShift):0,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:newTrack&&!saved.layerInstrument&&!track.layerInstrument?'strings':(saved.layerInstrument||track.layerInstrument||state.layerInstrument),layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
 }
 function shiftRecordedTrackNotes(notes,octaveShift){
   const shift=Number(octaveShift)||0;

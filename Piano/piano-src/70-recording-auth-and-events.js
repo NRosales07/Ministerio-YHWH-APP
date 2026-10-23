@@ -481,6 +481,8 @@ function bindInterface() {
       scroll.addEventListener('scroll',syncOverview,{passive:true});
       $('keyboardPanLeft').onclick=()=>scroll.scrollBy({left:-scroll.clientWidth*.78,behavior:'smooth'});
       $('keyboardPanRight').onclick=()=>scroll.scrollBy({left:scroll.clientWidth*.78,behavior:'smooth'});
+      $('keyboardZoomOutWide').onclick=()=>setKeyboardZoomByKey(-1);
+      $('keyboardZoomInWide').onclick=()=>setKeyboardZoomByKey(1);
       if(window.ResizeObserver)new ResizeObserver(syncOverview).observe(scroll);
       window.addEventListener('resize',syncOverview,{passive:true});
     }

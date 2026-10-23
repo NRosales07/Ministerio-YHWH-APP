@@ -9,3 +9,15 @@
 /Piano/audio/bigcat-cello-upload/
 /Piano/audio/vibraphone-upload/
 /Piano/audio/upright-piano-kw/
+
+# Instrument source and Cloudinary upload banks stay local; the app uses their hosted versions.
+/Piano/audio/*-source/
+/Piano/audio/*-upload/
+/Piano/audio/*-cloudinary-upload/
+/Piano/audio/Karoryfer.Fashionbass.v1.001/
+/Piano/audio/Fashionbass-Cloudinary-Upload/
+/Piano/audio/vsco2-trumpet-harmon-mute-sus/
+/Piano/audio/vsco2-trumpet-straight-mute-sus/
+/Piano/audio/vsco2-trumpet-sus/
+/Piano/audio/vsco2-upright-nr1/
+/Piano/audio/vsco2-upright-piano/

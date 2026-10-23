@@ -390,6 +390,8 @@ body.player-active #player .performance-layout > .player-timeline, body.player-a
   #player.mobile-piano-wide .manual-note-effect { display:none!important; }
   #player.mobile-piano-wide .keyboard-wide-nav { z-index:12; display:flex; flex:0 0 clamp(34px,9dvh,52px); align-items:center; gap:clamp(7px,2vw,18px); min-width:0; padding:4px max(10px,env(safe-area-inset-right)) 4px max(10px,env(safe-area-inset-left)); background:#151719; }
   #player.mobile-piano-wide .keyboard-wide-nav > button { display:grid; flex:0 0 clamp(30px,8vh,44px); width:clamp(30px,8vh,44px); height:clamp(30px,8vh,44px); place-items:center; padding:0; border:1px solid #ffffff14; border-radius:50%; background:#24282c; color:#e7eaed; font-size:clamp(14px,4vh,21px); }
+  #player.mobile-piano-wide .keyboard-wide-nav > #keyboardZoomOutWide,
+  #player.mobile-piano-wide .keyboard-wide-nav > #keyboardZoomInWide { border-color:#55a9c5; background:#183642; color:#d8f5ff; font-size:clamp(18px,5vh,25px); font-weight:700; }
   #player.mobile-piano-wide .keyboard-overview { position:relative; display:flex; flex:1 1 auto; height:clamp(25px,7vh,42px); min-width:0; overflow:hidden; border:1px solid #52616d; border-radius:4px; background:#e9eef0; touch-action:none; user-select:none; }
   #player.mobile-piano-wide .keyboard-overview-key { position:relative; flex:1 1 0; min-width:0; height:100%; border-right:1px solid #c2c8cb; background:linear-gradient(90deg,#fff,#e0e2e2); }
   #player.mobile-piano-wide .keyboard-overview-key i { position:absolute; z-index:1; top:0; right:-19%; width:38%; height:67%; border-radius:0 0 2px 2px; background:linear-gradient(90deg,#42474a,#111315); box-shadow:0 1px 2px #0009; }

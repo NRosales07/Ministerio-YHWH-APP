@@ -1676,7 +1676,7 @@ function instrumentTrackConfig(category,id,type){
   const track=trackFor(category,id,type)||{};
   const newTrack=['melodia','acompanamiento1','acompanamiento2'].includes(type)||type.startsWith('melodiaAlterna_');
   const instrument=saved.instrument||track.instrument||(type==='acompanamiento1'?state.bassInstrument:state.instrument);
-  return {instrument,intensity:['very-soft','soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',octaveShift:[-24,-12,0,12,24].includes(Number(saved.octaveShift))?Number(saved.octaveShift):0,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:newTrack&&!saved.layerInstrument&&!track.layerInstrument?'strings':layerInstrument,layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
+  return {instrument,intensity:['very-soft','soft','medium','strong','very-strong'].includes(saved.intensity)?saved.intensity:'strong',octaveShift:[-24,-12,0,12,24].includes(Number(saved.octaveShift))?Number(saved.octaveShift):0,layerEnabled:typeof saved.layerEnabled==='boolean'?saved.layerEnabled:typeof track.layerEnabled==='boolean'?track.layerEnabled:(newTrack?false:state.stringsLayerEnabled),layerInstrument:newTrack&&!saved.layerInstrument&&!track.layerInstrument?'strings':(saved.layerInstrument||track.layerInstrument||state.layerInstrument),layerVolume:Math.max(0,Math.min(200,Number(saved.layerVolume??track.layerVolume??state.stringsLayerVolume)||0))};
 }
 function shiftRecordedTrackNotes(notes,octaveShift){
   const shift=Number(octaveShift)||0;
@@ -4375,6 +4375,8 @@ async function playMelody() {
       }
     }finally{Object.assign(state,{instrument:original.instrument,trumpetIntensity:original.intensity,headroomVelocityLayer:original.headroomLayer,stringsLayerEnabled:original.layerEnabled,layerInstrument:original.layerInstrument,stringsLayerVolume:original.layerVolume});}
     if(drumPattern.events.length){try{await loadDrumPadBuffers();}catch(error){console.warn('Se omitió el patrón de batería porque no se pudieron cargar sus sonidos:',error);toast('La melodía seguirá sin batería; no se cargaron sus sonidos.');}}
+    // La carga de muestras puede tardar; reactiva el audio justo antes de programar la reproducción.
+    await resumeAudioContext(getAudioContext());
     state.playbackPreparing=false;
   } catch (error) {
     if(drumPadRecordAlongPending)cancelDrumPadRecordAlong();
@@ -4945,6 +4947,8 @@ function bindInterface() {
       scroll.addEventListener('scroll',syncOverview,{passive:true});
       $('keyboardPanLeft').onclick=()=>scroll.scrollBy({left:-scroll.clientWidth*.78,behavior:'smooth'});
       $('keyboardPanRight').onclick=()=>scroll.scrollBy({left:scroll.clientWidth*.78,behavior:'smooth'});
+      $('keyboardZoomOutWide').onclick=()=>setKeyboardZoomByKey(-1);
+      $('keyboardZoomInWide').onclick=()=>setKeyboardZoomByKey(1);
       if(window.ResizeObserver)new ResizeObserver(syncOverview).observe(scroll);
       window.addEventListener('resize',syncOverview,{passive:true});
     }
@@ -5108,6 +5112,13 @@ function moveKeyboardOctave(direction) {
   const keyLeft = targetKey.getBoundingClientRect().left - scroll.getBoundingClientRect().left + scroll.scrollLeft;
   const left = keyLeft - (scroll.clientWidth - targetKey.offsetWidth) / 2;
   scroll.scrollTo({ left: Math.max(0, Math.min(scroll.scrollWidth-scroll.clientWidth, left)), behavior:'smooth' });syncStageScroll();
+}
+function setKeyboardZoomByKey(direction){
+  const scroll=$('keyboardScroll'),base=keyboardBaseKeyWidth();if(!scroll||!base||!scroll.clientWidth)return;
+  const visibleKeys=scroll.clientWidth/(base*state.keyboardZoom)*12/7;
+  const targetKeys=Math.max(1,visibleKeys+(direction>0?-1:1));
+  const nextZoom=scroll.clientWidth/(base*(targetKeys*7/12));
+  setKeyboardZoom(nextZoom);
 }
 function setKeyboardPreset(keyCount){
   const scroll=$('keyboardScroll'),first=$('keyboard').querySelector('.keys');if(!scroll||!first)return;

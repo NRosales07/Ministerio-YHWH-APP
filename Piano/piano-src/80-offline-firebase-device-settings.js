@@ -34,6 +34,13 @@ function moveKeyboardOctave(direction) {
   const left = keyLeft - (scroll.clientWidth - targetKey.offsetWidth) / 2;
   scroll.scrollTo({ left: Math.max(0, Math.min(scroll.scrollWidth-scroll.clientWidth, left)), behavior:'smooth' });syncStageScroll();
 }
+function setKeyboardZoomByKey(direction){
+  const scroll=$('keyboardScroll'),base=keyboardBaseKeyWidth();if(!scroll||!base||!scroll.clientWidth)return;
+  const visibleKeys=scroll.clientWidth/(base*state.keyboardZoom)*12/7;
+  const targetKeys=Math.max(1,visibleKeys+(direction>0?-1:1));
+  const nextZoom=scroll.clientWidth/(base*(targetKeys*7/12));
+  setKeyboardZoom(nextZoom);
+}
 function setKeyboardPreset(keyCount){
   const scroll=$('keyboardScroll'),first=$('keyboard').querySelector('.keys');if(!scroll||!first)return;
   if(keyCount===88){setKeyboardZoom(scroll.clientWidth/(first.getBoundingClientRect().width/state.keyboardZoom*52));}
