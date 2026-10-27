@@ -9,7 +9,7 @@ function openCreateTrackScreen(){
     const label=button.querySelector('em');if(label)label.textContent=exists?'Grabación guardada · puedes reemplazarla':'Aún no grabada';
   });
   renderAlternateMelodyButtons(category,song.id);
-  transitionScreen('createTrackScreen',['homeView','songView','createView','theoryView','createTrackScreen','player','instrumentSettingsScreen']);
+  transitionScreen('createTrackScreen',['homeView','songView','createView','createTrackScreen','player','instrumentSettingsScreen']);
   document.body.classList.remove('create-list-active');
   queueGuidedTour('grabar');
 }
@@ -53,7 +53,7 @@ function openCreateTrackSettings(){
   const options=[...$('instrumentSelect').options].map(option=>`<option value="${escapeHTML(option.value)}">${escapeHTML(option.textContent)}</option>`).join('');
   $('songTrackInstrument').innerHTML=options;$('songTrackLayerInstrument').innerHTML=options;
   syncSongTrackSettingsForm(selectedCreateTrack);
-  transitionScreen('instrumentSettingsScreen',['homeView','songView','createView','createTrackScreen','theoryView','player','playModeModal','instrumentSettingsScreen']);
+  transitionScreen('instrumentSettingsScreen',['homeView','songView','createView','createTrackScreen','player','playModeModal','instrumentSettingsScreen']);
   queueGuidedTour('instrumentosGrabacion');
 }
 function instrumentTrackConfig(category,id,type){
@@ -225,7 +225,7 @@ function openSong(song, category, trackType='introduccion',autoPlay=false,playMo
   renderChordPresets();
   renderRecorded();
   updateAdminControls();
-  transitionScreen('player',['homeView','songView','createView','createTrackScreen','theoryView','playModeModal','instrumentSettingsScreen','player']);
+  transitionScreen('player',['homeView','songView','createView','createTrackScreen','playModeModal','instrumentSettingsScreen','player']);
   requestAnimationFrame(fitSongPresentationCards);document.fonts?.ready?.then(()=>fitSongPresentationCards());
   queueGuidedTour('piano',650);
   if(playMode!=='record'&&deviceSettings.songTitleStyle!=='black-card')songIntroStartTimer=setTimeout(()=>{songIntroStartTimer=null;showSongIntro(autoPlay,playMode);},180);

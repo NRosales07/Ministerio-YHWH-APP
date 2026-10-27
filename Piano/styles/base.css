@@ -97,15 +97,7 @@
 .chord-editor-actions button{min-height:36px;padding:7px 11px;border-radius:9px;background:#302d48;border:1px solid #5d5878;color:#f4f0ff;font-size:12px;font-weight:700}
 .chord-editor-actions .gold{border-color:transparent}
 #sustainBtn.active{border-color:#e8c97a;background:linear-gradient(145deg,#4a3f26,#302844);color:#f4d77e;box-shadow:0 0 0 1px #e8c97a55,0 0 12px #e8c97a33}
-
-/* Teoría musical integrada a Piano: acordes, tonalidades, círculo y teclado. */
-.theory-header{padding:10px 2px 4px}.theory-header h1{margin:0;color:var(--gold2);font-size:1.5rem}.theory-header p,.theory-intro{color:var(--muted);font-size:.9rem;line-height:1.5}
-.theory-tabs{display:flex;overflow-x:auto;padding:5px 0 12px;scrollbar-width:thin}.theory-tab{flex:0 0 auto;border:1px solid #35334e;border-radius:999px;background:#171722;font-weight:700;white-space:nowrap}
-.theory-panel{padding:17px;background:linear-gradient(145deg,#1a1929,#12121c);border:1px solid #34334f;border-radius:15px;margin-bottom:18px}.theory-panel h2{margin:0;color:var(--gold2);}.theory-intro{margin:6px 0 14px}.theory-chord-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(230px,.8fr);gap:12px;align-items:start}.theory-chord-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.theory-chord-card{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:91px;padding:11px;border:1px solid #383650;border-radius:11px;background:#1c1b2a;color:var(--text);text-align:left}.theory-chord-card.selected,.theory-chord-card:hover{border-color:var(--gold);background:#242137}.theory-chord-card b{color:var(--gold2)}.theory-chord-card span{font-family:ui-monospace,monospace;color:#c9c4d8;font-size:12px}.theory-chord-card small{color:var(--muted);font-size:11px}.theory-preview{border:1px solid #484365;border-radius:12px;background:#171622}.theory-preview h3{margin:0 0 5px;color:#f1d783}.theory-preview>p{margin:0 0 12px;color:var(--muted);font-size:12px}.theory-note-list{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.theory-note{min-width:37px;padding:5px 8px;border-radius:7px;background:#373351;border:1px solid #5e587b;color:#f3d987;text-align:center;font-weight:750}.theory-preview .gold{min-height:39px;padding:8px 13px}.theory-key-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.theory-key-card{padding:11px;border:1px solid #34334f;border-radius:11px;background:#171622}.theory-key-card h3{margin:0 0 9px;color:var(--gold2);}.theory-key-card>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.theory-key-card button{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:6px 3px;border:1px solid #45415e;border-radius:8px;}.theory-key-card button:hover{border-color:var(--gold)}.theory-key-card button small{color:var(--muted);font-size:9px}.theory-key-card button b{font-size:11px;color:#f0d580}.theory-circle-layout{display:grid;grid-template-columns:minmax(280px,380px) minmax(220px,1fr);gap:15px;align-items:center}.theory-circle-layout svg{width:100%;height:auto;overflow:visible}.theory-circle-node{cursor:pointer}.theory-circle-node circle{stroke-width:1.5;transition:.15s}.theory-circle-node text{fill:#eeeafa;text-anchor:middle;font-size:11px;pointer-events:none}.theory-circle-node.minor text{font-size:8px;fill:#d3cfe0}.theory-circle-node:hover circle,.theory-circle-node.selected circle{fill:#927c39;stroke-width:2}.theory-circle-results{display:grid;gap:7px;margin:13px 0}.theory-circle-results button{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid #403d59;border-radius:9px;text-align:left}.theory-circle-results small{color:var(--muted)}.theory-circle-results b{color:#f0d580}.theory-piano-preview{overflow:hidden}.theory-piano-scroll{overflow-x:auto;padding:8px 0 4px;scrollbar-color:#514777 #171729}.theory-piano-keys{position:relative;display:flex;width:max(100%,560px);height:190px;padding:0 2px 5px;background:#09090e;border-radius:8px;touch-action:pan-x;user-select:none}.theory-key{position:relative;flex:1 0 0;min-width:0}.theory-key.white{z-index:1;display:flex;align-items:flex-end;justify-content:center;height:100%;padding:0 1px 9px;border:1px solid #b0adbb;background:linear-gradient(110deg,#fff,#e6e5eb);color:#474454;border-radius:0 0 5px 5px}.theory-key.white span{font-size:10px;white-space:nowrap}.theory-key.white.active{background:linear-gradient(#d7caff,#fff0b5);box-shadow:inset 0 0 0 2px #d2b85d}.theory-key.white.octave span{color:#b58e2e;font-weight:800}.theory-key.black{position:absolute;z-index:2;top:0;width:20px;height:61%;padding:0 1px 6px;border:1px solid #030307;border-radius:0 0 4px 4px;background:linear-gradient(100deg,#3b3949,#09090c 65%);color:#e4e1ef;box-shadow:0 3px 6px #0009;display:flex;align-items:flex-end;justify-content:center}.theory-key.black span{font-size:8px;white-space:nowrap}.theory-key.black.active{background:linear-gradient(#758de1,#353b69);box-shadow:0 0 10px #738fed88}
-
-.theory-root-picker,.theory-mode-picker{display:flex;align-items:center;gap:9px;width:max-content;max-width:100%;margin:0 0 12px;padding:8px 11px;border:1px solid #393650;border-radius:10px;background:#171622;color:#d7d3e5;font-size:12px;font-weight:700}.theory-root-picker select,.theory-mode-picker select{min-height:34px;max-width:100%;padding:5px 9px;border:1px solid #5d5878;border-radius:8px;background:#242239;color:#f4f0ff;font:inherit}.theory-mode-picker{margin:0 0 12px}.theory-formula{margin:12px 0 6px;color:#f0d580;font-size:14px;font-weight:750}.theory-interval-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0 14px}.theory-interval-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:58px;padding:7px 4px;border:1px solid #3e3a58;border-radius:9px;background:#1a1929;color:#e8e6f0}.theory-interval-card b{font-size:11px}.theory-interval-card small{font-size:10px;color:var(--muted)}.theory-interval-card.selected,.theory-interval-card:hover{border-color:#e8c97a;background:#29263b}.theory-interval-preview{max-width:470px}.theory-key-card h3{font-size:.88rem}
-@keyframes screenFadeOut{to{opacity:0;transform:translateY(5px)}}@keyframes screenFadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}.screen-fade-out{animation:screenFadeOut .14s ease both;pointer-events:none}.screen-fade-in{animation:screenFadeIn .25s ease both}.theory-panel.screen-fade-out,.theory-panel.screen-fade-in{will-change:opacity,transform}
-.theory-circle-results{grid-template-columns:repeat(2,minmax(0,1fr))}.theory-circle-results .circle-degree{position:relative;display:grid;grid-template-columns:27px 1fr;grid-template-rows:auto auto;align-items:center;justify-items:start;gap:1px 8px;min-height:56px;padding:8px 9px;border-color:#45415e;transition:border-color .15s,transform .15s,background .15s}.theory-circle-results .circle-degree:active{transform:scale(.97)}.circle-degree .degree-badge{grid-row:1 / 3;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-weight:800}.circle-degree small{font-size:10px}.circle-degree b{font-size:14px}.circle-degree.active{border-color:#fff;box-shadow:0 0 0 1px #ffffff22}.theory-circle-node.degree-1 circle,.circle-degree.degree-1{--degree-color:#e1bd58}.theory-circle-node.degree-2 circle,.circle-degree.degree-2{--degree-color:#69a9de}.theory-circle-node.degree-3 circle,.circle-degree.degree-3{--degree-color:#bd86dc}.theory-circle-node.degree-4 circle,.circle-degree.degree-4{--degree-color:#62bb91}.theory-circle-node.degree-5 circle,.circle-degree.degree-5{--degree-color:#ed8d63}.theory-circle-node.degree-6 circle,.circle-degree.degree-6{--degree-color:#e8799b}.theory-circle-node[class*="degree-"] circle{fill:var(--degree-color);fill-opacity:.72;stroke:var(--degree-color);stroke-width:2.5}.theory-circle-node.minor[class*="degree-"] circle{fill:var(--degree-color);fill-opacity:.52}.theory-circle-node.selected circle{stroke:#fff;stroke-width:4;filter:drop-shadow(0 0 5px var(--degree-color,#f0d580))}.theory-circle-node:hover circle{stroke:#fff;stroke-width:3}.circle-degree{border-left:4px solid var(--degree-color)}.circle-degree .degree-badge{background:var(--degree-color);color:#17151f}.circle-degree.active{background:#ffffff18}
+@keyframes screenFadeOut{to{opacity:0;transform:translateY(5px)}}@keyframes screenFadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}.screen-fade-out{animation:screenFadeOut .14s ease both;pointer-events:none}.screen-fade-in{animation:screenFadeIn .25s ease both}.circle-degree .degree-badge{grid-row:1 / 3;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-weight:800}.circle-degree small{font-size:10px}.circle-degree b{font-size:14px}.circle-degree.active{border-color:#fff;box-shadow:0 0 0 1px #ffffff22}.circle-degree.degree-1{--degree-color:#e1bd58}.circle-degree.degree-2{--degree-color:#69a9de}.circle-degree.degree-3{--degree-color:#bd86dc}.circle-degree.degree-4{--degree-color:#62bb91}.circle-degree.degree-5{--degree-color:#ed8d63}.circle-degree.degree-6{--degree-color:#e8799b}.circle-degree{border-left:4px solid var(--degree-color)}.circle-degree .degree-badge{background:var(--degree-color);color:#17151f}.circle-degree.active{background:#ffffff18}
 @media(prefers-reduced-motion:reduce){.screen-fade-out,.screen-fade-in{animation:none}}
 
 /* Visor de letra y acordes: una sola definición para el componente. */
@@ -156,11 +148,10 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .admin:hover,.soft:hover,.tab:hover{border-color:var(--gold2);box-shadow:0 0 16px #c9a84c1c}
 .gold{box-shadow:0 4px 14px #c9a84c2a}
 .toolbar input,.modal input{border-color:#3b3b5c;}
-.song-card,.chord-preview,.piano-panel,.theory-panel,.theory-preview,.modal-card{background:linear-gradient(145deg,rgba(34,34,70,.94),rgba(20,20,37,.97));border-color:#343454;box-shadow:0 12px 30px #0003}
+.song-card,.chord-preview,.piano-panel,.modal-card{background:linear-gradient(145deg,rgba(34,34,70,.94),rgba(20,20,37,.97));border-color:#343454;box-shadow:0 12px 30px #0003}
 .song-card:hover{border-color:#c9a84c;}
 .home-view{border-color:#c9a84c55;background:linear-gradient(125deg,#11152f,#211d4a 46%,#121326 100%);box-shadow:0 18px 50px #0005}
 .home-back{border-color:#514b70}
-.theory-tab.active{box-shadow:0 0 14px #c9a84c1c}
 .modal-card{border-radius:20px}
 @media(prefers-reduced-motion:reduce){.admin,.soft,.gold,.tab,.home-back{transition:none}}
 
@@ -179,7 +170,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .empty{color:#d0cde0}
 .player-top{padding:10px 12px;border-radius:14px;}
 .player-top h1{letter-spacing:.01em}
-.piano-panel,.chord-preview,.theory-panel{border:1px solid #c9a84c55;background:linear-gradient(145deg,#1c1c3f,#17172f);box-shadow:0 10px 28px #0004}
+.piano-panel,.chord-preview{border:1px solid #c9a84c55;background:linear-gradient(145deg,#1c1c3f,#17172f);box-shadow:0 10px 28px #0004}
 .piano-panel .status{border-color:#ffffff18;}
 .quick-setting select,.mobile-quick-settings select,.chord-editor-fields select{border:1px solid #625a82;border-radius:8px;background:#17172f;color:#f2efff}
 .keyboard-navigation button{border:1px solid #c9a84c66;background:linear-gradient(135deg,#1d2677,#1b2152);color:#f1d783}
@@ -193,9 +184,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .admin-only{border-color:#9c84db;background:linear-gradient(135deg,#39306d,#28234f);color:#efeaff}
 .modal-card{border:1px solid #c9a84c66;}
 .audio-credit a{color:#e8c97a}
-.theory-panel h2,.theory-preview h3{color:#f1d783}
-.theory-chord-card,.theory-key-card,.theory-interval-card,.theory-circle-results button{background:linear-gradient(135deg,#1d2677aa,#1b2152aa)}
-.theory-chord-card:hover,.theory-chord-card.selected,.theory-interval-card:hover,.theory-interval-card.selected{border-color:#e8c97a;background:linear-gradient(135deg,#252f87,#20285f)}
 .quick-tempo{min-width:150px;padding:2px 8px}
 .quick-tempo label{align-items:center;gap:8px;color:#d0cde0;font-size:11px;font-weight:700}
 .quick-tempo input{width:100%;height:20px;margin:0;accent-color:#e8c97a;touch-action:pan-x}
@@ -226,11 +214,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .chord-editor-help{margin:4px 0 10px;font-size:.76rem;line-height:1.45}
 .chord-editor-fields>label:first-child{grid-column:1/-1}
 
-.suggested-voice-notes{display:block;min-height:10px;color:#c9c4d8;font-size:8px;line-height:1.15;white-space:nowrap}
-
-
-/* Taller guiado para acompañamiento de alabanzas sin partituras. */
-.worship-practice{margin:16px 0 20px;padding:18px;border:1px solid #63563d;border-radius:16px;background:linear-gradient(145deg,#242033,#171722 70%);box-shadow:0 12px 30px #0002}.worship-practice-copy small{color:#e5c875;font-weight:800;letter-spacing:.12em}.worship-practice-copy h2{margin:5px 0;color:#f1d783;font-size:1.15rem}.worship-practice-copy p,.worship-tip{max-width:850px;color:var(--muted);font-size:.9rem;line-height:1.55}.worship-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.worship-controls label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:.8rem;font-weight:700}.worship-controls select,.worship-controls input{width:100%;min-height:39px;padding:7px 9px;border:1px solid #49445f;border-radius:9px;background:#171622;color:var(--text)}.worship-controls input{padding:0;accent-color:#e5c875}.worship-now{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px;border:1px solid #49445f;border-radius:12px;background:#12121b}.worship-now>div:first-child{display:grid;gap:4px}.worship-now small{color:#d4c78e;font-size:.68rem;font-weight:800;letter-spacing:.1em}.worship-now strong{color:#f5dc8d;font-size:1.25rem}.worship-now span{color:var(--muted);font-size:.82rem}.worship-chord-strip{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.worship-chord-chip{min-width:100px;padding:8px;border:1px solid #39364d;border-radius:9px;background:#1b1a28;text-align:center;transition:.15s}.worship-chord-chip b,.worship-chord-chip strong,.worship-chord-chip small{display:block}.worship-chord-chip b{color:var(--muted);font-size:.68rem}.worship-chord-chip strong{color:var(--text);font-size:.8rem}.worship-chord-chip small{margin-top:3px;color:#aaa5bb;font-size:.67rem}.worship-chord-chip.active{border-color:#f1d783;background:#343044;box-shadow:0 0 0 1px #f1d78344}.worship-chord-chip.active strong{color:#f1d783}.worship-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:12px}.worship-actions>span{color:var(--muted);font-size:.82rem}.worship-actions button{min-height:40px;padding:8px 13px}.worship-actions button:disabled{opacity:.55}.worship-tip{margin:13px 0 0;padding:10px 12px;border-left:3px solid #b79a4d;background:#ffffff08}.worship-tip b{color:#ead38d}.learning-welcome h2{color:var(--gold2)}
+.suggested-voice-notes{display:block;min-height:10px;color:#c9c4d8;font-size:8px;line-height:1.15;white-space:nowrap}.worship-tip{max-width:850px;color:var(--muted);font-size:.9rem;line-height:1.55}.worship-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.worship-controls label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:.8rem;font-weight:700}.worship-controls select,.worship-controls input{width:100%;min-height:39px;padding:7px 9px;border:1px solid #49445f;border-radius:9px;background:#171622;color:var(--text)}.worship-controls input{padding:0;accent-color:#e5c875}.worship-now{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px;border:1px solid #49445f;border-radius:12px;background:#12121b}.worship-now>div:first-child{display:grid;gap:4px}.worship-now small{color:#d4c78e;font-size:.68rem;font-weight:800;letter-spacing:.1em}.worship-now strong{color:#f5dc8d;font-size:1.25rem}.worship-now span{color:var(--muted);font-size:.82rem}.worship-chord-strip{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.worship-chord-chip{min-width:100px;padding:8px;border:1px solid #39364d;border-radius:9px;background:#1b1a28;text-align:center;transition:.15s}.worship-chord-chip b,.worship-chord-chip strong,.worship-chord-chip small{display:block}.worship-chord-chip b{color:var(--muted);font-size:.68rem}.worship-chord-chip strong{color:var(--text);font-size:.8rem}.worship-chord-chip small{margin-top:3px;color:#aaa5bb;font-size:.67rem}.worship-chord-chip.active{border-color:#f1d783;background:#343044;box-shadow:0 0 0 1px #f1d78344}.worship-chord-chip.active strong{color:#f1d783}.worship-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:12px}.worship-actions>span{color:var(--muted);font-size:.82rem}.worship-actions button{min-height:40px;padding:8px 13px}.worship-actions button:disabled{opacity:.55}.worship-tip{margin:13px 0 0;padding:10px 12px;border-left:3px solid #b79a4d;background:#ffffff08}.worship-tip b{color:#ead38d}
 /* Shared visibility state toggled by the application. */
 .hidden { display: none !important; }
 
@@ -256,14 +240,14 @@ button, select, input[type="range"] { touch-action: manipulation; }
   font-size: 23px;
 }
 .brand-home small { margin-top: 3px;   letter-spacing: .13em; }
-.admin, .soft, .gold, .tab, .theory-tab {
+.admin, .soft, .gold, .tab{
   min-height: 42px;
   border: 1px solid var(--line);
   border-radius: 12px;
   transition: border-color .18s, background .18s, transform .18s;
 }
-.admin, .soft, .tab, .theory-tab { background: #171d26; }
-.soft:hover, .admin:hover, .tab:hover, .theory-tab:hover { border-color: #ab925e; }
+.admin, .soft, .tab{ background: #171d26; }
+.soft:hover, .admin:hover, .tab:hover{ border-color: #ab925e; }
 .connection {   letter-spacing: .02em; }
 
 /* Portada */
@@ -279,18 +263,18 @@ button, select, input[type="range"] { touch-action: manipulation; }
 .home-view:after { display: none; }
 
 /* Listas y vistas de contenido */
-.view, .theory-header, .theory-panel { color: var(--text); }
+.view{ color: var(--text); }
 .home-back { min-height: 42px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 12px; background: #171d26; }
 .toolbar { margin: 18px 0 12px; }
-.toolbar h1, .theory-header h1 { color: #f0e7d4; font-family: Georgia, "Times New Roman", serif; font-size: 1.85rem; font-weight: 500; letter-spacing: -.025em; }
-.toolbar input, .modal input, .theory-root-picker select, .theory-mode-picker select, .quick-setting select, .voice-direction select, .chord-editor select {
+.toolbar h1{ color: #f0e7d4; font-family: Georgia, "Times New Roman", serif; font-size: 1.85rem; font-weight: 500; letter-spacing: -.025em; }
+.toolbar input, .modal input, .quick-setting select, .voice-direction select, .chord-editor select {
   min-height: 44px;
   border: 1px solid var(--line);
   border-radius: 11px;
   background-color: #121720;
   color: var(--text);
 }
-.hint, .theory-header p, .theory-intro { color: #aab2bd; line-height: 1.55; }
+.hint{ color: #aab2bd; line-height: 1.55; }
 .song-card {
   border: 1px solid rgba(255,255,255,.075);
   border-radius: 15px;
@@ -366,17 +350,6 @@ button, select, input[type="range"] { touch-action: manipulation; }
 .mobile-song-details > summary { padding: 13px 15px; color: #e9dfca; }
 .mobile-song-details .lyrics-viewer { padding: 7px 14px 15px; }
 .audio-credit { color: #818b97; font-size: .68rem; }
-
-/* Teoría, grabación y diálogos conservan el mismo lenguaje visual. */
-.theory-tab {   color: #d5d7dc; }
-.theory-panel, .theory-preview, .theory-chord-card, .theory-key-card, .theory-interval-card {
-  border-color: rgba(255,255,255,.085);
-  border-radius: 15px;
-  background: linear-gradient(145deg, #171d26, #12171e);
-}
-.theory-panel h2, .theory-preview h3, .theory-chord-card b { color: var(--gold2); }
-.theory-mode-picker, .theory-root-picker { color: #b8bec7; }
-.theory-mode-picker select, .theory-root-picker select { margin-top: 5px; padding: 8px 10px; }
 .track-modal-card, .modal-card {
   border: 1px solid rgba(240,208,140,.22);
   border-radius: 20px;

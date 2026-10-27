@@ -1,13 +1,13 @@
 let thirdLayerGainNode=null;
 function thirdLayerTargetGain(){return state.thirdLayerEnabled?state.thirdLayerVolume/100:0;}
 function getThirdLayerGain(context=getAudioContext()){
-  if(!thirdLayerGainNode){thirdLayerGainNode=context.createGain();thirdLayerGainNode.gain.value=thirdLayerTargetGain();thirdLayerGainNode.connect(getMasterGain(context));}
+  if(!thirdLayerGainNode){thirdLayerGainNode=context.createGain();thirdLayerGainNode.gain.value=thirdLayerTargetGain();thirdLayerGainNode.connect(getLayerOutput(context));}
   return thirdLayerGainNode;
 }
 function updateThirdLayerGain(){if(!thirdLayerGainNode||!audioContext)return;const now=audioContext.currentTime;thirdLayerGainNode.gain.cancelScheduledValues(now);thirdLayerGainNode.gain.setTargetAtTime(thirdLayerTargetGain(),now,.035);}
 function stringsLayerTargetGain(){return state.stringsLayerEnabled?state.stringsLayerVolume/100:0;}
 function getStringsLayerGain(context=getAudioContext()){
-  if(!stringsLayerGainNode){stringsLayerGainNode=context.createGain();stringsLayerGainNode.gain.value=stringsLayerTargetGain();stringsLayerGainNode.connect(getMasterGain(context));}
+  if(!stringsLayerGainNode){stringsLayerGainNode=context.createGain();stringsLayerGainNode.gain.value=stringsLayerTargetGain();stringsLayerGainNode.connect(getLayerOutput(context));}
   return stringsLayerGainNode;
 }
 function updateStringsLayerGain(){

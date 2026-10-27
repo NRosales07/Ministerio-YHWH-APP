@@ -18,7 +18,7 @@ Las partes están ordenadas y se combinan en **un solo módulo de navegador**. N
 - `00-runtime-and-state.js`: importaciones, estado global y valores compartidos.
 - `05-instrument-runtime.js`: funciones de instrumentos que comparten el estado global del reproductor.
 - `10-song-library.js`: biblioteca, selección de canciones y letras.
-- `20-theory-and-learning.js`: teoría, lecciones, ejercicios y metrónomo.
+- `20-metronome.js`: controles y sonido del metrónomo.
 - `30-track-selection-and-timeline.js`: selección de pistas y línea de tiempo.
 - `40-player-visuals-and-settings.js`: visualización, teclado, apariencia y controles del reproductor.
 - `50-drum-pad-and-audio-cache.js`: Drum Pad, caché de audio y controles generales de sonido.

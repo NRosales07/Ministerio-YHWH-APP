@@ -83,18 +83,14 @@ html[data-theme="dark"] .home-info-icon{background:#1f1f38;color:#e8c97a}
 html[data-theme="dark"] .home-info-card p{color:#aaa9c1}
 html[data-theme="dark"] .home-info-card>span:not(.home-status-dot){color:#aaa9c1}
 html[data-theme="dark"] .home-status-dot{box-shadow:0 0 0 4px #00000021}
-html[data-theme="dark"] .home-back,html[data-theme="dark"] .soft,html[data-theme="dark"] .tab,html[data-theme="dark"] .theory-tab{border:1px solid #2a2a45;background:#2f2f5c}
-html[data-theme="dark"] .toolbar h1,html[data-theme="dark"] .theory-header h1{color:#e8e6f0}
-html[data-theme="dark"] .toolbar input,html[data-theme="dark"] .modal input,html[data-theme="dark"] .theory-root-picker select,html[data-theme="dark"] .theory-mode-picker select,html[data-theme="dark"] .quick-setting select,html[data-theme="dark"] .voice-direction select,html[data-theme="dark"] .chord-editor select{border:1px solid #2a2a45;background-color:#1b1b2e;color:#e8e6f0}
-html[data-theme="dark"] .hint,html[data-theme="dark"] .theory-header p,html[data-theme="dark"] .theory-intro{color:#aaa9c1}
+html[data-theme="dark"] .home-back,html[data-theme="dark"] .soft,html[data-theme="dark"] .tab{border:1px solid #2a2a45;background:#2f2f5c}
+html[data-theme="dark"] .toolbar h1{color:#e8e6f0}
+html[data-theme="dark"] .toolbar input,html[data-theme="dark"] .modal input,html[data-theme="dark"] .quick-setting select,html[data-theme="dark"] .voice-direction select,html[data-theme="dark"] .chord-editor select{border:1px solid #2a2a45;background-color:#1b1b2e;color:#e8e6f0}
+html[data-theme="dark"] .hint{color:#aaa9c1}
 html[data-theme="dark"] .song-card,html[data-theme="dark"] .empty{border:1px solid #2a2a45;background:#1b1b2e;color:#e8e6f0;box-shadow:0 2px 4px #0000001b}
 html[data-theme="dark"] .song-card b{color:#e8e6f0}
 html[data-theme="dark"] .song-card small{color:#aaa9c1}
 html[data-theme="dark"] .badge{background:#1f1f38;color:#9ce1b8}
-html[data-theme="dark"] .theory-tab.active{border-color:#514777;background:#2f2f5c}
-html[data-theme="dark"] .theory-panel,html[data-theme="dark"] .theory-preview,html[data-theme="dark"] .theory-chord-card,html[data-theme="dark"] .theory-interval-card{border-color:#2a2a45;background:#1b1b2e;color:#e8e6f0}
-html[data-theme="dark"] .theory-panel h2,html[data-theme="dark"] .theory-preview h3,html[data-theme="dark"] .theory-chord-card b{color:#e8c97a}
-html[data-theme="dark"] .theory-intro,html[data-theme="dark"] .theory-header p{color:#aaa9c1}
 html[data-theme="dark"] body.player-active{background:#12121f}
 html[data-theme="dark"] body.player-active #player{background:#12121f}
 html[data-theme="dark"] .player-top{background:#2f2f5c}
@@ -223,13 +219,10 @@ html[data-theme="dark"] .song-chip.create,html[data-theme="dark"] #songView > .h
 html[data-theme="dark"] #songView > .toolbar,html[data-theme="dark"] #createView > .toolbar{border-color:#2a2a45;background:#1f1f38;box-shadow:0 2px 5px #0000001b}
 html[data-theme="dark"] .toolbar input,html[data-theme="dark"] .modal input,html[data-theme="dark"] #songView .toolbar #search,html[data-theme="dark"] #createView .toolbar #createSearch,html[data-theme="dark"] select,html[data-theme="dark"] .quick-setting select{background-color:#11111d;border:1px solid #2a2a45;color:#e8e6f0}
 html[data-theme="dark"] .toolbar input:focus,html[data-theme="dark"] .modal input:focus{border-color:#c9a84c}
-html[data-theme="dark"] .home-back,html[data-theme="dark"] #songView > .home-back,html[data-theme="dark"] #createView > .home-back,html[data-theme="dark"] .soft,html[data-theme="dark"] .tab,html[data-theme="dark"] .theory-tab{background:#42426e;border:1px solid #2a2a45;color:#e8e6f0;box-shadow:none}
-html[data-theme="dark"] .soft:hover,html[data-theme="dark"] .tab:hover,html[data-theme="dark"] .theory-tab:hover,html[data-theme="dark"] .home-back:hover{border-color:#c9a84c}
-html[data-theme="dark"] .tab.active,html[data-theme="dark"] #theoryView:not(.hidden) .theory-tab.active{background:#42426e;border-color:#8176e0;color:#e8c97a;box-shadow:none}
-html[data-theme="dark"] .gold,html[data-theme="dark"] #theoryView .theory-preview .gold{background:linear-gradient(135deg,#c9a84c,#e8c97a);color:#1c1c3f;border-color:transparent;font-weight:750}
-html[data-theme="dark"] .theory-panel,html[data-theme="dark"] .theory-preview,html[data-theme="dark"] .theory-chord-card,html[data-theme="dark"] .theory-key-card,html[data-theme="dark"] .theory-interval-card,html[data-theme="dark"] #theoryView .theory-chord-card,html[data-theme="dark"] #theoryView .theory-key-card,html[data-theme="dark"] #theoryView .theory-interval-card{background:linear-gradient(150deg,#1b1b2e,#14141f);border-color:#2a2a45;color:#e8e6f0}
-html[data-theme="dark"] #theoryView .theory-chord-card.selected,html[data-theme="dark"] #theoryView .theory-interval-card.selected,html[data-theme="dark"] #theoryView .circle-degree.active{background:#302b50;border-color:#c9a84c;color:#e8c97a}
-html[data-theme="dark"] #theoryView .theory-note{background:#302b50;border-color:#514777;color:#e8c97a}
+html[data-theme="dark"] .home-back,html[data-theme="dark"] #songView > .home-back,html[data-theme="dark"] #createView > .home-back,html[data-theme="dark"] .soft,html[data-theme="dark"] .tab{background:#42426e;border:1px solid #2a2a45;color:#e8e6f0;box-shadow:none}
+html[data-theme="dark"] .soft:hover,html[data-theme="dark"] .tab:hover,html[data-theme="dark"] .home-back:hover{border-color:#c9a84c}
+html[data-theme="dark"] .tab.active{background:#42426e;border-color:#8176e0;color:#e8c97a;box-shadow:none}
+html[data-theme="dark"] .gold{background:linear-gradient(135deg,#c9a84c,#e8c97a);color:#1c1c3f;border-color:transparent;font-weight:750}
 html[data-theme="dark"] .modal,html[data-theme="dark"] .track-modal{background:#05050bdc}
 html[data-theme="dark"] .modal-card,html[data-theme="dark"] .track-modal .track-modal-card{background:#1b1b2e;border:1px solid #2a2a45;color:#e8e6f0}
 html[data-theme="dark"] .track-modal .track-choice{background:#11111d;border-color:#2a2a45;color:#e8e6f0}

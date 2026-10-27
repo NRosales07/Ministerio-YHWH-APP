@@ -45,21 +45,15 @@ button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-v
 .home-info-card>span:not(.home-status-dot) { color: #63808c; font-size: 1.4rem; }
 .home-status-dot { width: 10px; height: 10px; border-radius: 50%;  box-shadow: 0 0 0 4px #5eb77a1c; }
 
-/* Secciones de canciones y teoría siguen el mismo sistema azul claro. */
-.home-back,.soft,.tab,.theory-tab { border: 1px solid #99bac7; border-radius: 5px; background: #1789b7; color: white; }
-.toolbar h1,.theory-header h1 { color: #274552; font-family: Georgia,"Times New Roman",serif; font-weight: 500; }
-.toolbar input,.modal input,.theory-root-picker select,.theory-mode-picker select,.quick-setting select,.voice-direction select,.chord-editor select { border: 1px solid #9dbac5; border-radius: 5px; background-color: #f8fbfc; color: #30444d; }
-.hint,.theory-header p,.theory-intro { color: #59717b; }
+
+.home-back,.soft,.tab{ border: 1px solid #99bac7; border-radius: 5px; background: #1789b7; color: white; }
+.toolbar h1{ color: #274552; font-family: Georgia,"Times New Roman",serif; font-weight: 500; }
+.toolbar input,.modal input,.quick-setting select,.voice-direction select,.chord-editor select { border: 1px solid #9dbac5; border-radius: 5px; background-color: #f8fbfc; color: #30444d; }
+.hint{ color: #59717b; }
 .song-card,.empty { border: 1px solid #a5c3ce; border-radius: 5px; background: #f4f8f9; color: #314a54; box-shadow: 0 2px 4px #385e6b17; }
 .song-card b { color: #294754; }
 .song-card small { color: #6c828a; }
 .badge {  background: #deeff3;  }
-.theory-tabs { gap: 6px; }
-.theory-tab { min-height: 40px; padding: 8px 12px; }
-.theory-tab.active { border-color: #0879aa; background: #0f83b5; color: white; }
-.theory-panel,.theory-preview,.theory-chord-card,.theory-key-card,.theory-interval-card { border-color: #a3c3ce; border-radius: 6px; background: #f3f7f8; color: #344d57; }
-.theory-panel h2,.theory-preview h3,.theory-chord-card b { color: #167fa8; }
-.theory-intro,.theory-header p { color: #647b84; }
 
 /* Piano de pantalla completa: superficie negra, piano abajo y controles arriba. */
 body.player-active { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; background: #252629; }
@@ -207,11 +201,11 @@ html[data-theme="dark"] .settings-sheet .master-volume-label { color:#aaa9c1; }
 
 /* Mobile palette: remove the legacy purple surfaces from the light-blue UI. */
 
-/* Use the full mobile canvas for Theory and place sync status in the header. */
 
 
 
-/* Keep the original Theory panels, with smaller musical details on phones. */
+
+
 
 
 /* Piano playback: keep transport in the header, with a compact timeline above the keys. */

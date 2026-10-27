@@ -1111,9 +1111,7 @@ function renderKeyboard() {
   $('keyboard').ontransitionend = event => {
     if (event.target.tagName !== 'SPAN') event.target.classList.remove('playing');
   };
-  syncStageScroll();
-  if($('liveTheoryDock')&&!$('liveTheoryDock').classList.contains('hidden'))renderLiveTheoryDock();
-}
+  syncStageScroll();}
 function updateActiveChordLabel(){
   if(!state.showChordNames)return;
   const pitches=[...new Set([...state.activePointers.values()].map(active=>Number(active.element.dataset.midi)%12))];

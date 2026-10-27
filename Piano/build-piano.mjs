@@ -9,7 +9,7 @@ const parts = [
   '00-runtime-and-state.js',
   '05-instrument-runtime.js',
   '10-song-library.js',
-  '20-theory-and-learning.js',
+  '20-metronome.js',
   '30-track-selection-and-timeline.js',
   '40-player-visuals-and-settings.js',
   '50-drum-pad-and-audio-cache.js',

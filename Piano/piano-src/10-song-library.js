@@ -193,11 +193,11 @@ function transitionScreen(target, candidates) {
 }
 function openPlayerSettingsScreen(){
   closePlayerPopovers();
-  transitionScreen('playerSettingsScreen',['homeView','songView','createView','createTrackScreen','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen','playerSettingsScreen']);
+  transitionScreen('playerSettingsScreen',['homeView','songView','createView','createTrackScreen','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen','playerSettingsScreen']);
   settingsToggle?.setAttribute('aria-expanded','true');
 }
 function closePlayerSettingsScreen(){
-  transitionScreen('player',['homeView','songView','createView','createTrackScreen','theoryView','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen','playerSettingsScreen']);
+  transitionScreen('player',['homeView','songView','createView','createTrackScreen','player','playModeModal','instrumentSettingsScreen','deviceSettingsScreen','playerSettingsScreen']);
   settingsToggle?.setAttribute('aria-expanded','false');
 }
 function confirmDiscardUnsavedMelody(){
@@ -210,9 +210,7 @@ const GUIDED_TOUR_STEPS={
     {selector:'[data-view="adoracion"]',title:'Adoración',text:'Abre el catálogo de alabanzas de adoración. Puedes buscar, filtrar, escuchar una muestra y elegir cómo practicar.'},
     {selector:'[data-view="jubilo"]',title:'Júbilo',text:'Aquí están las alabanzas de celebración. El catálogo funciona igual: busca una canción y elige una forma de escucharla o practicarla.'},
     {selector:'#freePlayBtn',title:'Piano libre',text:'Entra directamente al teclado para tocar, cambiar instrumentos y practicar sin escoger una alabanza.'},
-    {selector:'[data-view="crear"]',title:'Crear o editar melodías',text:'Busca una alabanza y abre una pista para grabar o editar sus notas. Algunas acciones requieren acceso de Admin.'},
-    {selector:'[data-view="teoria"]',title:'Aprender música',text:'Explora las lecciones paso a paso y las herramientas de acordes, escalas, tonalidades e intervalos.'},
-    {selector:'#deviceSettingsBtn',title:'Ajustes para este dispositivo',text:'Personaliza tema, colores, encabezados, teclado, sonido, efectos y descarga de instrumentos.'},
+    {selector:'[data-view="crear"]',title:'Crear o editar melodías',text:'Busca una alabanza y abre una pista para grabar o editar sus notas. Algunas acciones requieren acceso de Admin.'},    {selector:'#deviceSettingsBtn',title:'Ajustes para este dispositivo',text:'Personaliza tema, colores, encabezados, teclado, sonido, efectos y descarga de instrumentos.'},
     {selector:'#recentSongsList',title:'Reproducidas recientemente',text:'Las alabanzas que escuches aparecen aquí para que puedas volver a abrirlas rápidamente.'},
     {selector:'.home-info-card',title:'Estado de los sonidos',text:'Consulta el avance de los sonidos guardados para practicar con menos espera y sin conexión.'}
   ],
@@ -238,7 +236,7 @@ const GUIDED_TOUR_STEPS={
     {selector:'#keyboardNavigation',title:'Desplaza el teclado',text:'Usa las flechas para moverte por octavas y los botones para mostrar más o menos teclas.'},
     {selector:'#notationToggle',title:'Nombres de las notas',text:'Muestra etiquetas en cifrado americano, latino, por octavas o grados.',prepare:()=>guidedOpenPopover('notationMenu')},
     {selector:'#settingsToggle',title:'Volumen y efectos',text:'Abre los ajustes del piano para controlar el volumen general, las barras y sus efectos.',prepare:openPlayerSettingsScreen},
-    {selector:'#masterVolume',title:'Volumen general',text:'Este control cambia el nivel de todo el piano y de sus instrumentos.'},
+    {selector:'#masterVolume',title:'Volumen del piano',text:'Ajusta el instrumento principal; cada capa conserva su propio volumen.'},
     {selector:'#sustainBtn',title:'Sustain',text:'Mantiene las notas sonando un poco después de soltar la tecla, como el pedal de un piano.'}
   ],
   crear:[
@@ -252,13 +250,7 @@ const GUIDED_TOUR_STEPS={
     {selector:'#createTrackScreen [data-record-track="acompanamiento1"]',title:'Primer acompañamiento',text:'Graba el bajo, acordes u otra parte completa sin asignar acordes nota por nota.'},
     {selector:'#createTrackScreen [data-record-track="acompanamiento2"]',title:'Segundo acompañamiento',text:'Añade otra interpretación independiente, por ejemplo cuerdas o un refuerzo.'},
     {selector:'#createTrackScreen [data-open-song-track-settings]',title:'Ajusta instrumentos y capas',text:'Elige un sonido por pista. La segunda capa está apagada hasta que la actives.'}
-  ],
-  teoria:[
-    {selector:'#theoryView .theory-header',title:'Aprende a tu ritmo',text:'La ruta empieza desde lo básico y presenta las ideas en lecciones breves con ejemplos de piano.'},
-    {selector:'#theoryView .theory-mode-tabs',title:'Dos maneras de explorar',text:'Sigue los capítulos en orden o cambia a consultar temas para ir directamente a una herramienta.'},
-    {selector:'#theoryJumpToLesson',title:'Empieza con una lección',text:'La primera clase te ayuda a ubicar Do en el teclado. Puedes repetirla y avanzar a tu ritmo.'},
-    {selector:'#theoryLessonList',title:'Avanza por los capítulos',text:'Abre cualquier lección de la ruta; el progreso se guarda mientras aprendes.'}
-  ],
+  ],
   modo:[
     {selector:'#playModeModal .mode-side-actions',title:'Escucha o configura',text:'Puedes observar la alabanza completa o abrir los ajustes de manos, colores e instrumentos.'},
     {selector:'#playModeModal .mode-cards',title:'Elige qué practicar',text:'Practica la melodía o escucha la segunda y tercera voz por separado.'},
@@ -296,7 +288,7 @@ const GUIDED_TOUR_STEPS={
     {selector:'#notationToggle',title:'Elige cómo leer las notas',text:'Activa cifrado americano, latino, nombres de octava, grados u oculta las etiquetas.',prepare:()=>guidedOpenPopover('notationMenu')},
     {selector:'#keyColorToggle',title:'Color de las notas',text:'Personaliza cómo se iluminan las notas de melodía y las del bajo.'},
     {selector:'#settingsToggle',title:'Sonido y efectos',text:'Desde Configuración ajustas volumen general, estilo de barras, destellos y otras opciones.',prepare:openPlayerSettingsScreen},
-    {selector:'#masterVolume',title:'Volumen general',text:'Sube o baja el nivel de salida de todo el piano y sus capas.'}
+    {selector:'#masterVolume',title:'Volumen del piano',text:'Sube o baja el instrumento principal sin cambiar el volumen de las capas.'}
   ]
 };
 let activeGuidedTour=null,guidedTourInitialized=false,guidedTourTimer=0;
@@ -382,24 +374,22 @@ function replayQuickGuide(){
 function setView(view) {
   if(view==='crear'&&!state.admin){toast('Solo Admin puede entrar a Crear melodía.');return;}
   if(!$('player').classList.contains('hidden')&&!confirmDiscardUnsavedMelody())return;
-  stopMetronome();closeLiveTheoryDock();
+  stopMetronome();
   state.view = view;
   document.body.classList.toggle('home-active',view==='home');
   document.body.classList.toggle('song-list-active',view==='adoracion'||view==='jubilo');
   document.body.classList.toggle('create-list-active',view==='crear');
   stopPlayback({suspendAudio:true});
-  stopTheorySequence();
-  const target={home:'homeView',adoracion:'songView',jubilo:'songView',crear:'createView',teoria:'theoryView'}[view]||'homeView';
-  transitionScreen(target,['homeView','songView','createView','createTrackScreen','theoryView','player','instrumentSettingsScreen']);
+  
+  const target={home:'homeView',adoracion:'songView',jubilo:'songView',crear:'createView',teoria:'theoryScreen'}[view]||'homeView';
+  transitionScreen(target,['homeView','songView','createView','createTrackScreen','player','instrumentSettingsScreen','theoryScreen']);
   document.querySelectorAll('.tab').forEach(button => button.classList.toggle('active', button.dataset.view === view));
-  renderLists();
-  if (view === 'teoria') renderTheory();
-  window.scrollTo(0, 0);
-  if(view==='adoracion'||view==='jubilo'||view==='crear'||view==='teoria')queueGuidedTour(view);
+  renderLists();  window.scrollTo(0, 0);
+  if(view==='adoracion'||view==='jubilo'||view==='crear')queueGuidedTour(view);
 }
 function openFreePlay() {
   if(state.melodyDirty&&!confirmDiscardUnsavedMelody())return;
-  stopPlayback();stopTheorySequence();stopMetronome();closePlayerPopovers();closeLiveTheoryDock();
+  stopPlayback();stopMetronome();closePlayerPopovers();
   clearSongIntro();
   document.body.classList.remove('song-title-visible');
   state.song=null;state.view='libre';state.category='adoracion';state.melodyType='introduccion';state.notes=[];state.chords=[];state.chordTarget=null;state.transpose=0;state.melodyDirty=false;state.recording=false;state.lastMidi=null;chordEditorOpen=false;applySongTrackInstrument(freePlayInstrumentConfig);
@@ -412,7 +402,7 @@ function openFreePlay() {
   updateTrackTimeline();
   $('playerLabel').textContent='Reproducción libre';$('activeKeyName').textContent='';$('activeKeyName').disabled=true;$('status').textContent='Toca las teclas para escuchar.';$('currentNote').textContent='';$('activeChordLabel').textContent='';
   $('voiceMixer').classList.add('hidden');$('notesPanel').dataset.open='';$('notesPanel').classList.add('hidden');$('lyricsPanel').classList.add('hidden');$('chordEditorPanel').classList.add('hidden');
-  renderRecorded();updateAdminControls();transitionScreen('player',['homeView','songView','createView','theoryView','player']);
+  renderRecorded();updateAdminControls();transitionScreen('player',['homeView','songView','createView','player']);
   queueGuidedTour('libre');
   setTimeout(startKeyboardAtC4,170);window.scrollTo(0,0);
 }
@@ -452,11 +442,17 @@ function parsePianoChord(symbol){
   const root=FLAT_TO_SHARP[match[1]]||match[1];const suffix=match[2];const qualities={major:'major',m:'minor',min:'minor',minor:'minor',m7b5:'m7b5','ø':'m7b5',dim:'dim',dim7:'dim7',aug:'aug',sus2:'sus2',sus4:'sus4',sus:'sus4',7:'7',maj7:'maj7',m7:'m7',min7:'m7',mMaj7:'mMaj7',M7:'maj7',6:'6',add9:'add9',9:'7',m9:'m7',5:'5'};
   return {root,quality:qualities[suffix]||'major',bass:match[3]?FLAT_TO_SHARP[match[3]]||match[3]:null};
 }
+function songChordDisplay(chord,symbol){
+  if(state.notation!=='latino')return symbol;
+  const names={C:'Do',D:'Re',E:'Mi',F:'Fa',G:'Sol',A:'La',B:'Si'};
+  const suffix={major:'',minor:'m',dim:'dim',dim7:'dim7',m7b5:'m7♭5',aug:'aum',sus2:'sus2',sus4:'sus4','7':'7',maj7:'maj7',m7:'m7',mMaj7:'mMaj7','6':'6',add9:'add9','5':'5'}[chord.quality]||'';
+  return (names[chord.root[0]]||chord.root[0])+chord.root.slice(1)+suffix;
+}
 function playSongChord(symbol,sourceElement){
   const chord=parsePianoChord(symbol);if(!chord)return;stopPlayback();
   state.selectedSongChord=symbol;document.querySelectorAll('#lyrics .lyrics-chord.selected').forEach(button=>button.classList.remove('selected'));sourceElement?.classList.add('selected');document.querySelectorAll('#keyboard .key.chord-selected').forEach(key=>key.classList.remove('chord-selected'));
   chordMidiNotes({...chord,octave:60,noTranspose:true}).forEach(midi=>document.querySelector(`.key[data-midi="${midi}"]`)?.classList.add('chord-selected'));
-  const display=state.notation==='latino'?theoryLabelChord(chord.root,chord.quality):symbol;
+  const display=songChordDisplay(chord,symbol);
   $('status').textContent=`Acorde ${display} · sonando en el piano.`;$('currentNote').textContent=display;$('currentNote').style.opacity='1';
   document.querySelector('.piano-panel')?.scrollIntoView({behavior:'smooth',block:'center'});
   playChord({...chord,octave:60,duration:1.8,preview:true,noTranspose:true});

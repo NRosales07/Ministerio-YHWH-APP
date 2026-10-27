@@ -286,12 +286,13 @@ var SONGS_JUBILO =
     "content": "[VERSO 1]:\nG | D | G | C | G | D | G |\nBendeciré a Jehová en todo tiempo...\n[CORO]:\nC | G | C | D | G | C | G | D | G |\nX2    Engrandeced a Jehová conmigo...   X2"
   },
   {
-    "id": 333,
+    "num": null,
     "title": "¿QUIÉN DIJO QUE NO QUE NO?",
-    "compositor": "Tradicional",
-    "tono": "Gm",
+    "compositor": "Coros",
+    "tono": "C",
     "album": "Alabanzas de Júbilo",
-    "content": "[VERSO 1]:\nG | D | G | C | G | D | G |\nX2     ¿Quién dijo que no? Que no había victoria...     X2"
+    "content": "[VERSO 1]:\n           C                                                    G\nX2 ¿Quién dijo que no? Que no había victoria\n         F                                     G                 C\nSi el tal no han conocido, al Cristo de la Gloria     \n                                                   F\nYo digo que si, que victoria tendremos\n                         G                Dm   G   C\nPorque ya conocemos, la Gloria de Dios\n                         G                Dm   G   C\nPorque ya conocemos, la Gloria de Dios  X2",
+    "id": 333
   },
   {
     "num": null,
@@ -303,28 +304,31 @@ var SONGS_JUBILO =
     "id": 334
   },
   {
-    "id": 335,
+    "num": null,
     "title": "SI ESTA TIERRA",
-    "compositor": "Tradicional",
-    "tono": "Gm",
+    "compositor": "Coros",
+    "tono": "C",
     "album": "Alabanzas de Júbilo",
-    "content": "[VERSO 1]:\nG | D | G | C | G | D | G |\nSi esta tierra ardiera en fuego, ¿a dónde iremos a morar?\nYo iré, yo iré con Jesús allá a morar, yo iré, yo iré con Jesús allá a morar"
+    "content": "[VERSO 1]:\n             C\nX2  Si esta tierra ardiera en fuego, \n                                   G\n¿A dónde iremos a morar?\n      F        C            G                 C \nYo iré, yo iré con Jesús allá a morar, \n      F        C            G                 C \nYo iré, yo iré con Jesús allá a morar...  X2",
+    "id": 335
   },
   {
-    "id": 336,
+    "num": null,
     "title": "EL GOZO",
-    "compositor": "Tradicional",
-    "tono": "Gm",
+    "compositor": "Coros",
+    "tono": "C",
     "album": "Alabanzas de Júbilo",
-    "content": "[VERSO 1]:\nG | D | G | Em |\nEl gozo que tengo yo, el mundo no me lo dio, el mundo no me lo dio\nY como no me lo dio, no me lo puede quitar, y como no me lo dio, no me lo puede quitar."
+    "content": "[VERSO 1]:\n       C                                  G                      C\nEl gozo que siento yo, el mundo no me lo dio, \n        G                      C\nEl mundo no me lo dio\n                             G                                C\nY como no me lo dio, no me lo puede quitar, \n                             G                                C\nY como no me lo dio, no me lo puede quitar...\n\n[CORO]:\n                               G                          C\nSi empezamos a cantar este lugar tiembla,\n                             G                                         C\nSi empezamos a orar, hablaremos nuevas lenguas,\n                 F                      C\nX2  Elías oró, y el fuego cayó, \n           G                       C\nOró Josué y el sol se paró...  X2",
+    "id": 336
   },
   {
-    "id": 337,
+    "num": null,
     "title": "ASI SE ALABA A DIOS",
-    "compositor": "Tradicional",
-    "tono": "Gm",
+    "compositor": "Coros",
+    "tono": "C",
     "album": "Alabanzas de Júbilo",
-    "content": "[VERSO 1]:\nG | D | D | G |\nAsi, asi, asi se alaba a Dios, asi, asi, asi se alaba a Dios\nCon mucha alegría y gozo, con mucha alegría y gozo,\nCon mucha alegría y gozo, así se alaba a Dios.\nAsi, asi, asi se alaba a Dios, asi, asi, asi se alaba a Dios, Asi, asi, asi se alaba a Dios."
+    "content": "[VERSO 1]:\n                                     G                                         C\nCon mucha alegría y gozo, con mucha alegría y gozo,\n                                     G                               C\nCon mucha alegría y gozo, así se alaba a Dios.\n              G                      C\nAsi, asi, asi se alaba a Dios, \n              G                      C\nAsi, asi, asi se alaba a Dios,  \n              G                      C\nAsi, asi, asi se alaba a Dios.\n\n  C\nAsi, asi, asi se alaba a Dios, Asi, asi, asi se alaba a Dios\n                                    G                                         C\nCon mucha alegría y gozo, con mucha alegría y gozo,\n                                     G                               C\nCon mucha alegría y gozo, así se alaba a Dios.\n              G                      C\nAsi, asi, asi se alaba a Dios, \n              G                      C\nAsi, asi, asi se alaba a Dios,  \n              G                      C\nAsi, asi, asi se alaba a Dios.\n[VERSO 2]:\n             C                           G\nX2  Levanten las manos todos, \n                                   C\nlevanten las manos todos\n                                    G                              C       \nLevanten las manos todos, asi se alaba a Dios  X2\n             G                      C\nAsi, asi, asi se alaba a Dios, \n              G                      C\nAsi, asi, asi se alaba a Dios,  \n              G                      C\nAsi, asi, asi se alaba a Dios.",
+    "id": 337
   },
   {
     "id": 338,
@@ -1358,10 +1362,10 @@ var SONGS_JUBILO =
   {
     "num": 28,
     "title": "YO TENGO UN ABOGADO",
-    "compositor": "",
+    "compositor": "Coros",
     "tono": "C",
-    "album": "",
-    "content": "[VERSO 1]:\n\nYo tengo un abogado que me defiende\n\nÉl nunca está ocupado, siempre me atiende\n\nÉl nunca pierde un caso, todos los gana\n\nSi alguno le interesa saber su nombre Jesús se llama\n\nSi alguno le interesa saber su nombre Jesús se llama... ",
+    "album": "Alabanzas de Júbilo",
+    "content": "[VERSO 1]:\n        C                                           G\nYo tengo un abogado que me defiende\n                             F             G                C\nÉl nunca está ocupado, siempre me atiende\n                                                           F\nÉl nunca pierde un caso, todos los gana\n                         C                         G                        C\nSi alguno le interesa saber su nombre Jesús se llama\n                         C                         G                        C\nSi alguno le interesa saber su nombre Jesús se llama \n\n\n\n\nSE REPITE TODO",
     "id": 458
   },
   {

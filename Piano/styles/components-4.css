@@ -882,14 +882,11 @@ html[data-piano-key-style="synthesia"] body.player-active #player .piano-panel .
 html[data-theme="dark"] body > .app-header,
 html[data-theme="dark"] #songView > .song-mobile-header,
 html[data-theme="dark"] #createView > .create-mobile-header,
-html[data-theme="dark"] #theoryView > .theory-header,
 html[data-theme="dark"] .mode-screen .mode-screen-header,
 html[data-theme="dark"] .mode-section-title,
 html[data-theme="dark"] #deviceSettingsScreen .device-settings-header,
 html[data-theme="dark"] #instrumentSettingsScreen .instrument-screen-header,
-html[data-theme="dark"] #player > .player-top,
-html[data-theme="dark"] .lesson-focus-header,
-html[data-theme="dark"] #player .live-theory-head {
+html[data-theme="dark"] #player > .player-top{
   background:#176fae!important;
   color:#fff!important;
   border-color:#176fae!important;
@@ -927,3 +924,4 @@ html[data-theme="dark"] body.home-active #homeView .home-action.primary small {
 body.player-active #player #instrumentMenu .instrument-picker-targets{grid-template-columns:repeat(3,minmax(0,1fr))}
 body.player-active #player #instrumentMenu .instrument-picker-mix{grid-template-columns:repeat(2,minmax(0,1fr))}
 body.player-active #player #instrumentMenu #thirdLayerStatus{grid-column:1/-1;margin:0;font-size:.62rem;line-height:1.2;opacity:.76}
+

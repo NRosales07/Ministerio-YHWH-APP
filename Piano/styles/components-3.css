@@ -12,7 +12,7 @@ html.device-customization-enabled body > header.app-header {
 .brand-home b { display: block; color: var(--text); font-size: .96rem; letter-spacing: .015em; }
 .connection { color: var(--muted); }
 .header-actions { display: flex; align-items: center; gap: 9px; }
-.theme-toggle, .admin, .soft, .gold, .tab, .theory-tab, .home-back {
+.theme-toggle, .admin, .soft, .gold, .tab, .home-back {
   min-height: 42px; padding: 9px 15px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--text); font-weight: 650;
 }
 .theme-toggle { width: 42px; padding: 0; }
@@ -20,7 +20,7 @@ html.device-customization-enabled body > header.app-header {
 .admin:hover, .home-action.primary:hover { background: var(--primary-strong); }
 .gold { border-color: var(--primary); background: var(--primary); color: white; box-shadow: 0 5px 14px color-mix(in srgb, var(--primary) 18%, transparent); }
 .gold:hover { border-color: var(--primary-strong); background: var(--primary-strong); transform: translateY(-1px); }
-.soft:hover, .tab:hover, .theory-tab:hover, .home-back:hover { border-color: var(--primary); background: var(--surface-soft); }
+.soft:hover, .tab:hover, .home-back:hover { border-color: var(--primary); background: var(--surface-soft); }
 .admin-home-entry { border-color: var(--line); background: var(--surface); color: var(--primary); }
 main { width: min(calc(100% - 40px), 1440px); max-width: 1440px; margin: 0 auto; padding: 28px 0 50px; }
 body.home-active > main { width: min(calc(100% - 40px), 1440px); max-width: 1440px; margin: 0 auto; padding: 28px 0 50px; background: transparent; }
@@ -67,25 +67,23 @@ html.device-customization-enabled body.home-active #homeView .home-recent-card {
   border-color: var(--line); border-radius: var(--radius-md); background: var(--surface); color: var(--text); box-shadow: var(--shadow);
 }
 html.device-customization-enabled body.home-active #homeView .home-recent-heading { color: var(--text); }
-/* Library, song lists and theory cards */
+
 .view { color: var(--text); }
-#songView, #createView, #theoryView {
+#songView, #createView{
   border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); color: var(--text);
 }
 html.device-customization-enabled #songView,
-html.device-customization-enabled #createView,
-html.device-customization-enabled #theoryView { border-color: var(--line); background: var(--surface); color: var(--text); }
-.song-mobile-header, .create-mobile-header, .theory-header {
+html.device-customization-enabled #createView{ border-color: var(--line); background: var(--surface); color: var(--text); }
+.song-mobile-header, .create-mobile-header{
   border-color: var(--line); border-radius: var(--radius-md); background: var(--surface); color: var(--text); box-shadow: 0 4px 16px rgba(24, 59, 58, .045);
 }
 html.device-customization-enabled #songView > .toolbar,
 html.device-customization-enabled #createView > .toolbar,
 html.device-customization-enabled .song-mobile-header,
-html.device-customization-enabled .create-mobile-header,
-html.device-customization-enabled .theory-header { border-color: var(--line); background: var(--surface); color: var(--text); }
+html.device-customization-enabled .create-mobile-header{ border-color: var(--line); background: var(--surface); color: var(--text); }
 html.device-customization-enabled #songView > .toolbar,
 html.device-customization-enabled #createView > .toolbar { border-radius: 16px; box-shadow: 0 4px 16px rgba(24, 59, 58, .045); }
-.song-mobile-header h1, .create-mobile-header h1, .theory-header h1 { color: var(--text); font-family: inherit; font-weight: 720; letter-spacing: -.035em; }
+.song-mobile-header h1, .create-mobile-header h1{ color: var(--text); font-family: inherit; font-weight: 720; letter-spacing: -.035em; }
 .song-filters { display: flex; flex-wrap: wrap; gap: 7px; }
 .song-filters button {
   min-height: 38px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font-weight: 650;
@@ -98,51 +96,23 @@ html.device-customization-enabled #createView > .toolbar { border-radius: 16px; 
 .selected-audio-meta { color: var(--text); }
 .preview-track { background: var(--surface-soft); }
 .preview-track i { background: var(--accent); }
-.tabs, .theory-tabs { gap: 8px; }
-.tab, .theory-tab { background: var(--surface); color: var(--muted); }
-.tab.active, .theory-tab.active { border-color: var(--primary); background: var(--primary); color: white; }
-.toolbar h1, .theory-header h1, .player-top h1 { color: var(--text); font-family: inherit; font-weight: 720; letter-spacing: -.035em; }
+.tabs{ gap: 8px; }
+.tab{ background: var(--surface); color: var(--muted); }
+.tab.active{ border-color: var(--primary); background: var(--primary); color: white; }
+.toolbar h1, .player-top h1 { color: var(--text); font-family: inherit; font-weight: 720; letter-spacing: -.035em; }
 .toolbar input, .modal input, select, .quick-setting select, .voice-direction select, .chord-editor select {
   min-height: 42px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text);
 }
-.hint, .theory-header p, .theory-intro, .connection { color: var(--muted); }
+.hint, .connection { color: var(--muted); }
 .song-list { gap: 12px; }
-.song-card, .empty, .theory-panel, .theory-preview, .theory-chord-card, .theory-key-card, .theory-interval-card {
+.song-card, .empty{
   border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--text); box-shadow: 0 4px 14px rgba(24, 59, 58, .035);
 }
 .song-card { min-height: 72px; padding: 16px 18px; }
 .song-card:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--line)); background: var(--surface-raised); }
-.song-card b, .theory-panel h2, .theory-preview h3 { color: var(--text); }
-.song-card small, .theory-panel p { color: var(--muted); }
-.badge { border-radius: 999px;   }
-.theory-panel { padding: clamp(18px, 3vw, 30px); }
-.theory-panel h2 { font-size: 1.35rem; letter-spacing: -.025em; }
-.theory-panel h2, .theory-preview h3 { font-family: inherit; }
-.theory-preview { padding: 20px; }
-.theory-root-picker, .theory-mode-picker, .theory-formula, .theory-note-list,
-.theory-circle-results, .theory-key-card, .theory-chord-card, .theory-interval-card {
-  border-color: var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text);
-}
-.theory-chord-card, .theory-key-card, .theory-interval-card { padding: 16px; }
-.theory-chord-card:hover, .theory-key-card:hover, .theory-interval-card:hover,
-.theory-chord-card.active, .theory-key-card.active, .theory-interval-card.active {
-  border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 14%, transparent);
-}
-.theory-tab, .theory-panel button { transition: background-color .18s ease, border-color .18s ease, transform .18s ease; }
-.learning-welcome,
-.learning-start-card,
-.theory-lesson-stage,
-.worship-practice,
-.lesson-piano-focus-shell { border-color: var(--line); background: var(--surface); color: var(--text); }
-.learning-welcome small, .learning-start-card small, .worship-practice-inner small { color: var(--primary); }
-.learning-guide-steps > div, .learning-progress-track { border-color: var(--line); background: var(--surface-raised); }
-.learning-guide-steps > div span { background: var(--primary); color: white; }
-.learning-progress-track i { background: var(--primary); }
-.theory-lesson-list button, .theory-lesson-list a { border-color: var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); }
-.lesson-focus-header, .lesson-focus-footer { border-color: var(--line); background: var(--surface-raised); color: var(--text); }
-.lesson-focus-prompt { color: var(--text); }
-.worship-practice-summary { color: var(--text); }
-.worship-practice-inner, .worship-now { border-color: var(--line); background: var(--surface-raised); color: var(--text); }
+.song-card b{ color: var(--text); }
+.song-card small{ color: var(--muted); }
+.badge { border-radius: 999px;   } .worship-now { border-color: var(--line); background: var(--surface-raised); color: var(--text); }
 .worship-chord-strip > * { border-color: var(--line); border-radius: 9px; background: var(--accent-soft); color: var(--text); }
 /* Settings and modal surfaces */
 .mode-screen-panel, .device-settings-panel, .modal-card, .player-sheet, .stage-popover, .chord-editor {
@@ -236,11 +206,6 @@ body.player-active #player .mobile-player-controls #playMelody{ background: var(
 .splash-logo { border-radius: 22px; }
 .splash-title { letter-spacing: -.025em; }
 .btn-entrar-splash { min-height: 48px; padding: 12px 28px; border-radius: 999px; background: var(--accent); color: #233531; font-weight: 750; }
-/* Teaching mode */
-.learning-welcome, .learning-start-card, .theory-lesson-stage, .worship-practice { border-color: var(--line); border-radius: var(--radius-md); background: var(--surface); color: var(--text); }
-.learning-welcome h2, .learning-start-card b, .worship-practice h2 { color: var(--text); }
-.learning-welcome p, .learning-start-card p, .worship-practice p { color: var(--muted); }
-#theoryJumpToLesson, .lesson-piano-focus button:not(.soft) { border-radius: 999px; background: var(--primary); color: white; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto; transition-duration: .01ms; animation-duration: .01ms; }
 }
@@ -305,25 +270,25 @@ html[data-theme="dark"]{
 html,body{background:var(--bg);color:var(--text)}
 body{background:radial-gradient(ellipse at 50% -35%,color-mix(in srgb,var(--primary) 7%,var(--bg)),var(--bg) 58%);font-family:var(--device-font,Inter,system-ui,sans-serif)}
 header:not(.player-top),.app-header,.device-settings-header,.instrument-screen-header,.mode-screen-header,.song-mobile-header,.create-mobile-header{background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--text);border-color:var(--line);box-shadow:var(--shadow-sm);backdrop-filter:blur(16px)}
-.brand b,.brand-icon,.theory-header h1,.toolbar h1,.home-view h1,.home-view h2{color:var(--text)}
-.brand small,.connection,.hint,.theory-header p,.theory-intro,.player-top p{color:var(--muted)}
+.brand b,.brand-icon,.toolbar h1,.home-view h1,.home-view h2{color:var(--text)}
+.brand small,.connection,.hint,.player-top p{color:var(--muted)}
 main{color:var(--text)}
 .home-view{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);color:var(--text)}
-.home-action,.song-card,.recent-song,.info-card,.offline-card,.instrument-config-card,.mode-screen-panel,.theory-panel,.theory-preview,.theory-chord-card,.theory-key-card,.theory-interval-card,.chord-preview,.settings-block,.settings-sheet,.voice-mixer,.quick-setting,.chord-editor,.piano-panel{background:var(--surface);color:var(--text);border-color:var(--line);box-shadow:var(--shadow-sm)}
-.song-card,.theory-chord-card,.theory-key-card,.theory-interval-card,.home-action{transition:transform .16s ease,border-color .16s ease,background-color .16s ease,box-shadow .16s ease}
-.song-card:hover,.theory-chord-card:hover,.theory-key-card button:hover,.home-action:hover{border-color:var(--primary);box-shadow:var(--shadow);transform:translateY(-1px)}
-.song-card b,.theory-panel h2,.theory-preview h3,.theory-chord-card b,.theory-key-card h3,.theory-formula,.chord-editor-title{color:var(--primary)}
-.song-card small,.theory-chord-card small,.theory-chord-card span,.theory-key-card button small,.theory-interval-card small,.chord-editor>p,.chord-editor-fields label{color:var(--muted)}
+.home-action,.song-card,.recent-song,.info-card,.offline-card,.instrument-config-card,.mode-screen-panel,.chord-preview,.settings-block,.settings-sheet,.voice-mixer,.quick-setting,.chord-editor,.piano-panel{background:var(--surface);color:var(--text);border-color:var(--line);box-shadow:var(--shadow-sm)}
+.song-card,.home-action{transition:transform .16s ease,border-color .16s ease,background-color .16s ease,box-shadow .16s ease}
+.song-card:hover,.home-action:hover{border-color:var(--primary);box-shadow:var(--shadow);transform:translateY(-1px)}
+.song-card b,.chord-editor-title{color:var(--primary)}
+.song-card small,.chord-editor>p,.chord-editor-fields label{color:var(--muted)}
 .badge{background:color-mix(in srgb,var(--success) 12%,var(--surface));color:var(--success);border:1px solid color-mix(in srgb,var(--success) 30%,transparent)}
-.tabs,.theory-tabs{scrollbar-color:var(--line) transparent}
-.tab,.theory-tab,.admin,.soft,.player-controls button,.chord-editor-actions button,.theory-key-card button,.theory-circle-results button,.theory-root-picker select,.theory-mode-picker select,.chord-editor-fields select,.track-layer-controls select,.instrument-name-field select,.instrument-config-card select,.settings-sheet select,.settings-sheet button{background:var(--surface-raised);color:var(--text);border:1px solid var(--line)}
-.tab.active,.theory-tab.active{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 4px 12px color-mix(in srgb,var(--primary) 24%,transparent)}
+.tabs{scrollbar-color:var(--line) transparent}
+.tab,.admin,.soft,.player-controls button,.chord-editor-actions button,.chord-editor-fields select,.track-layer-controls select,.instrument-name-field select,.instrument-config-card select,.settings-sheet select,.settings-sheet button{background:var(--surface-raised);color:var(--text);border:1px solid var(--line)}
+.tab.active{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 4px 12px color-mix(in srgb,var(--primary) 24%,transparent)}
 button.gold,.gold,.btn-entrar-splash,.player-controls .gold,.chord-editor-actions .gold{background:linear-gradient(135deg,var(--primary),var(--primary-strong));color:#fff;border:1px solid transparent;box-shadow:0 5px 14px color-mix(in srgb,var(--primary) 20%,transparent)}
 button.gold:hover,.gold:hover,.btn-entrar-splash:hover{filter:brightness(1.06)}
 .admin.active,.admin-only{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,var(--line));color:var(--text)}
-.soft:hover,.tab:hover,.theory-tab:hover,.player-controls button:hover,.chord-editor-actions button:hover{border-color:var(--primary)}
+.soft:hover,.tab:hover,.player-controls button:hover,.chord-editor-actions button:hover{border-color:var(--primary)}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 55%,transparent);outline-offset:2px}
-input,select,textarea,.toolbar input,.modal input,.theory-root-picker select,.theory-mode-picker select,.chord-editor-fields select{background:var(--surface-soft);color:var(--text);border:1px solid var(--line)}
+input,select,textarea,.toolbar input,.modal input,.chord-editor-fields select{background:var(--surface-soft);color:var(--text);border:1px solid var(--line)}
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:.85}
 input:focus,select:focus,textarea:focus,.toolbar input:focus,.modal input:focus{border-color:var(--primary);outline:none}
 html body.player-active #player,html body.player-active #player .performance-layout{color:var(--stage-text)}
@@ -335,7 +300,7 @@ html body.player-active #player .performance-layout>.note-canvas .canvas-readout
 html body.player-active #player .performance-layout>.note-canvas .canvas-readouts>.stage-tool-rail button{background:#233746;border-color:#435969;color:#eef3f7}
 html body.player-active #player .piano-panel{background:var(--surface);border-color:var(--line);color:var(--text)}
 html body.player-active #player .chord-preview{background:var(--surface);border-color:var(--line);color:var(--text)}
-html body.player-active #player .chord,html body.player-active #player .theory-note{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 32%,var(--line));color:var(--text)}
+html body.player-active #player .chord{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 32%,var(--line));color:var(--text)}
 html body.player-active #player .lyrics{color:var(--text);border-color:var(--line)}
 html body.player-active #player .player-controls button{background:var(--surface-raised);border-color:var(--line);color:var(--text)}
 html body.player-active #player .player-controls #playMelody,html body.player-active #player .player-controls #recordBtn{background:var(--primary);color:#fff;border-color:var(--primary)}
@@ -346,19 +311,6 @@ html body.player-active #player .piano .black{background:linear-gradient(100deg,
 html body.player-active #player .piano .white.playing{background:#f5e3ae;border-color:#d4a94e}
 html body.player-active #player .piano .black.playing{background:#8b6520;border-color:#d8b45f}
 .piano-panel .octave-marker{color:var(--accent);text-shadow:none}
-.theory-tabs .theory-tab{background:var(--surface-raised);color:var(--text);border-color:var(--line)}
-.theory-panel,.theory-preview,.theory-chord-card,.theory-key-card,.theory-interval-card,.theory-root-picker,.theory-mode-picker{background:var(--surface);border-color:var(--line);color:var(--text)}
-.theory-chord-card.selected,.theory-chord-card:hover,.theory-interval-card.selected,.theory-interval-card:hover{background:var(--accent-soft);border-color:var(--accent)}
-.theory-note-list .theory-note{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 30%,var(--line));color:var(--text)}
-.theory-key-card button{background:var(--surface-raised);border-color:var(--line);color:var(--text)}
-.theory-key-card button b,.theory-circle-results b{color:var(--primary)}
-.theory-circle-node circle{fill:var(--surface-raised);stroke:var(--line)}
-.theory-circle-node text,.theory-circle-node.minor text{fill:var(--text)}
-.theory-circle-node.minor circle{fill:var(--surface)}
-.theory-circle-node:hover circle,.theory-circle-node.selected circle{stroke:var(--accent)}
-.theory-circle-results button{background:var(--surface-raised);border-color:var(--line);color:var(--text)}
-.theory-circle-results .circle-degree.active{background:var(--accent-soft);border-color:var(--accent)}
-.theory-circle-results .circle-degree .degree-badge{color:#fff}
 .chord-editor{background:var(--surface);border-color:var(--line);color:var(--text)}
 .chord-editor-fields select{background:var(--surface-soft);border-color:var(--line);color:var(--text)}
 .chord-gap-target{background:var(--surface-raised);border-color:color-mix(in srgb,var(--accent) 50%,var(--line));color:var(--primary)}
@@ -401,7 +353,7 @@ html body.player-active #player .performance-layout{background:var(--stage-bg)}
 
 /* Correcciones puntuales para el reproductor y la navegación táctil. */
 /* Contraste AA en botones activos con el azul claro del tema oscuro. */
-html[data-theme="dark"] .tab.active,html[data-theme="dark"] .theory-tab.active,
+html[data-theme="dark"] .tab.active,
 html[data-theme="dark"] button.gold,html[data-theme="dark"] .gold,
 html[data-theme="dark"] .player-controls .gold,html[data-theme="dark"] .chord-editor-actions .gold,
 html[data-theme="dark"] #splashScreen .btn-entrar-splash,
@@ -447,9 +399,9 @@ html body.player-active #player .performance-layout>.piano-panel{border-top-colo
   .home-info-card { grid-template-columns: 36px minmax(0,1fr) 8px; gap: 10px; min-height: 68px; padding: 11px 13px; border-radius: 16px; }
   .home-info-icon { width: 34px; height: 34px; }
 
-  /* Catalogues, creation list and theory share a padded, scrollable page. */
-  #songView,#createView,#theoryView { min-height: calc(100dvh - 90px - var(--mobile-bottom)); padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-  .song-mobile-header,.create-mobile-header,.theory-header { position: sticky; top: calc(58px + env(safe-area-inset-top,0px)); z-index: 25; display: grid; grid-template-columns:auto minmax(0,1fr) auto; gap: 8px; min-height: 58px; margin: 0 0 11px; padding: 8px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: var(--bg); box-shadow: none; }
+  
+  #songView,#createView{ min-height: calc(100dvh - 90px - var(--mobile-bottom)); padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+  .song-mobile-header,.create-mobile-header{ position: sticky; top: calc(58px + env(safe-area-inset-top,0px)); z-index: 25; display: grid; grid-template-columns:auto minmax(0,1fr) auto; gap: 8px; min-height: 58px; margin: 0 0 11px; padding: 8px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: var(--bg); box-shadow: none; }
   .song-mobile-header .home-back,.create-mobile-header .home-back { min-height: 38px; padding: 7px 10px; font-size: .78rem; }
   .selected-audio-preview { min-width: 0; gap: 8px; padding: 6px 8px; border-radius: 13px; }
   .selected-audio-meta { min-width: 0; font-size: .7rem; }
@@ -469,13 +421,6 @@ html body.player-active #player .performance-layout>.piano-panel{border-top-colo
   .song-list { grid-template-columns: 1fr; gap: 9px; }
   .song-card { min-height: 66px; padding: 12px 14px; border-radius: 15px; }
   .song-list-footer,.create-list-footer { display: flex; justify-content: space-between; margin-top: 14px; padding: 12px 2px calc(6px + var(--mobile-bottom)); font-size: .72rem; }
-  #theoryView > .theory-header { display: block; padding: 9px 0 12px; }
-  #theoryView .theory-header h1 { margin: 0 0 4px; font-size: 1.2rem; }
-  #theoryView .theory-tabs { display: flex; gap: 7px; margin: 0 -1px 12px; padding: 2px 0 6px; overflow-x: auto; scrollbar-width: none; }
-  #theoryView .theory-tabs::-webkit-scrollbar { display:none; }
-  .theory-tab { flex: 0 0 auto; min-height: 38px; padding: 7px 11px; font-size: .76rem; }
-  .theory-panel { padding: 16px; border-radius: 17px; }
-  .theory-panel h2 { font-size: 1.08rem; }
 
   /* Full-screen settings and practice screens retain a safe content inset. */
   .mode-screen { padding: 0; }
@@ -541,7 +486,7 @@ html body.player-active #player .performance-layout>.piano-panel{border-top-colo
   body>header.app-header .theme-toggle { width:28px; height:28px; min-height:28px; font-size:12px; }
   body>header.app-header #adminBtn { min-height:28px; padding:3px 7px; font-size:.62rem; }
   main,body.home-active > main { display:flex; flex-direction:column; width:100%; height:calc(100dvh - 42px - env(safe-area-inset-top,0px)); min-height:0; margin:0; padding:8px var(--mobile-gutter-right) calc(8px + var(--mobile-bottom)) var(--mobile-gutter); overflow:hidden; }
-  #homeView.home-view,#songView,#createView,#theoryView { flex:1 1 auto; width:100%; min-height:0; overflow:hidden; }
+  #homeView.home-view,#songView,#createView{ flex:1 1 auto; width:100%; min-height:0; overflow:hidden; }
   #homeView .home-layout { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(190px,.85fr); align-items:stretch; gap:12px; height:100%; }
   #homeView .home-actions { min-height:0; grid-template-columns:minmax(0,1fr); align-content:start; align-self:stretch; gap:6px; }
   #homeView .home-actions::before { grid-column:1/-1; padding:0 2px 1px; }
@@ -573,18 +518,6 @@ html body.player-active #player .performance-layout>.piano-panel{border-top-colo
   .song-card small { margin-top:2px; font-size:.66rem; }
   .song-list-footer,.create-list-footer { flex:0 0 auto; margin-top:4px; padding:5px 2px 2px; }
 
-  #theoryView { display:flex; flex-direction:column; }
-  #theoryView > .theory-header { flex:0 0 auto; position:relative; top:auto; margin:0; padding:4px 0 5px; }
-  #theoryView .theory-header h1 { margin-bottom:2px; font-size:1rem; }
-  #theoryView .theory-header p { margin:0; font-size:.68rem; }
-  #theoryView .theory-content-shell { display:flex; flex:1 1 auto; flex-direction:column; min-height:0; overflow:hidden; }
-  #theoryView .theory-mode-tabs { flex:0 0 auto; gap:5px; margin:3px 0 6px; padding:3px; }
-  #theoryView .theory-mode-tabs button { min-height:29px; padding:4px 8px; font-size:.68rem; }
-  #theoryView #theoryLearning,#theoryView #theoryExplore { flex:1 1 auto; min-height:0; overflow-y:auto; }
-  #theoryView .theory-tabs { gap:5px; margin:4px 0 7px; padding:0 0 3px; }
-  #theoryView .theory-tab { min-height:30px; padding:4px 8px; font-size:.68rem; }
-  #theoryView .theory-panel { padding:12px; }
-
   .mode-screen-panel { padding-top:env(safe-area-inset-top,0px); }
   .device-settings-layout { min-height:0; }
   .device-settings-workspace { min-height:0; }
@@ -605,7 +538,7 @@ body.player-active > header.app-header { display:none; }
   body:not(.player-active) { height:100dvh; overflow:hidden; }
   body > header.app-header { min-height:calc(40px + env(safe-area-inset-top,0px)); height:calc(40px + env(safe-area-inset-top,0px)); padding:calc(3px + env(safe-area-inset-top,0px)) var(--mobile-gutter-right) 3px var(--mobile-gutter); }
   main,body.home-active > main { display:flex; flex-direction:column; height:calc(100dvh - 40px - env(safe-area-inset-top,0px)); padding:6px var(--mobile-gutter-right) calc(6px + var(--mobile-bottom)) var(--mobile-gutter); }
-  #homeView.home-view,#songView,#createView,#theoryView { flex:1 1 auto; width:100%; min-height:0; }
+  #homeView.home-view,#songView,#createView{ flex:1 1 auto; width:100%; min-height:0; }
   #homeView .home-layout { min-width:0; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); grid-template-rows:minmax(0,1fr); height:100%; min-height:0; }
   #homeView .home-actions { display:grid; width:min(100%,380px); height:100%; min-height:0; grid-template-columns:minmax(0,1fr); grid-template-rows:auto repeat(7,minmax(0,1fr)); align-content:stretch; align-self:stretch; gap:5px; }
   #homeView .home-actions::before { grid-column:1/-1; font-size:.76rem; letter-spacing:.11em; }
@@ -659,8 +592,7 @@ body.player-active > header.app-header { display:none; }
 @media (max-width: 900px) and (orientation: landscape) and (max-height: 600px) {
   body.player-active #player .stage-popover:not(.hidden),
   body.player-active #player .player-sheet:not(.hidden),
-  body.player-active #player .notes-panel:not(.hidden),
-  body.player-active #player #liveTheoryDock:not(.hidden) {
+  body.player-active #player .notes-panel:not(.hidden){
     position: fixed;
     z-index: 80;
     top: calc(48px + env(safe-area-inset-top, 0px));
@@ -714,11 +646,6 @@ body.player-active > header.app-header { display:none; }
   body.player-active #player #instrumentMenu .instrument-options { max-height:clamp(105px,34dvh,155px); }
   body.player-active #player #instrumentMenu .instrument-option { min-height:34px; gap:6px; padding:3px 6px; font-size:.67rem; }
   body.player-active #player #instrumentMenu .instrument-option .instrument-icon { flex-basis:25px; width:25px; height:25px; border-radius:6px; font-size:1.05rem; }
-  body.player-active #player #liveTheoryDock:not(.hidden) { gap: 5px; padding: 8px; }
-  body.player-active #player #liveTheoryDock .live-theory-modes button { min-height: 27px; padding: 3px 6px; font-size: .68rem; }
-  body.player-active #player #liveTheoryDock .live-theory-controls { gap: 5px; }
-  body.player-active #player #liveTheoryDock .live-theory-controls select { min-height: 29px; font-size: .68rem; }
-  body.player-active #player #liveTheoryDock .live-theory-explanation p { font-size: .66rem; }
   body.player-active #player #instrumentMenu:not(.hidden) {
     overflow-x: hidden;
     overflow-y: auto;
@@ -728,8 +655,7 @@ body.player-active > header.app-header { display:none; }
 @media (max-width: 900px) and (orientation: portrait) {
   body.player-active #player .stage-popover:not(.hidden),
   body.player-active #player .player-sheet:not(.hidden),
-  body.player-active #player .notes-panel:not(.hidden),
-  body.player-active #player #liveTheoryDock:not(.hidden) {
+  body.player-active #player .notes-panel:not(.hidden){
     position:fixed;
     z-index:80;
     top:calc(52px + env(safe-area-inset-top,0px));
@@ -752,8 +678,6 @@ body.player-active > header.app-header { display:none; }
 
 /* Ajustes del escenario solicitados para escritorio y móvil. */
 #player #status.player-status { display:none; }
-#player #theoryLiveToggle,
-#player #liveTheoryPlayKey { display:none; }
 #player .performance-layout > .note-canvas {
   background:#000;
 }
@@ -844,28 +768,14 @@ html.device-customization-enabled body.home-active #homeView .home-info-card :is
   body.home-active > header.app-header .brand-home,
   body.home-active > header.app-header .header-actions { align-self:start; }
 }
-
-/* Encabezados consistentes y configurables en todas las pantallas. */
-html.device-customization-enabled :is(body>header.app-header,#songView>.song-mobile-header,#createView>.create-mobile-header,#theoryView>.theory-header,#playModeModal .mode-screen-header,#playModeModal .mode-section-title,#instrumentSettingsScreen .instrument-screen-header,#deviceSettingsScreen .device-settings-header) {
-  border-color:var(--device-line-color);
-}
 html.device-customization-enabled body>header.app-header {
   height:var(--device-heading-height,58px);
   min-height:var(--device-heading-height,58px);
-}
-html.device-customization-enabled :is(#songView>.song-mobile-header,#createView>.create-mobile-header,#theoryView>.theory-header) {
-  height:var(--device-heading-height,58px);
-  min-height:var(--device-heading-height,58px);
-  flex-basis:var(--device-heading-height,58px);
 }
 html.device-customization-enabled :is(#playModeModal .mode-screen-header,#playModeModal .mode-section-title,#instrumentSettingsScreen .instrument-screen-header,#deviceSettingsScreen .device-settings-header) {
   height:var(--device-heading-height,58px);
   min-height:var(--device-heading-height,58px);
   flex-basis:var(--device-heading-height,58px);
-}
-html.device-customization-enabled :is(body>header.app-header .brand-home b,#songView>.song-mobile-header h1,#createView>.create-mobile-header h1,#theoryView>.theory-header h1,#playModeModal .mode-screen-header h1,#playModeModal .mode-section-title,#instrumentSettingsScreen .instrument-screen-header h1,#deviceSettingsScreen .device-settings-header h1) {
-  font-size:var(--device-heading-size,26px);
-  line-height:1.1;
 }
 html.device-customization-enabled body>header.app-header .brand-home b {
   font-size:var(--device-heading-size,26px);
@@ -880,9 +790,6 @@ html.device-customization-enabled body.song-list-active #songView>.song-mobile-h
   color:#fff;
   font-weight:750;
   box-shadow:0 5px 14px color-mix(in srgb,var(--primary) 20%,transparent);
-}
-html.device-customization-enabled :is(body>header.app-header,#songView>.song-mobile-header,#createView>.create-mobile-header,#theoryView>.theory-header,#playModeModal .mode-screen-header,#playModeModal .mode-section-title,#instrumentSettingsScreen .instrument-screen-header,#deviceSettingsScreen .device-settings-header) {
-  border-bottom-color:var(--device-line-color);
 }
 @media (max-width:700px) {
   html.device-customization-enabled body>header.app-header {
