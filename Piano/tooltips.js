@@ -60,8 +60,6 @@
     saveBtn: { d: 'Guarda la melodía en Firebase para que todo el equipo la vea.' },
     undoBtn: { d: 'Quita la última nota grabada.' },
     deleteBtn: { d: 'Elimina la melodía de esta alabanza.' },
-    theoryLiveToggle: { d: 'Muestra ayuda de teoría musical directamente sobre el teclado.' },
-    liveTheoryPlayKey: { d: 'Escucha la teoría que seleccionaste en el teclado.' },
     settingsToggle: { d: 'Abre los ajustes del piano.' },
     keyboardRangeToggle: { d: 'Elige cuántas teclas ver (18, 25 o las 88) y ajusta el tamaño.' },
     notationToggle: { d: 'Cambia las etiquetas de las notas entre cifrado americano (C, D, E) y latino (Do, Re, Mi).' },

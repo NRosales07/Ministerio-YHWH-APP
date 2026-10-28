@@ -381,8 +381,8 @@ function setView(view) {
   document.body.classList.toggle('create-list-active',view==='crear');
   stopPlayback({suspendAudio:true});
   
-  const target={home:'homeView',adoracion:'songView',jubilo:'songView',crear:'createView',teoria:'theoryScreen'}[view]||'homeView';
-  transitionScreen(target,['homeView','songView','createView','createTrackScreen','player','instrumentSettingsScreen','theoryScreen']);
+  const target={home:'homeView',adoracion:'songView',jubilo:'songView',crear:'createView'}[view]||'homeView';
+  transitionScreen(target,['homeView','songView','createView','createTrackScreen','player','instrumentSettingsScreen']);
   document.querySelectorAll('.tab').forEach(button => button.classList.toggle('active', button.dataset.view === view));
   renderLists();  window.scrollTo(0, 0);
   if(view==='adoracion'||view==='jubilo'||view==='crear')queueGuidedTour(view);

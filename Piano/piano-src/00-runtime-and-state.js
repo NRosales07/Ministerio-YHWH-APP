@@ -117,7 +117,21 @@ let pinchFlush = null;
 const timelineCache = { elapsed:'', duration:'', ratio:-1, percent:-1, empty:null };
 const FALLING_NOTES_MAX_LOOKAHEAD = 6;
 let fallingNotesStyle = (()=>{try{const v=safeStorageGetItem('yhwh_piano_barstyle');return v==='melody'||v==='drops'||v==='off'?v:'bars';}catch(_){return 'bars';}})();
-let fallingNotesLookahead = (()=>{try{const v=parseFloat(safeStorageGetItem('yhwh_piano_lookahead'));return v>=0.8&&v<=6?v:2.1;}catch(_){return 2.1;}})();
+const slowMobileBars=window.matchMedia?window.matchMedia('(pointer: coarse)').matches:false;
+const defaultFallingNotesLookahead=slowMobileBars?3.2:2.1;
+let fallingNotesLookahead=(()=>{
+  try{
+    const stored=parseFloat(safeStorageGetItem('yhwh_piano_lookahead'));
+    if(stored>=0.8&&stored<=6){
+      if(slowMobileBars&&stored===2.1&&safeStorageGetItem('yhwh_piano_lookahead_mobile_v1')!=='1'){
+        try{localStorage.setItem('yhwh_piano_lookahead','3.2');localStorage.setItem('yhwh_piano_lookahead_mobile_v1','1');}catch(_){}
+        return 3.2;
+      }
+      return stored;
+    }
+    return defaultFallingNotesLookahead;
+  }catch(_){return defaultFallingNotesLookahead;}
+})();
 // Opciones de rendimiento (Ajustes). Por defecto todo queda como estaba; el usuario puede apagar cada efecto.
 const SHOW_PLAYER_TIMELINE = true; // línea de tiempo (0:00 ——— 0:00) visible; pon false para quitarla
 const perfOption=(key)=>{try{return safeStorageGetItem(key)!=='0';}catch(_){return true;}};

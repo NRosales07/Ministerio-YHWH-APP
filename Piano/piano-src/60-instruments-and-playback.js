@@ -199,6 +199,7 @@ async function playNote(midi, element, duration = 0.4, visualDuration = null, oc
   if(!octaveLayer)handlePracticeInput(midi);
     if(octaveLayer&&!state.showOctaveNotes)element=null;
   element?.classList.add('playing');
+  latchMinimalKey(element);
   if(!octaveLayer){state.lastMidi = midi;$('currentNote').textContent = noteName(midi);$('currentNote').style.opacity = '1';}
   let recordedNote=null,recordedNoteFinalized=false;
   if (state.recording) {

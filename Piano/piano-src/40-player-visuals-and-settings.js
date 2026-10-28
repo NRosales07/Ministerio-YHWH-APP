@@ -33,10 +33,15 @@ const visualQueue={pending:[],index:0,sorted:true,offs:[]};
 function resetVisualQueue(){visualQueue.pending.length=0;visualQueue.index=0;visualQueue.sorted=true;visualQueue.offs.length=0;}
 function queueVisualEvent(at,fn){visualQueue.pending.push({at,fn});visualQueue.sorted=false;}
 function lightKeyOn(key,classes){
+  latchMinimalKey(key);
   let counts=keyLightCounts.get(key);if(!counts){counts={};keyLightCounts.set(key,counts);}
   classes.forEach(cls=>{counts[cls]=(counts[cls]||0)+1;key.classList.add(cls);});
 }
-function lightKeyOff(key,classes){
+function latchMinimalKey(key){
+  if(activePlayerLook!=='minimal'||!key)return;
+  document.querySelectorAll('.piano-panel .key.minimal-latched').forEach(item=>item.classList.remove('minimal-latched'));
+  key.classList.add('minimal-latched');
+}function lightKeyOff(key,classes){
   const counts=keyLightCounts.get(key);if(!counts)return;
   classes.forEach(cls=>{counts[cls]=Math.max(0,(counts[cls]||0)-1);if(!counts[cls])key.classList.remove(cls);});
 }
@@ -735,7 +740,7 @@ function updateVisualOptions(){
 }
 function fxNoteColor(midi){const color=barColorMode==='note'?BAR_NOTE_PALETTE[((midi%12)+12)%12]:barBassDiff&&midi<=48?state.bassColor:state.keyColor;return fnIsBlackKeyMidi(midi)?fnDarkenBarColor(color):color;}
 function showManualNoteEffect(midi,key){
-  if(fallingNotesStyle==='off'||!key)return;
+  if(fallingNotesStyle==='off'||!key||$('player')?.classList.contains('mobile-piano-wide'))return;
   if(!key.closest('.piano-panel'))key=document.querySelector(`.piano-panel .key[data-midi="${midi}"]`);
   if(!key)return;
   const stage=$('noteCanvas'),stageRect=stage?.getBoundingClientRect(),keyRect=key.getBoundingClientRect();if(!stageRect||!keyRect)return;
@@ -1111,7 +1116,8 @@ function renderKeyboard() {
   $('keyboard').ontransitionend = event => {
     if (event.target.tagName !== 'SPAN') event.target.classList.remove('playing');
   };
-  syncStageScroll();}
+  syncStageScroll();
+}
 function updateActiveChordLabel(){
   if(!state.showChordNames)return;
   const pitches=[...new Set([...state.activePointers.values()].map(active=>Number(active.element.dataset.midi)%12))];
@@ -1456,11 +1462,18 @@ function syncPlayerLookButtons(){
   document.querySelectorAll('[data-player-look]').forEach(button=>{const active=button.dataset.playerLook===activePlayerLook;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
   const status=$('playerLookStatus'),look=PLAYER_LOOKS.find(item=>item.id===activePlayerLook);if(status)status.textContent=look?'Look activo: '+look.name:'Look activo: Personalizado';
 }
-function markPlayerLookCustom(){if(applyingPlayerLook||activePlayerLook==='custom')return;activePlayerLook='custom';deviceSettings.playerLook='custom';syncPlayerLookButtons();scheduleDeviceSettingsSave();}
+function markPlayerLookCustom(){if(applyingPlayerLook||activePlayerLook==='custom')return;if(activePlayerLook==='minimal')document.querySelectorAll('.piano-panel .key.minimal-latched').forEach(key=>key.classList.remove('minimal-latched'));activePlayerLook='custom';deviceSettings.playerLook='custom';syncPlayerLookButtons();scheduleDeviceSettingsSave();}
 function applyPlayerLook(id){
   const look=PLAYER_LOOKS.find(item=>item.id===id);if(!look)return;applyingPlayerLook=true;
   try{
-    setBarAppearance(look.barStyle);setBarLook(look.barLook);setBarColorPreset(look.palette);setPianoKeyStyle(look.keyStyle);setFxStyle(look.fxStyle);
+    if(look.id!=='minimal')document.querySelectorAll('.piano-panel .key.minimal-latched').forEach(key=>key.classList.remove('minimal-latched'));
+    if(look.id==='minimal'){
+      lightKeys=true;keyColorOn=true;keyEdge=false;deviceSettings.lightKeys=true;
+      document.body.classList.remove('keys-no-color','keys-edge','keys-fill-off');
+      for(const [id,value] of [['lightKeysSwitch',true],['keyColorOnSwitch',true],['keyEdgeSwitch',false],['playerKeyLightingMode','full']]){const input=$(id);if(input){if(input.type==='checkbox')input.checked=value;else input.value=value;}}
+      try{localStorage.setItem('yhwh_piano_light_keys','1');localStorage.setItem('yhwh_piano_key_color_on','1');localStorage.setItem('yhwh_piano_key_edge','0');}catch(_){}
+      setKeyNoteIndicatorEnabled(true);
+    }    setBarAppearance(look.barStyle);setBarLook(look.barLook);setBarColorPreset(look.palette);setPianoKeyStyle(look.keyStyle);setFxStyle(look.fxStyle);
     state.keyColor=look.melodyColor;state.bassColor=look.bassColor;deviceSettings.melodyColor=state.keyColor;deviceSettings.bassColor=state.bassColor;
     try{localStorage.setItem('yhwh_piano_key_color',state.keyColor);localStorage.setItem('yhwh_piano_bass_color',state.bassColor);}catch(_){}
     if($('keyColorPicker'))$('keyColorPicker').value=state.keyColor;if($('bassColorPicker'))$('bassColorPicker').value=state.bassColor;
@@ -1649,7 +1662,7 @@ function bindCanvasGestures(){
       canvasGesture=null;pending=null;
       if(g.axis==='x')setKeyboardZoom(state.keyboardZoom,{preserveCenter:false});
       fallingNotesGeometry=null;
-      try{localStorage.setItem('yhwh_piano_lookahead',String(fallingNotesLookahead));}catch(_){}
+      try{localStorage.setItem('yhwh_piano_lookahead',String(fallingNotesLookahead));if(slowMobileBars)localStorage.setItem('yhwh_piano_lookahead_mobile_v1','1');}catch(_){}
     }
   };
   canvas.addEventListener('pointerup',endGesture);canvas.addEventListener('pointercancel',endGesture);canvas.addEventListener('lostpointercapture',endGesture);

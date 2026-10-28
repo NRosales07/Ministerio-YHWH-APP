@@ -39,11 +39,13 @@ html body .manual-note-effect.is-bar::after{content:"";position:absolute;left:15
 /* Sin borde ni sombra sobre las teclas: las líneas luminosas quedan pegadas al piano. */
 html body #player .performance-layout > .piano-panel,html body.player-active #player .performance-layout > .piano-panel{border-top:0;box-shadow:none}
 /* Estilos seleccionables para el teclado del escenario. */
-html[data-piano-key-style="flat"] body #player .piano-panel .key.white{background:#f6f7f8;border:1px solid #c1c8ce;border-radius:0;color:#26323a;box-shadow:none}
-html[data-piano-key-style="flat"] body #player .piano-panel .key.black{background:#252b31;border:1px solid #161a1e;border-radius:0 0 2px 2px;color:#f2f4f5;box-shadow:none}
-html[data-piano-key-style="flat"] body #player .piano-panel .key.playing,html[data-piano-key-style="flat"] body #player .piano-panel .key.bass-playing{box-shadow:none;filter:brightness(.96)}
+html[data-piano-key-style="flat"] body #player .piano-panel .key.white{background:#f6f7f8;border:1px solid #c1c8ce;border-radius:0;color:#26323a;box-shadow:none;transition:none}
+html[data-piano-key-style="flat"] body #player .piano-panel .key.black{background:#252b31;border:1px solid #161a1e;border-radius:0 0 2px 2px;color:#f2f4f5;box-shadow:none;transition:none}
+html[data-piano-key-style="flat"] body #player .piano-panel .key.playing,html[data-piano-key-style="flat"] body #player .piano-panel .key.bass-playing,html[data-piano-key-style="flat"] body #player .piano-panel .key.minimal-latched{box-shadow:none;filter:none}
 html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.white.playing{background:var(--pressed-key-color);border-color:var(--pressed-key-color)}
+html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.white.minimal-latched{background:var(--pressed-key-color);border-color:var(--pressed-key-color)}
 html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.black.playing{background:color-mix(in srgb,var(--pressed-key-color) 78%,#171b1e);border-color:var(--pressed-key-color)}
+html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.black.minimal-latched{background:color-mix(in srgb,var(--pressed-key-color) 78%,#171b1e);border-color:var(--pressed-key-color)}
 html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.white.bass-playing{background:var(--bass-note-color);border-color:var(--bass-note-color)}
 html[data-piano-key-style="flat"] body:not(.keys-no-color) #player .piano-panel .key.black.bass-playing{background:color-mix(in srgb,var(--bass-note-color) 78%,#171b1e);border-color:var(--bass-note-color)}
 html[data-piano-key-style="flat"] body #player .piano-panel .key.white.active,html[data-piano-key-style="flat"] body #player .piano-panel .key.white.chord-selected{background:#e6edf0;border-color:#71858e;box-shadow:none}
@@ -924,4 +926,24 @@ html[data-theme="dark"] body.home-active #homeView .home-action.primary small {
 body.player-active #player #instrumentMenu .instrument-picker-targets{grid-template-columns:repeat(3,minmax(0,1fr))}
 body.player-active #player #instrumentMenu .instrument-picker-mix{grid-template-columns:repeat(2,minmax(0,1fr))}
 body.player-active #player #instrumentMenu #thirdLayerStatus{grid-column:1/-1;margin:0;font-size:.62rem;line-height:1.2;opacity:.76}
+
+/* Las listas de alabanzas y sus pantallas de continuación no reservan el safe area derecho. */
+@media (max-width:900px) {
+  body.song-list-active #songView { --song-safe-right:14px; }
+  body.create-list-active #createView > .create-mobile-header,
+  body.create-list-active #createView > .toolbar,
+  body.create-list-active #createView > .create-list-footer { padding-right:9px; }
+  body.create-list-active #createView > #createList { padding-right:2px; }
+
+  #playModeModal .mode-screen-panel { padding-right:16px; }
+  #createTrackScreen .create-track-panel { padding-right:16px; }
+}
+@media (max-width:700px) and (orientation:portrait) {
+  body.song-list-active #songView { --song-safe-right:16px; }
+}
+@media (max-width:900px) and (orientation:landscape) {
+  body.song-list-active #songView { --song-safe-right:20px; }
+  #playModeModal .mode-screen-panel { padding-right:20px; }
+  #createTrackScreen .create-track-panel { padding-right:20px; }
+}
 

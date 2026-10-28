@@ -179,7 +179,6 @@ function bindInterface() {
     transitionScreen('playModeModal',['homeView','songView','createView','player','playModeModal']);
     queueGuidedTour('modo');
   };
-  document.addEventListener('yhwh-theory-note',event=>{const midi=Number(event.detail?.midi);if(midi>=21&&midi<=108)void playNote(midi,[...document.querySelectorAll('#theoryScreen [data-theory-midi]')].find(key=>Number(key.dataset.theoryMidi)===midi),.45);});
   $('freePlayBtn').onclick = openFreePlay;
   $('drumPadHomeBtn').onclick=openDrumPadScreen;
   $('drumPadOpen').onclick=openDrumPadScreen;
@@ -444,7 +443,7 @@ function bindInterface() {
     };
     const setWideMode=enabled=>{
       if(enabled&&!wideMedia.matches)return;
-      if(enabled){if(previousZoom===null)previousZoom=state.keyboardZoom;player.classList.add('mobile-piano-wide');moveWidePopovers(true);if(instrumentToggle&&headerActions){instrumentToggle.classList.add('instrument-header-toggle');headerActions.prepend(instrumentToggle);syncInstrumentButtons();}clearFallingNotesCanvas();wideToggle.setAttribute('aria-pressed','true');wideToggle.setAttribute('aria-label','Volver al tamaño normal del piano');wideToggle.title='Volver al tamaño normal';wideToggle.textContent='×';requestAnimationFrame(()=>{keyBaseWidthCache=0;stageLastKeyWidth=-1;setKeyboardZoom(1.8,{persist:false});syncOverview();});}
+      if(enabled){if(previousZoom===null)previousZoom=state.keyboardZoom;player.querySelectorAll('#noteCanvas .manual-note-effect').forEach(effect=>effect.remove());player.classList.add('mobile-piano-wide');moveWidePopovers(true);if(instrumentToggle&&headerActions){instrumentToggle.classList.add('instrument-header-toggle');headerActions.prepend(instrumentToggle);syncInstrumentButtons();}clearFallingNotesCanvas();wideToggle.setAttribute('aria-pressed','true');wideToggle.setAttribute('aria-label','Volver al tamaño normal del piano');wideToggle.title='Volver al tamaño normal';wideToggle.textContent='×';requestAnimationFrame(()=>{keyBaseWidthCache=0;stageLastKeyWidth=-1;setKeyboardZoom(1.8,{persist:false});syncOverview();});}
       else{player.classList.remove('mobile-piano-wide');moveWidePopovers(false);if(instrumentToggle&&instrumentHome){instrumentToggle.classList.remove('instrument-header-toggle');instrumentHome.prepend(instrumentToggle);syncInstrumentButtons();}wideToggle.setAttribute('aria-pressed','false');wideToggle.setAttribute('aria-label','Ampliar el piano');wideToggle.title='Ampliar el piano';wideToggle.textContent='⛶';const restoreZoom=previousZoom;previousZoom=null;requestAnimationFrame(()=>{keyBaseWidthCache=0;stageLastKeyWidth=-1;if(restoreZoom!==null)setKeyboardZoom(restoreZoom,{persist:false});requestAnimationFrame(()=>{fallingNotesCanvasDirty=true;fallingNotesGeometry=null;if(fallingNotesFrame)cancelAnimationFrame(fallingNotesFrame);fallingNotesFrame=0;if(!resizeFallingNotesCanvas())return;if(state.playing&&fallingNotesRun||fnHasFx())fallingNotesFrame=requestAnimationFrame(drawFallingNotesFrame);else clearFallingNotesCanvas();});});}
     };
     if(wideToggle)wideToggle.addEventListener('click',()=>setWideMode(wideToggle.getAttribute('aria-pressed')!=='true'));
