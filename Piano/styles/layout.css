@@ -61,7 +61,7 @@ body.player-active > header { display: none; }
 body.player-active > main { display: flex; width: 100%; max-width: none; height: 100vh; height: 100dvh; min-height: 0; margin: 0; padding: 0; overflow: hidden; }
 body.player-active #connection { display: none; }
 body.player-active #player { position: relative; display: flex; flex: 1; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; min-height: 0; margin: 0; overflow: hidden; background: #252629; }
-.player-top { z-index: 20; display: flex; flex: 0 0 48px; align-items: center; gap: 8px; min-width: 0; height: 48px; margin: 0; padding: env(safe-area-inset-top) max(8px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))) 0 max(8px,env(safe-area-inset-left));   box-shadow: 0 1px 3px #0004; }
+.player-top { z-index: 20; display: flex; flex: 0 0 48px; align-items: center; gap: 8px; min-width: 0; height: 48px; margin: 0; padding: env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left));   box-shadow: 0 1px 3px #0004; }
 .toolbar-back { display: flex; flex: 0 0 auto; flex-direction: column; align-items: center; justify-content: center; min-width: 42px; height: 42px; padding: 0 5px; border: 0;    font-size: 26px; line-height: 20px; }
 .toolbar-back small { font-size: 8px; line-height: 10px; }
 .top-tempo { display: flex; flex: 0 0 auto; align-items: center; gap: 5px; height: 100%; padding: 0 7px; border-right: 1px solid #ffffff27; border-left: 1px solid #ffffff27; }
@@ -83,7 +83,7 @@ body.player-active #player { position: relative; display: flex; flex: 1; flex-di
 .device-piano-background::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#11152238,#11152224 72%,#11152266)}
 .canvas-grid { position: absolute; inset: 0; contain: strict; pointer-events: none; background-image: linear-gradient(to right,color-mix(in srgb,var(--device-grid-line-color,#fff) var(--device-grid-line-opacity,55%),transparent) var(--device-grid-line-width,1px),transparent var(--device-grid-line-width,1px)),linear-gradient(to bottom,transparent calc(100% - 2px),#da3b3b 2px); background-size: calc(var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width) + var(--stage-key-width)) 100%,100% 100%; background-position: calc(var(--stage-scroll,0px) * -1) 0,0 0;  }
 .falling-notes-canvas { position: absolute; z-index: 1; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
-.canvas-readouts { position: absolute; z-index: 2; top: 15px; left: calc(64px + env(safe-area-inset-left)); right: calc(12px + var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); display: flex; align-items: center; gap: 11px; min-height: 32px; color: #edf2f4; font-size: .78rem; text-shadow: 0 1px 3px #000; }
+.canvas-readouts { position: absolute; z-index: 2; top: 15px; left: calc(64px + env(safe-area-inset-left)); right: calc(12px + env(safe-area-inset-right)); display: flex; align-items: center; gap: 11px; min-height: 32px; color: #edf2f4; font-size: .78rem; text-shadow: 0 1px 3px #000; }
 .canvas-readouts #playerLabel { color: #dbeaf0; font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
 .active-chord-label { padding: 4px 10px; border: 1px solid #ffffff21; border-radius: 4px;   font-size: 1.06rem; font-weight: 700; }
 .canvas-readouts #activeKeyName { margin-left: auto; color: #b9c4ca; font-size: .75rem; }
@@ -135,7 +135,7 @@ body.player-active #player { position: relative; display: flex; flex: 1; flex-di
 .notes-panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: .76rem; }
 .notes-panel-head button { width: 28px; height: 28px; border: 0; background: transparent; font-size: 20px; }
 .notes-panel .note-chip { border: 0; background: #cbe7f0; color: #276279; }
-.player-sheet { top: 58px; right: max(9px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); width: min(420px,calc(100vw - 18px)); max-height: calc(100dvh - 75px - env(safe-area-inset-bottom)); overflow: auto; padding: 16px; }
+.player-sheet { top: 58px; right: max(9px,env(safe-area-inset-right)); width: min(420px,calc(100vw - 18px)); max-height: calc(100dvh - 75px - env(safe-area-inset-bottom)); overflow: auto; padding: 16px; }
 .sheet-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
 .sheet-heading small { color: #63818a; font-size: .65rem; font-weight: 750; letter-spacing: .09em; }
 .sheet-heading h2 { margin: 2px 0 0; }
@@ -170,7 +170,7 @@ html[data-theme="dark"] .settings-sheet .master-volume-label { color:#aaa9c1; }
 .audio-license { margin-top: 12px; color: #60747c; font-size: .72rem; }
 .audio-license summary { cursor: pointer; }
 .audio-license .audio-credit { color: #687b82; font-size: .67rem; line-height: 1.6; }
-.chord-sheet { right: max(9px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); width: min(690px,calc(100vw - 18px)); }
+.chord-sheet { right: max(9px,env(safe-area-inset-right)); width: min(690px,calc(100vw - 18px)); }
 .chord-sheet #chordEditor { position: relative; display: block; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
 .chord-editor-title { display: flex; align-items: center; justify-content: space-between; padding-right: 1px; color: #3f5c66; }
 .chord-editor-help { color: #60747c; }
@@ -231,7 +231,7 @@ html[data-theme="dark"] .settings-sheet .master-volume-label { color:#aaa9c1; }
 .song-intro-overlay p { margin: 9px 0 0; color: #e1f2f8; font-size: clamp(.77rem,2vw,1.1rem); }
 .note-canvas.song-intro-active .song-intro-overlay { visibility: visible; animation: song-title-intro 2.8s ease both; }
 @keyframes song-title-intro { 0% { opacity: 0; transform: scale(.97); } 12% { opacity: 1; transform: scale(1); } 72% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-10px) scale(1.015); visibility: hidden; } }
-.player-timeline { position: relative; z-index: 5; order: 2; display: grid; flex: 0 0 25px; grid-template-columns: 38px minmax(0,1fr) 38px; align-items: center; gap: 8px; width: 100%; height: 25px; min-width: 0; padding: 0 max(10px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))) 0 max(10px,env(safe-area-inset-left)); background: #1e2022; color: #d3dade; }
+.player-timeline { position: relative; z-index: 5; order: 2; display: grid; flex: 0 0 25px; grid-template-columns: 38px minmax(0,1fr) 38px; align-items: center; gap: 8px; width: 100%; height: 25px; min-width: 0; padding: 0 max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left)); background: #1e2022; color: #d3dade; }
 .player-timeline.is-empty { visibility: hidden; }
 .timeline-time { color: #e0e5e7; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .timeline-time:last-child { text-align: right; }
@@ -251,7 +251,7 @@ html[data-theme="dark"] .settings-sheet .master-volume-label { color:#aaa9c1; }
 
 
 /* Barra del reproductor: transporte claro y herramientas separadas. */
-#player > .player-top { display:flex; align-items:center; justify-content:space-between; gap:clamp(4px,1vw,10px); overflow:visible; padding-right:max(8px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); padding-left:max(8px,env(safe-area-inset-left)); }
+#player > .player-top { display:flex; align-items:center; justify-content:space-between; gap:clamp(4px,1vw,10px); overflow:visible; padding-right:max(8px,env(safe-area-inset-right)); padding-left:max(8px,env(safe-area-inset-left)); }
 #player > .player-top > * { min-width:0; }
 #player > .player-top > #backBtn { flex:0 0 38px; width:38px; min-width:38px; }
 #player > .player-top .player-playback-group { display:flex; flex:1 1 auto; min-width:0; justify-content:center; align-items:center; gap:0; }
@@ -275,7 +275,7 @@ html[data-theme="dark"] .settings-sheet .master-volume-label { color:#aaa9c1; }
 .player-edit-actions #deleteBtn { background:#98313b; }
 
 /* El instrumento, el metrónomo y el tono quedan dentro del área negra del piano. */
-#player .performance-layout > .note-canvas .canvas-readouts { position:absolute; z-index:20;  right:max(8px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); left:max(8px,env(safe-area-inset-left)); display:block; width:auto; height:40px; min-height:40px; margin:0; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; box-sizing:border-box; pointer-events:none; }
+#player .performance-layout > .note-canvas .canvas-readouts { position:absolute; z-index:20;  right:max(8px,env(safe-area-inset-right)); left:max(8px,env(safe-area-inset-left)); display:block; width:auto; height:40px; min-height:40px; margin:0; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; box-sizing:border-box; pointer-events:none; }
 #player .performance-layout > .note-canvas .canvas-readouts > #playerLabel { display:none; }
 #player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail { position:absolute; z-index:12; top:0; right:auto; bottom:auto; left:0; display:flex; flex-direction:column; align-items:center; gap:3px; width:36px; margin:0; padding:3px; border:1px solid #ffffff24; border-radius:9px; background:#101215d9; box-shadow:0 3px 10px #0007; pointer-events:auto; }
 #player .performance-layout > .note-canvas .canvas-readouts > .stage-tool-rail button { display:grid; flex:0 0 29px; place-items:center; width:29px; height:29px; min-height:29px; padding:0; border:1px solid #ffffff21; border-radius:6px; background:#0876a637; color:#fff; font-size:16px; }
@@ -292,7 +292,7 @@ html[data-theme="dark"] .settings-sheet .master-volume-label { color:#aaa9c1; }
 #player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName:hover,#player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName:focus-visible { background:#0876a6; outline:2px solid #78d8ff; outline-offset:1px; }
 #player .performance-layout > .note-canvas .canvas-readouts > #activeKeyName:empty { display:none; }
 #player .performance-layout > .note-canvas .canvas-readouts > #activeChordLabel { position:absolute; z-index:5; top:44px; right:auto; bottom:auto; left:50%; transform:translateX(-50%); pointer-events:none; }
-.key-transpose-popover { z-index:30; top:52px; right:max(8px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); left:auto; width:min(260px,calc(100vw - 24px)); padding:13px; }
+.key-transpose-popover { z-index:30; top:52px; right:max(8px,env(safe-area-inset-right)); left:auto; width:min(260px,calc(100vw - 24px)); padding:13px; }
 .key-transpose-popover h2 { margin:0 0 4px; color:#334f5a; font-size:.95rem; }
 .key-transpose-popover p { margin:0 0 9px; color:#5d7077; font-size:.72rem; }
 .key-transpose-popover label { display:block; margin-bottom:4px; color:#526971; font-size:.72rem; }
@@ -382,7 +382,7 @@ body.player-active #player .performance-layout > .player-timeline, body.player-a
   #player.mobile-piano-wide .performance-layout > .player-timeline { display:none !important; }
   #player.mobile-piano-wide .falling-notes-canvas,
   #player.mobile-piano-wide .manual-note-effect { display:none!important; }
-  #player.mobile-piano-wide .keyboard-wide-nav { z-index:12; display:flex; flex:0 0 clamp(34px,9dvh,52px); align-items:center; gap:clamp(7px,2vw,18px); min-width:0; padding:4px max(10px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))) 4px max(10px,env(safe-area-inset-left)); background:#151719; }
+  #player.mobile-piano-wide .keyboard-wide-nav { z-index:12; display:flex; flex:0 0 clamp(34px,9dvh,52px); align-items:center; gap:clamp(7px,2vw,18px); min-width:0; padding:4px max(10px,env(safe-area-inset-right)) 4px max(10px,env(safe-area-inset-left)); background:#151719; }
   #player.mobile-piano-wide .keyboard-wide-nav > button { display:grid; flex:0 0 clamp(30px,8vh,44px); width:clamp(30px,8vh,44px); height:clamp(30px,8vh,44px); place-items:center; padding:0; border:1px solid #ffffff14; border-radius:50%; background:#24282c; color:#e7eaed; font-size:clamp(14px,4vh,21px); }
   #player.mobile-piano-wide .keyboard-wide-nav > #keyboardZoomOutWide,
   #player.mobile-piano-wide .keyboard-wide-nav > #keyboardZoomInWide { border-color:#55a9c5; background:#183642; color:#d8f5ff; font-size:clamp(18px,5vh,25px); font-weight:700; }

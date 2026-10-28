@@ -365,7 +365,7 @@ html body.player-active #player .performance-layout>.piano-panel{border-top-colo
 
 /* Mobile app shell: safe content in every view, with a dedicated edge-to-edge piano. */
 @media (max-width: 700px) {
-  :root { --mobile-gutter: max(16px, env(safe-area-inset-left, 0px)); --mobile-gutter-right: max(16px, var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); --mobile-bottom: env(safe-area-inset-bottom, 0px); }
+  :root { --mobile-gutter: max(16px, env(safe-area-inset-left, 0px)); --mobile-gutter-right: max(16px, env(safe-area-inset-right, 0px)); --mobile-bottom: env(safe-area-inset-bottom, 0px); }
   html { min-height: 100%; background: var(--bg); }
   body { min-height: 100dvh; background: var(--bg); }
   body:not(.player-active) { padding-bottom: var(--mobile-bottom); }
@@ -460,7 +460,7 @@ html body.player-active #player .performance-layout>.piano-panel{border-top-colo
   /* Free play is the one view whose keyboard reaches every physical edge. */
   body.player-active.free-play-active > main { padding: 0; }
   body.player-active.free-play-active #player { width: 100vw; max-width: none; margin: 0; border: 0; border-radius: 0; }
-  body.player-active.free-play-active #player > .player-top { padding-left: max(8px,env(safe-area-inset-left,0px)); padding-right: max(8px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); padding-top: env(safe-area-inset-top,0px); }
+  body.player-active.free-play-active #player > .player-top { padding-left: max(8px,env(safe-area-inset-left,0px)); padding-right: max(8px,env(safe-area-inset-right,0px)); padding-top: env(safe-area-inset-top,0px); }
   body.player-active.free-play-active #player .performance-layout > .piano-panel { width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; padding-bottom: 0; }
 }
 
@@ -475,7 +475,7 @@ html body.player-active #player .performance-layout>.piano-panel{border-top-colo
 
 /* Landscape phones: size the app to the usable viewport and scroll within long lists. */
 @media (max-width: 900px) and (orientation: landscape) {
-  :root { --mobile-gutter:max(14px,env(safe-area-inset-left,0px)); --mobile-gutter-right:max(20px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); --mobile-bottom:env(safe-area-inset-bottom,0px); }
+  :root { --mobile-gutter:max(14px,env(safe-area-inset-left,0px)); --mobile-gutter-right:max(20px,env(safe-area-inset-right,0px)); --mobile-bottom:env(safe-area-inset-bottom,0px); }
   html,body { width:100%; height:100%; min-height:0; }
   body:not(.player-active) { height:100dvh; overflow:hidden; }
   body > header.app-header { display:grid; min-height:calc(42px + env(safe-area-inset-top,0px)); height:calc(42px + env(safe-area-inset-top,0px)); padding:calc(4px + env(safe-area-inset-top,0px)) var(--mobile-gutter-right) 4px var(--mobile-gutter); }
@@ -534,7 +534,7 @@ body.player-active > header.app-header { display:none; }
 
 /* Extra-short landscape viewports, including phones whose CSS width exceeds 900px. */
 @media (orientation: landscape) and (max-height: 600px) {
-  :root { --mobile-gutter:max(12px,env(safe-area-inset-left,0px)); --mobile-gutter-right:max(20px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); --mobile-bottom:env(safe-area-inset-bottom,0px); }
+  :root { --mobile-gutter:max(12px,env(safe-area-inset-left,0px)); --mobile-gutter-right:max(20px,env(safe-area-inset-right,0px)); --mobile-bottom:env(safe-area-inset-bottom,0px); }
   body:not(.player-active) { height:100dvh; overflow:hidden; }
   body > header.app-header { min-height:calc(40px + env(safe-area-inset-top,0px)); height:calc(40px + env(safe-area-inset-top,0px)); padding:calc(3px + env(safe-area-inset-top,0px)) var(--mobile-gutter-right) 3px var(--mobile-gutter); }
   main,body.home-active > main { display:flex; flex-direction:column; height:calc(100dvh - 40px - env(safe-area-inset-top,0px)); padding:6px var(--mobile-gutter-right) calc(6px + var(--mobile-bottom)) var(--mobile-gutter); }
@@ -659,7 +659,7 @@ body.player-active > header.app-header { display:none; }
     position:fixed;
     z-index:80;
     top:calc(52px + env(safe-area-inset-top,0px));
-    right:max(8px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px)));
+    right:max(8px,env(safe-area-inset-right,0px));
     bottom:auto;
     left:max(8px,env(safe-area-inset-left,0px));
     width:auto;
@@ -1006,7 +1006,7 @@ html.device-customization-enabled body.melody-playing #player>.player-top #playM
 @media (max-width:900px) {
   body.song-list-active #songView {
     --song-safe-left:max(14px,env(safe-area-inset-left,0px));
-    --song-safe-right:max(14px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px)));
+    --song-safe-right:max(14px,env(safe-area-inset-right,0px));
   }
   body.song-list-active #songView>.song-mobile-header,
   body.song-list-active #songView>.toolbar,
@@ -1019,13 +1019,13 @@ html.device-customization-enabled body.melody-playing #player>.player-top #playM
 @media (max-width:700px) and (orientation:portrait) {
   body.song-list-active #songView {
     --song-safe-left:max(16px,env(safe-area-inset-left,0px));
-    --song-safe-right:max(16px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px)));
+    --song-safe-right:max(16px,env(safe-area-inset-right,0px));
   }
 }
 @media (max-width:900px) and (orientation:landscape) {
   body.song-list-active #songView {
     --song-safe-left:max(14px,env(safe-area-inset-left,0px));
-    --song-safe-right:max(20px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px)));
+    --song-safe-right:max(20px,env(safe-area-inset-right,0px));
   }
 }
 
@@ -1087,7 +1087,7 @@ html body #player .note-canvas>.canvas-grid{background-image:linear-gradient(to 
 
 /* Splash de bienvenida: tarjeta compacta y segura en móvil. */
 #splashScreen {
-  padding:max(16px,env(safe-area-inset-top)) max(16px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
   color:var(--text);
   background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--primary) 18%,var(--bg)),var(--bg) 72%);
 }
@@ -1148,7 +1148,7 @@ html body #player .note-canvas>.canvas-grid{background-image:linear-gradient(to 
     width:100%;
     height:100dvh;
     min-height:0;
-    padding:max(6px,env(safe-area-inset-top)) max(20px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))) max(6px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
+    padding:max(6px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
     overflow:hidden;
   }
   #createTrackScreen .mode-screen-header { grid-column:1/-1; min-height:36px; height:36px; padding:2px 0; }
@@ -1325,7 +1325,7 @@ body.home-active.home-grid-active > header.app-header .connection { display:none
 .home-grid-active > header.app-header .home-header-switch-slot { order:2; }
 body.home-active.home-grid-active > header.app-header { position:relative; }
 body.home-active.home-grid-active > header.app-header .header-left-group { width:auto; justify-content:flex-start; }
-body.home-active.home-grid-active > header.app-header .home-header-switch-slot { position:absolute; top:50%; right:max(8px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); transform:translateY(-50%); }
+body.home-active.home-grid-active > header.app-header .home-header-switch-slot { position:absolute; top:50%; right:max(8px,env(safe-area-inset-right,0px)); transform:translateY(-50%); }
 body.home-active.home-list-active > header.app-header .home-header-switch-slot { position:absolute; top:50%; left:50%; right:auto; transform:translate(-50%,-50%); }
 body.home-active.home-list-active > header.app-header { position:relative; }
 body.home-active.home-list-active > header.app-header .connection { display:none !important; }
@@ -1404,7 +1404,7 @@ html.device-customization-enabled body.home-active #homeView.home-grid-mode .hom
 
 /* Mantén la composición vertical de bienvenida también en teléfonos apaisados. */
 @media (max-width:900px) and (orientation:landscape) and (max-height:600px) {
-  #splashScreen { padding:max(10px,env(safe-area-inset-top)) max(12px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px))) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)); }
+  #splashScreen { padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)); }
   #splashScreen .splash-content {
     display:block;
     width:min(500px,100%);
@@ -1434,3 +1434,16 @@ html.device-customization-enabled body.home-active #homeView .home-action.primar
 html.device-customization-enabled body.home-active #homeView .home-action.primary b,
 html.device-customization-enabled body.home-active #homeView .home-action.primary small,
 html.device-customization-enabled body.home-active #homeView .home-action.primary b { color:var(--device-primary-text,#fff); }
+
+/* Quita únicamente el safe-area derecho de las pantallas de música y configuración. */
+@media (max-width: 700px) {
+  #playModeModal .mode-screen-panel,
+  #createTrackScreen .mode-screen-panel,
+  #deviceSettingsScreen .mode-screen-panel { padding-right: 0; }
+}
+@media (max-width: 900px) and (orientation: landscape) {
+  #playModeModal .mode-screen-panel,
+  #createTrackScreen .mode-screen-panel,
+  #deviceSettingsScreen .mode-screen-panel { padding-right: 0; }
+}
+
