@@ -937,6 +937,8 @@ body.player-active #player #instrumentMenu #thirdLayerStatus{grid-column:1/-1;ma
 
   #playModeModal .mode-screen-panel { padding-right:16px; }
   #createTrackScreen .create-track-panel { padding-right:16px; }
+  #deviceSettingsScreen .mode-screen-panel { padding-right:16px; }
+  #playerSettingsScreen .player-config-panel { padding-right:16px; }
 }
 @media (max-width:700px) and (orientation:portrait) {
   body.song-list-active #songView { --song-safe-right:16px; }
@@ -945,5 +947,7 @@ body.player-active #player #instrumentMenu #thirdLayerStatus{grid-column:1/-1;ma
   body.song-list-active #songView { --song-safe-right:20px; }
   #playModeModal .mode-screen-panel { padding-right:20px; }
   #createTrackScreen .create-track-panel { padding-right:20px; }
+  #deviceSettingsScreen .mode-screen-panel { padding-right:20px; }
+  #playerSettingsScreen .player-config-panel { padding-right:20px; }
 }
 
