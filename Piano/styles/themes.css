@@ -287,7 +287,7 @@ html body #player.player .performance-layout > #playerTimeline .timeline-time {
   color: #fff; font-size: 10px; line-height: 1; text-shadow: 0 1px 2px #000;
 }
 html body #player.player .performance-layout > #playerTimeline #playbackElapsed { left: max(5px, env(safe-area-inset-left)); }
-html body #player.player .performance-layout > #playerTimeline #playbackDuration { right: max(5px, env(safe-area-inset-right)); }
+html body #player.player .performance-layout > #playerTimeline #playbackDuration { right: max(5px, var(--safe-area-inset-right, env(safe-area-inset-right, 0px))); }
 
 /* 2. Todo lo que flota en el área negra baja para quedar debajo de la tira. */
 html body #player.player .performance-layout > .note-canvas .canvas-readouts { top: calc(var(--stage-tl-h) + 6px); }

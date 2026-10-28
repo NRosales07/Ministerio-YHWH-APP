@@ -98,7 +98,7 @@ body:has(#playModeModal:not(.hidden)) #playModeModal .mode-screen-panel,
 body:has(#instrumentSettingsScreen:not(.hidden)) #instrumentSettingsScreen .mode-screen-panel,
 body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen .mode-screen-panel{
   box-sizing:border-box;
-  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
+  padding:env(safe-area-inset-top,0px) var(--safe-area-inset-right, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
 }
 
 /* Etiquetas de tono en las barras manuales y en las barras de reproducción. */
@@ -380,7 +380,7 @@ html.device-customization-enabled body.home-active #homeView .home-action .home-
 .guided-tour{position:fixed;z-index:2147483500;inset:0;color:var(--device-text-color,var(--text));isolation:isolate}
 .guided-tour-backdrop{position:absolute;inset:0;background:rgba(5,9,18,.30);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px)}
 .guided-tour-spotlight{position:fixed;z-index:1;border:2px solid var(--device-accent-color,var(--gold2));border-radius:12px;box-shadow:0 0 0 3px color-mix(in srgb,var(--device-accent-color,var(--gold2)) 24%,transparent),0 0 22px color-mix(in srgb,var(--device-accent-color,var(--gold2)) 38%,transparent);pointer-events:none;transition:top .2s ease,left .2s ease,width .2s ease,height .2s ease}
-.guided-tour-card{position:fixed;z-index:2;right:max(22px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));width:min(410px,calc(100vw - 32px));overflow:hidden;padding:0;border:1px solid color-mix(in srgb,var(--device-accent-color,var(--gold2)) 38%,var(--device-line-color,var(--line)));border-radius:17px;background:var(--device-option-panel-color,var(--panel));color:var(--device-text-color,var(--text));box-shadow:0 24px 70px rgba(0,0,0,.48),0 5px 18px rgba(0,0,0,.22);font-family:var(--device-font,inherit)}
+.guided-tour-card{position:fixed;z-index:2;right:max(22px,var(--safe-area-inset-right, env(safe-area-inset-right, 0px)));bottom:max(22px,env(safe-area-inset-bottom));width:min(410px,calc(100vw - 32px));overflow:hidden;padding:0;border:1px solid color-mix(in srgb,var(--device-accent-color,var(--gold2)) 38%,var(--device-line-color,var(--line)));border-radius:17px;background:var(--device-option-panel-color,var(--panel));color:var(--device-text-color,var(--text));box-shadow:0 24px 70px rgba(0,0,0,.48),0 5px 18px rgba(0,0,0,.22);font-family:var(--device-font,inherit)}
 .guided-tour-card:before{position:absolute;top:0;right:0;left:0;height:4px;background:var(--device-heading-background,var(--device-primary-color,var(--gold)));content:""}
 .guided-tour-card .guided-tour-kicker{display:flex;align-items:center;gap:8px;padding:18px 56px 0 20px;color:var(--device-accent-color,var(--gold2));font-size:.68rem;font-weight:800;letter-spacing:.12em}
 .guided-tour-spark{display:inline-grid;place-items:center;width:25px;height:25px;flex:0 0 25px;border:1px solid color-mix(in srgb,var(--device-accent-color,var(--gold2)) 45%,transparent);border-radius:8px;background:color-mix(in srgb,var(--device-accent-color,var(--gold2)) 16%,var(--device-option-panel-color,var(--panel)));font-size:.95rem}
