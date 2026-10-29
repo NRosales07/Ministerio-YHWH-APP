@@ -4,6 +4,7 @@ function openCreateTrackScreen(){
   const {song,category}=selectedCreateSong;
   $('createTracksSongTitle').textContent=song.title||'Alabanza';
   $('createTrackScreen').dataset.category=category;$('createTrackScreen').dataset.songId=String(song.id);
+  const introManager=document.querySelector('[data-manage-track="introduccion"]');if(introManager)introManager.classList.toggle('hidden',!hasTrack(category,song.id,'introduccion'));
   document.querySelectorAll('[data-record-track]').forEach(button=>{
     const exists=hasTrack(category,song.id,button.dataset.recordTrack);
     const label=button.querySelector('em');if(label)label.textContent=exists?'Grabación guardada · puedes reemplazarla':'Aún no grabada';

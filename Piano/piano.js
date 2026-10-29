@@ -992,6 +992,7 @@ function openCreateTrackScreen(){
   const {song,category}=selectedCreateSong;
   $('createTracksSongTitle').textContent=song.title||'Alabanza';
   $('createTrackScreen').dataset.category=category;$('createTrackScreen').dataset.songId=String(song.id);
+  const introManager=document.querySelector('[data-manage-track="introduccion"]');if(introManager)introManager.classList.toggle('hidden',!hasTrack(category,song.id,'introduccion'));
   document.querySelectorAll('[data-record-track]').forEach(button=>{
     const exists=hasTrack(category,song.id,button.dataset.recordTrack);
     const label=button.querySelector('em');if(label)label.textContent=exists?'Grabación guardada · puedes reemplazarla':'Aún no grabada';
@@ -4068,6 +4069,7 @@ function bindInterface() {
   $('createTrackDrumPad')?.addEventListener('click',openCreateSongDrumPad);
   $('createTracksBack').onclick=()=>{document.body.classList.add('create-list-active');transitionScreen('createView',['homeView','songView','createView','createTrackScreen','player']);};
   document.querySelectorAll('[data-record-track]').forEach(button=>button.onclick=()=>beginCreateTrack(button.dataset.recordTrack));
+  document.querySelectorAll('[data-manage-track]').forEach(button=>button.onclick=()=>{if(!selectedCreateSong)return;const {song,category}=selectedCreateSong;openSong(song,category,button.dataset.manageTrack,false,'record');});
   $('alternateMelodyForm')?.addEventListener('submit',event=>{event.preventDefault();const input=$('alternateMelodyName');addAlternateMelody(input.value);input.value='';});
   document.querySelector('[data-open-song-track-settings]').onclick=openCreateTrackSettings;
   $('selectedPreviewBtn').onclick=()=>{if(!selectedSongForContinue){toast('Selecciona una alabanza primero.');return;}previewSongInList(selectedSongForContinue.song,selectedSongForContinue.category,$('selectedPreviewBtn'));};
