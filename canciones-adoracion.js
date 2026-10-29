@@ -1293,7 +1293,7 @@ var SONGS =
     "num": 14,
     "title": "QUIERO LEVANTAR MIS MANOS",
     "compositor": "Gamaliel Morán",
-    "tono": "G",
+    "tono": "A",
     "album": "Enciende Una Luz - 1999",
     "content": "[INTRO]:\n                                    | A | C#m | F# | Bm | E |\n        [VERSO 1]::\n            A                           C#m      F#7                     Bm\nX2   Quiero levantar mis manos, quiero levantar mi voz,\n   F#                       Bm   E                           A      A7\nOfreciendo a ti, mi vida,     en santidad y amor\n    D     F#m             Bm7       C#m             F#\nPadre, solo a ti te ofrezco, mi vida y mi corazón,\n Bm                              E       Bm      E\nY me postro en tu presencia, en adoración.   X2\n        [CORO]: \nA          C#m   Em      A       D   Dm                 A-F#m      \nHijo de Dios,          recibe hoy,         toda la gloria,       \n  Bm-A  D  B7   E\nla honra y      honor,\nA          C#m  Em       A     D    Dm                  A-F#m      \nHijo de Dios,          recibe hoy,         toda la gloria,        \n  Bm-A  D  B7   E\nla honra y       honor.\n        [VERSO 1]:          |     [CORO] X2 ",
     "id": 110,
@@ -1570,7 +1570,7 @@ var SONGS =
     "compositor": "Ninoska de Ponce",
     "tono": "A",
     "album": "Nuestro Legado - 2004",
-    "content": "[INTRO]:\n                                   | Asus2 | C#m7 | D | E |\n        [VERSO 1]: \nAsus2                                           E\nX2   Inúndame oh Dios, con tu santidad,\n    G                           D           E      A Asus2\nAnhelo estar más ce - rca de ti, no te dejare,\n                                E      G                             D   [F#m]\nSi no me bendices,    derrama tu espíritu en mí.   X2\n        [CORO]: \n            E     A     D             E                   A     D       E\nX2   Manda tu fuego, Seño - or, manda tu fuego, Señor.   X2\n           Bm7                         A             D                  A             Bm  \nX2   Consume el mal que hay en mí,   sediento estoy de ti, \n          A      G       F#m - E\nYo quiero verte, Señor   X2\n                   Bm7\nManda tu fue - ego.",
+    "content": "[INTRO]:\n                                   | Asus2 | C#m7 | D | E |\n        [VERSO 1]: \n           A                                           \nX2   Inúndame oh Dios, con tu santidad,\n    G                           D-E                A \nAnhelo estar más ce - rca de ti, no te dejare,\n                                    G                             D - E  [E]\nSi no me bendices,derrama tu espíritu en mí.   X2\n        [CORO]: \n    A            D              E                         D         E\nManda tu fuego, Seño - or, manda tu fuego, Señor.   \n           Bm7                         A             D                  A             Bm  \nX2   Consume el mal que hay en mí,   sediento estoy de ti, \n          A      G         E\nYo quiero verte, Señor   X2\n                   Bm7\nManda tu fue - ego.",
     "id": 135,
     "versiculos": [
       {

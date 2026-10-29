@@ -3,19 +3,20 @@ var SONGS_JUBILO =
   {
     "num": null,
     "title": "GRANDE ES EL SEÑOR",
-    "compositor": "Tradicional",
+    "compositor": "Marco Barrientos",
     "tono": "Em",
     "album": "Alabanzas de Júbilo",
-    "content": "[VERSO 1]:\n           Em                                                             Am\nX2    Grande es el Señor, creador del universo, canta \n\nY danza al Rey que viene pronto,\n Em                                                      B\nQue felicidad el corazón nos llena, grande es el Señor.  X2\n[CORO]:\n          Em                                      D\nX2     Ohh, Hosanna al Altísimo, Ohh, Hosanna al Altísimo,\n Em                                        B\nOhh, Hosanna al Altísimo, grande es el Señor.  X2",
+    "content": "[VERSO 1]:\n           Em                                                             Am\nX2    Grande es el Señor, creador del universo, canta \n\nY danza al Rey que viene pronto,\n Em                                                      B\nQue felicidad el corazón nos llena, grande es el Señor.  X2\n[CORO]:\n          Em                                      D\nX2     Ohh, Hosanna al Altísimo, Ohh, Hosanna al Altísimo,\n Em                                        B\nOhh, Hosanna al Altísimo, grande es el Señor.  X2\n\n\n\n\n\n\n\nSE REPITE TODO",
     "id": 300
   },
   {
-    "id": 301,
+    "num": null,
     "title": "CANTARÉ AL SEÑOR",
-    "compositor": "Tradicional",
+    "compositor": "Juan Carlos Alvarado",
     "tono": "Em",
     "album": "Alabanzas de Júbilo",
-    "content": "[VERSO 1]:\n               Em                                      D                  Am               B       Em\nX2   Cantaré al Señor por siempre, su diestra es todo poder.   X2\n[CORO]:\n           Em            D                                Em                                D                             Em\nX2   Echó a la mar, quien los perseguía, jinete y caballo, echó a la mar.   X2\n        Em            D              Am                 B\nEchó a la mar los carros del faraón. ¡Hey, Hey!"
+    "content": "[VERSO 1]:\n          Em                              D        \nX2   Cantaré al Señor por siempre, \n        Am          B     Em\nSu diestra es todo poder.   X2\n[CORO]:\n Em                 D                         Em  \nX2   Echó a la mar, quien los perseguía, \n                  D                      Em\nJinete y caballo, echó a la mar.   X2\n  Em          D           Am           B\nEchó a la mar los carros del faraón. ¡Hey, Hey!\n\n\n\n\n\n\n\nSE REPITE TODO",
+    "id": 301
   },
   {
     "num": null,
@@ -47,10 +48,10 @@ var SONGS_JUBILO =
   {
     "num": null,
     "title": "CUANDO EL PUEBLO",
-    "compositor": "Tradicional",
+    "compositor": "Coros",
     "tono": "Em",
     "album": "Alabanzas de Júbilo",
-    "content": "[VERSO 1]:\n            Em\nX2     Cuando el pueblo del Señor alaba a Dios,\n                  B                                      Em\nSuceden cosas, suceden cosas, maravillosas.  X2\n[CORO]:\n                   Am-D      G-Em                         B                          \nX2      Hay sanidad, liberación, y aquí se siente \n                             Em\nLa presencia del Señor.   X2           ",
+    "content": "[VERSO 1]:\n            Em\nX2     Cuando el pueblo del Señor alaba a Dios,\n                  B                                      Em\nSuceden cosas, suceden cosas, maravillosas.  X2\n[CORO]:\n                   Am-D      G-Em                         B                          \nX2      Hay sanidad, liberación, y aquí se siente \n                             Em\nLa presencia del Señor.   X2  \n\n\n\n\n\n\n\nSE REPITE TODO         ",
     "id": 305
   },
   {
@@ -898,10 +899,10 @@ var SONGS_JUBILO =
   {
     "num": null,
     "title": "PON ACEITE",
-    "compositor": "Tradicional",
+    "compositor": "Coros",
     "tono": "Em",
     "album": "Alabanzas de Júbilo",
-    "content": "TROMPETAS | Em | B | Em-E | Am | Em-B-Em |\n[VERSO 1]:\n                 Em           \nX2    Pon aceite en mi lámpara Señor, \n                                             B\nPon aceite en mi lámpara Señor\n                E                          Am\nQue yo quiero servirte con amor, \n          Em                  B       Em         \nPon aceite en mi lámpara Señor.   X2\n[CORO]:\n              B                     Em\nSeñor Jesús tu eres mi vida, \n              B                      Em\nSeñor Jesús tu eres mi amor,\n    Am                     Em\nSalvaste mi alma perdida, \n                    B                   Em\nPor eso te alabo con el corazón,\n    Am                    Em\nSalvaste mi alma perdida, \n                    B                   Em\nPor eso te alabo con el corazón.       \n\n",
+    "content": "[VERSO 1]:\n                 Em           \nX2    Pon aceite en mi lámpara Señor, \n                                             B\nPon aceite en mi lámpara Señor\n                E                          Am\nQue yo quiero servirte con amor, \n          Em                  B       Em         \nPon aceite en mi lámpara Señor.   X2\n[CORO]:\n              B                     Em\nSeñor Jesús tu eres mi vida, \n              B                      Em\nSeñor Jesús tu eres mi amor,\n    Am                     Em\nSalvaste mi alma perdida, \n                    B                   Em\nPor eso te alabo con el corazón,\n    Am                    Em\nSalvaste mi alma perdida, \n                    B                   Em\nPor eso te alabo con el corazón.       \n\n\n\n\n[BOMBO - CAMBIO DE TONO]:",
     "id": 405
   },
   {
@@ -1270,7 +1271,7 @@ var SONGS_JUBILO =
     "compositor": "Centro Vida",
     "tono": "Gm",
     "album": "",
-    "content": "[VERSO 1]:\n          Gm\nX2   Mayor es el que está conmigo, \n           F                                 Gm\nMás fuerte es el que está por mi...    X2 \n\n[CORO]:  X2\n             Gm              F  -  Gm\nX4    Poderoso él es poderoso, \n     Gm               F  -  Gm\nVictorioso él es victorioso...   X4\n\n\n\n\nSE REPITE TODO ",
+    "content": "[VERSO 1]:\n          Gm\nX2   Mayor es el que está conmigo, \n           F                                 Gm\nMás fuerte es el que está por mi...    X2 \n\n[CORO]:  X2\n             Gm              F  -  Gm\nX4    Poderoso él es poderoso, \n     Gm               F  -  Gm\nVictorioso él es victorioso...   X4\n\n\n\n\n\n\n\n\nSE REPITE TODO ",
     "id": 448
   },
   {
@@ -1457,5 +1458,35 @@ var SONGS_JUBILO =
     "album": "¡Espíritu Santo Gracias!",
     "content": "[VERSO 1]:\n       Cm                            Fm                          Cm    \nX3  Haré un altar para ti, Con sacrificio de alabanza, \nFm                Cm            G                Cm\nCon júbilo y danza, Y cantaré… a Jehová.  \n\n[CORO]:\n                            Fm      Bb                              Eb   Cm\nQue descienda el fuego,      que descienda el fuego \n                                G         Cm\nQue descienda el fuego de Dios...\n                            Fm      Bb                              Eb   Cm\nQue descienda el fuego,      que descienda el fuego \n                                G         Cm\nQue descienda el fuego de Dios...   X3\n\n\n\n\nESPACIO",
     "id": 468
+  },
+  {
+    "num": 39,
+    "title": "FUEGO",
+    "compositor": "Billy Bunster",
+    "tono": "Am",
+    "album": "",
+    "content": "[SE CANTA LENTO]: \n[VERSO 1]:\n                        Am          \nX2     Hay una llama que arde en mí, \n                G\nUn gran poder que está en ti,\n                   Dm  \nMe está quemando su fuego santo, \n                E7\nPuedo sentirlo está aquí.   X2\n\n\n\n\n\nPLATILLOS\n[VERSO 1]:\n                        Am          \nX2     Hay una llama que arde en mí, \n                G\nUn gran poder que está en ti,\n                   Dm  \nMe está quemando su fuego santo, \n                E7\nPuedo sentirlo está aquí.   X2\n[CORO]:\n           Am                   G\nX2     Fuego (fuego) Fuego del Señor (fuego del Señor)\n  Dm                                            E\nFuego (fuego) Fuego (fuego)  Fuego purificador.  X2\n\n\n\n\n\n\n\n\n\n\nSE REPITE TODO\n\n\n\n\n[BOMBO - PEQUEÑO ESPACIO]\n\n\n[PUENTE]:\n             Am\nX4      Fuego, fuego, fuego, fuego, fuego, fuego, fuego\n    G\nFuego, fuego, fuego, fuego, fuego, fuego, fuego\n  Dm\nFuego, fuego, fuego, fuego, fuego, fuego, fuego\n    E\nFuego purificador.    X4                                \n[CORO]:\n           Am                   G\nX2     Fuego (fuego) Fuego del Señor (fuego del Señor)\n  Dm                                            E\nFuego (fuego) Fuego (fuego)  Fuego purificador.  X2\n\n\n\n\n\n[BOMBO - PEQUEÑO ESPACIO]\n\n",
+    "id": 469,
+    "version": "Centro Vida"
+  },
+  {
+    "num": 40,
+    "title": "ME GOZARÉ",
+    "compositor": "Ebenezer",
+    "tono": "Am",
+    "album": "",
+    "content": "[VERSO 1]:\nX2   Cuando el Señor hiciere volver la cautividad…    X2\nX2   Mi boca llenará de risa...   X2\n[CORO]:\nX2   Me gozaré, me gozaré, me gozaré...   X2\n\n\n\n\n\n\n\n\nSE REPITE TODO\n\n\n\n\n\n              \n[VERSO 2]:\nX2  Así como David cantaba...   X2\nX2   Yo cantaré, Yo danzaré...    X2\n\n\n\n\n\n[BOMBO - CAMBIO DE TONO]",
+    "id": 470,
+    "version": "Centro Vida"
+  },
+  {
+    "num": 41,
+    "title": "ME GOZARÉ - FINAL",
+    "compositor": "Ebenezer",
+    "tono": "Am",
+    "album": "",
+    "content": "[CORO]:\n\nX2   Me gozaré, me gozaré, me gozaré, \n\nMe gozaré en Jehová, Pues ha llevado\n\nTodo mi dolor, me ha hecho Libre...   X2\n\n",
+    "id": 471,
+    "version": "Centro Vida"
   }
 ];
