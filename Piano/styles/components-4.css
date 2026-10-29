@@ -507,7 +507,7 @@ html body .manual-note-effect.is-bar.is-solid::before,html body .manual-note-eff
 .drum-pad{position:relative;min-height:clamp(110px,17vh,160px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:1px solid color-mix(in srgb,var(--gold) 35%,var(--line));border-radius:14px;background:linear-gradient(145deg,var(--panel2),var(--panel));color:var(--text);font:inherit;cursor:pointer;touch-action:manipulation;user-select:none;box-shadow:0 5px 16px #0002;transition:transform .09s ease,border-color .09s ease,background .09s ease,box-shadow .09s ease}
 .drum-pad>span{position:absolute;top:9px;left:11px;color:var(--muted);font-size:.7rem;font-weight:700}.drum-pad strong{font-size:1.05rem}.drum-pad small{color:var(--muted);font-size:.72rem}.drum-pad:hover,.drum-pad:focus-visible{border-color:var(--gold);outline:2px solid color-mix(in srgb,var(--gold) 35%,transparent);outline-offset:1px}.drum-pad:active,.drum-pad.is-hit{transform:scale(.97);border-color:var(--gold);background:color-mix(in srgb,var(--gold) 30%,var(--panel));box-shadow:0 0 20px color-mix(in srgb,var(--gold) 32%,transparent)}
 .drum-pad-transport{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:20px 0 12px}.drum-pad-transport button{min-height:42px;padding:8px 14px;border-radius:8px;font:inherit;font-size:.84rem;font-weight:650;cursor:pointer}.drum-pad-transport button[aria-pressed=true]{outline:2px solid var(--gold);outline-offset:2px}.drum-pad-hint{max-width:720px;margin:12px auto;color:var(--muted);font-size:.84rem;line-height:1.5;text-align:center}.drum-pad-license{margin:22px auto 0;color:var(--muted);font-size:.76rem;text-align:center}.drum-pad-license a{color:var(--gold)}
-@media(max-width:700px){.drum-pad-screen .mode-screen-header{grid-template-columns:minmax(72px,1fr) minmax(0,2fr) 24px}.drum-pad-screen .mode-screen-header>.soft{padding:4px 8px;font-size:.78rem}.drum-pad-main{padding:12px 12px max(20px,env(safe-area-inset-bottom))}.drum-pad-controls{grid-template-columns:1fr 1fr;gap:10px;padding:11px}.drum-pad-controls [role=status]{grid-column:1/-1}.drum-pad-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.drum-pad{min-height:clamp(96px,15vh,130px);border-radius:11px}.drum-pad strong{font-size:.95rem}.drum-pad-transport{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:15px}.drum-pad-transport button{padding:8px 7px;font-size:.78rem}.drum-pad-transport #drumPadRecord{grid-column:1/-1}}
+@media(max-width:700px){.drum-pad-screen .mode-screen-panel{padding-left:max(var(--mobile-gutter,12px),env(safe-area-inset-left,0px));padding-right:0}.drum-pad-screen .mode-screen-header{grid-template-columns:minmax(72px,1fr) minmax(0,2fr) 24px}.drum-pad-screen .mode-screen-header>.soft{padding:4px 8px;font-size:.78rem}.drum-pad-main{padding:12px 12px max(20px,env(safe-area-inset-bottom))}.drum-pad-controls{grid-template-columns:1fr 1fr;gap:10px;padding:11px}.drum-pad-controls [role=status]{grid-column:1/-1}.drum-pad-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.drum-pad{min-height:clamp(96px,15vh,130px);border-radius:11px}.drum-pad strong{font-size:.95rem}.drum-pad-transport{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:15px}.drum-pad-transport button{padding:8px 7px;font-size:.78rem}.drum-pad-transport #drumPadRecord{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){.drum-pad{transition:none}}
 
 /* Keep key illumination modes consistent across classic, flat, realistic, and themed styles. */
@@ -936,14 +936,34 @@ body.player-active #player #instrumentMenu #thirdLayerStatus{grid-column:1/-1;ma
   body.create-list-active #createView > #createList { padding-right:2px; }
 
   body:has(#playModeModal:not(.hidden)) #playModeModal .mode-screen-panel { padding-right:0; }
-  #createTrackScreen .create-track-panel { padding-right:16px; }
+  #createTrackScreen .create-track-panel,
+  body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen .device-settings-panel,
+  #playerSettingsScreen .player-config-panel { padding-right:0; }
 }
+
+/* Todos los botones «Continuar» comparten el dorado de Crear melodía. */
+#continueSongBtn,
+#createContinueBtn,
+ #modeStartBtn,
+html.device-customization-enabled body.song-list-active #songView>.song-mobile-header>#continueSongBtn,
+html.device-customization-enabled #playModeModal .mode-screen-continue {
+  border:1px solid #c9a84c;
+  background:linear-gradient(135deg,#c9a84c,#e8c97a);
+  color:#1c1c3f;
+  font-weight:750;
+}
+#continueSongBtn:disabled,
+#createContinueBtn:disabled,
+#modeStartBtn:disabled,
+html.device-customization-enabled body.song-list-active #songView>.song-mobile-header>#continueSongBtn:disabled { opacity:1; color:#1c1c3f; }
 @media (max-width:700px) and (orientation:portrait) {
   body.song-list-active #songView { --song-safe-right:16px; }
 }
 @media (max-width:900px) and (orientation:landscape) {
   body.song-list-active #songView { --song-safe-right:20px; }
   body:has(#playModeModal:not(.hidden)) #playModeModal .mode-screen-panel { padding-right:0; }
-  #createTrackScreen .create-track-panel { padding-right:20px; }
+  #createTrackScreen .create-track-panel,
+  body:has(#deviceSettingsScreen:not(.hidden)) #deviceSettingsScreen .device-settings-panel,
+  #playerSettingsScreen .player-config-panel { padding-right:0; }
 }
 
