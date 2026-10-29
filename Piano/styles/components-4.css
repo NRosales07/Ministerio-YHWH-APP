@@ -304,6 +304,41 @@ body.song-list-active #songView .selected-audio-preview>button {
   .player-settings-content { padding:12px 12px calc(18px + env(safe-area-inset-bottom)); }
 }
 
+/* En móviles horizontales, la navegación va arriba y el contenido gana ancho. */
+@media (max-width:900px) and (orientation:landscape) {
+  .player-settings-layout {
+    grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);
+    grid-template-rows:auto minmax(0,1fr);
+    grid-template-areas:"tabs tabs" "content preview";
+  }
+  .player-settings-tabs {
+    flex-direction:row;
+    gap:6px;
+    padding:7px 12px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    border-right:0;
+    border-bottom:1px solid var(--device-line-color,var(--line));
+  }
+  .player-settings-tabs button {
+    flex:0 0 auto;
+    min-height:36px;
+    padding:6px 11px;
+    border-radius:999px;
+    font-size:.78rem;
+    white-space:nowrap;
+  }
+  .player-settings-content { padding:14px 16px; }
+  .player-settings-preview { padding:13px 14px; border-left:1px solid var(--device-line-color,var(--line)); border-bottom:0; }
+  .player-settings-preview>h3 { display:block; margin-bottom:8px; font-size:.82rem; }
+  .player-settings-preview-card { padding:10px; border-radius:12px; }
+  .player-settings-preview-card>small { margin-bottom:7px; font-size:.72rem; }
+  .player-settings-preview-card>p { margin-top:8px; font-size:.68rem; }
+  .settings-preview-stage { height:clamp(100px,34dvh,150px); }
+  #playerSettingsScreen .settings-preview-keyboard { height:clamp(80px,27dvh,112px); min-height:0; }
+  .settings-preview-effects,.settings-preview-volume { height:clamp(100px,34dvh,150px); }
+}
+
 /* Piano settings is a navigable screen, sharing the app's full-screen and safe-area layout. */
 #playerSettingsScreen.player-config-screen { z-index:1200; background:var(--device-page-color,var(--bg)); }
 #playerSettingsScreen .player-config-panel { display:flex; flex-direction:column; width:100%; height:100%; min-height:0; padding:0; overflow:hidden; border:0; border-radius:0; background:var(--device-page-color,var(--bg)); color:var(--device-text-color,var(--text)); box-shadow:none; }
@@ -508,6 +543,46 @@ html body .manual-note-effect.is-bar.is-solid::before,html body .manual-note-eff
 .drum-pad>span{position:absolute;top:9px;left:11px;color:var(--muted);font-size:.7rem;font-weight:700}.drum-pad strong{font-size:1.05rem}.drum-pad small{color:var(--muted);font-size:.72rem}.drum-pad:hover,.drum-pad:focus-visible{border-color:var(--gold);outline:2px solid color-mix(in srgb,var(--gold) 35%,transparent);outline-offset:1px}.drum-pad:active,.drum-pad.is-hit{transform:scale(.97);border-color:var(--gold);background:color-mix(in srgb,var(--gold) 30%,var(--panel));box-shadow:0 0 20px color-mix(in srgb,var(--gold) 32%,transparent)}
 .drum-pad-transport{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:20px 0 12px}.drum-pad-transport button{min-height:42px;padding:8px 14px;border-radius:8px;font:inherit;font-size:.84rem;font-weight:650;cursor:pointer}.drum-pad-transport button[aria-pressed=true]{outline:2px solid var(--gold);outline-offset:2px}.drum-pad-hint{max-width:720px;margin:12px auto;color:var(--muted);font-size:.84rem;line-height:1.5;text-align:center}.drum-pad-license{margin:22px auto 0;color:var(--muted);font-size:.76rem;text-align:center}.drum-pad-license a{color:var(--gold)}
 @media(max-width:700px){.drum-pad-screen .mode-screen-panel{padding-left:max(var(--mobile-gutter,12px),env(safe-area-inset-left,0px));padding-right:0}.drum-pad-screen .mode-screen-header{grid-template-columns:minmax(72px,1fr) minmax(0,2fr) 24px}.drum-pad-screen .mode-screen-header>.soft{padding:4px 8px;font-size:.78rem}.drum-pad-main{padding:12px 12px max(20px,env(safe-area-inset-bottom))}.drum-pad-controls{grid-template-columns:1fr 1fr;gap:10px;padding:11px}.drum-pad-controls [role=status]{grid-column:1/-1}.drum-pad-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.drum-pad{min-height:clamp(96px,15vh,130px);border-radius:11px}.drum-pad strong{font-size:.95rem}.drum-pad-transport{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:15px}.drum-pad-transport button{padding:8px 7px;font-size:.78rem}.drum-pad-transport #drumPadRecord{grid-column:1/-1}}
+
+/* Filas claras para las acciones de pista en móviles horizontales. */
+@media (max-width:900px) and (orientation:landscape) {
+  #createTrackScreen .create-track-panel { gap:8px 18px; padding-left:max(14px,env(safe-area-inset-left,0px)); }
+  #createTrackScreen .mode-screen-header { border-radius:10px; }
+  #createTrackScreen .create-track-intro { padding:3px 8px 6px; border-bottom:1px solid var(--line); color:var(--muted); }
+  #createTrackScreen > .create-track-panel > .create-track-grid { grid-template-columns:minmax(0,1fr); grid-template-rows:repeat(4,minmax(0,1fr)); gap:6px; }
+  #createTrackScreen > .create-track-panel > .create-track-grid > button { display:grid; grid-template-columns:36px minmax(0,1fr) auto; grid-template-rows:auto auto; align-items:center; column-gap:9px; row-gap:2px; min-height:0; padding:5px 9px; border-radius:12px; background:var(--surface-raised); text-align:left; }
+  #createTrackScreen > .create-track-panel > .create-track-grid > button > span { grid-column:1; grid-row:1/3; display:grid; place-items:center; width:32px; height:32px; border-radius:10px; background:color-mix(in srgb,var(--primary) 13%,var(--surface)); }
+  #createTrackScreen > .create-track-panel > .create-track-grid > button b { grid-column:2; grid-row:1; font-size:.74rem; line-height:1.2; }
+  #createTrackScreen > .create-track-panel > .create-track-grid > button small { grid-column:2; grid-row:2; color:var(--muted); font-size:.64rem; line-height:1.2; }
+  #createTrackScreen > .create-track-panel > .create-track-grid > button em { grid-column:3; grid-row:1/3; justify-self:end; font-size:.63rem; font-style:normal; font-weight:700; }
+  #createTrackScreen .alternate-melodies { padding:9px 0 0 15px; border-left-color:color-mix(in srgb,var(--primary) 30%,var(--line)); }
+  #createTrackScreen .create-track-drum-button { border-color:color-mix(in srgb,var(--primary) 38%,var(--line)); background:color-mix(in srgb,var(--primary) 9%,var(--surface-raised)); }
+  #createTrackScreen .alternate-melodies h2 { margin-bottom:4px; font-size:1rem; }
+  #createTrackScreen #alternateMelodyName { border-radius:10px; }
+}
+/* Panel de ajustes en cuatro columnas para la vista horizontal del teléfono. */
+@media (max-width:900px) and (orientation:landscape) {
+  #instrumentSettingsScreen.create-track-settings-mode .instrument-screen-main { justify-content:center; gap:0; padding:5px 10px; overflow:hidden; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings { flex:0 1 auto; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; width:100%; max-width:none; margin:0; padding:9px; border-radius:14px; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings h2 { padding-bottom:6px; border-bottom:1px solid var(--line); font-size:.82rem; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings>p:not(#songTrackSettingsStatus) { display:none; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings>label { gap:4px; min-height:0; padding:6px 8px; border-radius:9px; font-size:.66rem; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings>label:nth-of-type(-n+4) { grid-row:2; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings>label:nth-of-type(5) { grid-column:1; grid-row:3; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings>label:nth-of-type(6) { grid-column:2; grid-row:3; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings>label:nth-of-type(7) { grid-column:3/5; grid-row:3; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings select { min-height:30px; padding:4px 7px; border-radius:7px; font-size:.7rem; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings .song-track-layer-toggle { min-height:48px; flex-wrap:wrap; justify-content:center; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings input[type="checkbox"] { width:17px; height:17px; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings input[type="range"] { min-height:18px; }
+  #instrumentSettingsScreen.create-track-settings-mode .song-track-settings output { font-size:.68rem; }
+  #instrumentSettingsScreen.create-track-settings-mode #songTrackSettingsStatus { grid-column:1/-1; grid-row:4; overflow:hidden; padding:3px 6px; color:var(--muted); font-size:.62rem; text-overflow:ellipsis; white-space:nowrap; }
+  #instrumentSettingsScreen.create-track-settings-mode .instrument-settings-footer { min-height:36px; grid-template-columns:auto minmax(0,1fr) auto; gap:6px; padding:3px 8px; }
+  #instrumentSettingsScreen.create-track-settings-mode .instrument-settings-footer>.soft,
+  #instrumentSettingsScreen.create-track-settings-mode .instrument-settings-footer .mode-screen-continue { min-height:30px; padding:4px 9px; font-size:.68rem; }
+  #instrumentSettingsScreen.create-track-settings-mode .instrument-settings-footer>p { font-size:.62rem; }
+}
+
 @media(prefers-reduced-motion:reduce){.drum-pad{transition:none}}
 
 /* Keep key illumination modes consistent across classic, flat, realistic, and themed styles. */
